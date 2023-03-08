@@ -1,0 +1,16 @@
+# Parameters:
+# instance.parameter=value       #(type, mode) default = 'def value' : description : [min..max]
+#------------------------------------------------------------------------------
+core_clk.mul=32000000                                 # (int   , init-time) default = '0x17d7840' : Clock Rate Multiplier. This parameter is not exposed via CADI and can only be set in LISA
+cpu0.semihosting-enable=1                             # (bool  , init-time) default = '0'      : Enable semihosting SVC traps. Applications that do not use semihosting must set this parameter to false.
+mps3_board.hostbridge.interfaceName=                  # (string, init-time) default = ''       : Host Interface
+mps3_board.hostbridge.userNetPorts=                   # (string, init-time) default = ''       : Listening ports to expose in user-mode networking
+mps3_board.hostbridge.userNetSubnet=172.20.51.0/24    # (string, init-time) default = '172.20.51.0/24' : Virtual subnet for user-mode networking
+mps3_board.hostbridge.userNetworking=1                # (bool  , init-time) default = '0'      : Enable user-mode networking
+mps3_board.smsc_91c111.enabled=1                      # (bool  , init-time) default = '0'      : Host interface connection enabled
+mps3_board.smsc_91c111.mac_address=00:02:f7:ef:6e:bf  # (string, init-time) default = '00:02:f7:ef:6e:bf' : Host/model MAC address
+mps3_board.telnetterminal0.start_telnet=0             # (bool  , init-time) default = '1'      : Start telnet if nothing connected
+mps3_board.uart0.shutdown_on_eot=1                    # (bool  , init-time) default = '0'      : Shutdown simulation when a EOT (ASCII 4) char is transmitted (useful for regression tests when semihosting is not available)
+mps3_board.uart0.out_file=-                           # (string, init-time) default = ''       : Output file to hold data written by the UART (use '-' to send all output to stdout)
+#mps3_board.visualisation.disable-visualisation=1      # (bool  , init-time) default = '0'      : Enable/disable visualisation
+#------------------------------------------------------------------------------
