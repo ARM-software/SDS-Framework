@@ -88,3 +88,27 @@ Execute the following steps:
    to start/stop reading sensor data
 
 Sensor data is read from files `<sensor_name>.<index>.sds` and also printed to the terminal.
+
+## Example recordings
+
+There are three pre-recorded examples available in the [Recordings](./Recordings/) folder. Each sensor has it's own metadata file, which describes the content of the raw files.
+
+ - Use [SDS-View](../utilities/SDS-View/) to view the captured data.
+   - execute the following line to view Accelerometer data:
+     ```
+     python ../utilities/SDS-View/sds-view.py -y Recordings/Accelerometer.sds.yml -s Recordings/Accelerometer.0.sds
+     ```
+   - execute the following line to view Gyroscope data:
+     ```
+     python ../utilities/SDS-View/sds-view.py -y Recordings/Gyroscope.sds.yml -s Recordings/Gyroscope.0.sds
+     ```
+
+ - Use [SDS-Convert](../utilities/SDS-Convert/) to convert the captured data from raw binary file to one of the supported output file types.
+   - convert Accelerometer data to simple CSV file by executing the following line:
+     ```
+     python ../utilities/SDS-Convert/sds-convert.py -y Recordings/Accelerometer.sds.yml -s Recordings/Accelerometer.0.sds -o simple_accelerometer.csv -f simple_csv --normalize
+     ```
+   - convert Gyroscope data to simple CSV file by executing the following line:
+     ```
+     python ../utilities/SDS-Convert/sds-convert.py -y Recordings/Gyroscope.sds.yml -s Recordings/Gyroscope.0.sds -o simple_gyroscope.csv -f simple_csv --normalize
+     ```
