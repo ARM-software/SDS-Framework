@@ -1,4 +1,4 @@
-# SDSIO-Socket
+# SDSIO-Server
 Python based SDS I/O Server for PC.
 
 It captures SDS recorder data sent from the target via one of the supported interfaces and writes recordings to files on the host.

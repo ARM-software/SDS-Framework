@@ -67,7 +67,7 @@ Use a programmer to download the HW image to the hardware target.
 ### HW Target (B-U585I-IOT02A)
 
 Execute the following steps:
- - run `python ../utilities/SDS-Socket/SDS-Socket.py` to start the socket server on the host PC
+ - run [SDSIO-Server](../utilities/SDSIO-Server/README.md) to start the SDS I/O server on the host PC
  - connect the board's ST-Link USB to the PC (provides also power)
  - open terminal on the PC and connect to the board's serial port (Baud rate: 115200)
  - reset the target (press RST button on the board)
