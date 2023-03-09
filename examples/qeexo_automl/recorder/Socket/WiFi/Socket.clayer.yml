@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Open-CMSIS-Pack/devtools/schemas/projmgr/0.9.4/tools/projmgr/schemas/clayer.schema.json
+
+layer:
+  # type: Socket
+  # name: WiFi
+  description: IoT Socket interface using WiFi
+
+  # interfaces:
+  #   - consumes:
+  #     - C_WiFi: 0
+  #   - provides:
+  #     - IoT_Socket:
+
+  # packs:
+  #   - pack: MDK-Packs::IoT_Socket
+
+  components:
+    - component: MDK-Packs::IoT Utility:Socket:WiFi
+
+  groups:
+    - group: Socket
+      files: 
+        - file: ./socket_startup.c

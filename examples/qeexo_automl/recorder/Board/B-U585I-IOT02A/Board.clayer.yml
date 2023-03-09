@@ -1,0 +1,107 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Open-CMSIS-Pack/devtools/schemas/projmgr/0.9.4/tools/projmgr/schemas/clayer.schema.json
+
+layer:
+  # type: Board
+  # name: B-U585I-IOT02A
+  # variant: IoT-WiFi
+  description: Board setup for IoT with WiFi interface
+  # for-board: B-U585I-IOT02A
+
+  # interfaces:
+  #   - consumes:
+  #     - RTOS2:
+  #   - provides:
+  #     - C_WiFi: 0
+  #     - A_UART: 3
+  #     - A_SPI: 1
+  #     - A_IO9_I:
+  #     - A_IO10_O:
+  #     - C_VIO:
+  #     - STDOUT:
+  #     - STDIN:
+  #     - STDERR:
+  #     - Heap : 65536
+
+  # packs:
+  #   - pack: ARM::CMSIS
+  #   - pack: Keil::ARM_Compiler
+  #   - pack: Keil::STM32U5xx_DFP@1.2.0
+  #   - pack: Keil::B-U585I-IOT02A_BSP@1.0.0
+
+  processor:
+    trustzone: off
+
+  add-paths:
+    - .
+    - ./Driver
+    - ../../../sensor/include
+    - ../../../audio/include
+
+  defines:
+    - MX_WIFI_SPI_DMA=0   # Do not use DMA if TZEN=1
+
+  components:
+    - component: Keil::Device:Startup
+
+    - component: Keil::Device:STM32Cube Framework:STM32CubeMX
+
+    - component: Keil::Device:STM32Cube HAL:Common
+    - component: Keil::Device:STM32Cube HAL:Cortex
+    - component: Keil::Device:STM32Cube HAL:DMA
+    - component: Keil::Device:STM32Cube HAL:EXTI
+    - component: Keil::Device:STM32Cube HAL:Flash
+    - component: Keil::Device:STM32Cube HAL:GPIO
+    - component: Keil::Device:STM32Cube HAL:I2C
+    - component: Keil::Device:STM32Cube HAL:ICACHE
+    - component: Keil::Device:STM32Cube HAL:IRDA
+    - component: Keil::Device:STM32Cube HAL:MDF
+    - component: Keil::Device:STM32Cube HAL:OSPI
+    - component: Keil::Device:STM32Cube HAL:PCD
+    - component: Keil::Device:STM32Cube HAL:PWR
+    - component: Keil::Device:STM32Cube HAL:RCC
+    - component: Keil::Device:STM32Cube HAL:RNG
+    - component: Keil::Device:STM32Cube HAL:RTC
+    - component: Keil::Device:STM32Cube HAL:SPI
+    - component: Keil::Device:STM32Cube HAL:Smartcard
+    - component: Keil::Device:STM32Cube HAL:UART
+    - component: Keil::Device:STM32Cube HAL:USART
+    - component: Keil::Device:STM32Cube LL:Common
+    - component: Keil::Device:STM32Cube LL:DLYB
+    - component: Keil::Device:STM32Cube LL:GPIO
+    - component: Keil::Device:STM32Cube LL:PWR
+    - component: Keil::Device:STM32Cube LL:RCC
+    - component: Keil::Device:STM32Cube LL:UCPD
+    - component: Keil::Device:STM32Cube LL:UTILS
+
+    - component: Keil::Board Support&B-U585I-IOT02A:Components:EMW3080
+    - component: Keil::Board Support&B-U585I-IOT02A:Components:HTS221
+    - component: Keil::Board Support&B-U585I-IOT02A:Components:IIS2MDC
+    - component: Keil::Board Support&B-U585I-IOT02A:Components:ISM330DHCX
+    - component: Keil::Board Support&B-U585I-IOT02A:Components:LPS22HH
+    - component: Keil::Board Support&B-U585I-IOT02A:Drivers:BUS
+    - component: Keil::Board Support&B-U585I-IOT02A:Drivers:Basic I/O
+    - component: Keil::Board Support&B-U585I-IOT02A:Drivers:Environmental Sensors
+    - component: Keil::Board Support&B-U585I-IOT02A:Drivers:Motion Sensors
+    - component: Keil::Board Support&B-U585I-IOT02A:Drivers:Audio
+
+    - component: ARM::CMSIS:CORE
+
+    - component: Keil::CMSIS Driver:SPI
+    - component: Keil::CMSIS Driver:USART
+    - component: Keil::CMSIS Driver:VIO
+    - component: Keil::CMSIS Driver:WiFi:EMW3080
+
+    - component: Keil::Compiler&ARM Compiler:Event Recorder&DAP
+    - component: Keil::Compiler&ARM Compiler:I/O:STDERR&User
+    - component: Keil::Compiler&ARM Compiler:I/O:STDOUT&User
+    - component: Keil::Compiler&ARM Compiler:I/O:STDIN&User
+
+  groups:
+    - group: Board
+      files:
+        - file: ./arduino.c
+        - file: ./retarget_stdio.c
+        - file: ./Driver/sensor_drv_hw.c
+        - file: ./Driver/ism330dhcx_fifo.c
+        - file: ./Driver/Audio_B-U585I-IOT02A.c
+        - file: ../../../sensor/source/sensor_drv.c

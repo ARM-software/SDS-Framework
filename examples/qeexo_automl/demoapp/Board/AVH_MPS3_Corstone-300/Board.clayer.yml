@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Open-CMSIS-Pack/devtools/schemas/projmgr/0.9.4/tools/projmgr/schemas/clayer.schema.json
+
+layer:
+  # type: Board
+  # name: AVH_MPS3_Cortsone-300
+  # variant: IoT-VSocket-Ethernet
+  description: Board setup for IoT with VSocket and Ethernet interface
+  # for device: ARM::SSE-300-MPS3
+
+  # interfaces:
+  #   - consumes:
+  #     - RTOS2:
+  #   - provides:
+  #     - VSocket
+  #     - C_ETH: 0
+  #     - C_VIO:
+  #     - STDOUT:
+  #     - STDIN:
+  #     - STDERR:
+  #     - Heap : 65536
+
+  # packs:
+  #   - pack: ARM::CMSIS
+  #   - pack: ARM::CMSIS-Driver
+  #   - pack: Keil::ARM_Compiler
+  #   - pack: ARM::V2M_MPS3_SSE_300_BSP@1.2.0
+
+  processor:
+    trustzone: secure
+
+  add-paths:
+    - .
+    - ./Driver
+    - ../../../sensor/include
+    - ../../../sensor/vsi/include
+
+  # defines:
+  #   - CMSIS_VIN
+  #   - CMSIS_VOUT
+
+  misc:
+    - Link:
+      - '--diag_suppress 6314,6848'
+
+  components:
+    - component: ARM::Device:Definition
+    - component: ARM::Device:Startup&Baremetal
+
+    - component: ARM::Native Driver:IO
+    - component: ARM::Native Driver:UART
+
+    - component: ARM::CMSIS:CORE
+
+    - component: ARM::CMSIS Driver:USART
+    - component: Keil::CMSIS Driver:Ethernet:ETH_LAN91C111
+    - component: ARM::CMSIS Driver:VIO:Custom
+
+    - component: Keil::Compiler&ARM Compiler:Event Recorder&DAP
+    - component: Keil::Compiler&ARM Compiler:I/O:STDERR&User
+    - component: Keil::Compiler&ARM Compiler:I/O:STDOUT&User
+    - component: Keil::Compiler&ARM Compiler:I/O:STDIN&User
+
+  groups:
+    - group: Board
+      files:
+        - file: ./main.c
+        - file: ./retarget_stdio.c
+        - file: ./Driver/vio_V2M-MPS3-SSE-300.c
+        - file: ../../../sensor/source/sensor_drv.c
+        - file: ../../../sensor/vsi/source/sensor_drv_hw.c
+        - file: ./RTE/Device/SSE-300-MPS3/fvp_sse300_mps3_s.sct
