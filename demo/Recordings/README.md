@@ -1,13 +1,12 @@
 # Recordings
 
-## Scenario 0
+This directory contains several data recordings that where captured using this SDS-Framework Demo example on the ST B-U585I-IOT02A Discovery Kit. 
 
-B-U585I-IOT02A Discovery Kit was rolled on the table.
+Sequence No. | Description
+-------------|:---------------------------------------
+*xxx*.0.sds  | Board was rolled on the table
+*xxx*.1.sds  | A counter clockwise circle was drawn in the air
+*xxx*.2.sds  | The letter `X`, starting at the top right position, was drawn in the air
 
-## Scenario 1
-
-A counter clockwise circle was drawn in the air using the B-U585I-IOT02A Discovery Kit. 
-
-## Scenario 2
-
-An X, starting at the top right position, was drawn in the air using the B-U585I-IOT02A Discovery Kit.
+These recording files can be used with the [SDS utilities](../../utilities):
+https://github.com/ARM-software/SDS-Framework/tree/main/utilities/SDS-Convertconverted 
