@@ -28,11 +28,11 @@
 
 /* Secure Code */
 #define S_ROM_ALIAS               (0x10000000) /* ITCM_BASE_S */
-#define TOTAL_S_ROM_SIZE          (0x00100000) /* 1 MB */
+#define TOTAL_S_ROM_SIZE          (0x00080000) /* 512 kB */
 
 /* Secure Data */
 #define S_RAM_ALIAS               (0x30000000) /* DTCM_BASE_S */
-#define TOTAL_S_RAM_SIZE          (0x00400000) /* 4 MB */
+#define TOTAL_S_RAM_SIZE          (0x00080000) /* 512 kB */
 
 
 /* Non-Secure Code */
@@ -41,7 +41,7 @@
 
 /* Non-Secure Data */
 #define NS_RAM_ALIAS              (0x21000000) /* ISRAM0_BASE_NS */
-#define TOTAL_NS_RAM_SIZE         (0x00080000) /* 512 kB */
+#define TOTAL_NS_RAM_SIZE         (0x00200000) /* 2 MB */
 
 
 /* Heap and Stack sizes for secure and nonsecure applications */
