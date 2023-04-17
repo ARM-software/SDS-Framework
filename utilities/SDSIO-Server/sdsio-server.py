@@ -246,8 +246,8 @@ class sdsio_server_serial:
             print(f"Serial write error: {e}\n")
             sys.exit(1)
 
-# main
-def main():
+# parse arguments
+def parse_arguments():
     formatter = lambda prog: argparse.HelpFormatter(prog, max_help_position=41)
     parser = argparse.ArgumentParser(formatter_class=formatter, description="SDS I/O server")
 
@@ -281,8 +281,12 @@ def main():
                                         help=help_str, default=serial.STOPBITS_ONE)
     parser_serial_optional.add_argument("--outdir", dest="out_dir", metavar="<Output dir>",
                                         help="Output directory", default=".")
+    return parser.parse_args()
 
-    args = parser.parse_args()
+# main
+def main():
+
+    args = parse_arguments()
 
     stream_buf_cnt   = 0
 
