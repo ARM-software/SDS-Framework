@@ -33,8 +33,11 @@ class sdsio_manager:
 
     # Open
     def __open(self, mode, name):
-        file_index = 0
         response = bytearray()
+        file_index         = 0
+        response_stream_id = 0
+        response_command   = 1
+        response_data_size = 0
 
         if mode == 1:
             # Write mode
@@ -46,21 +49,19 @@ class sdsio_manager:
                 f = open(fname, "wb")
                 self.stream_identifier += 1
                 self.stream_files.update({self.stream_identifier: f})
-
-                command   = 1
-                data_size = 0
-                response.extend(command.to_bytes(4, byteorder='little'))
-                response.extend(self.stream_identifier.to_bytes(4, byteorder='little'))
-                response.extend(mode.to_bytes(4, byteorder='little'))
-                response.extend(data_size.to_bytes(4, byteorder='little'))
+                response_stream_id = self.stream_identifier
             except Exception as e:
                 print(f"Could not open file {fname}. Error: {e}\n")
                 return 0
 
-            # if mode == 0:
-            #     read mode not supported
+        # if mode == 0:
+        #     read mode not supported
 
-            return response
+        response.extend(response_command.to_bytes(4, byteorder='little'))
+        response.extend(response_stream_id.to_bytes(4, byteorder='little'))
+        response.extend(mode.to_bytes(4, byteorder='little'))
+        response.extend(response_data_size.to_bytes(4, byteorder='little'))
+        return response
 
     # Close
     def __close(self, id):
