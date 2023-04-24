@@ -29,7 +29,7 @@ class sdsio_manager:
     def __init__(self, out_dir):
         self.stream_identifier = 0
         self.stream_files = {}
-        self.out_dir = out_dir
+        self.out_dir = path.normpath(f"{out_dir}")
 
     # Open
     def __open(self, mode, name):
@@ -41,10 +41,10 @@ class sdsio_manager:
 
         if mode == 1:
             # Write mode
-            fname = f"{self.out_dir}\\{name}.{file_index}.sds"
+            fname = path.join(self.out_dir, f"{name}.{file_index}.sds")
             while path.exists(fname) == True:
                 file_index = file_index + 1
-                fname = f"{self.out_dir}\\{name}.{file_index}.sds"
+                fname = path.join(self.out_dir, f"{name}.{file_index}.sds")
             try:
                 f = open(fname, "wb")
                 self.stream_identifier += 1
