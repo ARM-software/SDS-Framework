@@ -21,6 +21,8 @@ import sys
 
 import os.path as path
 import serial
+import ipaddress
+import ifaddr
 import socket
 import errno
 
@@ -136,10 +138,32 @@ class sdsio_manager:
 
 # Server - Socket
 class sdsio_server_socket:
-    def __init__(self, port):
+    def __init__(self, ip, interface, port):
+        self.ip             = ip
         self.port           = port
         self.sock_listening = None
         self.sock           = None
+
+        if interface != None:
+            ipv6 = None
+            adapter_list = ifaddr.get_adapters()
+            for adapter in adapter_list:
+                if adapter.name == interface or adapter.nice_name == interface:
+                    for ips in adapter.ips:
+                        try:
+                            socket.inet_pton(socket.AF_INET, ips.ip)
+                            self.ip = ips.ip
+                        except:
+                            try:
+                                socket.inet_pton(socket.AF_INET6, ips.ip[0])
+                                ipv6 = ips.ip[0]
+                            except:
+                                break
+            if self.ip == None:
+                self.ip = ipv6
+        if self.ip == None:
+            self.ip = ip = socket.gethostbyname(socket.gethostname())
+        print(f"  Server IP: {self.ip}\n")
 
     # socket accept
     def __accept(self):
@@ -158,19 +182,11 @@ class sdsio_server_socket:
 
     # Open socket server
     def open(self):
-        #Get local IP
-        if sys.platform == "darwin":
-            ip = socket.gethostbyname(socket.gethostname() + '.local')
-        else:
-            ip = socket.gethostbyname(socket.gethostname())
-
-        print(f"  Server IP: {ip}\n")
-
         try:
             # Create TCP socket
             self.sock_listening = socket.socket(socket.AF_INET,     # Internet
                                                 socket.SOCK_STREAM) # TCP
-            self.sock_listening.bind((ip, self.port))
+            self.sock_listening.bind((self.ip, self.port))
             self.sock_listening.listen()
             self.sock_listening.setblocking(False)
         except Exception as e:
@@ -272,6 +288,33 @@ def dir_path(out_dir):
     else:
         raise argparse.ArgumentTypeError(f"Invalid output directory: {out_dir}!")
 
+# Validate IP address
+def ip(ip):
+    try:
+        ip_obj = ipaddress.ip_address(ip)
+        return ip
+    except:
+        raise argparse.ArgumentTypeError(f"Invalid IP address: {ip}!")
+
+# Validate Network interface
+def interface(interface):
+    i = None
+    try:
+        adapter_list = ifaddr.get_adapters()
+        for adapter in adapter_list:
+            name = adapter.name.replace('{', '')
+            name = name.replace('}', '')
+            nice_name = adapter.nice_name.replace('{', '')
+            nice_name = nice_name.replace('}', '')
+            if name == interface:
+                return name
+            if nice_name == interface:
+                return nice_name
+    except:
+        pass
+    raise argparse.ArgumentTypeError(f"Invalid network interface: {interface}!")
+
+
 # parse arguments
 def parse_arguments():
     formatter = lambda prog: argparse.HelpFormatter(prog, max_help_position=41)
@@ -281,6 +324,11 @@ def parse_arguments():
 
     parser_socket = subparsers.add_parser("socket", formatter_class=formatter)
     parser_socket_optional = parser_socket.add_argument_group("optional")
+    parser_socket_optional_exclusive = parser_socket_optional.add_mutually_exclusive_group()
+    parser_socket_optional_exclusive.add_argument("--ipaddr", dest="ip",  metavar="<IP>",
+                                        help="Server IP address (not allowed with argument --interface)", type=ip, default=None)
+    parser_socket_optional_exclusive.add_argument("--interface", dest="interface",  metavar="<Interface>",
+                                        help="Network interface (not allowed with argument --ipaddr)", type=interface, default=None)
     parser_socket_optional.add_argument("--port", dest="port",  metavar="<TCP Port>",
                                         help="TCP port (default: 5050)", type=int, default=5050)
     parser_socket_optional.add_argument("--outdir", dest="out_dir", metavar="<Output dir>",
@@ -326,7 +374,7 @@ def main():
     manager = sdsio_manager(args.out_dir)
 
     if args.server_type == "socket":
-        server = sdsio_server_socket(args.port)
+        server = sdsio_server_socket(args.ip, args.interface, args.port)
     elif args.server_type == "serial":
         server = sdsio_server_serial(args.port, args.baudrate, args.parity, args.stop_bits)
 
