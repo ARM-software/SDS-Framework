@@ -8,15 +8,16 @@ Sensor data is recorded to files `<sensor_name>.<index>.sds`:
  - `<index>` is the zero-based index which is incremented for each subsequent recording
 
 ## Supported interfaces
-- **socket**  
+- **socket**
    SDS recorder data is sent from the target via TCP socket. Works together with the matching implementation on the target ([sdsio_socket.c](../../sds/source/sdsio_socket.c)).
 
-- **serial**  
+- **serial**
    SDS recorder data is sent from the target via serial port. Works together with the matching implementation on the target ([sdsio_vcom.c](../../sds/source/sdsio_vcom.c)).
 
 ## Set-up and requirements
 ### Requirements
 - Python 3.9 or later with packages:
+  - ifaddr
   - pyserial
 
 ### Set-up
@@ -34,10 +35,13 @@ Sensor data is recorded to files `<sensor_name>.<index>.sds`:
    2. Activate created Python environment:
       ```
       <env_name>/Scripts/activate
+   3. Install required Python packages using [requirements.txt](./requirements.txt):
+      ```
+      pip install -r requirements.txt
       ```
 4. Install required Python packages:
    ```
-   pip install pyserial
+   pip install ifaddr pyserial
    ```
 
 ## Usage
@@ -66,14 +70,17 @@ python sdsio-server.py socket --help
 ```
 
 ```
-usage: sdsio-server.py socket [-h] [--port <TCP Port>] [--outdir <Output dir>]
+usage: sdsio-server.py socket [-h] [--ipaddr <IP> | --interface <Interface>] [--port <TCP Port>]
+                              [--outdir <Output dir>]
 
 options:
-  -h, --help             show this help message and exit
+  -h, --help               show this help message and exit
 
 optional:
-  --port <TCP Port>      TCP port (default: 5050)
-  --outdir <Output dir>  Output directory
+  --ipaddr <IP>            Server IP address (not allowed with argument --interface)
+  --interface <Interface>  Network interface (not allowed with argument --ipaddr)
+  --port <TCP Port>        TCP port (default: 5050)
+  --outdir <Output dir>    Output directory
 ```
 
 
@@ -102,7 +109,7 @@ optional:
 ### Examples
 - Socket:
    ```
-   python sdsio-server.py socket --outdir ./out_dir
+   python sdsio-server.py socket --interface eth0 --outdir ./out_dir
    ```
 - Serial:
    ```
