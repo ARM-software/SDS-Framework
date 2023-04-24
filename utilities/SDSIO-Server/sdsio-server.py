@@ -35,27 +35,45 @@ class sdsio_manager:
     def __open(self, mode, name):
         response = bytearray()
         file_index         = 0
+        invalid_name       = 0
         response_stream_id = 0
         response_command   = 1
         response_data_size = 0
 
-        if mode == 1:
-            # Write mode
-            fname = path.join(self.out_dir, f"{name}.{file_index}.sds")
-            while path.exists(fname) == True:
-                file_index = file_index + 1
-                fname = path.join(self.out_dir, f"{name}.{file_index}.sds")
-            try:
-                f = open(fname, "wb")
-                self.stream_identifier += 1
-                self.stream_files.update({self.stream_identifier: f})
-                response_stream_id = self.stream_identifier
-            except Exception as e:
-                print(f"Could not open file {fname}. Error: {e}\n")
-                return 0
+        # Validate name
+        if len(name) == 0:
+            invalid_name = 1
+        else:
+            invalid_chars = [chr(0x00), chr(0x01), chr(0x02), chr(0x03),
+                             chr(0x04), chr(0x05), chr(0x06), chr(0x07),
+                             chr(0x08), chr(0x09), chr(0x0A), chr(0x0B),
+                             chr(0x0C), chr(0x0D), chr(0x0E), chr(0x0F),
+                             chr(0x7F), '\"', '*', '/', ':', '<', '>', '?', '\\', '|']
+            for ch in invalid_chars:
+                if name.find(ch) != -1:
+                    invalid_name = 1
+                    break
 
-        # if mode == 0:
-        #     read mode not supported
+        if invalid_name == 1:
+            print(f"Invalid stream name: {name}\n")
+        else:
+            if mode == 1:
+                # Write mode
+                fname = path.join(self.out_dir, f"{name}.{file_index}.sds")
+                while path.exists(fname) == True:
+                    file_index = file_index + 1
+                    fname = path.join(self.out_dir, f"{name}.{file_index}.sds")
+                try:
+                    f = open(fname, "wb")
+                    self.stream_identifier += 1
+                    self.stream_files.update({self.stream_identifier: f})
+                    response_stream_id = self.stream_identifier
+                except Exception as e:
+                    print(f"Could not open file {fname}. Error: {e}\n")
+                    return 0
+
+            # if mode == 0:
+            #     read mode not supported
 
         response.extend(response_command.to_bytes(4, byteorder='little'))
         response.extend(response_stream_id.to_bytes(4, byteorder='little'))
@@ -113,7 +131,7 @@ class sdsio_manager:
             self.__write(sdsio_id, data)
         # Invalid command
         else:
-            print(f"Invalid command: {command}")
+            print(f"Invalid command: {command}\n")
         return response
 
 # Server - Socket
@@ -247,6 +265,13 @@ class sdsio_server_serial:
             print(f"Serial write error: {e}\n")
             sys.exit(1)
 
+# Validate directory path
+def dir_path(out_dir):
+    if path.isdir(out_dir):
+        return out_dir
+    else:
+        raise argparse.ArgumentTypeError(f"Invalid output directory: {out_dir}!")
+
 # parse arguments
 def parse_arguments():
     formatter = lambda prog: argparse.HelpFormatter(prog, max_help_position=41)
@@ -259,7 +284,7 @@ def parse_arguments():
     parser_socket_optional.add_argument("--port", dest="port",  metavar="<TCP Port>",
                                         help="TCP port (default: 5050)", type=int, default=5050)
     parser_socket_optional.add_argument("--outdir", dest="out_dir", metavar="<Output dir>",
-                                        help="Output directory", default=".")
+                                        help="Output directory", type=dir_path, default=".")
 
     parser_serial = subparsers.add_parser("serial", formatter_class=formatter)
     parser_serial_required = parser_serial.add_argument_group("required")
@@ -281,7 +306,8 @@ def parse_arguments():
                                         choices=[serial.STOPBITS_ONE, serial.STOPBITS_ONE_POINT_FIVE, serial.STOPBITS_TWO],
                                         help=help_str, default=serial.STOPBITS_ONE)
     parser_serial_optional.add_argument("--outdir", dest="out_dir", metavar="<Output dir>",
-                                        help="Output directory", default=".")
+                                        help="Output directory", type=dir_path, default=".")
+
     return parser.parse_args()
 
 # main
@@ -305,7 +331,7 @@ def main():
         server = sdsio_server_serial(args.port, args.baudrate, args.parity, args.stop_bits)
 
     try:
-        print("Server opening...")
+        print("Server opening...\n")
         server.open()
         print("Server Opened.\n")
 
