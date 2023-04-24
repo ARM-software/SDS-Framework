@@ -1,1 +1,60 @@
-todo
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "sds": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the Synchronous Data Stream (SDS)"
+        },
+        "description": {
+          "type": "string",
+          "description": "Additional descriptive text (optional)"
+        },
+        "frequency": {
+          "type": "number",
+          "description": "Capture frequency of the SDS"
+        },
+        "tick-frequency": {
+          "type": "number",
+          "description": "Tick frequency of the timestamp value (optional); default: 1000 for 1 milli-second interval"
+        },
+        "content": {
+          "type": "array",
+          "description": "List of values captured (see below)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "description": "Name of the value"
+              },
+              "type": {
+                "type": "string",
+                "description": "Data type of the value"
+              },
+              "offset": {
+                "type": "number",
+                "description": "Offset of the value (optional); default: 0"
+              },
+              "scale": {
+                "type": "number",
+                "description": "Scale factor of the value (optional); default: 1.0"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Physical unit of the value (optional); default: no units"
+              }
+            },
+            "required": ["value", "type"]
+          }
+        }
+      },
+      "required": ["name", "frequency", "content"]
+    }
+  },
+  "required": ["sds"]
+}
+             
