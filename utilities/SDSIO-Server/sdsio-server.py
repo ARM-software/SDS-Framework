@@ -186,6 +186,7 @@ class sdsio_server_socket:
             # Create TCP socket
             self.sock_listening = socket.socket(socket.AF_INET,     # Internet
                                                 socket.SOCK_STREAM) # TCP
+            self.sock_listening.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self.sock_listening.bind((self.ip, self.port))
             self.sock_listening.listen()
             self.sock_listening.setblocking(False)
