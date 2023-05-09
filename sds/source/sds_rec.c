@@ -36,7 +36,7 @@
 #endif
 
 #if SDS_REC_MAX_STREAMS > 31
-#error "Maximmum number of SDS Recorder streams is 31!"
+#error "Maximum number of SDS Recorder streams is 31!"
 #endif
 
 // Control block
@@ -99,7 +99,7 @@ __STATIC_INLINE uint32_t atomic_wr32_if_zero (uint32_t *mem, uint32_t val) {
 __STATIC_INLINE uint32_t atomic_wr32_if_zero (uint32_t *mem, uint32_t val) {
   uint32_t expected;
   uint32_t ret = 1U;
-  
+
   expected = *mem;
   do {
     if (expected != 0U) {
@@ -138,11 +138,15 @@ static void sdsRecFree (uint32_t index) {
 
 // Event callback
 static void sdsRecEventCallback (sdsId_t id, uint32_t event, void *arg) {
-  uint32_t flags = (uint32_t)arg;
+  sdsRec_t *rec;
+  uint32_t  index = (uint32_t)arg;
   (void)id;
   (void)event;
 
-  osThreadFlagsSet(sdsRecThreadId, flags);
+  rec = pRecStreams[index];
+  if (rec != NULL) {
+    rec->flag_mask |= (1U << index);
+  }
 }
 
 // Recorder thread
@@ -245,11 +249,7 @@ sdsRecId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size, uint32_t 
       rec->sdsio     = sdsioOpen(name, sdsioModeWrite);
 
       if (rec->stream != NULL) {
-        if (io_threshold != 0U) {
-          sdsRegisterEvents(rec->stream, sdsRecEventCallback, SDS_EVENT_DATA_HIGH, (void *)(1U << index));
-        } else {
-          rec->flag_mask = 1U << index;
-        }
+        sdsRegisterEvents(rec->stream, sdsRecEventCallback, SDS_EVENT_DATA_HIGH, (void *)index);
       }
       if ((rec->stream == NULL) || (rec->sdsio == NULL)) {
         if (rec->stream != NULL) {
@@ -302,7 +302,8 @@ int32_t sdsRecClose (sdsRecId_t id) {
 uint32_t sdsRecWrite (sdsRecId_t id, uint32_t timestamp, const void *buf, uint32_t buf_size) {
   sdsRec_t *rec = id;
   RecHead_t rec_head;
-  uint32_t num = 0U;
+  uint32_t  mask;
+  uint32_t  num = 0U;
 
   if ((rec != NULL) && (buf != NULL) && (buf_size != 0U)) {
     if ((buf_size + sizeof(RecHead_t)) <= (rec->buf_size -  sdsGetCount(rec->stream))) {
@@ -313,8 +314,10 @@ uint32_t sdsRecWrite (sdsRecId_t id, uint32_t timestamp, const void *buf, uint32
         num = sdsWrite(rec->stream, buf, buf_size);
         rec->cnt_in++;
         if (num == buf_size) {
-          if (rec->flag_mask != 0U) {
-            osThreadFlagsSet(sdsRecThreadId, rec->flag_mask);
+          mask = rec->flag_mask & ~FLAG_MASK_CLOSE;
+          if (mask != 0U) {
+            rec->flag_mask &= ~mask;
+            osThreadFlagsSet(sdsRecThreadId, mask);
           }
         }
       }
