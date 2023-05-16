@@ -8,5 +8,5 @@ Sequence No. | Description
 *xxx*.1.sds  | A counter clockwise circle was drawn in the air
 *xxx*.2.sds  | The letter `X`, starting at the top right position, was drawn in the air
 
-These recording files can be used with the [SDS utilities](../../utilities) to view the captured data recordings or convert them into different data formats.
+These recording files can be used with the [SDS utilities](../../../utilities) to view the captured data recordings or convert them into different data formats.
 

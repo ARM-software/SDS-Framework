@@ -35,7 +35,7 @@ Demo is available for the following targets:
 ## Configure
 
 Host PC IP Address:
- - Modify the following definitions in [sdsio_socket.c](../sds/source/sdsio_socket.c):
+ - Modify the following definitions in [sdsio_socket.c](../../sds/source/sdsio/socket/sdsio_socket.c):
    - `SERVER_IP`: IP address of the host PC running python script (`SDS-Socket.py`)
 
 WiFi Access Point:
@@ -66,7 +66,7 @@ Use a programmer to download the HW image to the hardware target.
 ### HW Target (B-U585I-IOT02A)
 
 Execute the following steps:
- - run [SDSIO-Server](../utilities/SDSIO-Server/README.md) to start the SDS I/O server on the host PC
+ - run [SDSIO-Server](../../utilities/SDSIO-Server/README.md) to start the SDS I/O server on the host PC
  - connect the board's ST-Link USB to the PC (provides also power)
  - open terminal on the PC and connect to the board's serial port (Baud rate: 115200)
  - reset the target (press RST button on the board)
@@ -92,7 +92,7 @@ Sensor data is read from files `<sensor_name>.<index>.sds` and also printed to t
 
 There are three pre-recorded examples available in the [Recordings](./Recordings/) folder. Each sensor has it's own metadata file, which describes the content of the raw files.
 
- - Use [SDS-View](../utilities/SDS-View/) to view the captured data.
+ - Use [SDS-View](../../utilities/SDS-View/) to view the captured data.
    - execute the following line to view Accelerometer data:
      ```
      python ../utilities/SDS-View/sds-view.py -y Recordings/Accelerometer.sds.yml -s Recordings/Accelerometer.0.sds
@@ -102,7 +102,7 @@ There are three pre-recorded examples available in the [Recordings](./Recordings
      python ../utilities/SDS-View/sds-view.py -y Recordings/Gyroscope.sds.yml -s Recordings/Gyroscope.0.sds
      ```
 
- - Use [SDS-Convert](../utilities/SDS-Convert/) to convert the captured data from raw binary file to one of the supported output file types.
+ - Use [SDS-Convert](../../utilities/SDS-Convert/) to convert the captured data from raw binary file to one of the supported output file types.
    - convert Accelerometer data to simple CSV file by executing the following line:
      ```
      python ../utilities/SDS-Convert/sds-convert.py -y Recordings/Accelerometer.sds.yml -s Recordings/Accelerometer.0.sds -o simple_accelerometer.csv -f simple_csv --normalize
