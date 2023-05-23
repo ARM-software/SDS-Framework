@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// SDS I/O interface - virtual COM port
+// SDS I/O interface via USB Virtual COM Port (Keil::USB:Device:CDC)
 
 #include <string.h>
 
