@@ -33,7 +33,7 @@ The [Sensor interfaces](./sensor/README.md) provide the software layer for the c
 
 Directory                         | Description
 ----------------------------------|-------------------------------
-[demo](./demo)                    | Example implementations for various evaluation boards
+[examples](./examples)            | Example implementations for various evaluation boards
 [documentation](./documentation/) | User documentation of the SDS Framework
 [schema](./schema)                | Schema for SDS File Format
 [sensor](./sensor)                | Sensor interface for the SDS Framework
