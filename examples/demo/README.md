@@ -81,7 +81,7 @@ Sensor data is recorded to files `<sensor_name>.<index>.sds` and also printed to
 Execute the following steps:
  - run the VHT model from the command line by executing:
    ```
-   VHT_MPS3_Corstone_SSE-300 -f Board/AVH_MPS3_Corstone-300/fvp_config.txt -V ../sensor/vsi/python out/Demo/AVH/Debug/Debug+AVH.axf
+   VHT_MPS3_Corstone_SSE-300 -f Board/AVH_MPS3_Corstone-300/fvp_config.txt -V ../../sensor/vsi/python out/Demo/AVH/Debug/Debug+AVH.axf
    ```
  - press PB0 (vioBUTTON0) button (double click PB0 in the VHT visualization dialog)
    to start/stop reading sensor data
