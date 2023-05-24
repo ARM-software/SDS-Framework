@@ -27,7 +27,7 @@
 
 // USART Driver Number
 #ifndef SDSIO_USART_DRIVER_NUMBER
-#define SDSIO_USART_DRIVER_NUMBER 1
+#define SDSIO_USART_DRIVER_NUMBER 0
 #endif
 
 // USART Configuration
