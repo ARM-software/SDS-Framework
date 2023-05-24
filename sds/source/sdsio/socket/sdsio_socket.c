@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// SDS I/O interface - iotSocket (TCP)
+// SDS I/O interface via Socket (IoT Utility:Socket)
 
 #include <string.h>
 
