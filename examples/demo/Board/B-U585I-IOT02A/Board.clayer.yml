@@ -33,8 +33,8 @@ layer:
   add-path:
     - .
     - ./Driver
-    - ../../../sensor/include
-    - ../../../audio/include
+    - ../../../../sensor/include
+    - ../../../../audio/include
 
   define:
     - MX_WIFI_SPI_DMA=0   # Do not use DMA if TZEN=1
@@ -103,4 +103,4 @@ layer:
         - file: ./Driver/sensor_drv_hw.c
         - file: ./Driver/ism330dhcx_fifo.c
         - file: ./Driver/Audio_B-U585I-IOT02A.c
-        - file: ../../../sensor/source/sensor_drv.c
+        - file: ../../../../sensor/source/sensor_drv.c

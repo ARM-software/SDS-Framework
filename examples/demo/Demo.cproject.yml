@@ -15,7 +15,7 @@ project:
         - Heap: 65536
 
   add-path:
-    - ../sds/include
+    - ../../sds/include
 
   components:
     - component: ARM::CMSIS:RTOS2:Keil RTX5&Source
@@ -30,9 +30,9 @@ project:
         - file: ./demo.c
     - group: sds
       files:
-        - file: ../sds/source/sds.c
-        - file: ../sds/source/sds_rec.c
-        - file: ../sds/source/sdsio_socket.c
+        - file: ../../sds/source/sds.c
+        - file: ../../sds/source/sds_rec.c
+        - file: ../../sds/source/sdsio/socket/sdsio_socket.c
 
   # requires-layers:
   #   - Board
