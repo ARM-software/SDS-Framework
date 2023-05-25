@@ -24,11 +24,11 @@
 #include "sdsio.h"
 
 #ifndef SDSIO_MAX_NAME_SIZE
-#define SDSIO_MAX_NAME_SIZE         32
+#define SDSIO_MAX_NAME_SIZE         32U
 #endif
 
 // Max length of index and file extension
-#define SDSIO_MAX_EXT_SIZE          16
+#define SDSIO_MAX_EXT_SIZE          16U
 
 // SDS I/O functions
 

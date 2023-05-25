@@ -24,31 +24,7 @@
 
 #include "sdsio.h"
 #include "Driver_USART.h"
-
-// USART Driver Number
-#ifndef SDSIO_USART_DRIVER_NUMBER
-#define SDSIO_USART_DRIVER_NUMBER 0
-#endif
-
-// USART Configuration
-#ifndef SDSIO_USART_BAUDRATE
-#define SDSIO_USART_BAUDRATE      115200U
-#endif
-#ifndef SDSIO_USART_DATA_BITS
-#define SDSIO_USART_DATA_BITS     ARM_USART_DATA_BITS_8
-#endif
-#ifndef SDSIO_USART_PARITY
-#define SDSIO_USART_PARITY        ARM_USART_PARITY_NONE
-#endif
-#ifndef SDSIO_USART_STOP_BITS
-#define SDSIO_USART_STOP_BITS     ARM_USART_STOP_BITS_1
-#endif
-
-// USART Timeout
-#ifndef SDSIO_USART_TIMEOUT
-#define SDSIO_USART_TIMEOUT       3000U
-#endif
-
+#include "sdsio_config_serial_usart.h"
 
 // Expansion macro used to create CMSIS Driver references
 #define EXPAND_SYMBOL(name, port) name##port

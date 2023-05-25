@@ -19,24 +19,14 @@
 // SDS I/O interface via Socket (IoT Utility:Socket)
 
 #include <string.h>
+#include <stdio.h>
 
 #ifndef SDSIO_NO_LOCK
 #include "cmsis_os2.h"
 #endif
 #include "iot_socket.h"
 #include "sdsio.h"
-
-// Configuration
-#ifndef SERVER_IP
-#define SERVER_IP               {0, 0, 0, 0}
-#endif
-#ifndef SERVER_PORT
-#define SERVER_PORT             5050U
-#endif
-
-#ifndef SOCKET_RECEIVE_TOUT
-#define SOCKET_RECEIVE_TOUT     5000U
-#endif
+#include "sdsio_config_socket.h"
 
 // SDS I/O header
 typedef struct {
@@ -134,15 +124,16 @@ static uint32_t sdsioReceive (void *buf, uint32_t buf_size) {
 /** Initialize I/O interface */
 int32_t sdsioInit (void) {
   int32_t  ret  = SDSIO_ERROR;
-  uint32_t tout = SOCKET_RECEIVE_TOUT;
-
-  const uint8_t ip[] = SERVER_IP;
+  uint32_t tout = SDSIO_SOCKET_RECEIVE_TOUT;
+  uint8_t  ip[4];
 
   sdsioLockCreate();
-  socket = iotSocketCreate(IOT_SOCKET_AF_INET, IOT_SOCKET_SOCK_STREAM, IOT_SOCKET_IPPROTO_TCP);
+  if (sscanf(SDSIO_SERVER_IP, "%hhd.%hhd.%hhd.%hhd", &ip[0], &ip[1], &ip[2], &ip[3]) == 4) {
+    socket = iotSocketCreate(IOT_SOCKET_AF_INET, IOT_SOCKET_SOCK_STREAM, IOT_SOCKET_IPPROTO_TCP);
+  }
   if (socket >= 0) {
     iotSocketSetOpt(socket, IOT_SOCKET_SO_RCVTIMEO, &tout, sizeof(tout));
-    if (iotSocketConnect(socket, ip, 4, SERVER_PORT) == 0) {
+    if (iotSocketConnect(socket, (const uint8_t *)ip, 4, SDSIO_SERVER_PORT) == 0) {
       ret = SDSIO_OK;
     } else {
       iotSocketClose(socket);

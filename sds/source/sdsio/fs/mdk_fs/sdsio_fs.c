@@ -23,30 +23,16 @@
 
 #include "rl_fs.h"                      // Keil.MDK-Plus::File System:CORE
 #include "sdsio.h"
+#include "sdsio_config_fs_mdk.h"
 
-// File system drive
-#ifndef SDSIO_DRIVE
-#define SDSIO_DRIVE                 "M0:"
-#endif
 
-// Working directory:
-// - If the drive prefix is omitted, the current drive is used.
-// - Path string must end with delimiter character '\\' or '/'.
-#ifndef SDSIO_WORK_DIR
-#define SDSIO_WORK_DIR              ""
-#endif
-
+// Maximum stream name length
 #ifndef SDSIO_MAX_NAME_SIZE
-#define SDSIO_MAX_NAME_SIZE         32
-#endif
-
-// Formating of the Drive: 1 - allowed, 0 - not allowed
-#ifndef SDSIO_FORMATTING_ALLOWED
-#define SDSIO_FORMATTING_ALLOWED    1
+#define SDSIO_MAX_NAME_SIZE         32U
 #endif
 
 // Max length of index and file extension
-#define SDSIO_MAX_EXT_SIZE          16
+#define SDSIO_MAX_EXT_SIZE          16U
 
 // SDS I/O functions
 
