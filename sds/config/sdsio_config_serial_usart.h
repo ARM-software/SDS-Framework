@@ -50,8 +50,8 @@
 
 //   <o>Stop bits <0x0000U=>1
 //                <0x4000U=>2
-//                <0x8000U=>1,5
-//                <0xC000U=>0,5
+//                <0x8000U=>1.5
+//                <0xC000U=>0.5
 //   <i>Default: 1
 #define SDSIO_USART_STOP_BITS     0U
 // </h>
