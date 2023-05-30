@@ -25,7 +25,7 @@
 // <h>SDS IO via Socket (IoT Utility:Socket)
 
 //   <s.16>SDSIO-Server IP
-//   <i>SDSIO socket server IP address
+//   <i>SDSIO socket server IPv4 address
 //   <i>Default: "0.0.0.0"
 #define SDSIO_SERVER_IP           "0.0.0.0"
 
@@ -35,6 +35,7 @@
 #define SDSIO_SERVER_PORT         5050U
 
 //   <o>Socket receive timeout
+//   <i>Socket receive timeout in ms
 //   <i>Default: 5000
 #define SDSIO_SOCKET_RECEIVE_TOUT 5000U
 

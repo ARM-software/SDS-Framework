@@ -34,30 +34,30 @@
 //   <i>Default: 115200
 #define SDSIO_USART_BAUDRATE      115200U
 
-//   <o>Data bits <0x500U=>ARM_USART_DATA_BITS_5
-//                <0x600U=>ARM_USART_DATA_BITS_6
-//                <0x700U=>ARM_USART_DATA_BITS_7
-//                <0x000U=>ARM_USART_DATA_BITS_8
-//                <0x100U=>ARM_USART_DATA_BITS_9
-//   <i>Default: ARM_USART_DATA_BITS_8
+//   <o>Data bits <0x500U=>5
+//                <0x600U=>6
+//                <0x700U=>7
+//                <0x000U=>8
+//                <0x100U=>9
+//   <i>Default: 8
 #define SDSIO_USART_DATA_BITS     0U
 
-//   <o>Parity <0x0000U=>ARM_USART_PARITY_NONE
-//             <0x1000U=>ARM_USART_PARITY_EVEN
-//             <0x2000U=>ARM_USART_PARITY_ODD
-//   <i>Default: ARM_USART_PARITY_NONE
+//   <o>Parity <0x0000U=>None
+//             <0x1000U=>Even
+//             <0x2000U=>Odd
+//   <i>Default: None
 #define SDSIO_USART_PARITY        0U
 
-//   <o>Stop bits <0x0000U=>ARM_USART_STOP_BITS_1
-//                <0x4000U=>ARM_USART_STOP_BITS_2
-//                <0x8000U=>ARM_USART_STOP_BITS_1_5
-//                <0xC000U=>ARM_USART_STOP_BITS_0_5
-//   <i>Default: ARM_USART_STOP_BITS_1
+//   <o>Stop bits <0x0000U=>1
+//                <0x4000U=>2
+//                <0x8000U=>1,5
+//                <0xC000U=>0,5
+//   <i>Default: 1
 #define SDSIO_USART_STOP_BITS     0U
 // </h>
 
 //   <o>USART timeout
-//   <i>Send and receive timeout
+//   <i>Send and receive timeout in ms
 //   <i>Default: 3000
 #define SDSIO_USART_TIMEOUT       3000U
 
