@@ -26,10 +26,7 @@
 
 #include "rl_usb.h"                     // Keil.MDK-Plus::USB:CORE
 #include "sdsio.h"
-
-#ifndef SDSIO_USB_DEVICE_INDEX
-#define SDSIO_USB_DEVICE_INDEX  0U
-#endif
+#include "sdsio_config_vcom_mdk.h"
 
 // SDS I/O header
 typedef struct {
@@ -93,7 +90,7 @@ static uint32_t sdsioSend (const void *buf, uint32_t buf_size) {
   while (num < buf_size) {
     status = USBD_CDC_ACM_WriteData(SDSIO_USB_DEVICE_INDEX,
                                     (const uint8_t *)buf + num,
-                                    buf_size - num);
+                                    (int32_t)(buf_size - num));
     if (status >= 0) {
       num += (uint32_t)status;
     } else {
@@ -121,7 +118,7 @@ static uint32_t sdsioReceive (void *buf, uint32_t buf_size) {
   while (num < buf_size) {
     status = USBD_CDC_ACM_ReadData(SDSIO_USB_DEVICE_INDEX,
                                    (uint8_t *)buf + num,
-                                   buf_size - num);
+                                   (int32_t)(buf_size - num));
     if (status >= 0) {
       num += (uint32_t)status;
     } else {

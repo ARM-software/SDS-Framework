@@ -23,11 +23,7 @@
 
 #include "cmsis_compiler.h"
 #include "sds.h"
-
-// Configuration
-#ifndef SDS_MAX_STREAMS
-#define SDS_MAX_STREAMS         16U
-#endif
+#include "sds_config.h"
 
 // Control block
 typedef struct {

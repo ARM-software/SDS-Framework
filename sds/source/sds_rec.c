@@ -22,18 +22,11 @@
 #include <string.h>
 
 #include "cmsis_compiler.h"
+#include "cmsis_os2.h"
 #include "sds.h"
 #include "sdsio.h"
 #include "sds_rec.h"
-#include "cmsis_os2.h"
-
-// Configuration
-#ifndef SDS_REC_MAX_STREAMS
-#define SDS_REC_MAX_STREAMS     8U
-#endif
-#ifndef SDS_REC_MAX_RECORD_SIZE
-#define SDS_REC_MAX_RECORD_SIZE 8192U
-#endif
+#include "sds_rec_config.h"
 
 #if SDS_REC_MAX_STREAMS > 31
 #error "Maximum number of SDS Recorder streams is 31!"
