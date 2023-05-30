@@ -59,7 +59,7 @@
     <component Cclass="SDS" Cgroup="Buffer" Cversion="0.9.0">
       <description>Non-blocking read/write to a circular buffer</description>
       <RTE_Components_h>
-        #define RTE_SDS_BUFFER                  /* Synchronous Data Stream */
+        #define RTE_SDS_BUFFER                  /* Synchronous Data Stream (Buffer) */
       </RTE_Components_h>
       <files>
         <file category="header" name="sds/include/sds.h"/>
