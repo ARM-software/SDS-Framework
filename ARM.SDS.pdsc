@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package schemaVersion="1.7.7" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.7/schema/PACK.xsd">
+  <vendor>ARM</vendor>
+  <name>SDS</name>
+  <description>Synchronous Data Streaming</description>
+  <url>https://www.keil.com/pack/</url>
+  <license>LICENSE</license>
+  <repository type="git">https://github.com/ARM-software/SDS-Framework.git</repository>
+
+  <releases>
+    <release version="0.0.0">
+      Active Development ...
+    </release>
+  </releases>
+
+  <conditions>
+    <condition id="SDS IO via Socket">
+      <description>SDS IO via Socket (IotSocket)</description>
+      <require Cclass="CMSIS"        Cgroup="RTOS2"/>
+      <require Cclass="IoT Utility"  Cgroup="Socket"/>
+    </condition>
+    <condition id="SDS IO via VCOM - MDK USB">
+      <description>SDS IO via USB Virtual COM Port (MDK USB)</description>
+      <require Cclass="CMSIS" Cgroup="RTOS2"/>
+      <require Cvendor="Keil" Cclass="USB" Cgroup="Device" Csub="CDC"/>
+    </condition>
+    <condition id="SDS IO via Serial Port - CMSIS USART">
+      <description>SDS IO via Serial Port (CMSIS Driver USART)</description>
+      <require Cclass="CMSIS"        Cgroup="RTOS2"/>
+      <require Cclass="CMSIS Driver" Cgroup="USART"/>
+    </condition>
+    <condition id="SDS IO via File System - MDK FS">
+      <description>SDS IO via File System (MDK FS)</description>
+      <require Cvendor="Keil" Cclass="File System" Cgroup="Drive"/>
+    </condition>
+    <condition id="SDS Recorder with CMSIS-RTOS2">
+      <description>SDS Recorder with CMSIS-RTOS2</description>
+      <require Cclass="CMSIS" Cgroup="RTOS2"/>
+      <require Cclass="SDS"   Cgroup="Buffer"/>
+      <require Cclass="SDS"   Cgroup="IO"/>
+    </condition>
+  </conditions>
+
+  <taxonomy>
+    <description Cclass="SDS" doc="sds/README.md">Synchronous Data Streaming</description>
+  </taxonomy>
+
+  <apis>
+    <api Cclass="SDS" Cgroup="IO" Capiversion="0.9.0">
+      <description>Blocking read/write via I/O interface</description>
+      <files>
+        <file category="header" name="sds/include/sdsio.h" />
+      </files>
+    </api>
+  </apis>
+
+  <components>
+    <!-- SDS -->
+    <component Cclass="SDS" Cgroup="Buffer" Cversion="0.9.0">
+      <description>Non-blocking read/write to a circular buffer</description>
+      <RTE_Components_h>
+        #define RTE_SDS_BUFFER                  /* Synchronous Data Stream (Buffer) */
+      </RTE_Components_h>
+      <files>
+        <file category="header" name="sds/include/sds.h"/>
+        <file category="source" name="sds/source/sds.c"/>
+        <file category="header" name="sds/config/sds_config.h" attr="config" version="0.9.0"/>
+      </files>
+    </component>
+
+    <!-- SDS I/O (Socket) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="Socket" Capiversion="0.9.0" Cversion="0.9.0" condition="SDS IO via Socket">
+      <description>Blocking read/write via Socket (IoT Utility:Socket) </description>
+      <RTE_Components_h>
+        #define RTE_SDS_IO                       /* Synchronous Data Stream Input/Output */
+        #define RTE_SDS_IO_SOCKET                /* Synchronous Data Stream Input/Output (Socket) */
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="sds/source/sdsio/socket/sdsio_socket.c"/>
+        <file category="header" name="sds/config/sdsio_config_socket.h" attr="config" version="0.9.0"/>
+      </files>
+    </component>
+
+    <!-- SDS I/O (VCOM - MDK_USB) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="VCOM" Cvariant="MDK USB" Capiversion="0.9.0" Cversion="0.9.0" condition="SDS IO via VCOM - MDK USB">
+      <description>Blocking read/write via USB Virtual COM Port (Keil::USB:Device:CDC)</description>
+      <RTE_Components_h>
+        #define RTE_SDS_IO                       /* Synchronous Data Stream Input/Output */
+        #define RTE_SDS_IO_VCOM                  /* Synchronous Data Stream Input/Output (VCOM) */
+        #define RTE_SDS_IO_VCOM_MDK_USB          /* Synchronous Data Stream Input/Output (VCOM - MDK USB) */
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="sds/source/sdsio/vcom/mdk/sdsio_vcom.c"/>
+        <file category="header" name="sds/config/sdsio_config_vcom_mdk.h" attr="config" version="0.9.0"/>
+      </files>
+    </component>
+
+    <!-- SDS I/O (Serial - CMSIS USART) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="Serial" Cvariant="CMSIS USART" Capiversion="0.9.0" Cversion="0.9.0" condition="SDS IO via Serial Port - CMSIS USART">
+      <description>Blocking read/write via Serial Port (CMSIS Driver:USART)</description>
+      <RTE_Components_h>
+        #define RTE_SDS_IO                       /* Synchronous Data Stream Input/Output */
+        #define RTE_SDS_IO_SERIAL                /* Synchronous Data Stream Input/Output (Serial) */
+        #define RTE_SDS_IO_SERIAL_CMSIS_USART    /* Synchronous Data Stream Input/Output (Serial - CMSIS USART) */
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="sds/source/sdsio/serial/usart/sdsio_serial.c"/>
+        <file category="header" name="sds/config/sdsio_config_serial_usart.h" attr="config" version="0.9.0"/>
+      </files>
+    </component>
+
+    <!-- SDS I/O (File System - MDK FS) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="MDK FS" Capiversion="0.9.0" Cversion="0.9.0" condition="SDS IO via File System - MDK FS">
+      <description>Blocking read/write via File System (Keil::File System)</description>
+      <RTE_Components_h>
+        #define RTE_SDS_IO                       /* Synchronous Data Stream Input/Output */
+        #define RTE_SDS_IO_FILE_SYSTEM           /* Synchronous Data Stream Input/Output (File System) */
+        #define RTE_SDS_IO_FILE_SYSTEM_MDK_FS    /* Synchronous Data Stream Input/Output (File System - MDK FS) */
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="sds/source/sdsio/fs/mdk/sdsio_fs.c"/>
+        <file category="header" name="sds/config/sdsio_config_fs_mdk.h" attr="config" version="0.9.0"/>
+      </files>
+    </component>
+
+    <!-- SDS I/O (File System - Semihosting) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="0.9.0" Cversion="0.9.0">
+      <description>Blocking read/write via File System (Semihosting)</description>
+      <RTE_Components_h>
+        #define RTE_SDS_IO                       /* Synchronous Data Stream Input/Output */
+        #define RTE_SDS_IO_FILE_SYSTEM           /* Synchronous Data Stream Input/Output (File System) */
+        #define RTE_SDS_IO_FILE_SYSTEM_SEMIHOSTING    /* Synchronous Data Stream Input/Output (File System - Semihosting) */
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="sds/source/sdsio/fs/semihosting/sdsio_fs.c"/>
+      </files>
+    </component>
+
+    <!-- SDS Recorder -->
+    <component Cclass="SDS" Cgroup="Recorder" Cvariant="CMSIS-RTOS2" Cversion="0.9.0" condition="SDS Recorder with CMSIS-RTOS2">
+      <description>Record to Output device</description>
+      <RTE_Components_h>
+        #define RTE_SDS_RECORDER                /* Synchronous Data Stream Recorder */
+      </RTE_Components_h>
+      <files>
+        <file category="header" name="sds/include/sds_rec.h"/>
+        <file category="source" name="sds/source/sds_rec.c"/>
+        <file category="header" name="sds/config/sds_rec_config.h" attr="config" version="0.9.0"/>
+      </files>
+    </component>
+  </components>
+</package>
