@@ -12,7 +12,7 @@ Sensor data is recorded to files `<sensor_name>.<index>.sds`:
    SDS recorder data is sent from the target via TCP socket. Works together with the matching implementation on the target ([sdsio_socket.c](../../sds/source/sdsio/socket/sdsio_socket.c)).
 
 - **serial**
-   SDS recorder data is sent from the target via serial port. Works together with the matching implementation on the target ([sdsio_vcom.c](../../sds/source/sdsio/vcom/mdk_usb/sdsio_vcom.c)).
+   SDS recorder data is sent from the target via serial port. Works together with the matching implementation on the target ([sdsio_vcom.c](../../sds/source/sdsio/vcom/mdk/sdsio_vcom.c)).
 
 ## Set-up and requirements
 ### Requirements
