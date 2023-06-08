@@ -1,7 +1,0 @@
-sds:
-  name: Microphone
-  description: Microphone with 16kHz sample rate
-  frequency: 16000
-  content:
-  - value: Mono
-    type: int16_t
