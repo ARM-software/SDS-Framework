@@ -33,6 +33,10 @@
       <description>SDS IO via File System (MDK FS)</description>
       <require Cvendor="Keil" Cclass="File System" Cgroup="Drive"/>
     </condition>
+    <condition id="SDS IO via File System - Semihosting">
+      <description>SDS IO via File System (Semihosting)</description>
+      <require Cclass="CMSIS-View" Cgroup="Event Recorder" Cvariant="Semihosting"/>
+    </condition>
     <condition id="SDS Recorder with CMSIS-RTOS2">
       <description>SDS Recorder with CMSIS-RTOS2</description>
       <require Cclass="CMSIS" Cgroup="RTOS2"/>
@@ -124,7 +128,7 @@
     </component>
 
     <!-- SDS I/O (File System - Semihosting) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="0.9.0" Cversion="0.9.0">
+    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="0.9.0" Cversion="0.9.0" condition="SDS IO via File System - Semihosting">
       <description>Blocking read/write via File System (Semihosting)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                       /* Synchronous Data Stream Input/Output */
