@@ -39,3 +39,8 @@ Directory                         | Description
 [sensor](./sensor)                | Sensor interface for the SDS Framework
 [sds](./sds)                      | Interfaces of the SDS Framework for Cortex-M devices
 [utilities](./utilities)          | Python scripts for processing of SDS binary data files
+
+
+## License Terms
+
+The SDS Framework is licensed under [Apache License 2.0](LICENSE).
