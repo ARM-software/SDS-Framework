@@ -1,0 +1,21 @@
+solution:
+
+  created-for: CMSIS-Toolbox@2.0.0
+  cdefault:
+
+  target-types:
+    - type: B-U585I-IOT02A
+      board: STMicroelectronics::B-U585I-IOT02A
+      variables:
+        - Board-Layer:  ../../../framework/layer/Board/B-U585I-IOT02A/Board.clayer.yml
+
+  build-types:
+    - type: Debug
+      debug: on
+      optimize: none
+    - type: Release
+      debug: off
+      optimize: balanced
+
+  projects:
+    - project: ./SDS_Recorder.cproject.yml

@@ -1,0 +1,34 @@
+project:
+  packs:
+   - pack: ARM::SDS
+   - pack: Keil::MDK-Middleware
+
+  connections:
+    - connect: Demo Application
+      provides:
+        - CMSIS-RTOS2
+      consumes:
+        - STDIN
+        - STDOUT
+        - STDERR
+        - Heap: 65536
+
+  components:
+    - component: ARM::CMSIS:RTOS2:Keil RTX5&Source
+    - component: ARM::SDS:Buffer
+    - component: ARM::SDS:IO:Socket
+    - component: ARM::SDS:Recorder
+
+  groups:
+    - group: Documentation
+      files: 
+        - file: ./README.md
+    - group: Source Files
+      files:
+        - file: ./demo.c
+
+  layers:
+    - layer: $Socket-Layer$
+      type: Socket
+    - layer: $Board-Layer$
+      type: Board

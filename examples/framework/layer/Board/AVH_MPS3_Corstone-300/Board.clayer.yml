@@ -1,0 +1,68 @@
+layer:
+  type: Board
+  # name: AVH_MPS3_Cortsone-300
+  # variant: IoT-VSocket-Ethernet
+  description: Board setup for IoT with VSocket and Ethernet interface
+  for-board: ARM::V2M-MPS3-SSE-300-FVP
+  processor:
+    endian: little
+    trustzone: secure
+
+  connections:
+    - connect: AVH_MPS3_Cortsone-300 Board
+      consumes:
+        - CMSIS-RTOS2
+      provides:
+        - VSocket
+        - CMSIS_ETH: 0
+        - CMSIS_VIO
+        - STDIN
+        - STDOUT
+        - STDERR
+        - Heap: 65536
+
+  packs:
+    - pack: ARM::V2M_MPS3_SSE_300_BSP@1.2.0
+    - pack: ARM::CMSIS
+    - pack: ARM::CMSIS-Driver
+    - pack: ARM::CMSIS-View
+
+  define:
+    - CMSIS_board_header: "\"AVH_MPS3_Corstone_300.h\""
+
+  misc:
+    - Link:
+      - '--diag_suppress 6314,6848'
+
+  components:
+    - component: ARM::Device:Definition
+    - component: ARM::Device:Startup&Baremetal
+
+    - component: ARM::Native Driver:IO
+    - component: ARM::Native Driver:UART
+
+    - component: ARM::CMSIS:CORE
+
+    - component: ARM::CMSIS Driver:USART
+    - component: Keil::CMSIS Driver:Ethernet:ETH_LAN91C111
+    - component: ARM::CMSIS Driver:VIO:Custom
+
+    - component: ARM::CMSIS-View:Event Recorder&Semihosting
+
+  groups:
+    - group: Board
+      files:
+        - file: ./AVH_MPS3_Corstone_300.h
+        - file: ./main.h
+        - file: ./main.c
+        - file: ./Driver/vio_V2M-MPS3-SSE-300.c
+        - file: ./RTE/Device/SSE-300-MPS3/fvp_sse300_mps3_s.sct
+    - group: Driver
+      files:
+        - file: ../../../interface/VSI/include/arm_vsi.h
+        - file: ../../../interface/audio/include/audio_drv.h
+        - file: ../../../interface/VSI/audio/driver/audio_drv.c
+        - file: ../../../interface/sensor/include/sensor_drv.h
+        - file: ../../../interface/sensor/source/sensor_drv.c
+        - file: ../../../interface/VSI/sensor/driver/sensor_drv_hw.c
+        - file: ./Driver/sensor_config.h

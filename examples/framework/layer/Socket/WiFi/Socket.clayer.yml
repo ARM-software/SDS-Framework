@@ -1,0 +1,24 @@
+layer:
+  type: Socket
+  # name: WiFi
+  description: IoT Socket interface using WiFi
+
+  connections:
+    - connect: WiFi Socket
+      consumes:
+        - CMSIS_WiFi: 0
+        - STDOUT
+      provides:
+        - IoT_Socket
+
+  packs:
+    - pack: MDK-Packs::IoT_Socket
+
+  components:
+  # - component: MDK-Packs::IoT Utility:Socket:WiFi
+    - component: IoT Utility:Socket:WiFi
+
+  groups:
+    - group: Socket
+      files: 
+        - file: ./socket_startup.c
