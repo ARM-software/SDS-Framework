@@ -27,8 +27,6 @@ The [SDS Framework interfaces](./sds/README.md) implement the SDS streaming inte
 
 ![Interfaces](./documentation/images/SDS-Interfaces.png "Interfaces")
 
-The [Sensor interfaces](./sensor/README.md) provide the software layer for the connection to the physical sensors.
-
 ## Repository top-level structure
 
 Directory                         | Description
@@ -36,7 +34,6 @@ Directory                         | Description
 [examples](./examples)            | Example implementations for various evaluation boards
 [documentation](./documentation/) | User documentation of the SDS Framework
 [schema](./schema)                | Schema for SDS File Format
-[sensor](./sensor)                | Sensor interface for the SDS Framework
 [sds](./sds)                      | Interfaces of the SDS Framework for Cortex-M devices
 [utilities](./utilities)          | Python scripts for processing of SDS binary data files
 

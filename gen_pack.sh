@@ -33,7 +33,6 @@ audio
 examples
 schema
 sds
-sensor
 utilities
 "
 
