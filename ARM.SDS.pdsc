@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package schemaVersion="1.7.7" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.7/schema/PACK.xsd">
+<package schemaVersion="1.7.25" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.25/schema/PACK.xsd">
   <vendor>ARM</vendor>
   <name>SDS</name>
   <description>Synchronous Data Streaming</description>
@@ -153,4 +153,58 @@
       </files>
     </component>
   </components>
+
+  <!-- Examples -->
+  <examples>
+    <example name="SDS Buffer" folder="examples/sds_buffer" doc="README.md">
+      <description>Example shows usage of SDS Buffer</description>
+      <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
+      <board name="V2M-MPS3-SSE-300-FVP" vendor="ARM"/>
+      <project>
+        <environment name="cmsis" load="SDS_Buffer.csolution.yml"/>
+      </project>
+      <attributes/>
+    </example>
+    <example name="SDS Recorder" folder="examples/sds_recorder/fs/mdk" doc="README.md">
+      <description>Example shows usage of SDS Recorder via File System (Keil::File System)</description>
+      <board name="EVKB-IMXRT1050_MDK" vendor="NXP"/>
+      <project>
+        <environment name="cmsis" load="SDS_Recorder.csolution.yml"/>
+      </project>
+      <attributes/>
+    </example>
+      <example name="SDS Recorder" folder="examples/sds_recorder/fs/semihosting" doc="README.md">
+      <description>Example shows usage of SDS Recorder via File System (Semihosting)</description>
+      <board name="V2M-MPS3-SSE-300-FVP" vendor="ARM"/>
+      <project>
+        <environment name="cmsis" load="SDS_Recorder.csolution.yml"/>
+      </project>
+      <attributes/>
+    </example>
+      <example name="SDS Recorder" folder="examples/sds_recorder/serial/usart" doc="README.md">
+      <description>Example shows usage of SDS Recorder via Serial Port (CMSIS Driver:USART)</description>
+      <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
+      <project>
+        <environment name="cmsis" load="SDS_Recorder.csolution.yml"/>
+      </project>
+      <attributes/>
+    </example>
+      <example name="SDS Recorder" folder="examples/sds_recorder/socket" doc="README.md">
+      <description>Example shows usage of SDS Recorder via via Socket (IoT Utility:Socket)</description>
+      <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
+      <board name="V2M-MPS3-SSE-300-FVP" vendor="ARM"/>
+      <project>
+        <environment name="cmsis" load="SDS_Recorder.csolution.yml"/>
+      </project>
+      <attributes/>
+    </example>
+      <example name="SDS Recorder" folder="examples/sds_recorder/vcom/mdk" doc="README.md">
+      <description>Example shows usage of SDS Recorder via USB Virtual COM Port (Keil::USB:Device:CDC)</description>
+      <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
+      <project>
+        <environment name="cmsis" load="SDS_Recorder.csolution.yml"/>
+      </project>
+      <attributes/>
+    </example>
+  </examples>
 </package>
