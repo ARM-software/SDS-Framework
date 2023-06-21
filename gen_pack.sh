@@ -47,7 +47,6 @@ LICENSE
 # Default: empty
 #
 PACK_DELETE_FILES="
-README.md
 gen_pack.sh
 .gitignore
 "
@@ -69,6 +68,11 @@ PACKCHK_DEPS="
 ARM.CMSIS.pdsc
 Keil.MDK-Middleware.pdsc
 MDK-Packs.IoT_Socket.pdsc
+ARM.CMSIS-View.pdsc
+Keil.B-U585I-IOT02A_BSP.pdsc
+ARM.V2M_MPS3_SSE_300_BSP.pdsc
+Keil.IMXRT1050-EVKB_BSP.pdsc
+
 "
 
 # Optional: restrict fallback modes for changelog generation
