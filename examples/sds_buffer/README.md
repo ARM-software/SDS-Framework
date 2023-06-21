@@ -36,13 +36,10 @@ cbuild SDS_Buffer.csolution.yml --update-rte -p --configuration .Debug+B-U585I-I
 
 ### AVH_MPS3_Corstone-300 target
 
-- from the project folder execute following command to copy .sds recordings to the project folder:
-```sh
-copy ../recordings/Accelerometer.*.sds ./
-```
-- from the project folder execute following command to run the example on the VHT simulation model:
+- copy recorded accelerometer files (Accelerometer.x.sds) from [recordings folder](../recordings) to [project folder](./)
+- from the project folder execute following command to run the example for 60 seconds on the VHT simulation model:
 
 ```sh
-VHT_MPS3_Corstone_SSE-300 -f ../framework/layer/Board/AVH_MPS3_Corstone-300/fvp_config.txt -V ../framework/interface/VSI/sensor/python out/SDS_Buffer/AVH_MPS3_Corstone-300/Debug/SDS_Buffer.axf
+VHT_MPS3_Corstone_SSE-300 -f ../framework/layer/Board/AVH_MPS3_Corstone-300/fvp_config.txt -V ../framework/interface/VSI/sensor/python --simlimit=60 out/SDS_Buffer/AVH_MPS3_Corstone-300/Debug/SDS_Buffer.axf
 ```
 - monitor results (if motion detected) in terminal window

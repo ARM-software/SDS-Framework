@@ -24,10 +24,7 @@ cbuild SDS_Recorder.csolution.yml --update-rte -p --configuration .Debug+AVH_MPS
 ## Execute
 
 ### AVH_MPS3_Corstone-300 Target
-- from the project folder execute following command to copy .sds recordings to the project folder:
-```sh
-copy ../../../recordings/*.*.sds ./
-```
+- copy recorded sensor files (Accelerometer.x.sds, Gyroscope.x.sds and Temperature.x.sds ) from [recordings folder](../recordings) to [project folder](./)
 - from the project folder execute following command to run the example on the VHT simulation model:
 
 ```sh
