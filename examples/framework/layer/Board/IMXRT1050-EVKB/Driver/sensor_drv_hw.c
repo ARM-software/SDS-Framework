@@ -77,6 +77,15 @@ static int32_t Accelerometer_Enable (void) {
   if ((tmp & ACTIVE_MASK) == ACTIVE) {
     ret = SENSOR_OK;
   }
+  // Read M_CTRL_REG1 register
+  FXOS_ReadReg(&g_fxosHandle, M_CTRL_REG1, &tmp, 1U);
+  // Magnetometer sensor is active
+  if ((tmp & M_HMS_MASK) == MAG_ACTIVE) {
+    // Setup the Hybrid mode (Accelerometer and Magnetometer)
+    FXOS_WriteReg(&g_fxosHandle, M_CTRL_REG1, (M_RST_MASK | M_OSR_MASK | M_HMS_MASK));
+    FXOS_WriteReg(&g_fxosHandle, M_CTRL_REG2, M_HYB_AUTOINC_MASK);
+    ret = SENSOR_OK;
+  }
   sensorUnLock();
 
   return ret;
@@ -87,11 +96,21 @@ static int32_t Accelerometer_Disable (void) {
   uint8_t tmp = 0U;
 
   sensorLock();
-  // Setup the Standby mode
-  FXOS_WriteReg(&g_fxosHandle, CTRL_REG1, STANDBY);
-  // Read Control register to ensure we are in Standby mode
-  FXOS_ReadReg(&g_fxosHandle, CTRL_REG1, &tmp, 1U);
-  if ((tmp & ACTIVE_MASK) == STANDBY) {
+  // Read M_CTRL_REG1 register
+  FXOS_ReadReg(&g_fxosHandle, M_CTRL_REG1, &tmp, 1U);
+  // if Accelerometer/Magnetometer sensor is active (Hybrid mode)
+  if ((tmp & M_HMS_MASK) == HYBRID_ACTIVE) {
+    // Magnetometer sensor stay active
+    tmp &= ~(1UL << 1U);
+    FXOS_WriteReg(&g_fxosHandle, M_CTRL_REG1, (tmp | M_OSR_200_HZ));
+    FXOS_WriteReg(&g_fxosHandle, M_CTRL_REG2, M_HYB_AUTOINC_MASK);
+    FXOS_WriteReg(&g_fxosHandle, CTRL_REG1, (DATA_RATE_200HZ | ACTIVE_MASK));
+    ret = SENSOR_OK;
+  }
+  // if only Accelerometer sensor is active
+  else if ((tmp & M_HMS_MASK) == ACCEL_ACTIVE) {
+    // Setup the Standby mode
+    FXOS_WriteReg(&g_fxosHandle, CTRL_REG1, STANDBY);
     ret = SENSOR_OK;
   }
   sensorUnLock();
@@ -143,16 +162,23 @@ static int32_t Magnetometer_Enable (void) {
 
   sensorLockCreate();
   sensorLock();
-
-  // Read CTRL_REG1 register to ensure if Acelerometer sensor is active
-  FXOS_ReadReg(&g_fxosHandle, CTRL_REG1, &tmp, 1U);
-  if ((tmp & M_HMS0_MASK) != 0U) {
-    // Setup the Hybrid mode (Acelerometer and Magnetometer)
-    FXOS_WriteReg(&g_fxosHandle, M_CTRL_REG1, (M_RST_MASK | M_OSR_MASK | M_HMS_MASK));
-    FXOS_WriteReg(&g_fxosHandle, M_CTRL_REG2, (M_HYB_AUTOINC_MASK));
+  // Read M_CTRL_REG1 register
+  FXOS_ReadReg(&g_fxosHandle, M_CTRL_REG1, &tmp, 1U);
+  // Accelerometer/Magnetometer sensor is active (Hybrid mode)
+  if ((tmp & M_HMS_MASK) == HYBRID_ACTIVE) {
     ret = SENSOR_OK;
   }
-  else   if ((tmp & M_HMS0_MASK) == 0U) {
+  // Accelerometer sensor is active
+  else if ((tmp & M_HMS_MASK) == ACCEL_ACTIVE) {
+    // Setup the Hybrid mode (Accelerometer and Magnetometer)
+    FXOS_WriteReg(&g_fxosHandle, M_CTRL_REG1, (M_RST_MASK | M_OSR_MASK | M_HMS_MASK));
+    FXOS_WriteReg(&g_fxosHandle, M_CTRL_REG2, M_HYB_AUTOINC_MASK);
+    ret = SENSOR_OK;
+  }
+  // Read CTRL_REG1 register
+  FXOS_ReadReg(&g_fxosHandle, CTRL_REG1, &tmp, 1U);
+  // Accelerometer sensor is not active (standby)
+  if ((tmp & ACTIVE_MASK) == STANDBY) {
     // Setup only Magnetometer sensor as active
     FXOS_WriteReg(&g_fxosHandle, M_CTRL_REG1, (M_RST_MASK | M_OSR_MASK | M_HMS1_MASK));
     ret = SENSOR_OK;
@@ -167,17 +193,19 @@ static int32_t Magnetometer_Disable (void) {
   uint8_t tmp = 0U;
 
   sensorLock();
-  // Read CTRL_REG1 register to ensure if Acelerometer/Magnetometer sensor is active
-  FXOS_ReadReg(&g_fxosHandle, CTRL_REG1, &tmp, 1U);
-  if ((tmp & M_HMS_MASK) != 0U) {
-    // Acelerometer sensor stay active
-    FXOS_ReadReg(&g_fxosHandle, M_CTRL_REG1, &tmp, 1U);
+  // Read M_CTRL_REG1 register
+  FXOS_ReadReg(&g_fxosHandle, M_CTRL_REG1, &tmp, 1U);
+  //  Accelerometer/Magnetometer sensor is active (Hybrid mode)
+  if ((tmp & M_HMS_MASK) == HYBRID_ACTIVE) {
+    // Accelerometer sensor stay active
     tmp &= ~(1UL << 0U);
     tmp &= ~(1UL << 1U);
     FXOS_WriteReg(&g_fxosHandle, M_CTRL_REG1, tmp);
+    FXOS_WriteReg(&g_fxosHandle, CTRL_REG1, (DATA_RATE_200HZ | ACTIVE_MASK));
     ret = SENSOR_OK;
   }
-  else if ((tmp & M_HMS1_MASK) != 0U) {
+  // Only Magnetometer sensor is active
+  else if ((tmp & M_HMS_MASK) == MAG_ACTIVE) {
     // Setup the Standby mode
     FXOS_WriteReg(&g_fxosHandle, CTRL_REG1, STANDBY);
     ret = SENSOR_OK;
