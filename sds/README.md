@@ -48,6 +48,7 @@ The API is defined in [sdsio.h](include/sdsio.h). It features the following func
 - `sdsioClose`: Closes the specified I/O stream.
 - `sdsioWrite`: Writes data to the specified I/O stream and returns the number of bytes written (no overflow).
 - `sdsioRead`: Reads data from the specified I/O stream and returns the number of bytes read.
+- `sdsioEndOfStream`: Checks if end of stream has been reached and returns a nonzero value if end of stream.
 
 Function calls are typically blocking and shall be thread-safe.
 
