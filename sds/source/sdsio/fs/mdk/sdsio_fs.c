@@ -38,8 +38,8 @@
 
 /** Initialize I/O interface */
 int32_t sdsioInit (void) {
-  uint32_t  stat;
-  int32_t   ret  = SDSIO_ERROR;
+  int32_t  ret = SDSIO_ERROR;
+  uint32_t stat;
 
   // Initialize and mount file system drive
   stat = finit(SDSIO_DRIVE);
@@ -67,15 +67,20 @@ int32_t sdsioUninit (void) {
 
 /** Open I/O stream */
 sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
-  char       file_name[sizeof(SDSIO_WORK_DIR) + SDSIO_MAX_NAME_SIZE + SDSIO_MAX_EXT_SIZE];
   uint32_t   index   = 0U;
   sdsioId_t  sdsioId = NULL;
   FILE      *file    = NULL;
+  char       file_name[sizeof(SDSIO_WORK_DIR) + SDSIO_MAX_NAME_SIZE + SDSIO_MAX_EXT_SIZE];
 
   if (strlen(name) <= SDSIO_MAX_NAME_SIZE) {
     switch (mode) {
       case sdsioModeRead:
-        // Not Supported
+        sprintf(file_name, "%s%s.0.sds", SDSIO_WORK_DIR, name);
+        file = fopen(file_name, "rb");
+        if (file != NULL) {
+          // File exists
+          sdsioId = (sdsioId_t)file;
+        }
         break;
       case sdsioModeWrite:
         while (sdsioId == NULL) {
@@ -118,4 +123,10 @@ uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
 uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
   FILE *file = (FILE *)id;
   return fread(buf, 1, buf_size, file);
+}
+
+/** Check if end of stream has been reached. */
+int32_t sdsioEndOfStream (sdsioId_t id) {
+  FILE *file = (FILE *)id;
+  return feof(file);
 }
