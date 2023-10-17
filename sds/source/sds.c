@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -85,7 +85,7 @@ __STATIC_INLINE uint32_t atomic_wr32_if_zero (uint32_t *mem, uint32_t val) {
 #endif
 
 static sds_t *sdsAlloc (void) {
-  sds_t *stream = NULL;
+  sds_t   *stream = NULL;
   uint32_t n;
 
   for (n = 0U; n < SDS_MAX_STREAMS; n++) {
@@ -130,8 +130,8 @@ sdsId_t sdsOpen (void *buf, uint32_t buf_size, uint32_t threshold_low, uint32_t 
 
 // Close stream
 int32_t sdsClose (sdsId_t id) {
-  sds_t *stream = id;
-  int32_t ret = SDS_ERROR;
+  sds_t  *stream = id;
+  int32_t ret    = SDS_ERROR;
 
   if (stream != NULL) {
     sdsFree(stream);
@@ -142,8 +142,8 @@ int32_t sdsClose (sdsId_t id) {
 
 // Register stream events
 int32_t sdsRegisterEvents (sdsId_t id, sdsEvent_t event_cb, uint32_t event_mask, void *event_arg) {
-  sds_t *stream = id;
-  int32_t ret = SDS_ERROR;
+  sds_t  *stream = id;
+  int32_t ret    = SDS_ERROR;
 
   if ((stream != NULL) && (event_cb != NULL) && (event_mask != 0U)) {
     stream->event_cb   = event_cb;
@@ -156,8 +156,8 @@ int32_t sdsRegisterEvents (sdsId_t id, sdsEvent_t event_cb, uint32_t event_mask,
 
 // Write data to stream
 uint32_t sdsWrite (sdsId_t id, const void *buf, uint32_t buf_size) {
-  sds_t *stream = id;
-  uint32_t num = 0U;
+  sds_t   *stream = id;
+  uint32_t num    = 0U;
   uint32_t cnt_free, cnt_used, cnt_limit;
 
   if ((stream != NULL) && (buf != NULL) && (buf_size != 0U)) {
@@ -196,8 +196,8 @@ uint32_t sdsWrite (sdsId_t id, const void *buf, uint32_t buf_size) {
 
 // Read data from stream
 uint32_t sdsRead (sdsId_t id, void *buf, uint32_t buf_size) {
-  sds_t *stream = id;
-  uint32_t num = 0U;
+  sds_t   *stream = id;
+  uint32_t num    = 0U;
   uint32_t cnt_used, cnt_limit;
 
   if ((stream != NULL) && (buf != NULL) && (buf_size != 0U)) {
@@ -225,7 +225,7 @@ uint32_t sdsRead (sdsId_t id, void *buf, uint32_t buf_size) {
 
     if ((stream->event_cb != NULL) && (stream->event_mask & SDS_EVENT_DATA_LOW)) {
       cnt_used = stream->cnt_in - stream->cnt_out;
-      if (cnt_used < stream->threshold_low) {
+      if (cnt_used <= stream->threshold_low) {
         stream->event_cb(stream, SDS_EVENT_DATA_LOW, stream->event_arg);
       }
     }
@@ -235,7 +235,7 @@ uint32_t sdsRead (sdsId_t id, void *buf, uint32_t buf_size) {
 
 // Clear stream data
 int32_t sdsClear (sdsId_t id) {
-  sds_t *stream = id;
+  sds_t   *stream = id;
   uint32_t cnt_used, cnt_limit;
 
   cnt_used = stream->cnt_in - stream->cnt_out;
@@ -253,8 +253,8 @@ int32_t sdsClear (sdsId_t id) {
 
 // Get data count in stream
 uint32_t sdsGetCount (sdsId_t id) {
-  sds_t *stream = id;
-  uint32_t num = 0U;
+  sds_t   *stream = id;
+  uint32_t num    = 0U;
 
   if (stream != NULL) {
     num = stream->cnt_in - stream->cnt_out;
