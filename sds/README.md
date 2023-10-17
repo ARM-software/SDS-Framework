@@ -91,6 +91,8 @@ The API is defined in [sds_play.h](include/sds_play.h). It features the followin
 - `sdsPlayClose`: Closes the specified player stream.
 - `sdsPlayRead`: Reads a record with data and timestamp from the specified player stream 
   and returns the number of data bytes read.
+- `sdsPlayGetSize`: Gets the number of data bytes in the record.
+- `sdsPlayEndOfStream`: Checks if end of stream has been reached and returns a nonzero value if end of stream.
 
 The function `sdsPlayRead` call shall be non-blocking where other function calls are typically blocking. 
 All function calls except `sdsPlayInit/UnInit` shall be thread-safe.

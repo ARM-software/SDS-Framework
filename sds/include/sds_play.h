@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -77,7 +77,7 @@ int32_t sdsPlayClose (sdsPlayId_t id);
 
 /**
   \fn          uint32_t sdsPlayRead (sdsPlayId_t id, void *buf, uint32_t buf_size)
-  \brief       Write data to Player stream.
+  \brief       Read record data and timestamp from Player stream.
   \param[in]   id             \ref sdsPlayId_t
   \param[out]  timestamp      pointer to buffer for record timestamp in ticks
   \param[out]  buf            pointer to buffer for data to read
@@ -85,6 +85,22 @@ int32_t sdsPlayClose (sdsPlayId_t id);
   \return      number of data bytes read
 */
 uint32_t sdsPlayRead (sdsPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size);
+
+/**
+  \fn          uint32_t sdsPlayGetSize (sdsPlayId_t id)
+  \brief       Get record data size from Player stream.
+  \param[in]   id             \ref sdsPlayId_t
+  \return      number of data bytes in record
+*/
+uint32_t sdsPlayGetSize (sdsPlayId_t id);
+
+/**
+  \fn          int32_t sdsPlayEndOfStream (sdsPlayId_t id)
+  \brief       Check if end of stream has been reached.
+  \param[in]   id             \ref sdsPlayId_t
+  \return      nonzero if end of stream, else 0
+*/
+int32_t sdsPlayEndOfStream (sdsPlayId_t id);
 
 #ifdef  __cplusplus
 }
