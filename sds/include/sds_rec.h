@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -77,7 +77,7 @@ int32_t sdsRecClose (sdsRecId_t id);
 
 /**
   \fn          uint32_t sdsRecWrite (sdsRecId_t id, const void *buf, uint32_t buf_size)
-  \brief       Write data to recorder stream.
+  \brief       Write record data and timestamp to recorder stream.
   \param[in]   id             \ref sdsRecId_t
   \param[in]   timestamp      record timestamp in ticks
   \param[in]   buf            pointer to buffer with data to write
