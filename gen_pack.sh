@@ -12,7 +12,7 @@ set -o pipefail
 REQUIRED_GEN_PACK_LIB="0.8.0"
 
 # Set default command line arguments
-DEFAULT_ARGS=()
+DEFAULT_ARGS=(-c "v")
 
 # Pack warehouse directory - destination
 # Default: ./output
