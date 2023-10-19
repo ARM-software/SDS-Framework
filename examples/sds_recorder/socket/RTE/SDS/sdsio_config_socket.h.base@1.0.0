@@ -15,22 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Name:    sds_rec_config.h
- * Purpose: SDS Recorder configuration options
- * Rev.:    V0.9.0
+ * Name:    sdsio_config_socket.h
+ * Purpose: SDS IO via Socket (IoT Utility:Socket) configuration options
+ * Rev.:    V1.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>SDS Recorder
+// <h>SDS IO via Socket (IoT Utility:Socket)
 
-//   <o>Maximum number of recorder streams <1-31>
-//   <i>Default: 16
-#define SDS_REC_MAX_STREAMS       16U
+//   <s.16>SDSIO-Server IP
+//   <i>SDSIO socket server IPv4 address
+//   <i>Default: "0.0.0.0"
+#define SDSIO_SERVER_IP           "0.0.0.0"
 
-//   <o>Maximum size of a record
-//   <i>Default: 8192
-#define SDS_REC_MAX_RECORD_SIZE   8192U
+//   <o>SDSIO-Server port
+//   <i>SDSIO socket server port
+//   <i>Default: 5050
+#define SDSIO_SERVER_PORT         5050U
+
+//   <o>Socket receive timeout
+//   <i>Socket receive timeout in ms
+//   <i>Default: 5000
+#define SDSIO_SOCKET_RECEIVE_TOUT 5000U
 
 // </h>
 
