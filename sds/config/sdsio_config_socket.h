@@ -17,7 +17,7 @@
  *
  * Name:    sdsio_config_socket.h
  * Purpose: SDS IO via Socket (IoT Utility:Socket) configuration options
- * Rev.:    V0.9.0
+ * Rev.:    V1.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------

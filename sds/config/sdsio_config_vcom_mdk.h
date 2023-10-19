@@ -17,7 +17,7 @@
  *
  * Name:    sdsio_config_vcom_mdk.h
  * Purpose: SDS IO via USB Virtual COM Port (Keil::USB:Device:CDC) configuration options
- * Rev.:    V0.9.0
+ * Rev.:    V1.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
