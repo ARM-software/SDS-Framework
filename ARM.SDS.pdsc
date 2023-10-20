@@ -43,6 +43,12 @@
       <require Cclass="SDS"   Cgroup="Buffer"/>
       <require Cclass="SDS"   Cgroup="IO"/>
     </condition>
+    <condition id="SDS Player with CMSIS-RTOS2">
+      <description>SDS Player with CMSIS-RTOS2</description>
+      <require Cclass="CMSIS" Cgroup="RTOS2"/>
+      <require Cclass="SDS"   Cgroup="Buffer"/>
+      <require Cclass="SDS"   Cgroup="IO"/>
+    </condition>
   </conditions>
 
   <taxonomy>
@@ -150,6 +156,19 @@
         <file category="header" name="sds/include/sds_rec.h"/>
         <file category="source" name="sds/source/sds_rec.c"/>
         <file category="header" name="sds/config/sds_rec_config.h" attr="config" version="0.9.0"/>
+      </files>
+    </component>
+
+    <!-- SDS Player -->
+    <component Cclass="SDS" Cgroup="Player" Cvariant="CMSIS-RTOS2" Cversion="0.9.0" condition="SDS Player with CMSIS-RTOS2">
+      <description>Play from Input device</description>
+      <RTE_Components_h>
+        #define RTE_SDS_PLAYER                  /* Synchronous Data Stream Player */
+      </RTE_Components_h>
+      <files>
+        <file category="header" name="sds/include/sds_play.h"/>
+        <file category="source" name="sds/source/sds_play.c"/>
+        <file category="header" name="sds/config/sds_play_config.h" attr="config" version="0.9.0"/>
       </files>
     </component>
   </components>
