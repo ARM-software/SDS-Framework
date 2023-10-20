@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -36,7 +36,7 @@ typedef void *sdsId_t;
 #define SDS_ERROR               (-1)        ///< Operation failed
 
 /// Events
-#define SDS_EVENT_DATA_LOW      (1UL << 0)  ///< Data bellow threshold
+#define SDS_EVENT_DATA_LOW      (1UL << 0)  ///< Data bellow or equal to threshold
 #define SDS_EVENT_DATA_HIGH     (1UL << 1)  ///< Data above or equal to threshold
 
 /// Event callback function
