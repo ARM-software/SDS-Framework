@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2023 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -91,6 +91,14 @@ uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size);
   \return      number of bytes read
 */
 uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size);
+
+/**
+  \fn          int32_t sdsioEndOfStream (sdsioId_t id)
+  \brief       Check if end of stream has been reached.
+  \param[in]   id             \ref sdsioId_t
+  \return      nonzero if end of stream, else 0
+*/
+int32_t sdsioEndOfStream (sdsioId_t id);
 
 #ifdef  __cplusplus
 }
