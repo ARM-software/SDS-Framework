@@ -17,7 +17,7 @@
  *
  * Name:    sdsio_config_serial_usart.h
  * Purpose: SDS IO via Serial Port (CMSIS Driver:USART) configuration options
- * Rev.:    V0.9.0
+ * Rev.:    V1.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
@@ -50,8 +50,8 @@
 
 //   <o>Stop bits <0x0000U=>1
 //                <0x4000U=>2
-//                <0x8000U=>1,5
-//                <0xC000U=>0,5
+//                <0x8000U=>1.5
+//                <0xC000U=>0.5
 //   <i>Default: 1
 #define SDSIO_USART_STOP_BITS     0U
 // </h>

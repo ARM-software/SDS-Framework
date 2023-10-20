@@ -17,7 +17,7 @@
  *
  * Name:    sds_rec_config.h
  * Purpose: SDS Recorder configuration options
- * Rev.:    V0.9.0
+ * Rev.:    V1.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------

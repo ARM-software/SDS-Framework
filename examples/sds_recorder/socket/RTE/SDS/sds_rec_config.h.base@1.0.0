@@ -15,21 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Name:    sdsio_config_vcom_mdk.h
- * Purpose: SDS IO via USB Virtual COM Port (Keil::USB:Device:CDC) configuration options
- * Rev.:    V0.9.0
+ * Name:    sds_rec_config.h
+ * Purpose: SDS Recorder configuration options
+ * Rev.:    V1.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>SDS IO via USB Virtual COM Port (Keil::USB:Device:CDC)
+// <h>SDS Recorder
 
-//   <o>USB Device index <0-255>
-//   <i>Index of USB Device
-//   <i>Default: 0
-#define SDSIO_USB_DEVICE_INDEX  0U
+//   <o>Maximum number of recorder streams <1-31>
+//   <i>Default: 16
+#define SDS_REC_MAX_STREAMS       16U
+
+//   <o>Maximum size of a record
+//   <i>Default: 8192
+#define SDS_REC_MAX_RECORD_SIZE   8192U
 
 // </h>
-
 
 //------------- <<< end of configuration section >>> ---------------------------
