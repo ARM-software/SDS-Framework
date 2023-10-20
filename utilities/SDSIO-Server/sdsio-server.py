@@ -74,8 +74,17 @@ class sdsio_manager:
                     print(f"Could not open file {fname}. Error: {e}\n")
                     return 0
 
-            # if mode == 0:
-            #     read mode not supported
+            if mode == 0:
+                # Read mode
+                fname = path.join(self.out_dir, f"{name}.0.sds")
+                try:
+                    f = open(fname, "rb")
+                    self.stream_identifier += 1
+                    self.stream_files.update({self.stream_identifier: f})
+                    response_stream_id = self.stream_identifier
+                except Exception as e:
+                    print(f"Could not open file {fname}. Error: {e}\n")
+                    return 0
 
         response.extend(response_command.to_bytes(4, byteorder='little'))
         response.extend(response_stream_id.to_bytes(4, byteorder='little'))
@@ -102,6 +111,48 @@ class sdsio_manager:
             self.stream_files.get(id).write(data)
         except Exception as e:
             print(f"Could not write to file {self.stream_files.get(id)}. Error: {e}\n")
+        return response
+
+    # Read
+    def __read(self, id, data_sz):
+        data = bytearray()
+        response = bytearray()
+        response_command = 4
+        response_argument = 0
+
+        try:
+            data = self.stream_files.get(id).read(data_sz)
+            response_data_size = len(data)
+            response.extend(response_command.to_bytes(4, byteorder='little'))
+            response.extend(id.to_bytes(4, byteorder='little'))
+            response.extend(response_argument.to_bytes(4, byteorder='little'))
+            response.extend(response_data_size.to_bytes(4, byteorder='little'))
+            if len(data) != 0:
+                response.extend(data)
+        except Exception as e:
+            print(f"Could not read file {self.stream_files.get(id)}. Error: {e}\n")
+        return response
+
+    # End of Stream
+    def __endOfStream(self, id):
+        response = bytearray()
+        response_command = 5
+        response_data_size = 0
+
+        try:
+            f = self.stream_files.get(id)
+            f_position = f.tell()
+            if f_position < f.seek(0, 2):
+                response_argument = 0
+            else:
+                response_argument = 1
+            f.seek(f_position, 0)
+            response.extend(response_command.to_bytes(4, byteorder='little'))
+            response.extend(id.to_bytes(4, byteorder='little'))
+            response.extend(response_argument.to_bytes(4, byteorder='little'))
+            response.extend(response_data_size.to_bytes(4, byteorder='little'))
+        except Exception as e:
+            print(f"EOF error {self.stream_files.get(id)}. Error: {e}\n")
         return response
 
     # Clear
@@ -131,6 +182,12 @@ class sdsio_manager:
         # Write
         elif command == 3:
             self.__write(sdsio_id, data)
+        # Read
+        elif command == 4:
+            response = self.__read(sdsio_id, argument)
+        # End of stream
+        elif command == 5:
+            response = self.__endOfStream(sdsio_id)
         # Invalid command
         else:
             print(f"Invalid command: {command}\n")
