@@ -41,6 +41,7 @@ typedef struct {
 #define SDSIO_CMD_CLOSE         2U
 #define SDSIO_CMD_WRITE         3U
 #define SDSIO_CMD_READ          4U
+#define SDSIO_CMD_EOS           5U
 
 // Lock function
 #ifndef SDSIO_NO_LOCK
@@ -77,57 +78,112 @@ bool USBD_CDC0_ACM_GetLineCoding (CDC_LINE_CODING *line_coding) {
 }
 
 /**
-  \fn          uint32_t sdsioSend (const void *buf, uint32_t buf_size)
-  \brief       Send data via iot vcom
-  \param[in]   buf          pointer to buffer with data to send
-  \param[in]   buf_size     buffer size in bytes
-  \return      number of bytes sent
+  \fn          uint32_t sdsioSend (const header_t *header, const void *data, uint32_t data_size)
+  \brief       Send data via vcom
+  \param[in]   header       pointer to header
+  \param[in]   data         pointer to buffer with data to send
+  \param[in]   data_size    data size in bytes
+  \return      number of bytes sent (including header)
 */
-static uint32_t sdsioSend (const void *buf, uint32_t buf_size) {
+static uint32_t sdsioSend (const header_t *header, const void *data, uint32_t data_size) {
+  uint32_t cnt, num;
   int32_t  status;
-  uint32_t num = 0U;
 
-  while (num < buf_size) {
+  if (header == NULL) {
+    return 0U;
+  }
+
+  // Send header
+  cnt = 0U;
+  while (cnt < sizeof(header_t)) {
     status = USBD_CDC_ACM_WriteData(SDSIO_USB_DEVICE_INDEX,
-                                    (const uint8_t *)buf + num,
-                                    (int32_t)(buf_size - num));
+                                    (const uint8_t *)header + cnt,
+                                    (int32_t)(sizeof(header_t) - cnt));
     if (status >= 0) {
-      num += (uint32_t)status;
+      cnt += (uint32_t)status;
     } else {
-      // Error
-      if ((status != usbDriverBusy) && (status != usbTimeout)) {
+      cnt = 0U;
+      break;
+    }
+  }
+
+  // Send data
+  num = cnt;
+  cnt = 0U;
+  if ((num != 0U) && (data != NULL) && (data_size != 0U)) {
+    while (cnt < data_size) {
+      status = USBD_CDC_ACM_WriteData(SDSIO_USB_DEVICE_INDEX,
+                                      (const uint8_t *)data + cnt,
+                                      (int32_t)(data_size - cnt));
+      if (status >= 0) {
+        cnt += (uint32_t)status;
+      } else {
+        cnt = 0U;
         break;
       }
     }
   }
+
+  num += cnt;
 
   return num;
 }
 
 /**
-  \fn          uint32_t sdsioReceive (void *buf, uint32_t buf_size)
-  \brief       Receive data via iot vcom
-  \param[out]  buf          pointer to buffer for data to read
-  \param[in]   buf_size     buffer size in bytes
-  \return      number of bytes received
+  \fn          uint32_t sdsioReceive (header_t *header, void *data, uint32_t data_size)
+  \brief       Receive data via vcom
+  \param[out]  header       pointer to header
+  \param[out]  data         pointer to buffer for data to read
+  \param[in]   data_size    data size in bytes
+  \return      number of bytes received (including header)
 */
-static uint32_t sdsioReceive (void *buf, uint32_t buf_size) {
+static uint32_t sdsioReceive (header_t *header, void *data, uint32_t data_size) {
+  uint32_t cnt, num, size;
   int32_t  status;
-  uint32_t num = 0U;
 
-  while (num < buf_size) {
+  if (header == NULL) {
+    return 0U;
+  }
+
+  // Receive header
+  cnt = 0U;
+  while (cnt < sizeof(header_t)) {
     status = USBD_CDC_ACM_ReadData(SDSIO_USB_DEVICE_INDEX,
-                                   (uint8_t *)buf + num,
-                                   (int32_t)(buf_size - num));
+                                   (uint8_t *)header + cnt,
+                                   (int32_t)(sizeof(header_t) - cnt));
     if (status >= 0) {
-      num += (uint32_t)status;
+      cnt += (uint32_t)status;
     } else {
-      // Error
-      if ((status != usbDriverBusy) && (status != usbTimeout)) {
+      cnt = 0U;
+      break;
+    }
+  }
+
+  // Receive data
+  num = cnt;
+  cnt = 0U;
+  if ((num != 0U) && (header->data_size != 0U) &&
+      (data != NULL) && (data_size != 0U)) {
+
+    if (header->data_size < data_size) {
+      size = header->data_size;
+    } else {
+      size = data_size;
+    }
+    while (cnt < data_size) {
+      status = USBD_CDC_ACM_ReadData(SDSIO_USB_DEVICE_INDEX,
+                                     (uint8_t *)data + cnt,
+                                     (int32_t)(size - cnt));
+      if (status >= 0) {
+        cnt += (uint32_t)status;
+      } else {
+        cnt = 0U;
         break;
       }
     }
   }
+
+  num += cnt;
 
   return num;
 }
@@ -137,7 +193,7 @@ static uint32_t sdsioReceive (void *buf, uint32_t buf_size) {
 
 /** Initialize I/O interface */
 int32_t sdsioInit (void) {
-  int32_t ret  = SDSIO_ERROR;
+  int32_t ret = SDSIO_ERROR;
 
   sdsioLockCreate();
   if (USBD_Initialize(SDSIO_USB_DEVICE_INDEX) == usbOK) {
@@ -177,34 +233,30 @@ int32_t sdsioUninit (void) {
     data:   no data
 */
 sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
-  header_t header;
-  uint32_t size;
   uint32_t sdsio_id = 0U;
+  header_t header;
+  uint32_t size, data_size;
 
   if (name != NULL) {
     sdsioLock();
 
+    data_size = strlen(name) + 1U;
     header.command   = SDSIO_CMD_OPEN;
     header.sdsio_id  = 0U;
     header.argument  = mode;
-    header.data_size = strlen(name) + 1U;
+    header.data_size = data_size;
 
-    // Send header
-    size = sizeof(header_t);
-    if (sdsioSend(&header, size) == size) {
+    // Send header + data
+    size = sizeof(header_t) + data_size;
+    if (sdsioSend(&header, name, data_size) == size) {
 
-      // Send stream name
-      size = header.data_size;
-      if (sdsioSend(name, size) == size) {
-
-        // Receive header
-        size = sizeof(header_t);
-        if (sdsioReceive(&header, size) == size) {
-          if ((header.command   == SDSIO_CMD_OPEN) &&
-              (header.argument  == mode)           &&
-              (header.data_size == 0U)) {
-            sdsio_id = header.sdsio_id;
-          }
+      // Receive header
+      size = sizeof(header_t);
+      if (sdsioReceive(&header, NULL, 0U) == size) {
+        if ((header.command   == SDSIO_CMD_OPEN) &&
+            (header.argument  == mode)           &&
+            (header.data_size == 0U)) {
+          sdsio_id = header.sdsio_id;
         }
       }
     }
@@ -225,9 +277,9 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
     data:   no data
 */
 int32_t sdsioClose (sdsioId_t id) {
+  int32_t  ret = SDSIO_ERROR;
   header_t header;
   uint32_t size;
-  int32_t  ret = SDSIO_ERROR;
 
   if (id != NULL) {
     sdsioLock();
@@ -239,7 +291,7 @@ int32_t sdsioClose (sdsioId_t id) {
 
     // Send Header
     size = sizeof(header_t);
-    if (sdsioSend(&header, size) == size) {
+    if (sdsioSend(&header, NULL, 0U) == size) {
       ret = SDSIO_OK;
     }
 
@@ -259,9 +311,9 @@ int32_t sdsioClose (sdsioId_t id) {
     data:   data to be written
 */
 uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
+  uint32_t num = 0U;
   header_t header;
   uint32_t size;
-  uint32_t num = 0U;
 
   if ((id != NULL) && (buf != NULL) && (buf_size != 0U)) {
     sdsioLock();
@@ -271,14 +323,10 @@ uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
     header.argument  = 0U;
     header.data_size = buf_size;
 
-    // Send header
-    size = sizeof(header_t);
-    if (sdsioSend(&header, size) == size) {
-
-      // Send Data
-      if (sdsioSend(buf, buf_size) == buf_size) {
-        num = buf_size;
-      }
+    // Send header + data
+    size = sizeof(header_t) + buf_size;
+    if (sdsioSend(&header, buf, buf_size) == size) {
+      num = buf_size;
     }
 
     sdsioUnLock();
@@ -303,9 +351,8 @@ uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
     data    data read
 */
 uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
-  header_t header;
-  uint32_t size;
   uint32_t num = 0U;
+  header_t header;
 
   if ((id != NULL) && (buf != NULL) && (buf_size != 0U)) {
     sdsioLock();
@@ -316,20 +363,14 @@ uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
     header.data_size = 0U;
 
     // Send header
-    size = sizeof(header_t);
-    if (sdsioSend(&header, size) == size) {
+    if (sdsioSend(&header, NULL, 0U) == sizeof(header_t)) {
 
-      // Receive header
-      if (sdsioReceive(&header, size) == size) {
+      // Receive header + data
+      if (sdsioReceive(&header, buf, buf_size) >= sizeof(header_t)) {
         if ((header.command   == SDSIO_CMD_READ) &&
             (header.sdsio_id  == (uint32_t)id)   &&
             (header.data_size <= buf_size)) {
-
-          // Receive data
-          size = header.data_size;
-          if (sdsioReceive(buf, size) == size) {
-            num = size;
-          }
+          num = header.data_size;
         }
       }
     }
@@ -338,4 +379,48 @@ uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
   }
 
   return num;
+}
+
+/**
+  Check if end of stream has been reached.
+  Send:
+    header: command   = SDSIO_CMD_EOS
+            sdsio_id  = sdsio identifier
+            argument  = not used
+            data_size = 0
+    data:   no data
+  Receive:
+    header: command   = SDSIO_CMD_EOS
+            sdsio_id  = sdsio identifier
+            argument  = nonzero = end of stream, else 0
+            data_size = 0
+    data:   no data
+*/
+int32_t sdsioEndOfStream (sdsioId_t id) {
+  int32_t  eos = 0;
+  header_t header;
+
+  if (id != NULL) {
+    sdsioLock();
+
+    header.command   = SDSIO_CMD_EOS;
+    header.sdsio_id  = (uint32_t)id;
+    header.argument  = 0U;
+    header.data_size = 0U;
+
+    // Send Header
+    if (sdsioSend(&header, NULL, 0U) == sizeof(header_t)) {
+      // Receive header
+      if (sdsioReceive(&header, NULL, 0U) == sizeof(header_t)) {
+        if ((header.command   == SDSIO_CMD_EOS) &&
+            (header.sdsio_id  == (uint32_t)id)  &&
+            (header.data_size == 0U)) {
+          eos = (int32_t)header.argument;
+        }
+      }
+    }
+    sdsioUnLock();
+  }
+
+  return eos;
 }
