@@ -18,11 +18,13 @@
 
 import argparse
 import csv
+import json
 import sys
 import wave
 from struct import calcsize, unpack
 
 import numpy as np
+import pandas as pd
 import yaml
 
 
@@ -68,6 +70,9 @@ class RecordManager:
 
         return data
 
+
+# Potential AutoML CSV V2 columns that are not sensors, and so should be ignored.
+EXCLUDE_QX_CSVV2_COLS = ('timestamp', 'index', 'event', 'label', 'data_type', 'seconds', 'recording_id', 'event_id')
 
 # Convert C style data type to Python style
 def getDataType(data_type):
@@ -133,6 +138,18 @@ def qeexoColumnName(sensor_name):
     return qeexo_name
 
 
+# Open CSV file and read it's contents
+def readCSV(filename):
+    global sensors, csv_data
+
+    try:
+        csv_data = pd.read_csv(f'{filename}.csv')
+
+        sensors = csv_data.columns.tolist()
+        sensors = set(sensors) - set(EXCLUDE_QX_CSVV2_COLS)
+    except Exception as e:
+        sys.exit(f"Error in readCSV(): {e}")
+
 # Open CSV file and create writer
 def createCSV(filename):
     global csv_file, writer
@@ -141,7 +158,7 @@ def createCSV(filename):
         csv_file = open(f"{filename}.csv", "w", newline='')
         writer = csv.writer(csv_file)
     except Exception as e:
-        sys.exit(f"Error: {e}")
+        sys.exit(f"Error in createCSV(): {e}")
 
 # Open CSV file and create writer
 def createWAV(filename):
@@ -150,7 +167,7 @@ def createWAV(filename):
     try:
         wave_file = wave.open(f"{filename}.wav", "wb")
     except Exception as e:
-        sys.exit(f"Error: {e}")
+        sys.exit(f"Error in createWAV(): {e}")
 
 def prepareData(meta_data, raw_data, data_manipulation):
     sensor_data = []
@@ -191,7 +208,7 @@ def prepareData(meta_data, raw_data, data_manipulation):
 
 # Write data to CSV file, simple format
 # Only supports one sensor at a time
-def writeSimpleCSV(args, data, meta_data):
+def write_SDS_SimpleCSV(args, data, meta_data):
     normalize = args.normalize
     csv_start_tick = args.start_tick
     csv_stop_tick = args.stop_tick
@@ -206,7 +223,7 @@ def writeSimpleCSV(args, data, meta_data):
     writer.writerow(csv_header)
 
     # Convert [ms] to [s]
-    timestamp = [t/1000 for t in data["timestamp"]]
+    timestamp = [t / 1000 for t in data["timestamp"]]
     data_size = data["data_size"]
 
     cnt = 0
@@ -276,7 +293,7 @@ def writeSimpleCSV(args, data, meta_data):
 
 
 # Write data to CSV file using Qeexo V2 format
-def writeQeexoV2CSV(args, data, meta_data):
+def write_SDS_QeexoV2CSV(args, data, meta_data):
     interval = args.interval
     normalize = args.normalize
     csv_start_tick = args.start_tick
@@ -300,7 +317,7 @@ def writeQeexoV2CSV(args, data, meta_data):
         timestamp_base.append(data[sensor]["timestamp"][0])
 
     # Select timestamp with lowest value and round to first next interval
-    csv_timestamp_base = (min(timestamp_base)//interval) * interval
+    csv_timestamp_base = (min(timestamp_base) // interval) * interval
     csv_timestamp = csv_timestamp_base + interval
 
     while True:
@@ -373,8 +390,59 @@ def writeQeexoV2CSV(args, data, meta_data):
 
     csv_file.close()
 
-    # Create and write WAV file with parameters from metadata file
-def writeAudioWAV(framerate, data, meta_data):
+
+# Write data from QeexoV2 CSV format into SDS files
+def write_QeexoV2CSV_SDS(index):
+    # Write each sensor's data to it's own SDS file named: <sensor>.<recording_id>.sds
+    for sensor in sensors:
+        filename = f'{sensor}.{index}.sds'
+        with open(filename, 'wb') as f:
+            for idx, row in csv_data.iterrows():
+                start_ts = int(row['timestamp'])
+                # Sensor data is a string which is a JSON array containing all of the samples
+                # at this 50ms timestamp block
+                all_samples = row[sensor]
+                data = json.loads(all_samples)
+                if len(data)>0:
+                    # We have data to write out.
+                    ts_step = 50 / float(len(data))
+                    cur_ts = float(start_ts)
+
+                    # Write one record (timestamp, data size, binary data) of selected sensor to SDS file
+                    for sample in data:
+                        f.write(int(cur_ts).to_bytes(4, byteorder='little', signed=False))
+
+                        if (sensor == 'accel') or (sensor == 'gyro') or (sensor == 'magno'):
+                            # These are each 3-axes sensors (x,y,z) with int16 (2 byte) values
+                            assert(len(sample) == 3)
+                            data_size = int(3 * 2)
+                            sample_x = int(sample[0])
+                            sample_y = int(sample[1])
+                            sample_z = int(sample[2])
+                            f.write(data_size.to_bytes(4, byteorder='little', signed=False))
+                            f.write(sample_x.to_bytes(2, byteorder='little', signed=True))
+                            f.write(sample_y.to_bytes(2, byteorder='little', signed=True))
+                            f.write(sample_z.to_bytes(2, byteorder='little', signed=True))
+                        elif (sensor == 'temperature') or (sensor == 'humidity') or (sensor == 'microphone'):
+                            # These are single axes sensors with int16 (2 byte) values
+                            assert(len(sample) == 1)
+                            data_size = int(1 * 2)
+                            sample = int(sample[0])
+                            f.write(data_size.to_bytes(4, byteorder='little', signed=False))
+                            f.write(sample.to_bytes(2, byteorder='little', signed=True))
+                        elif (sensor == 'pressure'):
+                            # These are single axis sensors with int32 (4 byte) values
+                            assert(len(sample) == 1)
+                            data_size = int(1 * 4)
+                            sample = int(sample[0])
+                            f.write(data_size.to_bytes(4, byteorder='little', signed=True))
+                            f.write(sample.to_bytes(4, byteorder='little', signed=True))
+
+                        cur_ts += ts_step
+
+
+# Create and write WAV file with parameters from metadata file
+def write_SDS_AudioWAV(framerate, data, meta_data):
     raw_data = data["raw_data"]
     n_channels = len(meta_data)
     d_type = getDataType(meta_data[0]["type"])
@@ -397,12 +465,12 @@ def main():
     required = parser.add_argument_group("required")
     required.add_argument("-y", dest="yaml", metavar="<yaml_file>",
                             help="YAML sensor description file", nargs="+", required=True)
-    required.add_argument("-s", dest="sds", metavar="<sds_file>",
-                            help="SDS data recording file", nargs="+", required=True)
-    required.add_argument("-o", dest="out", metavar="<output_file>",
+    required.add_argument("-i", dest="in_file", metavar="<input_file>",
+                            help="Input file", nargs="+", required=True)
+    required.add_argument("-o", dest="out_file", metavar="<output_file>",
                             help="Output file", required=True)
-    required.add_argument("-f", dest="out_format", choices=["simple_csv", "qeexo_v2_csv", "audio_wav"],
-                            help="Output data format", required=True)
+    required.add_argument("-f", dest="convert_format", choices=["simple_csv", "qeexo_v2_csv", "audio_wav"],
+                            help="Conversion data format", required=True)
 
     optional = parser.add_argument_group("optional")
     optional.add_argument("--normalize", dest="normalize",
@@ -415,12 +483,39 @@ def main():
                             help="Qeexo class label for sensor data (default: %(default)s)", default=None)
     optional.add_argument("--interval", dest="interval", metavar="<interval>",
                             help="Qeexo timestamp interval in ms (default: %(default)s)", type=int, default=50)
+    optional.add_argument("--sds_id", dest="sds_id", metavar="<sds_file_id>", 
+                            help="Id number for SDS files to write. SDS files will be written to filenames: <sensor>.<sds_id>.sds",
+                            type=int, default=0)
 
     args = parser.parse_args()
 
     # Check if interval is zero
     if args.interval == 0:
         sys.exit(f"Invalid interval option: {args.interval} ms")
+
+    # Check if all input and output files have a supported file extension
+    if isinstance(args.in_file, list):
+        in_extension  = [i.split('.')[-1] for i in args.in_file]
+        if in_extension[1:] != in_extension[:-1]:
+            sys.exit(f"Input file extensions are not the same: {in_extension}")
+    else:
+        in_extension = args.in_file.split('.')[-1]
+
+    if isinstance(args.out_file, list):
+        out_extension = [o.split('.')[-1] for o in args.out_file]
+        if out_extension[1:] != out_extension[:-1]:
+            sys.exit(f"Output file extensions are not the same: {out_extension}")
+    else:
+        out_extension = args.out_file.split('.')[-1]
+
+    if 'sds' in in_extension:
+        sds_files  = args.in_file
+        other_files = args.out_file
+    elif 'sds' in out_extension:
+        other_files = args.in_file
+        sds_files  = args.out_file
+    else:
+        sys.exit(".sds file is missing from arguments.")
 
     # Load data from .yml file
     sensor_name = []
@@ -438,40 +533,54 @@ def main():
             sys.exit(f"Error: {e}")
 
     # Load data from .sds file
-    Record = RecordManager()
-    data = {}
-    i = 0
-    for filename in args.sds:
-        try:
-            file = open(filename, "rb")
-            data[sensor_name[i]] = Record.getData(file)
-            file.close()
-        except Exception as e:
-            sys.exit(f"Error: {e}")
-        i += 1
+    if 'sds' in in_extension:
+        Record = RecordManager()
+        data = {}
+        i = 0
+        for filename in sds_files:
+            try:
+                file = open(filename, "rb")
+                data[sensor_name[i]] = Record.getData(file)
+                file.close()
+            except Exception as e:
+                sys.exit(f"Error: {e}")
+            i += 1
 
     # CSV
-    if "csv" in args.out_format:
-        output_filename = args.out.split('.csv')[0]
-        createCSV(output_filename)
+    if "csv" in args.convert_format:
+        filename = other_files[0].split('.csv')[0]
 
-        if args.out_format == "qeexo_v2_csv":
-            writeQeexoV2CSV(args, data, meta_data)
-        elif args.out_format == "simple_csv":
-            # Only used for one sensor
-            if (len(args.yaml) > 1) or (len(args.sds) > 1):
-                sys.exit("Simple CSV file format only supports 1 metadata and 1 SDS file")
-            writeSimpleCSV(args, data[sensor_name[0]], meta_data[sensor_name[0]])
+        if 'sds' in in_extension:
+            createCSV(filename)
 
-    elif "wav" in args.out_format:
-        output_filename = args.out.split('.wav')[0]
-        createWAV(output_filename)
+            if args.convert_format == "qeexo_v2_csv":
+                write_SDS_QeexoV2CSV(args, data, meta_data)
+            elif args.convert_format == "simple_csv":
+                # Only used for one sensor
+                if (len(args.yaml) > 1) or (len(sds_files) > 1):
+                    sys.exit("Simple CSV file format only supports 1 metadata and 1 SDS file")
+                write_SDS_SimpleCSV(args, data[sensor_name[0]], meta_data[sensor_name[0]])
+        else:
+            readCSV(filename)
 
-        if args.out_format == "audio_wav":
-            # Only used for one sensor
-            if (len(args.yaml) > 1) or (len(args.sds) > 1):
-                sys.exit("Audio WAV file format only supports 1 metadata and 1 SDS file")
-            writeAudioWAV(sensor_frequency[sensor_name[0]], data[sensor_name[0]], meta_data[sensor_name[0]])
+            if args.convert_format == "qeexo_v2_csv":
+                write_QeexoV2CSV_SDS(args.sds_id)
+            elif args.convert_format == "simple_csv":
+                sys.exit('Simple CSV to SDS conversion is not supported.')
+
+    # WAV
+    elif "wav" in args.convert_format:
+        if 'sds' in in_extension:
+            filename = other_files.split('.wav')[0]
+            createWAV(filename)
+
+            if args.convert_format == "audio_wav":
+                # Only used for one sensor
+                if (len(args.yaml) > 1) or (len(sds_files) > 1):
+                    sys.exit("Audio WAV file format only supports 1 metadata and 1 SDS file")
+                write_SDS_AudioWAV(sensor_frequency[sensor_name[0]], data[sensor_name[0]], meta_data[sensor_name[0]])
+        else:
+            sys.exit('WAV to SDS conversion is not supported.')
 
 
 if __name__ == "__main__":
