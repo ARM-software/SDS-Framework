@@ -1,6 +1,6 @@
 # SDS Framework
 
-The **Synchronous Data Stream (SDS) Framework** implements a data stream management, provides methods and helper tools for developing and optimizing embedded applications that integrate DSP and ML algorithms. This framework relates to the [**Compute Graph streaming**](https://github.com/ARM-software/CMSIS-DSP/tree/main/ComputeGraph) that is part of the CMSIS-DSP compute library.
+The **Synchronous Data Stream (SDS) Framework** implements a data stream management, provides methods and helper tools for developing and optimizing embedded applications that integrate DSP and ML algorithms. This framework may be used stand-alone, but also in combination with [**CMSIS-Stream**](https://github.com/ARM-software/CMSIS-Stream) that allows to combine algorihms using a compute graph.
 
 ## Overview 
 
@@ -20,6 +20,8 @@ The **Synchronous Data Stream (SDS) Framework** implements a data stream managem
 - Defines binary data format with [YAML metadata file](./schema/README.md).
 
 - [Python-based utilities](./utilities/README.md) for recording, playback, visualization, and data conversion
+
+Refer to ["ML Developers Guide for Cortex-M Processors and Ethos-U NPU" - "Tool Support" - "SDS Framework Usage"](https://developer.arm.com/documentation/109267/0100/Tool-Support-for-the-Arm-Ethos-U-NPU/SDS-Framework-Usage) for more information.
 
 ## Interfaces
 
