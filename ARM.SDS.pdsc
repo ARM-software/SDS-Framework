@@ -12,6 +12,8 @@
       Active Development ...
       SDSIO-Server:
       - Correct response handling for open and read commands
+      SDSIO:
+      - Improve read functionality. Introduce an .index.txt file to track the index of the .sds file to read from
     </release>
   </releases>
 
@@ -122,7 +124,7 @@
     </component>
 
     <!-- SDS I/O (File System - MDK FS) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="MDK FS" Capiversion="1.0.0" Cversion="1.0.0" condition="SDS IO via File System - MDK FS">
+    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="MDK FS" Capiversion="1.0.0" Cversion="1.1.0" condition="SDS IO via File System - MDK FS">
       <description>Blocking read/write via File System (Keil::File System)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                       /* Synchronous Data Stream Input/Output */
@@ -136,7 +138,7 @@
     </component>
 
     <!-- SDS I/O (File System - Semihosting) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="1.0.0" Cversion="1.0.0" condition="SDS IO via File System - Semihosting">
+    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="1.0.0" Cversion="1.1.0" condition="SDS IO via File System - Semihosting">
       <description>Blocking read/write via File System (Semihosting)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                       /* Synchronous Data Stream Input/Output */
