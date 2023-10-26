@@ -71,15 +71,48 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
   sdsioId_t  sdsioId = NULL;
   FILE      *file    = NULL;
   char       file_name[sizeof(SDSIO_WORK_DIR) + SDSIO_MAX_NAME_SIZE + SDSIO_MAX_EXT_SIZE];
+  char       line[16];
 
   if (strlen(name) <= SDSIO_MAX_NAME_SIZE) {
     switch (mode) {
       case sdsioModeRead:
-        sprintf(file_name, "%s%s.0.sds", SDSIO_WORK_DIR, name);
+
+        sprintf(file_name, "%s%s.index.txt", SDSIO_WORK_DIR, name);
+        file = fopen(file_name, "r");
+        if (file != NULL) {
+          if (fscanf(file, "%i", &index) != 1) {
+            index = 0U;
+          }
+          fclose(file);
+        }
+
+        sprintf(file_name, "%s%s.%i.sds", SDSIO_WORK_DIR, name, index);
         file = fopen(file_name, "rb");
         if (file != NULL) {
           // File exists
+          index++;
           sdsioId = (sdsioId_t)file;
+        } else {
+          if (index != 0U) {
+            index = 0U;
+            sprintf(file_name, "%s%s.%i.sds", SDSIO_WORK_DIR, name, index);
+            file = fopen(file_name, "rb");
+            if (file != NULL) {
+              // File exists
+              index++;
+              sdsioId = (sdsioId_t)file;
+            }
+          }
+        }
+
+        if (sdsioId != NULL) {
+          sprintf(file_name, "%s%s.index.txt", SDSIO_WORK_DIR, name);
+          file = fopen(file_name, "w");
+          if (file != NULL) {
+            sprintf(line, "%i\r\n", index);
+            fwrite(line, 1, strlen(line) + 1U, file);
+            fclose(file);
+          }
         }
         break;
       case sdsioModeWrite:

@@ -76,15 +76,46 @@ class sdsio_manager:
 
             if mode == 0:
                 # Read mode
-                fname = path.join(self.out_dir, f"{name}.0.sds")
-                try:
-                    f = open(fname, "rb")
-                    self.stream_identifier += 1
-                    self.stream_files.update({self.stream_identifier: f})
-                    response_stream_id = self.stream_identifier
-                except Exception as e:
-                    print(f"Could not open file {fname}. Error: {e}\n")
+                fname = path.join(self.out_dir, f"{name}.index.txt")
+                if path.exists(fname) == True:
+                    try:
+                        with open(fname, "r") as f:
+                            line = f.readline()
+                            if len(line) > 0 and line.isnumeric() == True:
+                                file_index = int(line)
+                    except Exception as e:
+                        print(f"Could not read file index: {e}\n")
+                        pass
+
+                fname = path.join(self.out_dir, f"{name}.{file_index}.sds")
+                file_exists = False
+                if path.exists(fname) == True:
+                    file_exists = True
+                elif file_index != 0:
+                    file_index = 0
+                    fname = path.join(self.out_dir, f"{name}.{file_index}.sds")
+                    if path.exists(fname) == True:
+                        file_exists = True
+
+                if file_exists == True:
+                    try:
+                        f = open(fname, "rb")
+                        self.stream_identifier += 1
+                        self.stream_files.update({self.stream_identifier: f})
+                        response_stream_id = self.stream_identifier
+                        file_index = file_index + 1
+                    except Exception as e:
+                        print(f"Could not open file. Error: {e}\n")
                     pass
+
+                if response_stream_id != 0:
+                    try:
+                        fname = path.join(self.out_dir, f"{name}.index.txt")
+                        with open(fname, "w") as f:
+                            f.write(f"{file_index}")
+                    except Exception as e:
+                        print(f"Could not update file index. Error: {e}\n")
+                        pass
 
         response.extend(response_command.to_bytes(4, byteorder='little'))
         response.extend(response_stream_id.to_bytes(4, byteorder='little'))
