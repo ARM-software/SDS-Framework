@@ -72,7 +72,7 @@ class sdsio_manager:
                     response_stream_id = self.stream_identifier
                 except Exception as e:
                     print(f"Could not open file {fname}. Error: {e}\n")
-                    return 0
+                    pass
 
             if mode == 0:
                 # Read mode
@@ -84,7 +84,7 @@ class sdsio_manager:
                     response_stream_id = self.stream_identifier
                 except Exception as e:
                     print(f"Could not open file {fname}. Error: {e}\n")
-                    return 0
+                    pass
 
         response.extend(response_command.to_bytes(4, byteorder='little'))
         response.extend(response_stream_id.to_bytes(4, byteorder='little'))
@@ -119,18 +119,22 @@ class sdsio_manager:
         response = bytearray()
         response_command = 4
         response_argument = 0
+        response_data_size = 0
 
         try:
             data = self.stream_files.get(id).read(data_sz)
             response_data_size = len(data)
-            response.extend(response_command.to_bytes(4, byteorder='little'))
-            response.extend(id.to_bytes(4, byteorder='little'))
-            response.extend(response_argument.to_bytes(4, byteorder='little'))
-            response.extend(response_data_size.to_bytes(4, byteorder='little'))
-            if len(data) != 0:
-                response.extend(data)
         except Exception as e:
             print(f"Could not read file {self.stream_files.get(id)}. Error: {e}\n")
+            pass
+
+        response.extend(response_command.to_bytes(4, byteorder='little'))
+        response.extend(id.to_bytes(4, byteorder='little'))
+        response.extend(response_argument.to_bytes(4, byteorder='little'))
+        response.extend(response_data_size.to_bytes(4, byteorder='little'))
+        if response_data_size != 0:
+            response.extend(data)
+
         return response
 
     # End of Stream
