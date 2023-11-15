@@ -18,7 +18,7 @@ Available target:
 The following commands convert and build the project with build type `Debug` and target type `AVH_MPS3_Corstone-300`:
 
 ```sh
-cbuild SDS_Recorder.csolution.yml --update-rte -p --configuration .Debug+AVH_MPS3_Corstone-300
+cbuild SDS_Recorder.csolution.yml --update-rte -p --context .Debug+AVH_MPS3_Corstone-300
 ```
 
 ## Execute

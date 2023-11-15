@@ -19,7 +19,7 @@ Available target:
 The following commands convert and build the project with build type `Debug` and target type `IMXRT1050-EVKB`:
 
 ```sh
-cbuild SDS_Recorder.csolution.yml --update-rte -p --configuration .Debug+IMXRT1050-EVKB
+cbuild SDS_Recorder.csolution.yml --update-rte -p --context .Debug+IMXRT1050-EVKB
 ```
 
 ## Execute

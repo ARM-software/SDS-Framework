@@ -34,7 +34,7 @@ WiFi Access Point:
 The following commands convert and build the project with build type `Debug` and target type `B-U585I-IOT02A`:
 
 ```sh
-cbuild SDS_Recorder.csolution.yml --update-rte -p --configuration .Debug+B-U585I-IOT02A
+cbuild SDS_Recorder.csolution.yml --update-rte -p --context .Debug+B-U585I-IOT02A
 ```
 
 ## Execute
