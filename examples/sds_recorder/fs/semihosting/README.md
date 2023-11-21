@@ -25,12 +25,12 @@ cbuild SDS_Recorder.csolution.yml --update-rte -p --context .Debug+AVH_MPS3_Cors
 
 ### AVH_MPS3_Corstone-300 Target
 - copy recorded sensor files (Accelerometer.x.sds, Gyroscope.x.sds and Temperature.x.sds ) from [recordings folder](../recordings) to [project folder](./)
-- from the project folder execute following command to run the example on the VHT simulation model:
+- from the project folder execute following command to run the example on the AVH simulation model:
 
 ```sh
-VHT_MPS3_Corstone_SSE-300 -f ../../../framework/layer/Board/AVH_MPS3_Corstone-300/fvp_config.txt -V ../../../framework/interface/VSI/sensor/python out/SDS_Recorder/AVH_MPS3_Corstone-300/Debug/SDS_Recorder.axf
+FVP_Corstone_SSE-300 -f ../../../framework/layer/Board/AVH_MPS3_Corstone-300/fvp_config.txt -C mps3_board.v_path=../../../framework/interface/VSI/sensor/python out/SDS_Recorder/AVH_MPS3_Corstone-300/Debug/SDS_Recorder.axf
 ```
- - press PB0 (vioBUTTON0) button (double click PB0 in the VHT visualization dialog)
+ - press PB0 (vioBUTTON0) button (double click PB0 in the AVH visualization dialog)
    to start/stop reading sensor data
    >Note: The recordings start with index 0 and increment for each subsequent start/stop.
  - sensor data is recorded to files `<sensor>.<index>.sds` on the host PC.
