@@ -149,6 +149,7 @@ def plotData(all_data, data_desc, freq, title, view3D):
         # Increment description number
         desc_n += 1
 
+    plt.grid(linestyle=":")
     plt.title(title)
     plt.xlabel("seconds")
     plt.ylabel(unit)
@@ -209,7 +210,6 @@ def main():
         plotData(data, data_desc, data_freq, data_name, args.view3D)
 
     # Show plotted figures
-    plt.grid(linestyle=":")
     plt.show()
 
 
