@@ -456,94 +456,137 @@ def write_SDS_AudioWAV(framerate, data, meta_data):
     wave_file.close()
 
 
+def in_file(in_file):
+    global in_extension
+
+    # Check if all input files have a supported file extension
+    in_extension.append(in_file.split('.')[-1])
+    if in_extension[1:] != in_extension[:-1]:
+        sys.exit(f"Input file extensions are not the same: {in_extension}")
+
+    return in_file
+
+
+def out_file(out_file):
+    global out_extension
+
+    # Check if all output files have a supported file extension
+    out_extension.append(out_file.split('.')[-1])
+    if out_extension[1:] != out_extension[:-1]:
+        sys.exit(f"Output file extensions are not the same: {out_extension}")
+
+    return out_file
+
+
 # Main function
 def main():
-    formatter = lambda prog: argparse.HelpFormatter(prog,max_help_position=60)
-    parser = argparse.ArgumentParser(description="Convert SDS data to selected format",
+    global in_extension, out_extension
+
+    in_extension  = []
+    out_extension = []
+
+    # Parse arguments
+    formatter = lambda prog: argparse.HelpFormatter(prog, max_help_position=60)
+    parser = argparse.ArgumentParser(description="Convert from or to SDS files using selected data conversion format",
                                      formatter_class=formatter)
 
-    required = parser.add_argument_group("required")
-    required.add_argument("-y", dest="yaml", metavar="<yaml_file>",
-                            help="YAML sensor description file", nargs="+", required=True)
-    required.add_argument("-i", dest="in_file", metavar="<input_file>",
-                            help="Input file", nargs="+", required=True)
-    required.add_argument("-o", dest="out_file", metavar="<output_file>",
-                            help="Output file", required=True)
-    required.add_argument("-f", dest="convert_format", choices=["simple_csv", "qeexo_v2_csv", "audio_wav"],
-                            help="Conversion data format", required=True)
+    subparsers = parser.add_subparsers(dest="convert_format", help="Data conversion format", required=True)
 
-    optional = parser.add_argument_group("optional")
-    optional.add_argument("--normalize", dest="normalize",
-                            help="Normalize timestamps so they start with 0", action="store_true")
-    optional.add_argument("--start-tick", dest="start_tick", metavar="<start-tick>",
-                            help="Exported data start tick (default: %(default)s)", type=float, default=None)
-    optional.add_argument("--stop-tick", dest="stop_tick", metavar="<stop-tick>",
-                            help="Exported data stop tick (default: %(default)s)", type=float, default=None)
-    optional.add_argument("--label", dest="label", metavar="'label'",
-                            help="Qeexo class label for sensor data (default: %(default)s)", default=None)
-    optional.add_argument("--interval", dest="interval", metavar="<interval>",
-                            help="Qeexo timestamp interval in ms (default: %(default)s)", type=int, default=50)
-    optional.add_argument("--sds_id", dest="sds_id", metavar="<sds_file_id>", 
-                            help="Id number for SDS files to write. SDS files will be written to filenames: <sensor>.<sds_id>.sds",
-                            type=int, default=0)
+    # Audio WAV
+    parser_audio_wav = subparsers.add_parser("audio_wav", formatter_class=formatter)
+    parser_audio_wav_required = parser_audio_wav.add_argument_group("required")
+    parser_audio_wav_required.add_argument("-i", dest="in_file", metavar="<input_file>",
+                                           help="Input file", nargs="+", type=in_file, required=True)
+    parser_audio_wav_required.add_argument("-o", dest="out_file", metavar="<output_file>",
+                                           help="Output file", type=out_file, required=True)
+    parser_audio_wav_optional = parser_audio_wav.add_argument_group("optional")
+    parser_audio_wav_optional.add_argument("-y", dest="yaml", metavar="<yaml_file>",
+                                           help="YAML sensor description file", nargs="+", default=None)
+
+    # Simple CSV
+    parser_simple_csv = subparsers.add_parser("simple_csv", formatter_class=formatter)
+    parser_simple_csv_required = parser_simple_csv.add_argument_group("required")
+    parser_simple_csv_required.add_argument("-i", dest="in_file", metavar="<input_file>",
+                                            help="Input file", nargs="+", type=in_file, required=True)
+    parser_simple_csv_required.add_argument("-o", dest="out_file", metavar="<output_file>",
+                                            help="Output file", type=out_file, required=True)
+    parser_simple_csv_optional = parser_simple_csv.add_argument_group("optional")
+    parser_simple_csv_optional.add_argument("-y", dest="yaml", metavar="<yaml_file>",
+                                            help="YAML sensor description file", nargs="+", default=None)
+    parser_simple_csv_optional.add_argument("--normalize", dest="normalize",
+                                            help="Normalize timestamps so they start with 0", action="store_true")
+    parser_simple_csv_optional.add_argument("--start-tick", dest="start_tick", metavar="<start-tick>",
+                                            help="Exported data start tick (default: %(default)s)", type=float, default=None)
+    parser_simple_csv_optional.add_argument("--stop-tick", dest="stop_tick", metavar="<stop-tick>",
+                                            help="Exported data stop tick (default: %(default)s)", type=float, default=None)
+
+    # Qeexo V2 CSV
+    parser_qeexo_v2_csv = subparsers.add_parser("qeexo_v2_csv", formatter_class=formatter)
+    parser_qeexo_v2_csv_required = parser_qeexo_v2_csv.add_argument_group("required")
+    parser_qeexo_v2_csv_required.add_argument("-i", dest="in_file", metavar="<input_file>",
+                                              help="Input file", nargs="+", type=in_file, required=True)
+    parser_qeexo_v2_csv_required.add_argument("-o", dest="out_file", metavar="<output_file>",
+                                              help="Output file", type=out_file, required=True)
+    parser_qeexo_v2_csv_optional = parser_qeexo_v2_csv.add_argument_group("optional")
+    parser_qeexo_v2_csv_optional.add_argument("-y", dest="yaml", metavar="<yaml_file>",
+                                              help="YAML sensor description file", nargs="+", default=None)
+    parser_qeexo_v2_csv_optional.add_argument("--normalize", dest="normalize",
+                                              help="Normalize timestamps so they start with 0", action="store_true")
+    parser_qeexo_v2_csv_optional.add_argument("--start-tick", dest="start_tick", metavar="<start-tick>",
+                                              help="Exported data start tick (default: %(default)s)", type=float, default=None)
+    parser_qeexo_v2_csv_optional.add_argument("--stop-tick", dest="stop_tick", metavar="<stop-tick>",
+                                              help="Exported data stop tick (default: %(default)s)", type=float, default=None)
+    parser_qeexo_v2_csv_optional.add_argument("--label", dest="label", metavar="'label'",
+                                              help="Qeexo class label for sensor data (default: %(default)s)", default=None)
+    parser_qeexo_v2_csv_optional.add_argument("--interval", dest="interval", metavar="<interval>",
+                                              help="Qeexo timestamp interval in ms (default: %(default)s)", type=int, default=50)
+    parser_qeexo_v2_csv_optional.add_argument("--sds_index", dest="sds_index", metavar="<sds_index>", 
+                                              help="SDS file index to write (default: <sensor>.%(default)s.sds)", type=int, default=0)
 
     args = parser.parse_args()
 
-    # Check if interval is zero
-    if args.interval == 0:
-        sys.exit(f"Invalid interval option: {args.interval} ms")
+    if not isinstance(args.in_file, list):
+        args.in_file = [args.in_file]
+    if not isinstance(args.out_file, list):
+        args.out_file = [args.out_file]
 
-    # Check if all input and output files have a supported file extension
-    if isinstance(args.in_file, list):
-        in_extension  = [i.split('.')[-1] for i in args.in_file]
-        if in_extension[1:] != in_extension[:-1]:
-            sys.exit(f"Input file extensions are not the same: {in_extension}")
-    else:
-        in_extension = args.in_file.split('.')[-1]
-
-    if isinstance(args.out_file, list):
-        out_extension = [o.split('.')[-1] for o in args.out_file]
-        if out_extension[1:] != out_extension[:-1]:
-            sys.exit(f"Output file extensions are not the same: {out_extension}")
-    else:
-        out_extension = args.out_file.split('.')[-1]
-
+    # Determine conversion direction
     if 'sds' in in_extension:
-        sds_files  = args.in_file
+        sds_files   = args.in_file
         other_files = args.out_file
+        if args.yaml is None:
+            sys.exit("YAML file is missing from arguments. [-y <yaml_file>]")
+        else:
+            # Load data from YAML file
+            sensor_name = []
+            meta_data = {}
+            sensor_frequency = {}
+            for filename in args.yaml:
+                try:
+                    with open(filename, "r") as file:
+                        yaml_data = yaml.load(file, Loader=yaml.FullLoader)["sds"]
+                        sensor_name.append(yaml_data["name"])
+                        sensor_frequency[sensor_name[-1]] = yaml_data["frequency"]
+                        meta_data[sensor_name[-1]] = yaml_data["content"]
+                except Exception as e:
+                    sys.exit(f"Error loading YAML file: {e}")
     elif 'sds' in out_extension:
         other_files = args.in_file
-        sds_files  = args.out_file
+        sds_files   = args.out_file
     else:
-        sys.exit(".sds file is missing from arguments.")
+        sys.exit("SDS file is missing from arguments.")
 
-    # Load data from .yml file
-    sensor_name = []
-    meta_data = {}
-    sensor_frequency = {}
-    for filename in args.yaml:
-        try:
-            file = open(filename, "r")
-            yaml_data = yaml.load(file, Loader=yaml.FullLoader)["sds"]
-            sensor_name.append(yaml_data["name"])
-            sensor_frequency[sensor_name[-1]] = yaml_data["frequency"]
-            meta_data[sensor_name[-1]] = yaml_data["content"]
-            file.close()
-        except Exception as e:
-            sys.exit(f"Error: {e}")
-
-    # Load data from .sds file
+    # Load data from SDS file
     if 'sds' in in_extension:
         Record = RecordManager()
         data = {}
         i = 0
         for filename in sds_files:
             try:
-                file = open(filename, "rb")
-                data[sensor_name[i]] = Record.getData(file)
-                file.close()
+                with open(filename, "rb") as file:
+                    data[sensor_name[i]] = Record.getData(file)
             except Exception as e:
-                sys.exit(f"Error: {e}")
+                sys.exit(f"Error loading SDS file: {e}")
             i += 1
 
     # CSV
@@ -554,6 +597,9 @@ def main():
             createCSV(filename)
 
             if args.convert_format == "qeexo_v2_csv":
+                # Check if interval is zero
+                if args.interval == 0:
+                    sys.exit(f"Invalid interval option: {args.interval} ms")
                 write_SDS_QeexoV2CSV(args, data, meta_data)
             elif args.convert_format == "simple_csv":
                 # Only used for one sensor
@@ -564,7 +610,7 @@ def main():
             readCSV(filename)
 
             if args.convert_format == "qeexo_v2_csv":
-                write_QeexoV2CSV_SDS(args.sds_id)
+                write_QeexoV2CSV_SDS(args.sds_index)
             elif args.convert_format == "simple_csv":
                 sys.exit('Simple CSV to SDS conversion is not supported.')
 
