@@ -1,0 +1,25 @@
+default:
+
+  compiler: AC6
+
+  misc:
+    - for-compiler: AC6
+      C-CPP:
+        - -Wno-macro-redefined
+        - -Wno-pragma-pack
+        - -Wno-parentheses-equality
+      C:
+        - -std=c11
+      ASM:
+        - -masm=auto
+      Link:
+        - --entry=Reset_Handler
+
+    - for-compiler: GCC
+      C-CPP:
+        - -Wall
+      C:
+        - -std=gnu11
+      Link:
+        - --specs=nosys.specs
+        - --entry=Reset_Handler
