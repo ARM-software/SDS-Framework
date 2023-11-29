@@ -16,6 +16,8 @@
       SDSIO:
       - Improve read functionality. Introduce an .index.txt file to track the index of the .sds file to read from
       - Remove automatic file open after .sds file index is reset in read mode
+      Examples:
+      - Add sds_player example
     </release>
   </releases>
 
@@ -228,6 +230,14 @@
       <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
       <project>
         <environment name="cmsis" load="SDS_Recorder.csolution.yml"/>
+      </project>
+      <attributes/>
+    </example>
+    <example name="SDS Player" folder="examples/sds_player" doc="README.md">
+      <description>Example shows usage of SDS Player via File System (Semihosting)</description>
+      <board name="V2M-MPS3-SSE-300-FVP" vendor="ARM"/>
+      <project>
+        <environment name="cmsis" load="SDS_Player.csolution.yml"/>
       </project>
       <attributes/>
     </example>
