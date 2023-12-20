@@ -48,9 +48,11 @@ int main (void) {
 
   vioInit();                            // Initialize Virtual I/O
 
+#ifndef ARM_VSI_DISABLE
   VSI2_Initialize();                    // Initialize VSI2
   VSI5_Initialize();                    // Initialize VSI5
   VSI6_Initialize();                    // Initialize VSI6
+#endif
 
 #ifdef CMSIS_shield_header
   shield_setup();

@@ -165,6 +165,7 @@ DEFAULT_IRQ_HANDLER(UARTRX5_Handler)
 DEFAULT_IRQ_HANDLER(UARTTX5_Handler)
 DEFAULT_IRQ_HANDLER(UART5_Handler)
 
+#ifndef ARM_VSI_DISABLE
 DEFAULT_IRQ_HANDLER(ARM_VSI0_Handler)
 DEFAULT_IRQ_HANDLER(ARM_VSI1_Handler)
 DEFAULT_IRQ_HANDLER(ARM_VSI2_Handler)
@@ -173,6 +174,7 @@ DEFAULT_IRQ_HANDLER(ARM_VSI4_Handler)
 DEFAULT_IRQ_HANDLER(ARM_VSI5_Handler)
 DEFAULT_IRQ_HANDLER(ARM_VSI6_Handler)
 DEFAULT_IRQ_HANDLER(ARM_VSI7_Handler)
+#endif
 
 /*----------------------------------------------------------------------------
   Exception / Interrupt Vector table
@@ -428,6 +430,7 @@ extern const pFunc __VECTOR_TABLE[496];
   0,                                /*  221: Reserved */
   0,                                /*  222: Reserved */
   0,                                /*  223: Reserved */
+#ifndef ARM_VSI_DISABLE
   ARM_VSI0_Handler,                 /*  224: VSI 0 */
   ARM_VSI1_Handler,                 /*  225: VSI 1 */
   ARM_VSI2_Handler,                 /*  226: VSI 2 */
@@ -436,6 +439,7 @@ extern const pFunc __VECTOR_TABLE[496];
   ARM_VSI5_Handler,                 /*  229: VSI 5 */
   ARM_VSI6_Handler,                 /*  230: VSI 6 */
   ARM_VSI7_Handler,                 /*  231: VSI 7 */
+#endif
 };
 
 #if defined ( __GNUC__ )
