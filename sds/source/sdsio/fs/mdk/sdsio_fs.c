@@ -95,17 +95,10 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
         } else {
           if (index != 0U) {
             index = 0U;
-            sprintf(file_name, "%s%s.%i.sds", SDSIO_WORK_DIR, name, index);
-            file = fopen(file_name, "rb");
-            if (file != NULL) {
-              // File exists
-              index++;
-              sdsioId = (sdsioId_t)file;
-            }
           }
         }
 
-        if (sdsioId != NULL) {
+        if ((sdsioId != NULL) || (index == 0U)) {
           sprintf(file_name, "%s%s.index.txt", SDSIO_WORK_DIR, name);
           file = fopen(file_name, "w");
           if (file != NULL) {
