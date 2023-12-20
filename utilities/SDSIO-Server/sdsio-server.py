@@ -72,7 +72,6 @@ class sdsio_manager:
                     response_stream_id = self.stream_identifier
                 except Exception as e:
                     print(f"Could not open file {fname}. Error: {e}\n")
-                    pass
 
             if mode == 0:
                 # Read mode
@@ -85,19 +84,9 @@ class sdsio_manager:
                                 file_index = int(line)
                     except Exception as e:
                         print(f"Could not read file index: {e}\n")
-                        pass
 
                 fname = path.join(self.out_dir, f"{name}.{file_index}.sds")
-                file_exists = False
                 if path.exists(fname) == True:
-                    file_exists = True
-                elif file_index != 0:
-                    file_index = 0
-                    fname = path.join(self.out_dir, f"{name}.{file_index}.sds")
-                    if path.exists(fname) == True:
-                        file_exists = True
-
-                if file_exists == True:
                     try:
                         f = open(fname, "rb")
                         self.stream_identifier += 1
@@ -106,16 +95,16 @@ class sdsio_manager:
                         file_index = file_index + 1
                     except Exception as e:
                         print(f"Could not open file. Error: {e}\n")
-                    pass
+                elif file_index != 0:
+                    file_index = 0
 
-                if response_stream_id != 0:
+                if response_stream_id != 0 or file_index == 0:
                     try:
                         fname = path.join(self.out_dir, f"{name}.index.txt")
                         with open(fname, "w") as f:
                             f.write(f"{file_index}")
                     except Exception as e:
                         print(f"Could not update file index. Error: {e}\n")
-                        pass
 
         response.extend(response_command.to_bytes(4, byteorder='little'))
         response.extend(response_stream_id.to_bytes(4, byteorder='little'))
@@ -157,7 +146,6 @@ class sdsio_manager:
             response_data_size = len(data)
         except Exception as e:
             print(f"Could not read file {self.stream_files.get(id)}. Error: {e}\n")
-            pass
 
         response.extend(response_command.to_bytes(4, byteorder='little'))
         response.extend(id.to_bytes(4, byteorder='little'))

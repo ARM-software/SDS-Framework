@@ -12,6 +12,7 @@
       Active Development ...
       SDSIO-Server:
       - Correct response handling for open and read commands
+      - Remove automatic file open after .sds file index is reset in read mode
       SDSIO:
       - Improve read functionality. Introduce an .index.txt file to track the index of the .sds file to read from
       - Remove automatic file open after .sds file index is reset in read mode
