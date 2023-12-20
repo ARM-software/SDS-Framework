@@ -25,8 +25,8 @@
 extern int32_t app_initialize (void);
 extern void    app_main (void *argument);
 
-extern int32_t  VSI2_Initialize (void);
-extern int32_t  VSI5_Initialize (void);
-extern int32_t  VSI6_Initialize (void);
+extern int32_t VSI2_Initialize (void);
+extern int32_t VSI5_Initialize (void);
+extern int32_t VSI6_Initialize (void);
 
 #endif
