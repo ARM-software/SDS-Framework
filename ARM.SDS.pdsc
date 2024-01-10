@@ -10,6 +10,9 @@
   <releases>
     <release version="0.0.0">
       Active Development ...
+      SDS Player:
+      - Improve performance
+      - Update configuration file
       SDSIO-Server:
       - Correct response handling for open and read commands
       - Remove automatic file open after .sds file index is reset in read mode
@@ -169,7 +172,7 @@
     </component>
 
     <!-- SDS Player -->
-    <component Cclass="SDS" Cgroup="Player" Cvariant="CMSIS-RTOS2" Cversion="1.0.0" condition="SDS Player with CMSIS-RTOS2">
+    <component Cclass="SDS" Cgroup="Player" Cvariant="CMSIS-RTOS2" Cversion="2.0.0" condition="SDS Player with CMSIS-RTOS2">
       <description>Play from Input device</description>
       <RTE_Components_h>
         #define RTE_SDS_PLAYER                  /* Synchronous Data Stream Player */
@@ -177,7 +180,7 @@
       <files>
         <file category="header" name="sds/include/sds_play.h"/>
         <file category="source" name="sds/source/sds_play.c"/>
-        <file category="header" name="sds/config/sds_play_config.h" attr="config" version="1.0.0"/>
+        <file category="header" name="sds/config/sds_play_config.h" attr="config" version="2.0.0"/>
       </files>
     </component>
   </components>

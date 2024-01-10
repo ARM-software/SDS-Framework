@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2023-2024 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -48,17 +48,15 @@ typedef struct {
            uint32_t    buf_size;
            sdsId_t     stream;
            sdsioId_t   sdsio;
-           PlayHead_t  head_in;
            PlayHead_t  head_out;
-  volatile uint32_t    cnt_in;
-  volatile uint32_t    cnt_out;
+           uint32_t    record_data_cnt;
 } sdsPlay_t;
 
 static sdsPlay_t   PlayStreams[SDS_PLAY_MAX_STREAMS] = {0};
 static sdsPlay_t *pPlayStreams[SDS_PLAY_MAX_STREAMS] = {NULL};
 
 // Player buffer
-static uint8_t PlayBuf[SDS_PLAY_MAX_RECORD_SIZE];
+static uint8_t PlayBuf[SDS_PLAY_BUF_SIZE];
 
 // Event callback
 static sdsPlayEvent_t sdsPlayEvent = NULL;
@@ -153,7 +151,7 @@ static void sdsPlayEventCallback (sdsId_t id, uint32_t event, void *arg) {
 // Player thread
 static __NO_RETURN void sdsPlayThread (void *arg) {
   sdsPlay_t *play;
-  uint32_t   size, num, flags, n;
+  uint32_t  flags, cnt, num, n;
   (void)arg;
 
   while (1) {
@@ -175,55 +173,30 @@ static __NO_RETURN void sdsPlayThread (void *arg) {
           osEventFlagsSet(sdsPlayCloseEventFlags, 1U << play->index);
           continue;
         }
-        do {
-          if (play->head_in.data_size == 0U) {
-            // Read new header
-            num = sdsioRead(play->sdsio, &play->head_in, HEAD_SIZE);
-            if (num == 0U) {
-              if (sdsioEndOfStream(play->sdsio) == 0) {
-                if (sdsPlayEvent != NULL) {
-                  sdsPlayEvent(play, SDS_PLAY_EVENT_IO_ERROR);
-                }
-              } else {
-                play->flags |= SDS_PLAY_FLAG_EOS;
-              }
-              break;
-            }
 
-            if (num == HEAD_SIZE) {
-              if (play->head_in.data_size == 0U) {
-                break;
-              }
+        while (1) {
+          cnt = play->buf_size - sdsGetCount(play->stream);
+          if (cnt == 0U) {
+            break;
+          }
+          if (cnt > sizeof(PlayBuf)) {
+            cnt = sizeof(PlayBuf);
+          }
+          num = sdsioRead(play->sdsio, PlayBuf, cnt);
+          if (num != 0U) {
+            sdsWrite(play->stream, PlayBuf, num);
+          }
+          if (num != cnt) {
+            if (sdsioEndOfStream(play->sdsio) != 0) {
+              play->flags |= SDS_PLAY_FLAG_EOS;
             } else {
               if (sdsPlayEvent != NULL) {
                 sdsPlayEvent(play, SDS_PLAY_EVENT_IO_ERROR);
               }
-              break;
-            }
-          }
-
-          size = play->head_in.data_size + HEAD_SIZE;
-          if (size > SDS_PLAY_MAX_RECORD_SIZE) {
-            if (sdsPlayEvent != NULL) {
-              sdsPlayEvent(play, SDS_PLAY_EVENT_IO_ERROR);
             }
             break;
           }
-          if (size <= (play->buf_size - sdsGetCount(play->stream))) {
-            memcpy(PlayBuf, &play->head_in, HEAD_SIZE);
-            if (sdsioRead(play->sdsio, PlayBuf + HEAD_SIZE, play->head_in.data_size) == play->head_in.data_size) {
-              if (sdsWrite(play->stream, PlayBuf, size) == size) {
-                play->head_in.data_size = 0U;
-                play->cnt_in++;
-              }
-            } else {
-              if (sdsPlayEvent != NULL) {
-                sdsPlayEvent(play, SDS_PLAY_EVENT_IO_ERROR);
-              }
-              break;
-            }
-          }
-        } while (play->head_in.data_size == 0U);
+        }
       }
     }
   }
@@ -270,7 +243,7 @@ sdsPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size, uint32_
   uint32_t   index;
 
   if ((name != NULL) && (buf != NULL) && (buf_size != 0U) &&
-      (buf_size <= SDS_PLAY_MAX_RECORD_SIZE) && (io_threshold <= buf_size)) {
+      (buf_size <= SDS_PLAY_BUF_SIZE) && (io_threshold <= buf_size)) {
 
     play = sdsPlayAlloc(&index);
     if (play != NULL) {
@@ -279,12 +252,9 @@ sdsPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size, uint32_
       play->event_close        = 0U;
       play->flags              = 0U;
       play->buf_size           = buf_size;
-      play->head_in.timestamp  = 0U;
-      play->head_in.data_size  = 0U;
       play->head_out.timestamp = 0U;
       play->head_out.data_size = 0U;
-      play->cnt_in             = 0U;
-      play->cnt_out            = 0U;
+      play->record_data_cnt    = 0U;
       play->stream             = sdsOpen(buf, buf_size, io_threshold, 0U);
       play->sdsio              = sdsioOpen(name, sdsioModeRead);
 
@@ -335,28 +305,25 @@ int32_t sdsPlayClose (sdsPlayId_t id) {
 uint32_t sdsPlayRead (sdsPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size) {
   sdsPlay_t *play = id;
   uint32_t   num  = 0U;
+  uint32_t   size;
 
   if ((play != NULL) && (buf != NULL) && (buf_size != 0U)) {
-    if (play->cnt_out < play->cnt_in) {
-      if (play->head_out.data_size == 0U) {
-        if (sdsRead(play->stream, &play->head_out, HEAD_SIZE) != HEAD_SIZE) {
-          play->head_out.data_size = 0U;
+    size = sdsGetCount(play->stream);
+    if ((play->head_out.data_size == 0U) && (size >= HEAD_SIZE)) {
+      sdsRead(play->stream, &play->head_out, HEAD_SIZE);
+      size -= HEAD_SIZE;
+    }
+
+    if ((play->head_out.data_size != 0U) && (play->head_out.data_size <= size)) {
+      if (play->head_out.data_size <= buf_size) {
+        num = sdsRead(play->stream, buf, play->head_out.data_size);
+        if (timestamp != NULL) {
+          *timestamp = play->head_out.timestamp;
         }
-      }
-      if (play->head_out.data_size != 0U) {
-        if (play->head_out.data_size <= buf_size) {
-          if (sdsRead(play->stream, buf, play->head_out.data_size) == play->head_out.data_size) {
-            if (timestamp != NULL) {
-              *timestamp = play->head_out.timestamp;
-            }
-            num = play->head_out.data_size;
-            play->head_out.data_size = 0U;
-            play->cnt_out++;
-            if (play->event_threshold != 0U) {
-              play->event_threshold = 0U;
-              osThreadFlagsSet(sdsPlayThreadId, 1U << play->index);
-            }
-          }
+        play->head_out.data_size = 0U;
+        if (play->event_threshold != 0U) {
+          play->event_threshold = 0U;
+          osThreadFlagsSet(sdsPlayThreadId, 1U << play->index);
         }
       }
     }
@@ -367,20 +334,19 @@ uint32_t sdsPlayRead (sdsPlayId_t id, uint32_t *timestamp, void *buf, uint32_t b
 // Get record data size from Player stream
 uint32_t sdsPlayGetSize (sdsPlayId_t id) {
   sdsPlay_t *play = id;
-  uint32_t   num  = 0U;
+  uint32_t   size = 0U;
+  uint32_t   cnt;
 
   if (play != NULL) {
-    if (play->cnt_out < play->cnt_in) {
-      if (play->head_out.data_size == 0U) {
-        if (sdsRead(play->stream, &play->head_out, HEAD_SIZE) == HEAD_SIZE) {
-          num = play->head_out.data_size;
-        } else {
-          play->head_out.data_size = 0U;
-        }
+    if (play->head_out.data_size == 0U) {
+      cnt = sdsGetCount(play->stream);
+      if (cnt >= HEAD_SIZE) {
+        sdsRead(play->stream, &play->head_out, HEAD_SIZE);
       }
     }
+    size = play->head_out.data_size;
   }
-  return num;
+  return size;
 }
 
 // Check if end of stream has been reached
@@ -389,7 +355,7 @@ int32_t sdsPlayEndOfStream (sdsPlayId_t id) {
   int32_t    eos  = 0;
 
   if (play != NULL) {
-    if ((play->cnt_out == play->cnt_in) && ((play->flags & SDS_PLAY_FLAG_EOS) != 0U)) {
+    if ((sdsGetCount(play->stream) == 0U) && ((play->flags & SDS_PLAY_FLAG_EOS) != 0U)) {
       eos = 1;
     }
   }
