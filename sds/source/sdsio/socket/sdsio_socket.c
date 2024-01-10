@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2024 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -169,7 +169,7 @@ static uint32_t sdsioReceive (header_t *header, void *data, uint32_t data_size) 
     } else {
       size = data_size;
     }
-    while (cnt < data_size) {
+    while (cnt < size) {
       status = iotSocketRecv(socket,
                              (uint8_t *)data + cnt,
                              (size - cnt));
