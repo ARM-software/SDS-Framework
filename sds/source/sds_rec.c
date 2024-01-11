@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2024 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -41,8 +41,6 @@ typedef struct {
            uint32_t    buf_size;
            sdsId_t     stream;
            sdsioId_t   sdsio;
-  volatile uint32_t    cnt_in;
-  volatile uint32_t    cnt_out;
 } sdsRec_t;
 
 static sdsRec_t   RecStreams[SDS_REC_MAX_STREAMS] = {0};
@@ -55,7 +53,7 @@ typedef struct {
 } RecHead_t;
 
 // Record buffer
-static uint8_t RecBuf[SDS_REC_MAX_RECORD_SIZE];
+static uint8_t RecBuf[SDS_REC_BUF_SIZE];
 
 // Event callback
 static sdsRecEvent_t sdsRecEvent = NULL;
@@ -149,7 +147,6 @@ static void sdsRecEventCallback (sdsId_t id, uint32_t event, void *arg) {
 // Recorder thread
 static __NO_RETURN void sdsRecThread (void *arg) {
   sdsRec_t *rec;
-  RecHead_t rec_head;
   uint32_t  flags, cnt, n;
 
   (void)arg;
@@ -168,22 +165,22 @@ static __NO_RETURN void sdsRecThread (void *arg) {
         if ((rec->flags & SDS_REC_FLAG_CLOSE) != 0U) {
           continue;
         }
-        while (rec->cnt_out != rec->cnt_in) {
-          cnt = sdsRead(rec->stream, &rec_head, sizeof(RecHead_t));
-          if (cnt == sizeof(RecHead_t)) {
-            memcpy(RecBuf, &rec_head, sizeof(RecHead_t));
-            cnt = sdsRead(rec->stream, RecBuf + sizeof(RecHead_t), rec_head.data_size);
-            rec->cnt_out++;
-            if (cnt == rec_head.data_size) {
-              cnt += sizeof(RecHead_t);
-              if (sdsioWrite(rec->sdsio, RecBuf, cnt) != cnt) {
-                if (sdsRecEvent != NULL) {
-                  sdsRecEvent(rec, SDS_REC_EVENT_IO_ERROR);
-                }
-              }
-            }
+
+        cnt = sdsGetCount(rec->stream);
+        while (cnt != 0U) {
+          if (cnt > sizeof(RecBuf)) {
+            cnt = sizeof(RecBuf);
           }
+          sdsRead(rec->stream, RecBuf, cnt);
+          if (sdsioWrite(rec->sdsio, RecBuf, cnt) != cnt) {
+            if (sdsRecEvent != NULL) {
+              sdsRecEvent(rec, SDS_REC_EVENT_IO_ERROR);
+            }
+            break;
+          }
+          cnt = sdsGetCount(rec->stream);
         }
+
         if (rec->event_close != 0U) {
           rec->flags |= SDS_REC_FLAG_CLOSE;
           osEventFlagsSet(sdsRecCloseEventFlags, 1U << rec->index);
@@ -232,7 +229,7 @@ sdsRecId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size, uint32_t 
   uint32_t  index;
 
   if ((name != NULL) && (buf != NULL) && (buf_size != 0U) &&
-      (buf_size <= SDS_REC_MAX_RECORD_SIZE) && (io_threshold <= buf_size)) {
+      (buf_size <= SDS_REC_BUF_SIZE) && (io_threshold <= buf_size)) {
 
     rec = sdsRecAlloc(&index);
     if (rec != NULL) {
@@ -241,8 +238,6 @@ sdsRecId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size, uint32_t 
       rec->event_close     = 0U;
       rec->flags           = 0U;
       rec->buf_size        = buf_size;
-      rec->cnt_in          = 0U;
-      rec->cnt_out         = 0U;
       rec->stream          = sdsOpen(buf, buf_size, 0U, io_threshold);
       rec->sdsio           = sdsioOpen(name, sdsioModeWrite);
 
@@ -300,7 +295,6 @@ uint32_t sdsRecWrite (sdsRecId_t id, uint32_t timestamp, const void *buf, uint32
       rec_head.data_size = buf_size;
       if (sdsWrite(rec->stream, &rec_head, sizeof(RecHead_t)) == sizeof(RecHead_t)) {
         num = sdsWrite(rec->stream, buf, buf_size);
-        rec->cnt_in++;
         if (num == buf_size) {
           if (rec->event_threshold != 0U) {
             rec->event_threshold = 0U;
