@@ -12,9 +12,9 @@ The API is defined in the [Driver_GPIO.h](./Driver_GPIO.h) header file.
 
 ## API aligned with CMSIS-Driver specification
 
-This proposal is aligned with [CMSIS-Driver](https://arm-software.github.io/CMSIS_5/Driver/html/group__mci__interface__gr.html) specification with some exceptions.
+This proposal is aligned with [CMSIS-Driver](https://arm-software.github.io/CMSIS_6/latest/Driver/group__gpio__interface__gr.html) specification with some exceptions.
 
-The API provides common driver functions and expects function calls as described in CMSIS-Driver [Theory of Operation](https://arm-software.github.io/CMSIS_5/Driver/html/theoryOperation.html).
+The API provides common driver functions and expects function calls as described in CMSIS-Driver [Theory of Operation](https://arm-software.github.io/CMSIS_6/latest/Driver/theoryOperation.html).
 
 >Note: The term GPIO is used consistently in the API despite that it defines operations on pin level.
 
