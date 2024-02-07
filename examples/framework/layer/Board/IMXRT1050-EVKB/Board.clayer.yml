@@ -38,11 +38,10 @@ layer:
     - pack: NXP::EVKB-IMXRT1050_BSP@15.1.0
     - pack: Keil::IMXRT1050-EVKB_BSP@1.1.1
     - pack: Keil::iMXRT105x_MWP@1.5.1
-    - pack: ARM::CMSIS@5.9.0
-    - pack: ARM::CMSIS-Driver
-    - pack: ARM::CMSIS-View
-    # - pack: ARM::CMSIS-Compiler@1.0.0
-    - pack: Keil::ARM_Compiler@1.7.2
+    - pack: ARM::CMSIS@>=6.0.0
+    - pack: ARM::CMSIS-Driver@>=2.8.0
+    - pack: ARM::CMSIS-View@>=1.0.0
+    - pack: ARM::CMSIS-Compiler@>=2.0.0
 
   define:
     - CMSIS_board_header: "\"IMXRT1050_EVKB.h\""
@@ -112,15 +111,15 @@ layer:
     - component: Keil::CMSIS Driver:MCI
     - component: ARM::CMSIS Driver:USART:Custom
     - component: NXP::CMSIS Driver:USART:lpuart_cmsis
-    - component: Keil::CMSIS Driver:VIO:Board&IMXRT1050-EVKB
+    # - component: Keil::CMSIS Driver:VIO:Board&IMXRT1050-EVKB
+
+    - component: ARM::CMSIS Driver:VIO:Custom
 
     - component: ARM::CMSIS-View:Event Recorder&DAP
-    # - component: ARM::CMSIS-Compiler:I/O:STDERR&User
-    # - component: ARM::CMSIS-Compiler:I/O:STDOUT&User
-    # - component: ARM::CMSIS-Compiler:I/O:STDIN&User
-    - component: Keil::Compiler&ARM Compiler:I/O:STDERR&User
-    - component: Keil::Compiler&ARM Compiler:I/O:STDOUT&User
-    - component: Keil::Compiler&ARM Compiler:I/O:STDIN&User
+    - component: ARM::CMSIS-Compiler:CORE
+    - component: ARM::CMSIS-Compiler:STDERR:Custom
+    - component: ARM::CMSIS-Compiler:STDOUT:Custom
+    - component: ARM::CMSIS-Compiler:STDIN:Custom
 
   groups:
     - group: GPIO Interface
@@ -134,7 +133,6 @@ layer:
         - file: ./main.h
         - file: ./main.c
         - file: ./retarget_stdio.c
-        - file: ./RTE/Device/MIMXRT1052DVL6B/MIMXRT1052xxxxx_flexspi_nor_sdram.scf
     - group: Driver
       files:
         - file: ../../../interface/audio/include/audio_drv.h
@@ -144,6 +142,10 @@ layer:
         - file: ./Driver/sensor_drv_hw.c
         - file: ./Driver/Audio_IMXRT1050-EVKB.h
         - file: ./Driver/Audio_IMXRT1050-EVKB.c
+        - file: ./Driver/vio_IMXRT1050-EVKB.c
     - group: MCUXpresso
       files:
         - file: ./IMXRT1050-EVKB.mex
+
+  linker:
+    - script: ./RTE/Device/MIMXRT1052DVL6B/MIMXRT1052xxxxx_flexspi_nor_sdram.scf

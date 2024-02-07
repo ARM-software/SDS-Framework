@@ -1,11 +1,11 @@
 /******************************************************************************
- * @file     vio.c
- * @brief    Virtual I/O implementation template
+ * @file     vio_B-U585I-IOT02A.c
+ * @brief    Virtual I/O implementation for board B-U585I-IOT02A
  * @version  V2.0.0
- * @date     18. October 2023
+ * @date     5. October 2023
  ******************************************************************************/
 /*
- * Copyright (c) 2019-2023 Arm Limited (or its affiliates).
+ * Copyright (c) 2021-2023 Arm Limited (or its affiliates).
  * All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
@@ -23,20 +23,15 @@
  * limitations under the License.
  */
 
-/*! \page vio_V2M-MPS3-SSE-300 Physical I/O Mapping
+/*! \page vio_B-U585I-IOT02A Physical I/O Mapping
+
 The table below lists the physical I/O mapping of this CMSIS-Driver VIO implementation.
-Virtual Resource  | Variable       | Physical Resource on V2M-MPS3-SSE-300          |
+
+Virtual Resource  | Variable       | Physical Resource on B-U585I-IOT02A            |
 :-----------------|:---------------|:-----------------------------------------------|
-vioBUTTON0        | vioSignalIn.0  | User Button PB1                                |
-vioBUTTON1        | vioSignalIn.1  | User Button PB1                                |
-vioLED0           | vioSignalOut.0 | User LED UL0                                   |
-vioLED1           | vioSignalOut.1 | User LED UL1                                   |
-vioLED2           | vioSignalOut.2 | User LED UL2                                   |
-vioLED3           | vioSignalOut.3 | User LED UL3                                   |
-vioLED4           | vioSignalOut.4 | User LED UL4                                   |
-vioLED5           | vioSignalOut.5 | User LED UL5                                   |
-vioLED6           | vioSignalOut.6 | User LED UL6                                   |
-vioLED7           | vioSignalOut.7 | User LED UL7                                   |
+vioBUTTON0        | vioSignalIn.0  | GPIO C.13: Button USER                         |
+vioLED0           | vioSignalOut.0 | GPIO H.6:  LED RED                             |
+vioLED1           | vioSignalOut.1 | GPIO H.7:  LED GREEN                           |
 */
 
 /* History:
@@ -53,9 +48,7 @@ vioLED7           | vioSignalOut.7 | User LED UL7                               
 #include CMSIS_device_header
 
 #if !defined CMSIS_VOUT || !defined CMSIS_VIN
-#include "arm_mps3_io_drv.h"
-#include "device_cfg.h"
-#include "device_definition.h"
+#include "b_u585i_iot02a.h"
 #endif
 
 // VIO input, output definitions
@@ -93,29 +86,42 @@ void vioInit (void) {
   memset(vioValue, 0, sizeof(vioValue));
 
 #if !defined CMSIS_VOUT
-  // Turn off all LEDs
-  arm_mps3_io_write_leds(&MPS3_IO_DEV, ARM_MPS3_IO_ACCESS_PORT, 0U, 0U);
+  // Initialize LEDs pins
+  BSP_LED_Init(LED_RED);
+  BSP_LED_Init(LED_GREEN);
 #endif
 
 #if !defined CMSIS_VIN
-// Add user code here:
-
+  // Initialize buttons pins (only USER button)
+  BSP_PB_Init(BUTTON_USER, BUTTON_MODE_GPIO);
 #endif
 }
 
 // Set signal output.
 void vioSetSignal (uint32_t mask, uint32_t signal) {
 #if !defined CMSIS_VOUT
-  uint32_t n;
+// Add user variables here:
+
 #endif
 
   vioSignalOut &= ~mask;
   vioSignalOut |=  mask & signal;
 
 #if !defined CMSIS_VOUT
-  for (n = 0U; n < 8U; n++) {
-    if (mask & (1U << n)) {
-      arm_mps3_io_write_leds(&MPS3_IO_DEV, ARM_MPS3_IO_ACCESS_PIN, n, signal & (1U << n));
+  // Output signals to LEDs
+  if ((mask & vioLED0) != 0U) {
+    if ((signal & vioLED0) != 0U) {
+      BSP_LED_On(LED_RED);
+    } else {
+      BSP_LED_Off(LED_RED);
+    }
+  }
+
+  if ((mask & vioLED1) != 0U) {
+    if ((signal & vioLED1) != 0U) {
+      BSP_LED_On(LED_GREEN);
+    } else {
+      BSP_LED_Off(LED_GREEN);
     }
   }
 #endif
@@ -130,7 +136,14 @@ uint32_t vioGetSignal (uint32_t mask) {
 #endif
 
 #if !defined CMSIS_VIN
-  vioSignalIn = arm_mps3_io_read_buttons(&MPS3_IO_DEV, ARM_MPS3_IO_ACCESS_PORT, 0);
+  // Get input signals from buttons (only USER button)
+  if ((mask & vioBUTTON0) != 0U) {
+    if (BSP_PB_GetState(BUTTON_USER) == 1U) {
+      vioSignalIn |=  vioBUTTON0;
+    } else {
+      vioSignalIn &= ~vioBUTTON0;
+    }
+  }
 #endif
 
   signal = vioSignalIn & mask;

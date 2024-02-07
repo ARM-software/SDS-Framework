@@ -23,9 +23,9 @@ layer:
 
   packs:
     - pack: ARM::V2M_MPS3_SSE_300_BSP@1.2.0
-    - pack: ARM::CMSIS@5.9.0
-    - pack: ARM::CMSIS-Driver
-    - pack: ARM::CMSIS-View
+    - pack: ARM::CMSIS@>=6.0.0
+    - pack: ARM::CMSIS-Driver@>=2.8.0
+    - pack: ARM::CMSIS-View@>=1.0.0
 
   define:
     - CMSIS_board_header: "\"AVH_MPS3_Corstone_300.h\""

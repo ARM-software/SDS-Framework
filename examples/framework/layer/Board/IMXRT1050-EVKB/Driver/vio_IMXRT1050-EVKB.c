@@ -1,11 +1,11 @@
 /******************************************************************************
- * @file     vio.c
- * @brief    Virtual I/O implementation template
+ * @file     vio_IMXRT1050-EVKB.c
+ * @brief    Virtual I/O implementation for board IMXRT1050-EVKB
  * @version  V2.0.0
- * @date     18. October 2023
+ * @date     3. October 2023
  ******************************************************************************/
 /*
- * Copyright (c) 2019-2023 Arm Limited (or its affiliates).
+ * Copyright (c) 2021-2023 Arm Limited (or its affiliates).
  * All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
@@ -23,20 +23,12 @@
  * limitations under the License.
  */
 
-/*! \page vio_V2M-MPS3-SSE-300 Physical I/O Mapping
+/*! \page vio_IMXRT1050-EVKB Physical I/O Mapping
 The table below lists the physical I/O mapping of this CMSIS-Driver VIO implementation.
-Virtual Resource  | Variable       | Physical Resource on V2M-MPS3-SSE-300          |
+Virtual Resource  | Variable       | Physical Resource on IMXRT1050-EVKB            |
 :-----------------|:---------------|:-----------------------------------------------|
-vioBUTTON0        | vioSignalIn.0  | User Button PB1                                |
-vioBUTTON1        | vioSignalIn.1  | User Button PB1                                |
-vioLED0           | vioSignalOut.0 | User LED UL0                                   |
-vioLED1           | vioSignalOut.1 | User LED UL1                                   |
-vioLED2           | vioSignalOut.2 | User LED UL2                                   |
-vioLED3           | vioSignalOut.3 | User LED UL3                                   |
-vioLED4           | vioSignalOut.4 | User LED UL4                                   |
-vioLED5           | vioSignalOut.5 | User LED UL5                                   |
-vioLED6           | vioSignalOut.6 | User LED UL6                                   |
-vioLED7           | vioSignalOut.7 | User LED UL7                                   |
+vioBUTTON0        | vioSignalIn.0  | WAKEUP SW8(USER_BUTTON)                        |
+vioLED0           | vioSignalOut.0 | GPIO_AD_B0_09 (USER_LED)                       |
 */
 
 /* History:
@@ -46,16 +38,14 @@ vioLED7           | vioSignalOut.7 | User LED UL7                               
  *    Initial release
  */
 
-#include <string.h>
 #include "cmsis_vio.h"
 
 #include "RTE_Components.h"                 // Component selection
 #include CMSIS_device_header
 
 #if !defined CMSIS_VOUT || !defined CMSIS_VIN
-#include "arm_mps3_io_drv.h"
-#include "device_cfg.h"
-#include "device_definition.h"
+#include "pin_mux.h"
+#include "board.h"
 #endif
 
 // VIO input, output definitions
@@ -93,29 +83,34 @@ void vioInit (void) {
   memset(vioValue, 0, sizeof(vioValue));
 
 #if !defined CMSIS_VOUT
-  // Turn off all LEDs
-  arm_mps3_io_write_leds(&MPS3_IO_DEV, ARM_MPS3_IO_ACCESS_PORT, 0U, 0U);
+  // Initialize LEDs pins
+  BOARD_InitUSER_LED();
 #endif
 
 #if !defined CMSIS_VIN
-// Add user code here:
-
+  // Initialize buttons pins
+  BOARD_InitUSER_BUTTON();
 #endif
 }
 
 // Set signal output.
 void vioSetSignal (uint32_t mask, uint32_t signal) {
 #if !defined CMSIS_VOUT
-  uint32_t n;
+// Add user variables here:
+
 #endif
 
   vioSignalOut &= ~mask;
   vioSignalOut |=  mask & signal;
 
 #if !defined CMSIS_VOUT
-  for (n = 0U; n < 8U; n++) {
-    if (mask & (1U << n)) {
-      arm_mps3_io_write_leds(&MPS3_IO_DEV, ARM_MPS3_IO_ACCESS_PIN, n, signal & (1U << n));
+  // Output signals to LEDs
+
+  if (mask & vioLED0) {
+    if (signal & vioLED0) {
+      USER_LED_ON();
+    } else {
+      USER_LED_OFF();
     }
   }
 #endif
@@ -130,7 +125,14 @@ uint32_t vioGetSignal (uint32_t mask) {
 #endif
 
 #if !defined CMSIS_VIN
-  vioSignalIn = arm_mps3_io_read_buttons(&MPS3_IO_DEV, ARM_MPS3_IO_ACCESS_PORT, 0);
+  // Get input signals from buttons
+  if (mask & vioBUTTON0) {
+    if (!GPIO_PinRead (BOARD_USER_BUTTON_GPIO, BOARD_USER_BUTTON_GPIO_PIN)) {
+      vioSignalIn |=  vioBUTTON0;
+    } else {
+      vioSignalIn &= ~vioBUTTON0;
+    }
+  }
 #endif
 
   signal = vioSignalIn & mask;

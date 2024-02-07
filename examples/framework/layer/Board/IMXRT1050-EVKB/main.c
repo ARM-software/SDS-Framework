@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------
- * Copyright (c) 2021-2022 Arm Limited (or its affiliates). 
+ * Copyright (c) 2021-2022 Arm Limited (or its affiliates).
  * All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
@@ -37,6 +37,7 @@
 #include "fsl_iomuxc.h"
 #include "fsl_dmamux.h"
 #include "fsl_sai_edma.h"
+#include "fsl_fxos.h"
 #include "main.h"
 
 // Callbacks for LPUART1 Driver
@@ -48,6 +49,24 @@ void     LPUART1_DeinitPins(void) { /* Not implemented */ }
 uint32_t LPUART3_GetFreq   (void) { return BOARD_BOOTCLOCKRUN_UART_CLK_ROOT; }
 void     LPUART3_InitPins  (void) { /* Done in BOARD_InitARDUINO_UART function */ }
 void     LPUART3_DeinitPins(void) { /* Not implemented */ }
+
+// FXOS 6-axis sensor handle
+fxos_handle_t g_fxosHandle = {0};
+
+// Sensor initialize
+static void BOARD_InitSensor (void) {
+  static fxos_config_t config = {0};
+
+  BOARD_InitI2C();
+  BOARD_Accel_I2C_Init();
+
+  config.I2C_SendFunc    = BOARD_Accel_I2C_Send;
+  config.I2C_ReceiveFunc = BOARD_Accel_I2C_Receive;
+  config.slaveAddress    = 0x1FU;
+  if (FXOS_Init(&g_fxosHandle, &config) != kStatus_Success) {
+    while (1);
+  }
+}
 
 #ifdef CMSIS_shield_header
 __WEAK int32_t shield_setup (void) {
@@ -72,6 +91,8 @@ int main (void) {
   BOARD_InitBootPins();
   BOARD_InitBootClocks();
   BOARD_InitDebugConsole();
+
+  BOARD_InitSensor();
 
   NVIC_SetPriority(ENET_IRQn,    8U);
   NVIC_SetPriority(USDHC1_IRQn,  8U);
