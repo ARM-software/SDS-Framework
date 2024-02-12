@@ -1,10 +1,10 @@
 /*------------------------------------------------------------------------------
  * MDK Middleware - Component ::USB:Device
- * Copyright (c) 2004-2019 Arm Limited (or its affiliates). All rights reserved.
+ * Copyright (c) 2004-2023 Arm Limited (or its affiliates). All rights reserved.
  *------------------------------------------------------------------------------
  * Name:    USBD_Config_%Instance%.c
  * Purpose: USB Device Configuration
- * Rev.:    V5.2.0
+ * Rev.:    V5.3.0
  *------------------------------------------------------------------------------
  * Use the following configuration settings in the Device Class configuration
  * files to assign a Device Class to this USB Device %Instance%.
@@ -71,11 +71,11 @@
 
 //     <s.126>Manufacturer String
 //     <i>String Descriptor describing Manufacturer.
-#define USBD%Instance%_STR_DESC_MAN              L"Keil Software"
+#define USBD%Instance%_STR_DESC_MAN_RAW          "Keil Software"
 
 //     <s.126>Product String
 //     <i>String Descriptor describing Product.
-#define USBD%Instance%_STR_DESC_PROD             L"Keil USB Device %Instance%"
+#define USBD%Instance%_STR_DESC_PROD_RAW         "Keil USB Device %Instance%"
 
 //     <e.0>Serial Number String
 //     <i>Enable Serial Number String.
@@ -84,7 +84,7 @@
 
 //       <s.126>Default value
 //       <i>Default device's Serial Number String.
-#define USBD%Instance%_STR_DESC_SER              L"0001A0000000"
+#define USBD%Instance%_STR_DESC_SER_RAW          "0001A0000000"
 
 //       <o.0..7>Maximum Length (in characters) <0-126>
 //       <i>Specifies the maximum number of Serial Number String characters that can be set at run-time.
@@ -123,84 +123,5 @@
 //   </h>
 // </h>
 
-
-#include "RTE_Components.h"
-
-#ifdef  RTE_USB_Device_CustomClass_0
-#include "USBD_Config_CustomClass_0.h"
-#endif
-#ifdef  RTE_USB_Device_CustomClass_1
-#include "USBD_Config_CustomClass_1.h"
-#endif
-#ifdef  RTE_USB_Device_CustomClass_2
-#include "USBD_Config_CustomClass_2.h"
-#endif
-#ifdef  RTE_USB_Device_CustomClass_3
-#include "USBD_Config_CustomClass_3.h"
-#endif
-
-#ifdef  RTE_USB_Device_HID_0
-#include "USBD_Config_HID_0.h"
-#endif
-#ifdef  RTE_USB_Device_HID_1
-#include "USBD_Config_HID_1.h"
-#endif
-#ifdef  RTE_USB_Device_HID_2
-#include "USBD_Config_HID_2.h"
-#endif
-#ifdef  RTE_USB_Device_HID_3
-#include "USBD_Config_HID_3.h"
-#endif
-
-#ifdef  RTE_USB_Device_MSC_0
-#include "USBD_Config_MSC_0.h"
-#endif
-#ifdef  RTE_USB_Device_MSC_1
-#include "USBD_Config_MSC_1.h"
-#endif
-#ifdef  RTE_USB_Device_MSC_2
-#include "USBD_Config_MSC_2.h"
-#endif
-#ifdef  RTE_USB_Device_MSC_3
-#include "USBD_Config_MSC_3.h"
-#endif
-
-#ifdef  RTE_USB_Device_CDC_0
-#include "USBD_Config_CDC_0.h"
-#endif
-#ifdef  RTE_USB_Device_CDC_1
-#include "USBD_Config_CDC_1.h"
-#endif
-#ifdef  RTE_USB_Device_CDC_2
-#include "USBD_Config_CDC_2.h"
-#endif
-#ifdef  RTE_USB_Device_CDC_3
-#include "USBD_Config_CDC_3.h"
-#endif
-#ifdef  RTE_USB_Device_CDC_4
-#include "USBD_Config_CDC_4.h"
-#endif
-#ifdef  RTE_USB_Device_CDC_5
-#include "USBD_Config_CDC_5.h"
-#endif
-#ifdef  RTE_USB_Device_CDC_6
-#include "USBD_Config_CDC_6.h"
-#endif
-#ifdef  RTE_USB_Device_CDC_7
-#include "USBD_Config_CDC_7.h"
-#endif
-
-#ifdef  RTE_USB_Device_ADC_0
-#include "USBD_Config_ADC_0.h"
-#endif
-#ifdef  RTE_USB_Device_ADC_1
-#include "USBD_Config_ADC_1.h"
-#endif
-#ifdef  RTE_USB_Device_ADC_2
-#include "USBD_Config_ADC_2.h"
-#endif
-#ifdef  RTE_USB_Device_ADC_3
-#include "USBD_Config_ADC_3.h"
-#endif
 
 #include "usbd_config.h"

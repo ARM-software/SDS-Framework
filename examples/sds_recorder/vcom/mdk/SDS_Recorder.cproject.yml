@@ -1,7 +1,9 @@
 project:
   packs:
    - pack: ARM::SDS
-   - pack: Keil::MDK-Middleware
+   - pack: ARM::CMSIS@>=6.0.0
+   - pack: ARM::CMSIS-RTX@>=5.8.0
+   - pack: Keil::MDK-Middleware@7.17.0
 
   connections:
     - connect: Demo Application
@@ -15,6 +17,7 @@ project:
 
   components:
     - component: ARM::CMSIS:RTOS2:Keil RTX5&Source
+    - component: ARM::CMSIS:OS Tick
     - component: ARM::SDS:Buffer
     - component: ARM::SDS:IO:VCOM&MDK USB
     - component: ARM::SDS:Recorder

@@ -1,8 +1,10 @@
 project:
   packs:
    - pack: ARM::SDS
-   - pack: Keil::ARM_Compiler@1.7.2
-   - pack: Keil::MDK-Middleware@7.16.0
+   - pack: ARM::CMSIS@>=6.0.0
+   - pack: ARM::CMSIS-RTX@>=5.8.0
+   - pack: ARM::CMSIS-Compiler@>=2.0.0
+   - pack: Keil::MDK-Middleware@7.17.0
 
   connections:
     - connect: Demo Application
@@ -16,16 +18,17 @@ project:
 
   components:
     - component: ARM::CMSIS:RTOS2:Keil RTX5&Source
+    - component: ARM::CMSIS:OS Tick
     - component: ARM::SDS:Buffer
     - component: ARM::SDS:IO:File System&MDK FS
     - component: ARM::SDS:Recorder
-    - component: Keil::Compiler&ARM Compiler:I/O:File&File System
+    - component: Keil::CMSIS-Compiler:File Interface:MDK-MW File System
     - component: Keil::File System&MDK-Plus:CORE&LFN
     - component: Keil::File System&MDK-Plus:Drive:Memory Card
 
   groups:
     - group: Documentation
-      files: 
+      files:
         - file: ./README.md
     - group: Source Files
       files:

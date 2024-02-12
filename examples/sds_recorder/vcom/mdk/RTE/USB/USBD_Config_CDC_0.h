@@ -1,10 +1,10 @@
 /*------------------------------------------------------------------------------
  * MDK Middleware - Component ::USB:Device
- * Copyright (c) 2004-2019 Arm Limited (or its affiliates). All rights reserved.
+ * Copyright (c) 2004-2023 Arm Limited (or its affiliates). All rights reserved.
  *------------------------------------------------------------------------------
  * Name:    USBD_Config_CDC_0.h
  * Purpose: USB Device Communication Device Class (CDC) Configuration
- * Rev.:    V5.2.0
+ * Rev.:    V5.3.0
  *----------------------------------------------------------------------------*/
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
@@ -129,10 +129,10 @@
 //   <i>in the USB component.
 //
 //     <s.126>Communication Class Interface String
-#define USBD_CDC0_CIF_STR_DESC           L"USB_CDC0_0"
+#define USBD_CDC0_CIF_STR_DESC_RAW       "USB_CDC0_0"
 
 //     <s.126>Data Class Interface String
-#define USBD_CDC0_DIF_STR_DESC           L"USB_CDC0_1"
+#define USBD_CDC0_DIF_STR_DESC_RAW       "USB_CDC0_1"
 
 //     <h>Abstract Control Model Settings
 
@@ -183,7 +183,7 @@
 
 //       <s.12>MAC Address String
 //       <i>Specifies 48-bit Ethernet MAC address.
-#define USBD_CDC0_NCM_MAC_ADDRESS        L"1E306CA2455E"
+#define USBD_CDC0_NCM_MAC_ADDRESS_RAW    "1E306CA2455E"
 
 //       <h>Ethernet Statistics
 //       <i>Specifies Ethernet statistic functions supported.
