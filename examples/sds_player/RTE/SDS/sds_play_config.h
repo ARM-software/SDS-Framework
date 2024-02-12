@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2023-2024 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,7 +17,7 @@
  *
  * Name:    sds_play_config.h
  * Purpose: SDS Player configuration options
- * Rev.:    V1.0.0
+ * Rev.:    V2.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
@@ -26,11 +26,11 @@
 
 //   <o>Maximum number of player streams <1-31>
 //   <i>Default: 16
-#define SDS_PLAY_MAX_STREAMS       16U
+#define SDS_PLAY_MAX_STREAMS    16U
 
-//   <o>Maximum size of a record
+//   <o>Size of a temporary player buffer
 //   <i>Default: 8192
-#define SDS_PLAY_MAX_RECORD_SIZE   8192U
+#define SDS_PLAY_BUF_SIZE       8192U
 
 // </h>
 
