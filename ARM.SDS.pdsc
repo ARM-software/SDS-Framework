@@ -16,6 +16,7 @@
       SDSIO:
       - Improve read functionality. Introduce an .index.txt file to track the index of the .sds file to read from
       - Remove automatic file open after .sds file index is reset in read mode
+      - Correct receive in sdsio_socket and sdsio_vcom drivers.
       Examples:
       - Add sds_player example
     </release>
@@ -87,7 +88,7 @@
     </component>
 
     <!-- SDS I/O (Socket) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="Socket" Capiversion="1.0.0" Cversion="1.0.0" condition="SDS IO via Socket">
+    <component Cclass="SDS" Cgroup="IO" Csub="Socket" Capiversion="1.0.0" Cversion="1.0.1" condition="SDS IO via Socket">
       <description>Blocking read/write via Socket (IoT Utility:Socket) </description>
       <RTE_Components_h>
         #define RTE_SDS_IO                       /* Synchronous Data Stream Input/Output */
@@ -100,7 +101,7 @@
     </component>
 
     <!-- SDS I/O (VCOM - MDK_USB) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="VCOM" Cvariant="MDK USB" Capiversion="1.0.0" Cversion="1.0.0" condition="SDS IO via VCOM - MDK USB">
+    <component Cclass="SDS" Cgroup="IO" Csub="VCOM" Cvariant="MDK USB" Capiversion="1.0.0" Cversion="1.0.1" condition="SDS IO via VCOM - MDK USB">
       <description>Blocking read/write via USB Virtual COM Port (Keil::USB:Device:CDC)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                       /* Synchronous Data Stream Input/Output */
