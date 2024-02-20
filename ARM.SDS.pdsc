@@ -10,21 +10,6 @@
   <releases>
     <release version="0.0.0">
       Active Development ...
-      SDS Player:
-      - Improve performance
-      - Update configuration file
-      SDS Recorder:
-      - Improve performance
-      - Update configuration file
-      SDSIO-Server:
-      - Correct response handling for open and read commands
-      - Remove automatic file open after .sds file index is reset in read mode
-      SDSIO:
-      - Improve read functionality. Introduce an .index.txt file to track the index of the .sds file to read from
-      - Remove automatic file open after .sds file index is reset in read mode
-      - Correct receive in sdsio_socket and sdsio_vcom drivers.
-      Examples:
-      - Add sds_player example
     </release>
   </releases>
 
