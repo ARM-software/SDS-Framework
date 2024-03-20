@@ -12,6 +12,9 @@
       Active Development ...
       VSI Sensor:
       - Add try/except to the import section
+      SDS-Convert:
+      - Add QeexoV2CSV to SDS conversion
+      - Revamp argparse interface with multiple subparsers
     </release>
   </releases>
 
