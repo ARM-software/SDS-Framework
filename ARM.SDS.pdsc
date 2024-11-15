@@ -20,6 +20,8 @@
       SDS-Convert:
       - Add QeexoV2CSV to SDS conversion
       - Revamp argparse interface with multiple subparsers
+      Examples:
+      - environment name attribute updated from "cmsis" to "csolution" for compliance
     </release>
   </releases>
 
@@ -190,7 +192,7 @@
       <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
       <board name="V2M-MPS3-SSE-300-FVP" vendor="ARM"/>
       <project>
-        <environment name="cmsis" load="SDS_Buffer.csolution.yml"/>
+        <environment name="csolution" load="SDS_Buffer.csolution.yml"/>
       </project>
       <attributes/>
     </example>
@@ -198,7 +200,7 @@
       <description>Example shows usage of SDS Recorder via File System (Keil::File System)</description>
       <board name="EVKB-IMXRT1050_MDK" vendor="NXP"/>
       <project>
-        <environment name="cmsis" load="SDS_Recorder.csolution.yml"/>
+        <environment name="csolution" load="SDS_Recorder.csolution.yml"/>
       </project>
       <attributes/>
     </example>
@@ -206,7 +208,7 @@
       <description>Example shows usage of SDS Recorder via File System (Semihosting)</description>
       <board name="V2M-MPS3-SSE-300-FVP" vendor="ARM"/>
       <project>
-        <environment name="cmsis" load="SDS_Recorder.csolution.yml"/>
+        <environment name="csolution" load="SDS_Recorder.csolution.yml"/>
       </project>
       <attributes/>
     </example>
@@ -214,7 +216,7 @@
       <description>Example shows usage of SDS Recorder via Serial Port (CMSIS Driver:USART)</description>
       <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
       <project>
-        <environment name="cmsis" load="SDS_Recorder.csolution.yml"/>
+        <environment name="csolution" load="SDS_Recorder.csolution.yml"/>
       </project>
       <attributes/>
     </example>
@@ -223,7 +225,7 @@
       <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
       <board name="V2M-MPS3-SSE-300-FVP" vendor="ARM"/>
       <project>
-        <environment name="cmsis" load="SDS_Recorder.csolution.yml"/>
+        <environment name="csolution" load="SDS_Recorder.csolution.yml"/>
       </project>
       <attributes/>
     </example>
@@ -231,7 +233,7 @@
       <description>Example shows usage of SDS Recorder via USB Virtual COM Port (Keil::USB:Device:CDC)</description>
       <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
       <project>
-        <environment name="cmsis" load="SDS_Recorder.csolution.yml"/>
+        <environment name="csolution" load="SDS_Recorder.csolution.yml"/>
       </project>
       <attributes/>
     </example>
@@ -239,7 +241,7 @@
       <description>Example shows usage of SDS Player via File System (Semihosting)</description>
       <board name="V2M-MPS3-SSE-300-FVP" vendor="ARM"/>
       <project>
-        <environment name="cmsis" load="SDS_Player.csolution.yml"/>
+        <environment name="csolution" load="SDS_Player.csolution.yml"/>
       </project>
       <attributes/>
     </example>
