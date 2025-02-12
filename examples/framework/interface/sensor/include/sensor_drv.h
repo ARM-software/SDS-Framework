@@ -43,7 +43,6 @@ extern "C"
    dataType == SENSOR_DRV_DATA_UINT32 ? 4U :   \
    dataType == SENSOR_DRV_DATA_FLOAT  ? 4U : 0U)
 
-
 /// Data type definitions
 #define SENSOR_DRV_DATA_INT8    1U              ///<  8-bit signed integer
 #define SENSOR_DRV_DATA_UINT8   2U              ///<  8-bit unsigned integer
@@ -53,35 +52,22 @@ extern "C"
 #define SENSOR_DRV_DATA_UINT32  6U              ///< 32-bit unsigned integer
 #define SENSOR_DRV_DATA_FLOAT   7U              ///< 32-bit floating point
 
-/// Supported data rates in Hz.
-typedef const struct {
-  uint32_t num;                                 ///< Number of supported data rates
-  float    rates[];                             ///< Array of supported data rates (Hz)
-} SensorDrv_DataRates_t;
-
-/// Supported measurement ranges.
-typedef const struct {
-  uint32_t num;                                 ///< Number of supported ranges
-  struct {
-    float min;                                  ///< Minimum value in measurement units
-    float max;                                  ///< Maximum value in measurement units
-  } ranges[];                                   ///< Array of supported range values
-} SensorDrv_Ranges_t;
-
 /// Sensor Information.
 typedef const struct {
-  char                  *name;                  ///< Sensor name
-  uint16_t               channels;              ///< Number of channels (e.g.: thermometer - 1 ch, accelerometer - 3 ch (x,y,z))
-  uint16_t               data_type;             ///< Type of the sensor data (SENSOR_DRV_DATA_xxx).
-  SensorDrv_DataRates_t *data_rates;            ///< Supported data rates
-  SensorDrv_Ranges_t    *ranges;                ///< Supported measurement ranges
-  char                  *unit;                  ///< Measurement unit (recommended: https://www.iana.org/assignments/senml/senml.xhtml)
-  uint32_t               fifo_size;             ///< FIFO size in bytes
+  char         *name;                           ///< Sensor name
+  uint16_t      channels;                       ///< Number of channels (e.g.: thermometer - 1 ch, accelerometer - 3 ch (x,y,z))
+  uint16_t      data_type;                      ///< Sensor data type (SENSOR_DRV_DATA_xxx)
+  float         data_rate;                      ///< Data rate in Hz
+  float         scale;                          ///< Conversion multiplier used to translate raw data into measurement units
+  float         offset;                         ///< Offset (in measurement units)
+  char         *unit;                           ///< Measurement unit (recommended: https://www.iana.org/assignments/senml/senml.xhtml)
+  uint32_t      fifo_size;                      ///< FIFO size in bytes
+  uint32_t      threshold;                      ///< Data event threshold in bytes
 } SensorDrv_Info_t;
 
 /// Sensor status flags.
 typedef struct {
-    uint32_t active   : 1;                      ///< Active state: 1 = active (Capture started), 0 = inactive (Capture stoped)
+    uint32_t active   : 1;                      ///< Active state: 1 = active (Capture started), 0 = inactive (Capture stopped)
     uint32_t overflow : 1;                      ///< Overflow flag (cleared on read)
     uint32_t reserved : 30;
 } SensorDrv_Status_t;
@@ -92,9 +78,8 @@ typedef struct {
 #define SENSOR_DRV_UNSUPPORTED      (-2)        ///< Operation not supported
 
 /// Events
-#define SENSOR_DRV_EVENT_DATA       (1UL << 0)  ///< Data available. Triggered when data threshold is reached or exceeded.
-#define SENSOR_DRV_EVENT_OVERFLOW   (1UL << 1)  ///< Data overflow detected.
-
+#define SENSOR_DRV_EVENT_DATA       (1UL << 0)  ///< Data available. Triggered when data threshold is reached or exceeded
+#define SENSOR_DRV_EVENT_OVERFLOW   (1UL << 1)  ///< Data overflow detected
 
 /// \brief       Sensor Events callback function type
 /// \param[in]   event  Events notification mask.
@@ -114,77 +99,23 @@ typedef void (*SensorDrv_Event_t) (uint32_t event);
 /// \brief       Gets sensor information.
 /// \return      Pointer to the sensor information structure - \ref SensorDrv_Info_t.
 
-
 /// \fn          int32_t CaptureStart (void)
 /// \brief       Starts capturing sensor data.
 /// \return      Return code.
-
 
 /// \fn          int32_t CaptureStop (void)
 /// \brief       Stops capturing sensor data.
 /// \return      Return code.
 
-
-/// \fn          int32_t SetDataRate (float rate)
-/// \brief       Sets the sensor's data rate.
-/// \param[in]   rate        Data rate in Hz.
-/// \return      Return code.
-///
-///  \note       To determine the supported data rates, retrieve the `SensorDrv_Info_t` structure
-///              using `GetInfo()`. The available rates are stored in the `data_rates` member.
-///              Ensure that the requested rate matches one of the supported values to avoid errors.
-
-
-/// \fn          float GetDataRate (void)
-/// \brief       Gets the sensor's current data rate.
-/// \return      Data rate in Hz.
-
-
-/// \fn          int32_t SetRange (float min, float max)
-/// \brief       Sets sensor's measurement range (in measurement units).
-/// \param[in]   min         Minimum value of the desired measurement range.
-/// \param[in]   max         Maximum value of the desired measurement range.
-/// \return      Return code.
-///
-/// \note        To determine the supported measurement ranges, retrieve the `SensorDrv_Info_t` structure
-///              using `GetInfo()`. The available ranges are stored in the `ranges` member.
-///              Ensure that the requested range matches one of the supported values to avoid errors.
-
-
-/// \fn          int32_t GetRange (float *min, float *max)
-/// \brief       Gets sensor's current measurement range (in measurement units).
-/// \param[out]  min         Pointer to store the minimum value of the current measurement range.
-/// \param[out]  max         Pointer to store the maximum value of the current measurement range.
-/// \return      Return code.
-
-
-/// \fn          float GetOffset (void)
-/// \brief       Returns the sensor's offset (in measurement units).
-/// \return      The sensor's offset value.
-
-
-/// \fn          float GetResolution (void)
-/// \brief       Returns sensor's resolution.
-/// \return      A conversion multiplier used to translate raw data into measurement units.
-
-
-/// \fn          int32_t SetDataThreshold (uint32_t threshold)
-/// \brief       Sets data event threshold in bytes.
-/// \param[in]   threshold   Data event threshold in bytes.
-/// \return      Return code.
-
-
 /// \fn          SensorDrv_Status_t GetStatus (void)
 /// \brief       Returns sensor's current status.
 /// \return      The sensor status - \ref SensorDrv_Status_t.
-
 
 /// \fn          uint32_t Read (void *buf, uint32_t buf_size)
 /// \brief       Reads data from the sensor into the provided buffer.
 /// \param[out]  buf         Pointer to the buffer to store the read data.
 /// \param[in]   buf_size    Buffer size in bytes.
 /// \return      The number of bytes successfully read.
-
 
 /// Sensor driver access structure.
 typedef struct {
@@ -193,13 +124,6 @@ typedef struct {
   SensorDrv_Info_t  *(*GetInfo)          (void);                                            ///< Pointer to \ref GetInfo : Gets sensor information.
   int32_t            (*CaptureStart)     (void);                                            ///< Pointer to \ref CaptureStart : Starts capturing sensor data.
   int32_t            (*CaptureStop)      (void);                                            ///< Pointer to \ref CaptureStop : Stops capturing sensor data.
-  int32_t            (*SetDataRate)      (float rate);                                      ///< Pointer to \ref SetDataRate : Sets the sensor's data rate.
-  float              (*GetDataRate)      (void);                                            ///< Pointer to \ref GetDataRate : Gets the sensor's current data rate.
-  int32_t            (*SetRange)         (float min, float max);                            ///< Pointer to \ref SetRange : Sets sensor's measurement range (in measurement units).
-  int32_t            (*GetRange)         (float *min, float *max);                          ///< Pointer to \ref GetRange : Gets sensor's current measurement range (in measurement units).
-  float              (*GetOffset)        (void);                                            ///< Pointer to \ref GetOffset : Returns the sensor's offset (in measurement units).
-  float              (*GetResolution)    (void);                                            ///< Pointer to \ref GetResolution : Returns sensor's resolution.
-  int32_t            (*SetDataThreshold) (uint32_t threshold);                              ///< Pointer to \ref SetDataThreshold : Sets data event threshold in bytes.
   SensorDrv_Status_t (*GetStatus)        (void);                                            ///< Pointer to \ref GetStatus : Returns sensor's current status.
   uint32_t           (*Read)             (void *buf, uint32_t buf_size);                    ///< Pointer to \ref Read : Reads data from the sensor into the provided buffer.
 } const SensorDrv_t;
