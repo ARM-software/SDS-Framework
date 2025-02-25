@@ -57,7 +57,7 @@ int32_t sdsRecInit (sdsRecEvent_t event_cb);
 int32_t sdsRecUninit (void);
 
 /**
-  \fn          sdsRecId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size, uint32_t record_size)
+  \fn          sdsRecId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size, uint32_t io_threshold)
   \brief       Open recorder stream.
   \param[in]   name           stream name (pointer to NULL terminated string)
   \param[in]   buf            pointer to buffer for stream

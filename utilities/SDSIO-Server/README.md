@@ -4,10 +4,12 @@ Python based SDS I/O Server for PC.
 It captures SDS recorder data sent from the target via one of the supported interfaces and writes recordings to files on the host.
 
 Sensor data is recorded to files `<sensor_name>.<index>.sds`:
- - `<sensor_name>` is the sensor name specified from the target
- - `<index>` is the zero-based index which is incremented for each subsequent recording
+
+- `<steam_name>` is the name of the I/O stream specified with the function `sdsRecOpen` on the target.
+- `<index>` is the zero-based index which is incremented for each subsequent recording.
 
 ## Supported interfaces
+
 - **socket**
    SDS recorder data is sent from the target via TCP socket. Works together with the matching implementation on the target ([sdsio_socket.c](../../sds/source/sdsio/socket/sdsio_socket.c)).
 
@@ -16,11 +18,13 @@ Sensor data is recorded to files `<sensor_name>.<index>.sds`:
 
 ## Set-up and requirements
 ### Requirements
+
 - Python 3.9 or later with packages:
-  - ifaddr
-  - pyserial
+    - ifaddr
+    - pyserial
 
 ### Set-up
+
 1. Open terminal in SDSIO-Server root folder
 2. Check installed Python version with:
    ```

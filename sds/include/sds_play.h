@@ -57,7 +57,7 @@ int32_t sdsPlayInit (sdsPlayEvent_t event_cb);
 int32_t sdsPlayUninit (void);
 
 /**
-  \fn          sdsPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size, uint32_t record_size)
+  \fn          sdsPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size, uint32_t io_threshold)
   \brief       Open player stream.
   \param[in]   name           stream name (pointer to NULL terminated string)
   \param[in]   buf            pointer to buffer for stream
