@@ -1,0 +1,15 @@
+site_name: SDS-Framework
+repo_url: https://github.com/ARM-software/SDS-Framework
+edit_uri: ./edit/main/documentation
+nav:
+    - Home: index.md
+    - Overview: overview.md
+    - Theory of Operation: theory.md
+    - Examples: examples.md
+theme:
+  name: readthedocs
+markdown_extensions:
+  - admonition
+extra_css:
+  - css/extra.css
+docs_dir: documentation

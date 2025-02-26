@@ -57,7 +57,7 @@ The table below contains recommended buffer sizes depending on the communication
 ToDo
 
 Communication  | Buffer Size | Description
-:--------------:-------------|:----------------
+:--------------|:------------|:----------------
 Network        | 4096        | Default size of Ethernet record is xxxx bytes
 USB Device     | xxx         | .
 FileSystem     | xxx         | .
