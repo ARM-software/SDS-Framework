@@ -5,7 +5,10 @@ nav:
     - Home: index.md
     - Overview: overview.md
     - Theory of Operation: theory.md
+    - SDS Interface: sds_interface.md
     - Examples: examples.md
+    - Utilities: utilities.md
+
 theme:
   name: readthedocs
 markdown_extensions:

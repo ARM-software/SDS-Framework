@@ -1,5 +1,5 @@
 # SDS-Convert
-Convert SDS data recordings to selected format, based on descriptions found in metadata (YAML) files.  
+Convert SDS data files to selected format based on descriptions found in metadata (YAML) files.  
 By default raw timestamps are used for the output file. User can override this behaviour using `--normalize` flag.
 Output timestamps will then start with 0. User can also select start and stop tick for the data to be converter to the
 specified format using `--start-tick <tick>` and `--stop-tick <tick>` respectively. Both parameters are based on 
@@ -31,13 +31,16 @@ timestamp format in the output file.
   Convert .sds to audio WAV format. It takes one sensor and appends required wave header, derived from the
   parameters in the metadata file.
 
-## Set-up and requirements
+## Setup and requirements
+
 ### Requirements
+
 - Python 3.9 or later with packages:
   - pyyaml
   - pandas
 
-### Set-up
+### Setup
+
 1. Open terminal in SDS-Convert root folder
 2. Check installed Python version with:
    ```

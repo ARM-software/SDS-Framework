@@ -9,8 +9,10 @@ This user's guide assumes basic knowledge about Cortex-M software development. I
 ## Manual Chapters
 
 - [**Overview**](overview.md) explains the of features of the SDS-Framework and outlines the possibilities.
-- [**Theory of Operation**](theory.md) explains data stream capturing and playback.
+- [**Theory of Operation**](theory.md) explains data stream recording and playback.
+- [**SDS Interface**](sds_interface.md) describes the various interfaces (USB, Socket, File System) for connecting to the target.
 - [**Examples**](examples.md) lists the examples that are available.
+- [**Utilities**](utilities.md) explains Python based utilities that operate with SDS data files for converting, viewing, recording, and playback.
 
 ## Revision History
 

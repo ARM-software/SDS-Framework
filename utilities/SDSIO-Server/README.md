@@ -16,14 +16,14 @@ Sensor data is recorded to files `<sensor_name>.<index>.sds`:
 - **serial**
    SDS recorder data is sent from the target via serial port. Works together with the matching implementation on the target ([sdsio_vcom.c](../../sds/source/sdsio/vcom/mdk/sdsio_vcom.c)).
 
-## Set-up and requirements
+## Setup and requirements
 ### Requirements
 
 - Python 3.9 or later with packages:
     - ifaddr
     - pyserial
 
-### Set-up
+### Setup
 
 1. Open terminal in SDSIO-Server root folder
 2. Check installed Python version with:

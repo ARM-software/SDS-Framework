@@ -1,32 +1,35 @@
 # SDS-View
-View time based plot of SDS data recording, based on the description found in metadata (YAML) file. 
 
-Horizontal time scale is derived from the number of data points in a recording and frequency 
-provided in the metadata description. All plots form a single recording will be displayed on the 
-same figure (shared vertical scale).
+Output a time-based plot of SDS data files (`<name>.<index>.sds`) based on the meta-data file (`<name>.sds.yml`.
 
-If there are 3 values described in the metadata file, an additional 3D view will be displayed.  
-The tool also supports plotting of multiple recordings at the same time, by listing their paths 
-after the `-s` flag.  
+The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description. All plots form a single recording will be displayed on the same figure (shared vertical scale).
+
+If there are 3 values described in the metadata file, an optional 3D view may be displayed.  
+The tool also supports plotting of multiple SDS data files (`<name>.<index>.sds`) at the same time.
 Note that in this case all recordings will be processed and decoded based on the description in 
-the metadata file listed after the `-y` flag.
+the metadata file.
 
 ## Limitations
+
 - Data in recording must all be of the same type (float, uint32_t, uint16_t, ...)
 
-## Set-up and requirements
+## Setup and requirements
+
 ### Requirements
 - Python 3.9 or later with packages:
   - pyyaml
   - numpy
   - matplotlib
 
-### Set-up
+### Setup
+
 1. Open terminal in SDS-View root folder
+
 2. Check installed Python version with:
    ```
    python --version
    ```
+
 3. (Optional) Use Python environment
    1. Create Python environment:
       ```
