@@ -17,7 +17,7 @@ jobs:
     name: Generate pack
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -26,9 +26,18 @@ jobs:
         run: |
           git fetch --tags --force
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+      
+      - name: Install MkDocs
+        run: pip install mkdocs
+
       - uses: Open-CMSIS-Pack/gen-pack-action@main
         with:
           doxygen-version: none
           packchk-version: 1.3.95
           gen-pack-script: ./gen_pack.sh
           gen-pack-output: ./output
+          gen-doc-script: ./documentation/gen_doc.sh
+          doc-path: ./site
+
