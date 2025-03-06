@@ -57,6 +57,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#sds-file-format">SDS File Format</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sdsio-server-protocol">SDSIO Server Protocol</a>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -182,6 +184,126 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <h2 id="sds-file-format">SDS File Format</h2>
 <p>The SDS file format is described <a href="https://github.com/ARM-software/SDS-Framework/tree/main/schema">here</a>.  Each call to 
 <code>sdsRecWrite</code> creates one record.</p>
+<h2 id="sdsio-server-protocol">SDSIO Server Protocol</h2>
+<p>The SDSIO Server uses a simple protocol for data exchange between a Host computer and the embedded target that integrates an <a href="../sds_interface/">SDSIO Interface</a>.  The protocol assumes that the correct communication to the server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.</p>
+<p>The following conventions describe the command semantic used in the following documentation"</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Symbol</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&gt;</td>
+<td style="text-align: left;">Prefix indicating the direction: Command from target to Host.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&lt;</td>
+<td style="text-align: left;">Prefix indicating the direction: Response from Host to target.</td>
+</tr>
+<tr>
+<td style="text-align: left;">WORD</td>
+<td style="text-align: left;">32-bit value (low byte first).</td>
+</tr>
+<tr>
+<td style="text-align: left;">****</td>
+<td style="text-align: left;">The field above has exactly one occurrence.</td>
+</tr>
+<tr>
+<td style="text-align: left;">++++</td>
+<td style="text-align: left;">The field above has a variable length.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Commands:</strong></p>
+<p>Commands are send from the embedded target to the Host computer that is running the SDSIO Server.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">ID</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">SDSIO_CMD_OPEN</td>
+<td style="text-align: left;">Open a SDS data file</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">SDSIO_CMD_CLOSE</td>
+<td style="text-align: left;">Close a SDS data file</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">SDSIO_CMD_WRITE</td>
+<td style="text-align: left;">Write to SDS data file</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">SDSIO_CMD_READ</td>
+<td style="text-align: left;">Read from SDS data file</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: left;">SDSIO_CMD_EOS</td>
+<td style="text-align: left;">End of Stream</td>
+</tr>
+</tbody>
+</table>
+<p>Each Command starts with a Header (4 Words) and optional data with variable length. Depending on the Command, the SDSIO Server replies with a Response that repeats the Header and delivers additional data.</p>
+<p><strong>SDSIO_CMD_OPEN</strong></p>
+<p>The Command ID=1 <strong>SDSIO_CMD_OPEN</strong> opens an SDS data file on the Host computer.</p>
+<p>SDS data filenames use the following file format: <code>&lt;name&gt;.&lt;file-index&gt;.sds</code>. <code>Name</code> is the base file name of the SDS data file. <code>Len of Name</code> is the size of the string in bytes. <code>&lt;file-index&gt;</code> is a sequential number starting from <code>0</code>.</p>
+<p><code>Mode</code> defines <code>read</code> (value=0) or <code>write</code> (value=1) operation. For <code>write</code>, the server inserts the next available <code>&lt;file-index&gt;</code> number that does not exist yet (if <code>Name.3.sds</code> exists, the server creates <code>Name.4.sds</code>). For <code>read</code> the server maintains a list of <code>Names</code> that where previously used. When a Name was not used before it opens <code>&lt;file-index&gt;=0</code>, i.e. <code>Name.0.sds</code>.</p>
+<pre><code class="language-txt">| WORD | WORD **| WORD | WORD *******|++++++|
+&gt;  1   |   0    | Mode | Len of Name | Name |
+|******|********|******|*************|++++++|
+</code></pre>
+<p>The Response ID=1 <strong>SDSIO_CMD_OPEN</strong> provides a <code>Handle</code> that is used to identify the file in subsequent commands.</p>
+<pre><code class="language-txt">| WORD | WORD **| WORD | WORD *******|
+&lt;  1   | Handle | Mode | 0           |
+|******|********|******|*************|
+</code></pre>
+<p><strong>SDSIO_CMD_CLOSE</strong></p>
+<p>The Command ID=2 <strong>SDSIO_CMD_CLOSE</strong> closes an SDS data file on the Host computer. The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</strong>. There is no Response from the SDSIO Server on this command.</p>
+<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |
+&gt;  2   | Handle |  0   |  0   |
+|******|********|******|******|
+</code></pre>
+<p><strong>SDSIO_CMD_WRITE</strong></p>
+<p>The Command ID=3 <strong>SDSIO_CMD_WRITE</strong> writes data to an SDS data file on the Host computer. The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</strong>. <code>Size</code> is the <code>Data</code> size in bytes.  There is no Response from the SDSIO Server on this command.</p>
+<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |++++++|
+&gt;  3   | Handle |  0   | Size | Data |
+|******|********|******|******|++++++|
+</code></pre>
+<p><strong>SDSIO_CMD_READ</strong></p>
+<p>The Command ID=4 <strong>SDSIO_CMD_READ</strong> reads data from an SDS data file on the Host computer. The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</strong>. <code>Size</code> are the number of bytes that should be read.</p>
+<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |
+&gt;  4   | Handle | Size |   0  |
+|******|********|******|******|
+</code></pre>
+<p>The Response ID=4 <strong>SDSIO_CMD_READ</strong> provides the data read from an SDS data file on the HOST computer.
+<code>Size</code> is the <code>Data</code> size in bytes that is read.</p>
+<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |++++++|
+&lt;  4   | Handle |  0   | Size | Data |
+|******|********|******|******|++++++|
+</code></pre>
+<p><strong>SDSIO_CMD_EOS</strong></p>
+<p>The Command ID=5 <strong>SDSIO_CMD_EOS</strong> checks if the end of file is reached. The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</strong>.</p>
+<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |
+&gt;  5   | Handle |  0   |   0  |
+|******|********|******|******|
+</code></pre>
+<p>The Response ID=5 <strong>SDSIO_CMD_EOS</strong> returs the <code>Status</code> with nonzero = end of stream, else 0</p>
+<p>| WORD |  WORD  | WORD   | WORD |
+&lt;  5   | Handle | Status |   0  |
+|<strong><em>*</em>*|</strong><strong><em>*</em>*|</strong><strong><em>*</em>*|</strong>****|</p>
+<p>ToDo: I don't understand why this command is needed as <strong>SDSIO_CMD_READ</strong> returns indirectly this status already.  Also the <code>nonzero</code> above needs work.</p>
               
             </div>
           </div><footer>
