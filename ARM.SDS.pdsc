@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package schemaVersion="1.7.36" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.36/schema/PACK.xsd">
+<package schemaVersion="1.7.45" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.45/schema/PACK.xsd">
   <vendor>ARM</vendor>
   <name>SDS</name>
-  <description>Synchronous Data Streaming</description>
+  <description overview="overview/README.md">Synchronous Data Streaming</description>
   <url>https://www.keil.com/pack/</url>
   <license>LICENSE</license>
   <licenseSets>

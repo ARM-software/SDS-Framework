@@ -78,3 +78,110 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 
 The SDS file format is described [here](https://github.com/ARM-software/SDS-Framework/tree/main/schema).  Each call to 
 `sdsRecWrite` creates one record.
+
+## SDSIO Server Protocol
+
+The SDSIO Server uses a simple protocol for data exchange between a Host computer and the embedded target that integrates an [SDSIO Interface](sds_interface.md).  The protocol assumes that the correct communication to the server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.
+
+The following conventions describe the command semantic used in the following documentation"
+
+Symbol     | Description
+:----------|:----------------------
+\>         | Prefix indicating the direction: Command from target to Host.
+<          | Prefix indicating the direction: Response from Host to target.
+WORD       | 32-bit value (low byte first).
+****       | The field above has exactly one occurrence.
+++++       | The field above has a variable length.
+
+**Commands:**
+
+Commands are send from the embedded target to the Host computer that is running the SDSIO Server.
+
+ID  | Name               | Description
+:--:|:-------------------|:------------------------
+1   | SDSIO_CMD_OPEN     | Open a SDS data file
+2   | SDSIO_CMD_CLOSE    | Close a SDS data file
+3   | SDSIO_CMD_WRITE    | Write to SDS data file
+4   | SDSIO_CMD_READ     | Read from SDS data file
+5   | SDSIO_CMD_EOS      | End of Stream
+
+Each Command starts with a Header (4 Words) and optional data with variable length. Depending on the Command, the SDSIO Server replies with a Response that repeats the Header and delivers additional data.
+
+**SDSIO_CMD_OPEN**
+
+The Command ID=1 **SDSIO_CMD_OPEN** opens an SDS data file on the Host computer.
+
+SDS data filenames use the following file format: `<name>.<file-index>.sds`. `Name` is the base file name of the SDS data file. `Len of Name` is the size of the string in bytes. `<file-index>` is a sequential number starting from `0`.
+
+`Mode` defines `read` (value=0) or `write` (value=1) operation. For `write`, the server inserts the next available `<file-index>` number that does not exist yet (if `Name.3.sds` exists, the server creates `Name.4.sds`). For `read` the server maintains a list of `Names` that where previously used. When a Name was not used before it opens `<file-index>=0`, i.e. `Name.0.sds`.
+
+```txt
+| WORD | WORD **| WORD | WORD *******|++++++|
+>  1   |   0    | Mode | Len of Name | Name |
+|******|********|******|*************|++++++|
+```
+
+The Response ID=1 **SDSIO_CMD_OPEN** provides a `Handle` that is used to identify the file in subsequent commands.
+
+```txt
+| WORD | WORD **| WORD | WORD *******|
+<  1   | Handle | Mode | 0           |
+|******|********|******|*************|
+```
+
+**SDSIO_CMD_CLOSE**
+
+The Command ID=2 **SDSIO_CMD_CLOSE** closes an SDS data file on the Host computer. The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**. There is no Response from the SDSIO Server on this command.
+
+```txt
+| WORD |  WORD  | WORD | WORD |
+>  2   | Handle |  0   |  0   |
+|******|********|******|******|
+```
+
+**SDSIO_CMD_WRITE**
+
+The Command ID=3 **SDSIO_CMD_WRITE** writes data to an SDS data file on the Host computer. The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**. `Size` is the `Data` size in bytes.  There is no Response from the SDSIO Server on this command.
+
+```txt
+| WORD |  WORD  | WORD | WORD |++++++|
+>  3   | Handle |  0   | Size | Data |
+|******|********|******|******|++++++|
+```
+
+**SDSIO_CMD_READ**
+
+The Command ID=4 **SDSIO_CMD_READ** reads data from an SDS data file on the Host computer. The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**. `Size` are the number of bytes that should be read.
+
+```txt
+| WORD |  WORD  | WORD | WORD |
+>  4   | Handle | Size |   0  |
+|******|********|******|******|
+```
+
+The Response ID=4 **SDSIO_CMD_READ** provides the data read from an SDS data file on the HOST computer.
+`Size` is the `Data` size in bytes that is read.
+
+```txt
+| WORD |  WORD  | WORD | WORD |++++++|
+<  4   | Handle |  0   | Size | Data |
+|******|********|******|******|++++++|
+```
+
+**SDSIO_CMD_EOS**
+
+The Command ID=5 **SDSIO_CMD_EOS** checks if the end of file is reached. The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**.
+
+```txt
+| WORD |  WORD  | WORD | WORD |
+>  5   | Handle |  0   |   0  |
+|******|********|******|******|
+```
+
+The Response ID=5 **SDSIO_CMD_EOS** returs the `Status` with nonzero = end of stream, else 0
+
+| WORD |  WORD  | WORD   | WORD |
+<  5   | Handle | Status |   0  |
+|******|********|********|******|
+
+ToDo: I don't understand why this command is needed as **SDSIO_CMD_READ** returns indirectly this status already.  Also the `nonzero` above needs work.
