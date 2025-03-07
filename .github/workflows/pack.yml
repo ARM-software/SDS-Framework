@@ -30,7 +30,9 @@ jobs:
         uses: actions/setup-python@v5
       
       - name: Install MkDocs
-        run: pip install mkdocs
+        run: |
+          pip install mkdocs
+          pip install mkdocs-mermaid2-plugin
 
       - uses: Open-CMSIS-Pack/gen-pack-action@main
         with:
