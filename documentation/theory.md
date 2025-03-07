@@ -50,7 +50,7 @@ The size of the data stream buffer depends on several factors such as:
 - the size of the data stream as it is recommended that the buffer is at least twice the size of a single data stream.
 - the frequency of the algorithm execution. Fast execution speeds may require a larger buffer.
 
-**Recommended Buffer Size**
+**Recommended Buffer Size:**
 
 The table below contains recommended buffer sizes depending on the communication technology used:
 
@@ -180,8 +180,73 @@ The Command ID=5 **SDSIO_CMD_EOS** checks if the end of file is reached. The `Ha
 
 The Response ID=5 **SDSIO_CMD_EOS** returs the `Status` with nonzero = end of stream, else 0
 
+```txt
 | WORD |  WORD  | WORD   | WORD |
 <  5   | Handle | Status |   0  |
 |******|********|********|******|
+```
 
 ToDo: I don't understand why this command is needed as **SDSIO_CMD_READ** returns indirectly this status already.  Also the `nonzero` above needs work.
+
+## SDSIO Message Sequence
+
+This is the message sequence of the SDS DataTest example when connected to MDK-Middleware Ethernet.
+It contains the following threads that executes on the target.
+
+- Management: Overall execution management
+- Algorithm: Algorithm under test
+- Recorder: SDS Recorder thread (sdsRecThread)
+- Playback: SDS Playback thread (sdsPlayThread)
+
+The Server is the SDSIO Server executing on the target system.
+
+```mermaid
+sequenceDiagram
+    participant Management
+    participant Algorithm
+    create participant Recorder as SDS Recorder
+    participant Server as SDSIO Server
+    Management->>Recorder: sdsRecInit
+    Note over Management: sdsRecOpen
+    Management->>Server: SDSIO_CMD_OPEN
+    activate Server
+    Server-->>Management: Response
+    activate Algorithm
+    loop periodic
+        Note over Algorithm: sdsRecWrite
+        Algorithm->>Recorder: Threshold Trigger
+        loop send all data
+            Recorder->>Server: SDSIO_CMD_WRITE
+        end
+    end
+    deactivate Algorithm
+    Note over Management: sdsRecClose
+    Management->>Recorder: Close Trigger
+    loop send all data
+        Recorder->>Server: SDSIO_CMD_WRITE
+    end
+    Recorder->>Management: Close Confirm
+    Management->>Server: SDSIO_CMD_CLOSE
+    deactivate Server
+```
+
+
+ToDo:
+
+- create similar diagram for Playback
+- should Playback and Record use the same Thread?
+- How is the buffer filled on PlayOpen?
+- document control blocks in sds.c, sds_rec.c, and sds_play.c (comments might be sufficient)
+
+How does Threshold work?
+
+- when Threshold is reach, the write operation writes the whole buffer.  The transport layer (TCP/IP) may need to split this into multiple packs. Should size be optimized for transport layer?
+- This writes all buffers https://github.com/ARM-software/SDS-Framework/blob/main/sds/source/sds_rec.c#L157 until empty. When Recorder is same priority as Algorithm, Algorithm might not be executed for quite a while.
+
+sds.c generates detailed events (are they documented?)
+but sds_rec.c does not really use this information
+
+- Threshold event is only set when complete write was possible, is this correct? https://github.com/ARM-software/SDS-Framework/blob/main/sds/source/sds_rec.c#L298 
+
+https://github.com/Arm-Examples/SDS-Examples/blob/main/Hardware/DataTest/rec_management.c
+- do we really need `recdone`?

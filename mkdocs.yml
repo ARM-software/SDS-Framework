@@ -9,6 +9,9 @@ nav:
     - Examples: examples.md
     - Utilities: utilities.md
 
+plugins:
+    - search
+    - mermaid2    # pip install mkdocs-mermaid2-plugin
 theme:
   name: readthedocs
 markdown_extensions:
@@ -16,3 +19,4 @@ markdown_extensions:
 extra_css:
   - css/extra.css
 docs_dir: documentation
+
