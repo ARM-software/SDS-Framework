@@ -47,6 +47,8 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal current" href="#">Theory of Operation</a>
 <ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#buffer-size">Buffer Size</a>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#timestamp">Timestamp</a>
@@ -96,12 +98,43 @@
 <h1 id="theory-of-operation">Theory of Operation</h1>
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
-<p>The core of the SDS-Framework is a circular buffer handling that is the interface between the Recorder/Playback functions and the file I/O communication as shown in the picture below. The user application may read one data streams and write another data stream.</p>
-<p><img alt="Theory of operation" src="../images/Theory_of_Operation.png"/></p>
-<p>ToDo:</p>
+<p>The SDS Framework enables to record and playback one or more data streams to an application that is under development as shown in the diagram below. With the SDSIO Interface the data streams are connected to SDS data files. The file storage can be either embedded within the system and access by a file system or external on a host computer and accessed by a communication interface such as Ethernet or USB.</p>
+<p>The DSP or ML algorithms that are tested operate on blocks and are executed periodically. This documentation uses these terms:</p>
 <ul>
-<li>When does sdsRecInit require an event handler?</li>
+<li><strong>Block size</strong>: is the number of bytes processed by a DSP or ML compute node.</li>
+<li><strong>Interval</strong>: is the periodic time interval that the compute node executes.</li>
 </ul>
+<p><img alt="SDSIO Interface for Player and Recorder" src="../images/SDS-InOut.png"/></p>
+<p>The core of the SDS-Framework is a circular buffer handling (<code>sds.c/h</code>) that is controlled by the Recorder/Player interface functions (<code>sdsRec.c/h</code>/<code>sdsPlay.c/h</code>). This circular buffer is the queue for the file I/O communication (<code>sdsio.c/h</code>). Using the Recorder/Player functions, the data stream under development may read and write data streams as shown in the diagram above.</p>
+<p><img alt="Implementation Files of SDS" src="../images/Theory_of_Operation.png"/></p>
+<h2 id="usage">Usage</h2>
+<p>The following diagram shows the usage of the SDS Recorder and Player functions.  Management is a separate thread that controls the overall execution. Algorithm is a thread that executes Signal Conditioning (SC) and ML Model.</p>
+<div class="mermaid">sequenceDiagram
+    participant Management
+    participant SDS Player
+    participant SDS Recorder
+    participant Algorithm
+    Management-&gt;&gt;SDS Player: sdsPlayOpen `SCinput`
+    Management-&gt;&gt;SDS Recorder: sdsRecOpen `SCoutput`
+    Management-&gt;&gt;SDS Recorder: sdsRecOpen `MLoutput`
+    Management-&gt;&gt;Algorithm: Activate Algorithm
+    Activate Algorithm
+    loop periodic
+        SDS Player-&gt;&gt;Algorithm: sdsPlayReads `SCinput` (with timestamp)
+        Note over Algorithm: Execute Signal Conditioning
+        Algorithm-&gt;&gt;SDS Recorder: sdsRecWrite `SCoutput`
+        Note over Algorithm: Execute ML Model
+        Algorithm-&gt;&gt;SDS Recorder: sdsRecWrite `MLoutput`
+    end
+    Management-&gt;&gt;Algorithm: Deactivate Algorithm
+    Deactivate Algorithm
+    Management-&gt;&gt;SDS Player: sdsPlayClose `SCinput`
+    Management-&gt;&gt;SDS Recorder: sdsRecClose `SCoutput`
+    Management-&gt;&gt;SDS Recorder: sdsRecClose `MCoutput`
+</div>
+<p>Each data stream is stored in a separate SDS data file. In the diagram below <code>SCinput.0.sds</code> is the input to Signal Conditioning, <code>SCoutput.0.sds</code> is the output of Signal Conditioning, and <code>MLoutput.0.sds</code> is the output of the ML Model. Each execution of the algorithm is represented in a data block with a <code>timestamp</code>. The <code>timestamp</code> allows to correlate the blocks of different streams. In the above example, all blocks of one algorithm execution have the same timestamp value.</p>
+<p><img alt="SDS Files" src="../images/SDS-Files.png"/></p>
+<p>ToDo When does sdsRecInit require an event handler?</p>
 <p><strong>Example:</strong> Recording of an accelerometer data stream</p>
 <p>The following code snippets show the usage of the <strong>Recorder Interface</strong>.</p>
 <pre><code class="language-c">// *** variable definitions ***
@@ -112,7 +145,7 @@ struct {                          // sensor data stream format
 } accelerometer [30];             // number of samples in one data stream record
 
 sdsRecId_t *accel_id,             // data stream id
-uint8_t accel_buf[1500];          // data stream buffer for circular buffer handling
+uint8_t accel_buf[1000];          // data stream buffer for circular buffer handling
      :
 // *** function calls ***
    sdsRecInit(NULL);              // init SDS Recorder  
@@ -133,9 +166,11 @@ uint8_t accel_buf[1500];          // data stream buffer for circular buffer hand
 <p>The size of the data stream buffer depends on several factors such as:</p>
 <ul>
 <li>the communication interface used as the technology may impose certain buffer sizes to maximize the transfer rate.</li>
-<li>the size of the data stream as it is recommended that the buffer is at least twice the size of a single data stream.</li>
+<li>the size of the data stream as it is recommended that the buffer is at least three the size of a single data stream.</li>
 <li>the frequency of the algorithm execution. Fast execution speeds may require a larger buffer.</li>
 </ul>
+<p>A a guideline, the buffer size should be 3 times the <strong>block size</strong>. As a minimum 0x1000 (4 KB) is recommended.</p>
+<p>ToDo: Threshold should be optional</p>
 <p><strong>Recommended Buffer Size:</strong></p>
 <p>The table below contains recommended buffer sizes depending on the communication technology used:</p>
 <p>ToDo</p>
