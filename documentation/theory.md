@@ -3,13 +3,53 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-The core of the SDS-Framework is a circular buffer handling that is the interface between the Recorder/Playback functions and the file I/O communication as shown in the picture below. The user application may read one data streams and write another data stream.
+The SDS Framework enables to record and playback one or more data streams to an application that is under development as shown in the diagram below. With the SDSIO Interface the data streams are connected to SDS data files. The file storage can be either embedded within the system and access by a file system or external on a host computer and accessed by a communication interface such as Ethernet or USB.
 
-![Theory of operation](images/Theory_of_Operation.png)
+The DSP or ML algorithms that are tested operate on blocks and are executed periodically. This documentation uses these terms:
 
-ToDo:
+- **Block size**: is the number of bytes processed by a DSP or ML compute node.
+- **Interval**: is the periodic time interval that the compute node executes.
 
-- When does sdsRecInit require an event handler?
+![SDSIO Interface for Player and Recorder](images/SDS-InOut.png)
+
+The core of the SDS-Framework is a circular buffer handling (`sds.c/h`) that is controlled by the Recorder/Player interface functions (`sdsRec.c/h`/`sdsPlay.c/h`). This circular buffer is the queue for the file I/O communication (`sdsio.c/h`). Using the Recorder/Player functions, the data stream under development may read and write data streams as shown in the diagram above.
+
+![Implementation Files of SDS](images/Theory_of_Operation.png)
+
+## Usage
+
+The following diagram shows the usage of the SDS Recorder and Player functions.  Management is a separate thread that controls the overall execution. Algorithm is a thread that executes Signal Conditioning (SC) and ML Model.
+
+```mermaid
+sequenceDiagram
+    participant Management
+    participant SDS Player
+    participant SDS Recorder
+    participant Algorithm
+    Management->>SDS Player: sdsPlayOpen `SCinput`
+    Management->>SDS Recorder: sdsRecOpen `SCoutput`
+    Management->>SDS Recorder: sdsRecOpen `MLoutput`
+    Management->>Algorithm: Activate Algorithm
+    Activate Algorithm
+    loop periodic
+        SDS Player->>Algorithm: sdsPlayReads `SCinput` (with timestamp)
+        Note over Algorithm: Execute Signal Conditioning
+        Algorithm->>SDS Recorder: sdsRecWrite `SCoutput`
+        Note over Algorithm: Execute ML Model
+        Algorithm->>SDS Recorder: sdsRecWrite `MLoutput`
+    end
+    Management->>Algorithm: Deactivate Algorithm
+    Deactivate Algorithm
+    Management->>SDS Player: sdsPlayClose `SCinput`
+    Management->>SDS Recorder: sdsRecClose `SCoutput`
+    Management->>SDS Recorder: sdsRecClose `MCoutput`
+```
+
+Each data stream is stored in a separate SDS data file. In the diagram below `SCinput.0.sds` is the input to Signal Conditioning, `SCoutput.0.sds` is the output of Signal Conditioning, and `MLoutput.0.sds` is the output of the ML Model. Each execution of the algorithm is represented in a data block with a `timestamp`. The `timestamp` allows to correlate the blocks of different streams. In the above example, all blocks of one algorithm execution have the same timestamp value.
+
+![SDS Files](images/SDS-Files.png)
+
+ToDo When does sdsRecInit require an event handler?
 
 **Example:** Recording of an accelerometer data stream
 
@@ -24,7 +64,7 @@ struct {                          // sensor data stream format
 } accelerometer [30];             // number of samples in one data stream record
 
 sdsRecId_t *accel_id,             // data stream id
-uint8_t accel_buf[1500];          // data stream buffer for circular buffer handling
+uint8_t accel_buf[1000];          // data stream buffer for circular buffer handling
      :
 // *** function calls ***
    sdsRecInit(NULL);              // init SDS Recorder  
@@ -47,8 +87,12 @@ uint8_t accel_buf[1500];          // data stream buffer for circular buffer hand
 The size of the data stream buffer depends on several factors such as:
 
 - the communication interface used as the technology may impose certain buffer sizes to maximize the transfer rate.
-- the size of the data stream as it is recommended that the buffer is at least twice the size of a single data stream.
+- the size of the data stream as it is recommended that the buffer is at least three the size of a single data stream.
 - the frequency of the algorithm execution. Fast execution speeds may require a larger buffer.
+
+A a guideline, the buffer size should be 3 times the **block size**. As a minimum 0x1000 (4 KB) is recommended.
+
+ToDo: Threshold should be optional
 
 **Recommended Buffer Size:**
 
