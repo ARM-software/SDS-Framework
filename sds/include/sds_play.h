@@ -29,22 +29,27 @@ extern "C"
 // ==== SDS Player ====
 
 /// Identifier
-typedef void *sdsPlayId_t;
+typedef void *sdsPlayId_t;                  ///< handle to SDS file for playback
 
 /// Function return codes
 #define SDS_PLAY_OK             (0)         ///< Operation completed successfully
 #define SDS_PLAY_ERROR          (-1)        ///< Operation failed
 
-/// Events
+/// Event codes
 #define SDS_PLAY_EVENT_IO_ERROR  (1UL << 0) ///< I/O Error
 
-/// Event callback function
+/**
+  \typedef void (*sdsPlayEvent_t) (sdsPlayId_t id, uint32_t event)
+  \brief       Call back function for player events
+  \param[in]   id             handle to SDS file for playback
+  \param[in]   event          event code
+*/
 typedef void (*sdsPlayEvent_t) (sdsPlayId_t id, uint32_t event);
 
 /**
   \fn          int32_t sdsPlayInit (void)
   \brief       Initialize player.
-  \param[in]   event_cb       pointer to \ref sdsPlayEvent_t
+  \param[in]   event_cb       pointer to \ref sdsPlayEvent_t callback function
   \return      return code
 */
 int32_t sdsPlayInit (sdsPlayEvent_t event_cb);
@@ -63,14 +68,14 @@ int32_t sdsPlayUninit (void);
   \param[in]   buf            pointer to buffer for stream
   \param[in]   buf_size       buffer size in bytes
   \param[in]   io_threshold   threshold in bytes to trigger I/O read (when below threshold)
-  \return      \ref sdsPlayId_t
+  \return      \ref sdsPlayId_t handle to SDS file for playback
 */
 sdsPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size, uint32_t io_threshold);
 
 /**
   \fn          int32_t sdsPlayClose (sdsPlayId_t id)
   \brief       Close player stream.
-  \param[in]   id             \ref sdsPlayId_t
+  \param[in]   id             \ref sdsPlayId_t handle to SDS file for playback
   \return      return code
 */
 int32_t sdsPlayClose (sdsPlayId_t id);
@@ -78,7 +83,7 @@ int32_t sdsPlayClose (sdsPlayId_t id);
 /**
   \fn          uint32_t sdsPlayRead (sdsPlayId_t id, void *buf, uint32_t buf_size)
   \brief       Read record data and timestamp from Player stream.
-  \param[in]   id             \ref sdsPlayId_t
+  \param[in]   id             \ref sdsPlayId_t handle to SDS file for playback
   \param[out]  timestamp      pointer to buffer for record timestamp in ticks
   \param[out]  buf            pointer to buffer for data to read
   \param[in]   buf_size       buffer size in bytes
@@ -89,7 +94,7 @@ uint32_t sdsPlayRead (sdsPlayId_t id, uint32_t *timestamp, void *buf, uint32_t b
 /**
   \fn          uint32_t sdsPlayGetSize (sdsPlayId_t id)
   \brief       Get record data size from Player stream.
-  \param[in]   id             \ref sdsPlayId_t
+  \param[in]   id             \ref sdsPlayId_t handle to SDS file for playback
   \return      number of data bytes in record
 */
 uint32_t sdsPlayGetSize (sdsPlayId_t id);
@@ -97,7 +102,7 @@ uint32_t sdsPlayGetSize (sdsPlayId_t id);
 /**
   \fn          int32_t sdsPlayEndOfStream (sdsPlayId_t id)
   \brief       Check if end of stream has been reached.
-  \param[in]   id             \ref sdsPlayId_t
+  \param[in]   id             \ref sdsPlayId_t handle to SDS file for playback
   \return      nonzero if end of stream, else 0
 */
 int32_t sdsPlayEndOfStream (sdsPlayId_t id);

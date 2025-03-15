@@ -7,7 +7,8 @@ The SDS Framework enables to record and playback one or more data streams to an 
 
 The DSP or ML algorithms that are tested operate on blocks and are executed periodically. This documentation uses these terms:
 
-- **Block size**: is the number of bytes processed by a DSP or ML compute node.
+- **Data Block**: is a set of input or output data which is processed in one step by a DSP or ML compute note.
+- **Block size**: is the number of bytes of a data block. 
 - **Interval**: is the periodic time interval that the compute node executes.
 
 ![SDSIO Interface for Player and Recorder](images/SDS-InOut.png)
@@ -121,7 +122,7 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 ## SDS File Format
 
 The SDS file format is described [here](https://github.com/ARM-software/SDS-Framework/tree/main/schema).  Each call to 
-`sdsRecWrite` creates one record.
+`sdsRecWrite` writes one data block.
 
 ## SDSIO Server Protocol
 
@@ -294,3 +295,89 @@ but sds_rec.c does not really use this information
 
 https://github.com/Arm-Examples/SDS-Examples/blob/main/Hardware/DataTest/rec_management.c
 - do we really need `recdone`?
+
+## Guidelines for Stream Buffer sizing and Threshold settings
+
+### Overview
+
+The **SDS Recorder/Player** uses memory buffers to manage data recording and playback efficiently.
+Proper buffer and threshold configurations optimize performance by balancing data production, consumption, and system resource utilization.
+
+### Stream Buffer Size
+
+The size of memory buffers affects the balance between data production and consumption.
+
+The **absolute minimum stream buffer size** should be large enough to store **one maximum record along with its header (8 bytes)**.
+
+The **recommended stream buffer size** should be large enough to store **at least two maximum records along with headers (8 bytes per record)** and
+can be rounded up for convenience.
+
+The record size generally corresponds to the data size used by the underlying technology.
+For example, in typical **ML applications**, the record size should ideally match the **data slice required by the DSP process**.
+
+If sufficient RAM is available, increasing the buffer size can improve performance.
+
+### Threshold Settings for SDS Recorder/Player
+
+#### **Function of Thresholds**
+
+- **For the SDS Recorder:** Determines when data writing to the **I/O** begins.
+- **For the SDS Player:** Determines when data reading from the **I/O** begins.
+
+The **recommended threshold setting** is **half of the stream buffer size**, enabling a **double-buffering technique** where one half of the buffer is transferred while the other half continues to fill or be consumed.
+
+A well-optimized system ensures timely data transfer over the I/O:
+
+- For the **Recorder**: Previously acquired data must be transferred before the remaining of the buffer fills with new data.
+- For the **Player**: New playback data should be transferred before the previously transferred playback data is consumed.
+
+#### **Impact on System Performance**
+
+The threshold setting directly affects system performance, as **I/O transfers temporarily occupy the CPU**.
+During these operations, other system processes may experience limited CPU availability.
+
+If the system requires additional CPU resources for other tasks, adjustments can be made by:
+
+1. **Increasing the priority of critical threads**.
+2. **Reducing the threshold setting**, which shortens the duration of each transfer but increases the frequency of transfers.
+
+> **Note:** Thresholds operate based on discrete record sizes. A threshold is only triggered when a write or read operation
+> surpasses (for write) or falls below (for read) the set limit.
+> When handling large records, breaking them into smaller chunks may be necessary to optimize system performance.
+
+### Additional Settings Affecting I/O Bandwidth
+
+Several additional factors influence I/O bandwidth, including:
+
+1. **Temporary Recorder/Player buffer size** (configured in the `sds_rec_config.h` / `sds_play_config.h` files).
+2. **I/O low-level buffering**.
+
+#### **Optimizing I/O Buffering**
+
+For **optimal performance**, the **temporary Recorder/Player buffer size should match the I/O low-level buffer size**.
+
+For some interfaces, the I/O low-level buffer size can be configurable, for others, it is fixed.
+
+Example: The **USB Virtual COM interface** allows I/O low-level buffer size configuration.
+It is recommended to set this buffer size as a multiple of the **bulk endpoint maximum packet size** (512 bytes for USB high-speed connections).
+
+### Example configurations for typical ML use cases
+
+| **ML Use Case**      | **DSP slice**                       | **Calculation**                                                                      | **Buffer Size**  | **Threshold** |
+| -------------------- | ----------------------------------- | ------------------------------------------------------------------------------------ | ---------------- | ------------- |
+| **Motion detection** | 125 accelerometer samples           | `2 × [(125 samples × 3 axes × 4 bytes per axis) + 8] = 3016 -> rounded to 3072`      | **3072 bytes**   | **1536**      |
+| **Keyword spotting** | 250 ms of audio data samples (16kHz)| `2 × [(4,000 audio samples × 4 bytes per sample) + 8] = 32,016 -> rounded to 32,768` | **32768 bytes**  | **16384**     |
+| **Object detection** | 1 picture (320x320)                 | `2 × [(320 × 320 pixels × 4 bytes per pixel) + 8] = 819,216`                         | **819216 bytes** | **409608**    |
+
+### **Best Practices Summary**
+
+- **Ensure buffer sizes align with DSP ata slice sizes** for efficient ML processing.
+
+- **Use double-buffering** to enhance I/O efficiency.
+
+- **Adjust threshold settings** to balance performance and CPU usage.
+
+- **Match temporary buffer sizes to I/O low-level buffer sizes** where possible.
+
+By following these guidelines, the **SDS Recorder/Player** can be configured efficiently to balance **performance, latency, and CPU utilization**,
+ensuring smooth data processing and system stability.

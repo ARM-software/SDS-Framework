@@ -29,7 +29,7 @@ extern "C"
 // ==== SDS Recorder ====
 
 /// Identifier
-typedef void *sdsRecId_t;
+typedef void *sdsRecId_t;                   ///< handle to SDS file for recording
 
 /// Function return codes
 #define SDS_REC_OK              (0)         ///< Operation completed successfully
@@ -44,7 +44,7 @@ typedef void (*sdsRecEvent_t) (sdsRecId_t id, uint32_t event);
 /**
   \fn          int32_t sdsRecInit (sdsRecEvent_t event_cb)
   \brief       Initialize recorder.
-  \param[in]   event_cb       pointer to \ref sdsRecEvent_t
+  \param[in]   event_cb       pointer to \ref sdsRecEvent_t callback function
   \return      return code
 */
 int32_t sdsRecInit (sdsRecEvent_t event_cb);
@@ -63,14 +63,14 @@ int32_t sdsRecUninit (void);
   \param[in]   buf            pointer to buffer for stream
   \param[in]   buf_size       buffer size in bytes
   \param[in]   io_threshold   threshold in bytes to trigger I/O write (when equal or above threshold)
-  \return      \ref sdsRecId_t
+  \return      \ref sdsRecId_t handle to SDS file for recording
 */
 sdsRecId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size, uint32_t io_threshold);
 
 /**
   \fn          int32_t sdsRecClose (sdsRecId_t id)
   \brief       Close recorder stream.
-  \param[in]   id             \ref sdsRecId_t
+  \param[in]   id             \ref sdsRecId_t handle to SDS file for recording
   \return      return code
 */
 int32_t sdsRecClose (sdsRecId_t id);
@@ -78,7 +78,7 @@ int32_t sdsRecClose (sdsRecId_t id);
 /**
   \fn          uint32_t sdsRecWrite (sdsRecId_t id, const void *buf, uint32_t buf_size)
   \brief       Write record data and timestamp to recorder stream.
-  \param[in]   id             \ref sdsRecId_t
+  \param[in]   id             \ref sdsRecId_t handle to SDS file for recording 
   \param[in]   timestamp      record timestamp in ticks
   \param[in]   buf            pointer to buffer with data to write
   \param[in]   buf_size       buffer size in bytes

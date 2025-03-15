@@ -29,13 +29,13 @@ extern "C"
 // ==== Synchronous Data Stream Input/Output (SDS I/O) ====
 
 /// Identifier
-typedef void *sdsioId_t;
+typedef void *sdsioId_t;        ///< handle to SDS I/O stream
 
 /// Open Mode
 typedef enum {
   sdsioModeRead  = 0,           ///< Open for read (binary)
   sdsioModeWrite = 1            ///< Open for write (binary)
-} sdsioMode_t;
+} sdsioMode_t;                  ///< Open mode
 
 /// Function return codes
 #define SDSIO_OK                (0)         ///< Operation completed successfully
@@ -59,7 +59,7 @@ int32_t sdsioUninit (void);
   \fn          sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode)
   \brief       Open I/O stream.
   \param[in]   name           stream name (pointer to NULL terminated string)
-  \param[in]   mode           \ref sdsioMode_t
+  \param[in]   mode           \ref sdsioMode_t open mode
   \return      \ref sdsioId_t
 */
 sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode);
@@ -67,7 +67,7 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode);
 /**
   \fn          int32_t sdsioClose (sdsioId_t id)
   \brief       Close I/O stream.
-  \param[in]   id             \ref sdsioId_t
+  \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
   \return      return code
 */
 int32_t sdsioClose (sdsioId_t id);
@@ -75,7 +75,7 @@ int32_t sdsioClose (sdsioId_t id);
 /**
   \fn          uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size)
   \brief       Write data to I/O stream.
-  \param[in]   id             \ref sdsioId_t
+  \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
   \param[in]   buf            pointer to buffer with data to write
   \param[in]   buf_size       buffer size in bytes
   \return      number of bytes written
@@ -85,7 +85,7 @@ uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size);
 /**
   \fn          uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size)
   \brief       Read data from I/O stream.
-  \param[in]   id             \ref sdsioId_t
+  \param[in]   id             \ref sdsioId_t handle to SDS I/O stream 
   \param[out]  buf            pointer to buffer for data to read
   \param[in]   buf_size       buffer size in bytes
   \return      number of bytes read
@@ -95,7 +95,7 @@ uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size);
 /**
   \fn          int32_t sdsioEndOfStream (sdsioId_t id)
   \brief       Check if end of stream has been reached.
-  \param[in]   id             \ref sdsioId_t
+  \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
   \return      nonzero if end of stream, else 0
 */
 int32_t sdsioEndOfStream (sdsioId_t id);

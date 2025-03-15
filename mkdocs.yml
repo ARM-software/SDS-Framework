@@ -8,10 +8,20 @@ nav:
     - SDS Interface: sds_interface.md
     - Examples: examples.md
     - Utilities: utilities.md
+    - API Modules: SDS_API\modules.md
 
 plugins:
     - search
     - mermaid2    # pip install mkdocs-mermaid2-plugin
+    - mkdoxy:     # pip install mkdoxy  (may require PYTHONPATH to be set)
+        projects:
+          SDS_API:
+            src-dirs: ./sds/include
+            full-doc: true
+            doxy-cfg:
+              FILE_PATTERNS: "*.h *.txt"
+
+
 theme:
   name: readthedocs
 markdown_extensions:

@@ -2,42 +2,36 @@
 
 The **Synchronous Data Stream (SDS) Framework** implements a data stream management, provides methods and helper tools for developing and optimizing embedded applications that integrate DSP and ML algorithms. This framework may be used stand-alone, but also in combination with [**CMSIS-Stream**](https://github.com/ARM-software/CMSIS-Stream) that allows to combine algorithms using a compute graph.
 
-## Overview 
+## Features
 
-- Implements a flexible data stream management for sensor and audio data interfaces
-   - Supports data streams from multiple interfaces including provisions for time drifts. 
+- Implements a flexible data stream management for sensor, audio, and video interfaces that process data streams.
+- Supports data streams from multiple interfaces (i.e. for sensor fusion) including provisions for time drifts.
+- **Record real-world data** with original data sources of the target hardware for analysis and development.
+- **Playback real-world data** for algorithm validation using target hardware or [Arm Virtual Hardware - FVP](https://github.com/arm-software/avh).
 
-- Provides methods to **record real-world data** for analysis and development
-  - Input to Digital Signal Processing (DSP) development tools such as filter designers
-  - Input to Machine Learning (ML) model classification, training, and performance optimization
-  - Verify execution of DSP algorithm on Cortex-M targets with off-line tools
+The captured data streams are stored in SDS data files. A [YAML metadata file](./schema/README.md) can be used to describe the content. The SDS data files have several use cases such as:
 
-- **Playback real-world data** for algorithm validation using Arm Virtual Hardware
-  - Input to Digital Signal Processing (DSP) development tools such as filter designers
-  - Input to Machine Learning (ML) model classification, training, and performance optimization 
-  - Verify execution of DSP algorithm on Cortex-M targets with off-line tools
+- Input to Digital Signal Processing (DSP) development tools such as filter designers
+- Input to Machine Learning (ML) model classification, training, and performance optimization 
+- Verify execution of DSP algorithm on Cortex-M targets with off-line tools
 
-- Defines binary data format with [YAML metadata file](./schema/README.md).
+[Python-based utilities](./utilities/README.md) are provided for recording, playback, visualization, and data conversion
 
-- [Python-based utilities](./utilities/README.md) for recording, playback, visualization, and data conversion
-
-Refer to ["ML Developers Guide for Cortex-M Processors and Ethos-U NPU" - "Tool Support" - "SDS Framework Usage"](https://developer.arm.com/documentation/109267/0100/Tool-Support-for-the-Arm-Ethos-U-NPU/SDS-Framework-Usage) for more information.
-
-## Interfaces
-
-The [SDS Framework interfaces](./sds/README.md) implement the SDS streaming interfaces via different methods. The functions of the **sds.h Circular Buffer Handling** may be used at any level of a Compute Graph to provide inputs or capture outputs of an DSP or ML algorithm.
-
-![Interfaces](./documentation/images/SDS-Interfaces.png "Interfaces")
-
-## Repository top-level structure
+## Repository structure
 
 Directory                         | Description
 ----------------------------------|-------------------------------
 [examples](./examples)            | Example implementations for various evaluation boards
-[documentation](./documentation/) | User documentation of the SDS Framework
+[documentation](./documentation/) | [User documentation](https://arm-software.github.io/SDS-Framework/main/index.html) of the SDS Framework
 [schema](./schema)                | Schema for SDS File Format
 [sds](./sds)                      | Interfaces of the SDS Framework for Cortex-M devices
 [utilities](./utilities)          | Python scripts for processing of SDS binary data files
+
+## Related
+
+- [SDS Examples](https://github.com/Arm-Examples/sds-examples)
+- [ML Developers Guide for Cortex-M Processors and Ethos-U NPU](https://developer.arm.com/documentation/109267)
+- [Arm Virtual Hardware - FVP](https://github.com/arm-software/avh)
 
 ## License
 
@@ -46,6 +40,11 @@ The SDS Framework is licensed under [![License](https://img.shields.io/github/li
 ## Contributions and Pull Requests
 
 Contributions are accepted under [![License](https://img.shields.io/github/license/arm-software/CMSIS_6?label)](https://github.com/ARM-software/CMSIS_6/blob/main/LICENSE). Only submit contributions where you have authored all of the code.
+
+The documentation is generated using [MKDocs](https://www.mkdocs.org/) with the following additional plugins:
+
+- [mermaid2](https://mkdocs-mermaid2.readthedocs.io/en/latest/) for sequence diagrams.
+- [mkdoxy](https://pypi.org/project/mkdoxy) for API documentation.
 
 ### Issues and Labels
 
