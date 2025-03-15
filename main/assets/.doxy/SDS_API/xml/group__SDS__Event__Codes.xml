@@ -8,9 +8,10 @@
         <name>SDS_PLAY_EVENT_IO_ERROR</name>
         <initializer>(1UL &lt;&lt; 0)</initializer>
         <briefdescription>
-<para>Event codes. </para>
+<para>I/O Error during sds_play function execution. </para>
         </briefdescription>
         <detaileddescription>
+<para>Event codes.</para>
 <para>I/O Error </para>
         </detaileddescription>
         <inbodydescription>

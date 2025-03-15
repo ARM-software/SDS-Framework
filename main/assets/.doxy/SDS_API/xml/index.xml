@@ -96,7 +96,7 @@
     <member refid="group__SDS__Player_1gaf1b0208812f302b24be984165f4468eb" kind="function"><name>sdsPlayGetSize</name></member>
     <member refid="group__SDS__Player_1gac7de4a7650abe5d2ee8f4f4c6fde57b0" kind="function"><name>sdsPlayEndOfStream</name></member>
   </compound>
-  <compound refid="group__Defines" kind="group"><name>Defines</name>
+  <compound refid="group__Define" kind="group"><name>Define</name>
   </compound>
   <compound refid="group__SDS__Errors" kind="group"><name>SDS_Errors</name>
     <member refid="group__SDS__Errors_1ga46cd26d34d8645e568904ae7d1b339e7" kind="define"><name>SDS_PLAY_OK</name></member>

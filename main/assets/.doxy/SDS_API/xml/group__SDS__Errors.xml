@@ -8,9 +8,10 @@
         <name>SDS_PLAY_OK</name>
         <initializer>(0)</initializer>
         <briefdescription>
-<para>Function return codes. </para>
+<para>SDS function execution completed. </para>
         </briefdescription>
         <detaileddescription>
+<para>Function return codes.</para>
 <para>Operation completed successfully </para>
         </detaileddescription>
         <inbodydescription>
@@ -21,9 +22,10 @@
         <name>SDS_PLAY_ERROR</name>
         <initializer>(-1)</initializer>
         <briefdescription>
-<para>Operation failed. </para>
+<para>Error during sds_play function execution. </para>
         </briefdescription>
         <detaileddescription>
+<para>Operation failed. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

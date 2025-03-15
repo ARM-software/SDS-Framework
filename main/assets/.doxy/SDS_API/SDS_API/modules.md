@@ -5,7 +5,7 @@
 Here is a list of all modules:
 
 
-* [**Defines**](group__Defines.md) _Error and Event Codes._ 
+* [**Define Values**](group__Define.md) 
     
 
     * [**SDS Error Codes**](group__SDS__Errors.md) _SDS Player Error Codes._ 

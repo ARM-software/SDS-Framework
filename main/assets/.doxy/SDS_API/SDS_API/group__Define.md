@@ -1,14 +1,14 @@
 
 
-# Group Defines
+# Group Define
 
 
 
-[**Modules**](modules.md) **>** [**Defines**](group__Defines.md)
+[**Modules**](modules.md) **>** [**Define**](group__Define.md)
 
 
 
-_Error and Event Codes._ 
+
 
 
 

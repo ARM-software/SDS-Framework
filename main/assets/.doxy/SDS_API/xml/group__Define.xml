@@ -1,12 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
-  <compounddef id="group__Defines" kind="group">
-    <compoundname>Defines</compoundname>
-    <title>Defines</title>
+  <compounddef id="group__Define" kind="group">
+    <compoundname>Define</compoundname>
+    <title>Define Values</title>
     <innergroup refid="group__SDS__Errors">SDS Error Codes</innergroup>
     <innergroup refid="group__SDS__Event__Codes">SDS Event Codes</innergroup>
     <briefdescription>
-<para>Error and Event Codes. </para>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
