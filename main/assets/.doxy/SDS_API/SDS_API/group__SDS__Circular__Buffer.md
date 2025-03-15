@@ -94,12 +94,6 @@ sds.h _: SDS circular buffer handling for data streams_[More...](#detailed-descr
 ## Detailed Description
 
 
-/
-
-
-/\*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====
-
-
 The stream data is written to and read from a circular buffer allocated in RAM. Event callback function which is triggered on data threshold reached can be registered. 
 
 

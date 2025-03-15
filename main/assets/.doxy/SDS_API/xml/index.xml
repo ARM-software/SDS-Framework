@@ -57,15 +57,6 @@
     <member refid="group__SDS__IO__Interface_1ga9e13c7a64eb4e9cf51f07ffc21c699bc" kind="function"><name>sdsioRead</name></member>
     <member refid="group__SDS__IO__Interface_1ga5d7ec0d83a40f56939115f3c09b0d1d1" kind="function"><name>sdsioEndOfStream</name></member>
   </compound>
-  <compound refid="group__Defines" kind="group"><name>Defines</name>
-  </compound>
-  <compound refid="group__SDS__Errors" kind="group"><name>SDS_Errors</name>
-    <member refid="group__SDS__Errors_1ga46cd26d34d8645e568904ae7d1b339e7" kind="define"><name>SDS_PLAY_OK</name></member>
-    <member refid="group__SDS__Errors_1gae66ed83b49afe0693f0a33611fd2f997" kind="define"><name>SDS_PLAY_ERROR</name></member>
-  </compound>
-  <compound refid="group__SDS__Event__Codes" kind="group"><name>SDS_Event_Codes</name>
-    <member refid="group__SDS__Event__Codes_1ga607b2b4ced9971b99b2289dd111888f5" kind="define"><name>SDS_PLAY_EVENT_IO_ERROR</name></member>
-  </compound>
   <compound refid="group__SDS__Circular__Buffer" kind="group"><name>SDS_Circular_Buffer</name>
     <member refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kind="typedef"><name>sdsId_t</name></member>
     <member refid="group__SDS__Circular__Buffer_1gac4428df6973dd12416953c49b278b46c" kind="typedef"><name>sdsPlayEvent_t</name></member>
@@ -104,6 +95,15 @@
     <member refid="group__SDS__Player_1ga80feb400c5cbd35961e74c521fbe1802" kind="function"><name>sdsPlayRead</name></member>
     <member refid="group__SDS__Player_1gaf1b0208812f302b24be984165f4468eb" kind="function"><name>sdsPlayGetSize</name></member>
     <member refid="group__SDS__Player_1gac7de4a7650abe5d2ee8f4f4c6fde57b0" kind="function"><name>sdsPlayEndOfStream</name></member>
+  </compound>
+  <compound refid="group__Defines" kind="group"><name>Defines</name>
+  </compound>
+  <compound refid="group__SDS__Errors" kind="group"><name>SDS_Errors</name>
+    <member refid="group__SDS__Errors_1ga46cd26d34d8645e568904ae7d1b339e7" kind="define"><name>SDS_PLAY_OK</name></member>
+    <member refid="group__SDS__Errors_1gae66ed83b49afe0693f0a33611fd2f997" kind="define"><name>SDS_PLAY_ERROR</name></member>
+  </compound>
+  <compound refid="group__SDS__Event__Codes" kind="group"><name>SDS_Event_Codes</name>
+    <member refid="group__SDS__Event__Codes_1ga607b2b4ced9971b99b2289dd111888f5" kind="define"><name>SDS_PLAY_EVENT_IO_ERROR</name></member>
   </compound>
   <compound refid="dir_d09908635ef304ba819d3349bcb716bf" kind="dir"><name>sds/include</name>
   </compound>
