@@ -1,0 +1,332 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="group__SDS__Circular__Buffer" kind="group">
+    <compoundname>SDS_Circular_Buffer</compoundname>
+    <title>SDS Circular Buffer</title>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" prot="public" static="no">
+        <type>void *</type>
+        <definition>typedef void* sdsId_t</definition>
+        <argsstring></argsstring>
+        <name>sdsId_t</name>
+        <briefdescription>
+<para>Identifier. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>handle to SDS stream</para>
+<para>todo test </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="32" column="14" bodyfile="sds/include/sds.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="group__SDS__Circular__Buffer_1gac4428df6973dd12416953c49b278b46c" prot="public" static="no">
+        <type>void(*</type>
+        <definition>typedef void(* sdsPlayEvent_t) (sdsPlayId_t id, uint32_t event)</definition>
+        <argsstring>)(sdsPlayId_t id, uint32_t event)</argsstring>
+        <name>sdsPlayEvent_t</name>
+        <briefdescription>
+<para>Call back function for SDS circular buffer handling. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Call back function for player events.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>handle to SDS file for playback </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">event</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>event code</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+todo </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_play.h" line="47" column="9" bodyfile="sds/include/sds_play.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="group__SDS__Circular__Buffer_1ga22743afd7f4d4f25622e426fef93bdac" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsClose</definition>
+        <argsstring>(sdsId_t id)</argsstring>
+        <name>sdsClose</name>
+        <param>
+          <type><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Close stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS stream </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>return code</para>
+</simplesect>
+todo </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="67" column="9" declfile="sds/include/sds.h" declline="67" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__Circular__Buffer_1ga6bb703bed44e380e1095df0e17fb5a4f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsRegisterEvents</definition>
+        <argsstring>(sdsId_t id, sdsEvent_t event_cb, uint32_t event_mask, void *event_arg)</argsstring>
+        <name>sdsRegisterEvents</name>
+        <param>
+          <type><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>sdsEvent_t</type>
+          <declname>event_cb</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>event_mask</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>event_arg</declname>
+        </param>
+        <briefdescription>
+<para>Register stream events. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS stream </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">event_cb</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to sdsEvent_t </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">event_mask</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>event mask </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">event_arg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>event argument </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>return code</para>
+</simplesect>
+todo </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="78" column="9" declfile="sds/include/sds.h" declline="78" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__Circular__Buffer_1ga24c1cda904934edb663913ef16a9a10a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t sdsWrite</definition>
+        <argsstring>(sdsId_t id, const void *buf, uint32_t buf_size)</argsstring>
+        <name>sdsWrite</name>
+        <param>
+          <type><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>buf</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>buf_size</declname>
+        </param>
+        <briefdescription>
+<para>Write data to stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS stream </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to buffer with data to write </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer size in bytes </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of bytes written</para>
+</simplesect>
+todo </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="88" column="10" declfile="sds/include/sds.h" declline="88" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__Circular__Buffer_1ga9193d33422dae3d136364f1992f0ddaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t sdsRead</definition>
+        <argsstring>(sdsId_t id, void *buf, uint32_t buf_size)</argsstring>
+        <name>sdsRead</name>
+        <param>
+          <type><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>buf</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>buf_size</declname>
+        </param>
+        <briefdescription>
+<para>Read data from stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS stream </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to buffer for data to read </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer size in bytes </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of bytes read</para>
+</simplesect>
+todo </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="98" column="10" declfile="sds/include/sds.h" declline="98" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__Circular__Buffer_1gae961e1d5b6e812759de341b1a01f2fb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsClear</definition>
+        <argsstring>(sdsId_t id)</argsstring>
+        <name>sdsClear</name>
+        <param>
+          <type><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Clear stream data. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS stream </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>return code</para>
+</simplesect>
+todo </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="106" column="9" declfile="sds/include/sds.h" declline="106" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__Circular__Buffer_1gae8e41a48e111458dc1784c8c4d733c7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t sdsGetCount</definition>
+        <argsstring>(sdsId_t id)</argsstring>
+        <name>sdsGetCount</name>
+        <param>
+          <type><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Get data count in stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS stream </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of bytes in stream</para>
+</simplesect>
+todo </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="114" column="10" declfile="sds/include/sds.h" declline="114" declcolumn="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="sds_8h_source" kindref="compound">sds.h</ref>: SDS circular buffer handling for data streams </para>
+    </briefdescription>
+    <detaileddescription>
+<para>/</para>
+<para>/*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====</para>
+<para>The stream data is written to and read from a circular buffer allocated in RAM. Event callback function which is triggered on data threshold reached can be registered. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

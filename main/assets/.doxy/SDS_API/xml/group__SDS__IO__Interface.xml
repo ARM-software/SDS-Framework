@@ -1,0 +1,323 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="group__SDS__IO__Interface" kind="group">
+    <compoundname>SDS_IO_Interface</compoundname>
+    <title>SDS I/O Interface</title>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="group__SDS__IO__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioInit</definition>
+        <argsstring>(void)</argsstring>
+        <name>sdsioInit</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Initialize SDS I/O. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>todo</para>
+<para><simplesect kind="return"><para>return code </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.txt" line="133" column="9" declfile="sds/include/sds.txt" declline="133" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__IO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioUninit</definition>
+        <argsstring>(void)</argsstring>
+        <name>sdsioUninit</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Un-initialize SDS I/O. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>todo</para>
+<para><simplesect kind="return"><para>return code </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="56" column="9" declfile="sds/include/sdsio.h" declline="56" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__IO__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref></type>
+        <definition>sdsioId_t sdsioOpen</definition>
+        <argsstring>(const char *name, sdsioMode_t mode)</argsstring>
+        <name>sdsioOpen</name>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kindref="member">sdsioMode_t</ref></type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+<para>Open I/O stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>todo</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>stream name (pointer to NULL terminated string) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">mode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kindref="member">sdsioMode_t</ref> open mode </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="65" column="11" declfile="sds/include/sdsio.h" declline="65" declcolumn="11"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__IO__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioClose</definition>
+        <argsstring>(sdsioId_t id)</argsstring>
+        <name>sdsioClose</name>
+        <param>
+          <type><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Close I/O stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>todo</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref> handle to SDS I/O stream </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>return code </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="73" column="9" declfile="sds/include/sdsio.h" declline="73" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__IO__Interface_1ga8316585cd4bc3fd49590870e4ad4ba90" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t sdsioWrite</definition>
+        <argsstring>(sdsioId_t id, const void *buf, uint32_t buf_size)</argsstring>
+        <name>sdsioWrite</name>
+        <param>
+          <type><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>buf</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>buf_size</declname>
+        </param>
+        <briefdescription>
+<para>Write data to I/O stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>todo</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref> handle to SDS I/O stream </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to buffer with data to write </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer size in bytes </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of bytes written </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="83" column="10" declfile="sds/include/sdsio.h" declline="83" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__IO__Interface_1ga9e13c7a64eb4e9cf51f07ffc21c699bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t sdsioRead</definition>
+        <argsstring>(sdsioId_t id, void *buf, uint32_t buf_size)</argsstring>
+        <name>sdsioRead</name>
+        <param>
+          <type><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>buf</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>buf_size</declname>
+        </param>
+        <briefdescription>
+<para>Read data from I/O stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>todo</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref> handle to SDS I/O stream </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to buffer for data to read </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer size in bytes </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of bytes read </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="93" column="10" declfile="sds/include/sdsio.h" declline="93" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__IO__Interface_1ga5d7ec0d83a40f56939115f3c09b0d1d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioEndOfStream</definition>
+        <argsstring>(sdsioId_t id)</argsstring>
+        <name>sdsioEndOfStream</name>
+        <param>
+          <type><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Check if end of stream has been reached. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>todo</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref> handle to SDS I/O stream </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>nonzero if end of stream, else 0 </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="101" column="9" declfile="sds/include/sdsio.h" declline="101" declcolumn="9"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" prot="public" static="no">
+        <type>void *</type>
+        <definition>typedef void* sdsioId_t</definition>
+        <argsstring></argsstring>
+        <name>sdsioId_t</name>
+        <briefdescription>
+<para>Identifier. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>handle to SDS I/O stream</para>
+<para>todo test </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="32" column="14" bodyfile="sds/include/sdsio.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" prot="public" static="no" strong="no">
+        <type></type>
+        <name>sdsioMode_t</name>
+        <enumvalue id="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41ae1e892569bf150769083e37f812029a3" prot="public">
+          <name>sdsioModeRead</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+<para>Open for read (binary) </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41a2e552b9f633629884f6d5205e384ca94" prot="public">
+          <name>sdsioModeWrite</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+<para>Open for write (binary) </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Open Mode. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>todo </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="35" column="1" bodyfile="sds/include/sdsio.h" bodystart="35" bodyend="38"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="sdsio_8h_source" kindref="compound">sdsio.h</ref>: SDS I/O Interface for data streams </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The stream data can be written to an output device or read from an input device. Typically these interfaces communicate to an SDS I/O server that reads or writes SDS data files. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

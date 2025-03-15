@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="sdsio_8h" kind="file" language="C++">
+    <compoundname>sdsio.h</compoundname>
+    <includes local="no">stdint.h</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>sds/include/sdsio.h</label>
+        <link refid="sdsio_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="sdsio_8h_1ae2eb088ff47b195c4b98a7f9ef10066b" prot="public" static="no">
+        <name>SDSIO_OK</name>
+        <initializer>(0)</initializer>
+        <briefdescription>
+<para>Function return codes. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Operation completed successfully </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="41" column="9" bodyfile="sds/include/sdsio.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="sdsio_8h_1a9445f070322b3667176d0022c433dea2" prot="public" static="no">
+        <name>SDSIO_ERROR</name>
+        <initializer>(-1)</initializer>
+        <briefdescription>
+<para>Operation failed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="42" column="9" bodyfile="sds/include/sdsio.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="enum">
+      <member refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kind="enum"><name>sdsioMode_t</name></member>
+    </sectiondef>
+    <sectiondef kind="typedef">
+      <member refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kind="typedef"><name>sdsioId_t</name></member>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="sdsio_8h_1ab3fc1abd1e43a7c55f041ef48e987ad8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioInit</definition>
+        <argsstring>(void)</argsstring>
+        <name>sdsioInit</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="49" column="9" declfile="sds/include/sdsio.h" declline="49" declcolumn="9"/>
+      </memberdef>
+      <member refid="group__SDS__IO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" kind="function"><name>sdsioUninit</name></member>
+      <member refid="group__SDS__IO__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" kind="function"><name>sdsioOpen</name></member>
+      <member refid="group__SDS__IO__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" kind="function"><name>sdsioClose</name></member>
+      <member refid="group__SDS__IO__Interface_1ga8316585cd4bc3fd49590870e4ad4ba90" kind="function"><name>sdsioWrite</name></member>
+      <member refid="group__SDS__IO__Interface_1ga9e13c7a64eb4e9cf51f07ffc21c699bc" kind="function"><name>sdsioRead</name></member>
+      <member refid="group__SDS__IO__Interface_1ga5d7ec0d83a40f56939115f3c09b0d1d1" kind="function"><name>sdsioEndOfStream</name></member>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>2022-2023<sp/>Arm<sp/>Limited.<sp/>All<sp/>rights<sp/>reserved.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>SPDX-License-Identifier:<sp/>Apache-2.0</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the<sp/>License);<sp/>you<sp/>may</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance<sp/>with<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/>www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,<sp/>software</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an<sp/>AS<sp/>IS<sp/>BASIS,<sp/>WITHOUT</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>See<sp/>the<sp/>License<sp/>for<sp/>the<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>limitations<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>SDSIO_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDSIO_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stdint.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">//<sp/>====<sp/>Synchronous<sp/>Data<sp/>Stream<sp/>Input/Output<sp/>(SDS<sp/>I/O)<sp/>====</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*<ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35" refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/>sdsioModeRead<sp/><sp/>=<sp/>0,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/>sdsioModeWrite<sp/>=<sp/>1<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="38"><highlight class="normal">}<sp/><ref refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kindref="member">sdsioMode_t</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDSIO_OK<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDSIO_ERROR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(-1)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__IO__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" kindref="member">sdsioInit</ref><sp/>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56" refid="group__SDS__IO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__IO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" kindref="member">sdsioUninit</ref><sp/>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65" refid="group__SDS__IO__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" refkind="member"><highlight class="normal"><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref><sp/><ref refid="group__SDS__IO__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" kindref="member">sdsioOpen</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/><ref refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kindref="member">sdsioMode_t</ref><sp/>mode);</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73" refid="group__SDS__IO__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__IO__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" kindref="member">sdsioClose</ref><sp/>(<ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83" refid="group__SDS__IO__Interface_1ga8316585cd4bc3fd49590870e4ad4ba90" refkind="member"><highlight class="normal">uint32_t<sp/><ref refid="group__SDS__IO__Interface_1ga8316585cd4bc3fd49590870e4ad4ba90" kindref="member">sdsioWrite</ref><sp/>(<ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93" refid="group__SDS__IO__Interface_1ga9e13c7a64eb4e9cf51f07ffc21c699bc" refkind="member"><highlight class="normal">uint32_t<sp/><ref refid="group__SDS__IO__Interface_1ga9e13c7a64eb4e9cf51f07ffc21c699bc" kindref="member">sdsioRead</ref><sp/>(<ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="101" refid="group__SDS__IO__Interface_1ga5d7ec0d83a40f56939115f3c09b0d1d1" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__IO__Interface_1ga5d7ec0d83a40f56939115f3c09b0d1d1" kindref="member">sdsioEndOfStream</ref><sp/>(<ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="104"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">/*<sp/>SDSIO_H<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
+    </programlisting>
+    <location file="sds/include/sdsio.h"/>
+  </compounddef>
+</doxygen>

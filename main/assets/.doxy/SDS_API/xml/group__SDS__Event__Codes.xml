@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="group__SDS__Event__Codes" kind="group">
+    <compoundname>SDS_Event_Codes</compoundname>
+    <title>SDS Event Codes</title>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="group__SDS__Event__Codes_1ga607b2b4ced9971b99b2289dd111888f5" prot="public" static="no">
+        <name>SDS_PLAY_EVENT_IO_ERROR</name>
+        <initializer>(1UL &lt;&lt; 0)</initializer>
+        <briefdescription>
+<para>Event codes. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>I/O Error </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_play.h" line="39" column="9" bodyfile="sds/include/sds_play.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>SDS Player Event Codes. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The following values are passed as event value to <ref refid="group__SDS__Circular__Buffer_1gac4428df6973dd12416953c49b278b46c" kindref="member">sdsPlayEvent_t</ref>. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

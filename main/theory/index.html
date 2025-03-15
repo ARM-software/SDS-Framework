@@ -59,6 +59,32 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#sdsio-message-sequence">SDSIO Message Sequence</a>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#guidelines-for-stream-buffer-sizing-and-threshold-settings">Guidelines for Stream Buffer sizing and Threshold settings</a>
+<ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#stream-buffer-size">Stream Buffer Size</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#threshold-settings-for-sds-recorderplayer">Threshold Settings for SDS Recorder/Player</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#function-of-thresholds">Function of Thresholds</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#impact-on-system-performance">Impact on System Performance</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#additional-settings-affecting-io-bandwidth">Additional Settings Affecting I/O Bandwidth</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#optimizing-io-buffering">Optimizing I/O Buffering</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#example-configurations-for-typical-ml-use-cases">Example configurations for typical ML use cases</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#best-practices-summary">Best Practices Summary</a>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -72,6 +98,10 @@
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../utilities/">Utilities</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="" href="../SDS_API/modules.md">API Modules</a>
 </li>
 </ul>
 </div>
@@ -101,7 +131,8 @@
 <p>The SDS Framework enables to record and playback one or more data streams to an application that is under development as shown in the diagram below. With the SDSIO Interface the data streams are connected to SDS data files. The file storage can be either embedded within the system and access by a file system or external on a host computer and accessed by a communication interface such as Ethernet or USB.</p>
 <p>The DSP or ML algorithms that are tested operate on blocks and are executed periodically. This documentation uses these terms:</p>
 <ul>
-<li><strong>Block size</strong>: is the number of bytes processed by a DSP or ML compute node.</li>
+<li><strong>Data Block</strong>: is a set of input or output data which is processed in one step by a DSP or ML compute note.</li>
+<li><strong>Block size</strong>: is the number of bytes of a data block. </li>
 <li><strong>Interval</strong>: is the periodic time interval that the compute node executes.</li>
 </ul>
 <p><img alt="SDSIO Interface for Player and Recorder" src="../images/SDS-InOut.png"/></p>
@@ -212,7 +243,7 @@ use the same timestamp for the recording of one iteration of a DSP or ML algorit
 In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timestamp value.</p>
 <h2 id="sds-file-format">SDS File Format</h2>
 <p>The SDS file format is described <a href="https://github.com/ARM-software/SDS-Framework/tree/main/schema">here</a>.  Each call to 
-<code>sdsRecWrite</code> creates one record.</p>
+<code>sdsRecWrite</code> writes one data block.</p>
 <h2 id="sdsio-server-protocol">SDSIO Server Protocol</h2>
 <p>The SDSIO Server uses a simple protocol for data exchange between a Host computer and the embedded target that integrates an <a href="../sds_interface/">SDSIO Interface</a>.  The protocol assumes that the correct communication to the server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.</p>
 <p>The following conventions describe the command semantic used in the following documentation"</p>
@@ -391,6 +422,106 @@ but sds_rec.c does not really use this information</p>
 </ul>
 <p>https://github.com/Arm-Examples/SDS-Examples/blob/main/Hardware/DataTest/rec_management.c
 - do we really need <code>recdone</code>?</p>
+<h2 id="guidelines-for-stream-buffer-sizing-and-threshold-settings">Guidelines for Stream Buffer sizing and Threshold settings</h2>
+<h3 id="overview">Overview</h3>
+<p>The <strong>SDS Recorder/Player</strong> uses memory buffers to manage data recording and playback efficiently.
+Proper buffer and threshold configurations optimize performance by balancing data production, consumption, and system resource utilization.</p>
+<h3 id="stream-buffer-size">Stream Buffer Size</h3>
+<p>The size of memory buffers affects the balance between data production and consumption.</p>
+<p>The <strong>absolute minimum stream buffer size</strong> should be large enough to store <strong>one maximum record along with its header (8 bytes)</strong>.</p>
+<p>The <strong>recommended stream buffer size</strong> should be large enough to store <strong>at least two maximum records along with headers (8 bytes per record)</strong> and
+can be rounded up for convenience.</p>
+<p>The record size generally corresponds to the data size used by the underlying technology.
+For example, in typical <strong>ML applications</strong>, the record size should ideally match the <strong>data slice required by the DSP process</strong>.</p>
+<p>If sufficient RAM is available, increasing the buffer size can improve performance.</p>
+<h3 id="threshold-settings-for-sds-recorderplayer">Threshold Settings for SDS Recorder/Player</h3>
+<h4 id="function-of-thresholds"><strong>Function of Thresholds</strong></h4>
+<ul>
+<li><strong>For the SDS Recorder:</strong> Determines when data writing to the <strong>I/O</strong> begins.</li>
+<li><strong>For the SDS Player:</strong> Determines when data reading from the <strong>I/O</strong> begins.</li>
+</ul>
+<p>The <strong>recommended threshold setting</strong> is <strong>half of the stream buffer size</strong>, enabling a <strong>double-buffering technique</strong> where one half of the buffer is transferred while the other half continues to fill or be consumed.</p>
+<p>A well-optimized system ensures timely data transfer over the I/O:</p>
+<ul>
+<li>For the <strong>Recorder</strong>: Previously acquired data must be transferred before the remaining of the buffer fills with new data.</li>
+<li>For the <strong>Player</strong>: New playback data should be transferred before the previously transferred playback data is consumed.</li>
+</ul>
+<h4 id="impact-on-system-performance"><strong>Impact on System Performance</strong></h4>
+<p>The threshold setting directly affects system performance, as <strong>I/O transfers temporarily occupy the CPU</strong>.
+During these operations, other system processes may experience limited CPU availability.</p>
+<p>If the system requires additional CPU resources for other tasks, adjustments can be made by:</p>
+<ol>
+<li><strong>Increasing the priority of critical threads</strong>.</li>
+<li><strong>Reducing the threshold setting</strong>, which shortens the duration of each transfer but increases the frequency of transfers.</li>
+</ol>
+<blockquote>
+<p><strong>Note:</strong> Thresholds operate based on discrete record sizes. A threshold is only triggered when a write or read operation
+surpasses (for write) or falls below (for read) the set limit.
+When handling large records, breaking them into smaller chunks may be necessary to optimize system performance.</p>
+</blockquote>
+<h3 id="additional-settings-affecting-io-bandwidth">Additional Settings Affecting I/O Bandwidth</h3>
+<p>Several additional factors influence I/O bandwidth, including:</p>
+<ol>
+<li><strong>Temporary Recorder/Player buffer size</strong> (configured in the <code>sds_rec_config.h</code> / <code>sds_play_config.h</code> files).</li>
+<li><strong>I/O low-level buffering</strong>.</li>
+</ol>
+<h4 id="optimizing-io-buffering"><strong>Optimizing I/O Buffering</strong></h4>
+<p>For <strong>optimal performance</strong>, the <strong>temporary Recorder/Player buffer size should match the I/O low-level buffer size</strong>.</p>
+<p>For some interfaces, the I/O low-level buffer size can be configurable, for others, it is fixed.</p>
+<p>Example: The <strong>USB Virtual COM interface</strong> allows I/O low-level buffer size configuration.
+It is recommended to set this buffer size as a multiple of the <strong>bulk endpoint maximum packet size</strong> (512 bytes for USB high-speed connections).</p>
+<h3 id="example-configurations-for-typical-ml-use-cases">Example configurations for typical ML use cases</h3>
+<table>
+<thead>
+<tr>
+<th><strong>ML Use Case</strong></th>
+<th><strong>DSP slice</strong></th>
+<th><strong>Calculation</strong></th>
+<th><strong>Buffer Size</strong></th>
+<th><strong>Threshold</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Motion detection</strong></td>
+<td>125 accelerometer samples</td>
+<td><code>2 × [(125 samples × 3 axes × 4 bytes per axis) + 8] = 3016 -&gt; rounded to 3072</code></td>
+<td><strong>3072 bytes</strong></td>
+<td><strong>1536</strong></td>
+</tr>
+<tr>
+<td><strong>Keyword spotting</strong></td>
+<td>250 ms of audio data samples (16kHz)</td>
+<td><code>2 × [(4,000 audio samples × 4 bytes per sample) + 8] = 32,016 -&gt; rounded to 32,768</code></td>
+<td><strong>32768 bytes</strong></td>
+<td><strong>16384</strong></td>
+</tr>
+<tr>
+<td><strong>Object detection</strong></td>
+<td>1 picture (320x320)</td>
+<td><code>2 × [(320 × 320 pixels × 4 bytes per pixel) + 8] = 819,216</code></td>
+<td><strong>819216 bytes</strong></td>
+<td><strong>409608</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="best-practices-summary"><strong>Best Practices Summary</strong></h3>
+<ul>
+<li>
+<p><strong>Ensure buffer sizes align with DSP ata slice sizes</strong> for efficient ML processing.</p>
+</li>
+<li>
+<p><strong>Use double-buffering</strong> to enhance I/O efficiency.</p>
+</li>
+<li>
+<p><strong>Adjust threshold settings</strong> to balance performance and CPU usage.</p>
+</li>
+<li>
+<p><strong>Match temporary buffer sizes to I/O low-level buffer sizes</strong> where possible.</p>
+</li>
+</ul>
+<p>By following these guidelines, the <strong>SDS Recorder/Player</strong> can be configured efficiently to balance <strong>performance, latency, and CPU utilization</strong>,
+ensuring smooth data processing and system stability.</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Group SDS_IO_Interface - SDS-Framework</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Group SDS_IO_Interface";
+        var mkdocs_page_input_path = "SDS_API/group__SDS__IO__Interface.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> SDS-Framework
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../overview/">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../theory/">Theory of Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../sds_interface/">SDS Interface</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../examples/">Examples</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../utilities/">Utilities</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../modules.md">API Modules</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">SDS-Framework</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Group SDS_IO_Interface</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__IO__Interface.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="group-sds_io_interface">Group SDS_IO_Interface</h1>
+<p><a href="../modules/"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="./"><strong>SDS_IO_Interface</strong></a></p>
+<p>sdsio.h <em>: SDS I/O Interface for data streams</em><a href="#detailed-description">More...</a></p>
+<h2 id="public-types">Public Types</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Type</th>
+<th style="text-align: left;">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">typedef void *</td>
+<td style="text-align: left;"><a href="#typedef-sdsioid_t"><strong>sdsioId_t</strong></a>  <br><em>Identifier.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">enum</td>
+<td style="text-align: left;"><a href="#enum-sdsiomode_t"><strong>sdsioMode_t</strong></a>  <br><em>Open Mode.</em></td>
+</tr>
+</tbody>
+</table>
+<h2 id="public-functions">Public Functions</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Type</th>
+<th style="text-align: left;">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">int32_t</td>
+<td style="text-align: left;"><a href="#function-sdsioclose"><strong>sdsioClose</strong></a> (<a href="./#typedef-sdsioid_t"><strong>sdsioId_t</strong></a> id) <br><em>Close I/O stream.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">int32_t</td>
+<td style="text-align: left;"><a href="#function-sdsioendofstream"><strong>sdsioEndOfStream</strong></a> (<a href="./#typedef-sdsioid_t"><strong>sdsioId_t</strong></a> id) <br><em>Check if end of stream has been reached.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">int32_t</td>
+<td style="text-align: left;"><a href="#function-sdsioinit"><strong>sdsioInit</strong></a> (void) <br><em>Initialize SDS I/O.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;"><a href="./#typedef-sdsioid_t"><strong>sdsioId_t</strong></a></td>
+<td style="text-align: left;"><a href="#function-sdsioopen"><strong>sdsioOpen</strong></a> (const char * name, <a href="./#enum-sdsiomode_t"><strong>sdsioMode_t</strong></a> mode) <br><em>Open I/O stream.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">uint32_t</td>
+<td style="text-align: left;"><a href="#function-sdsioread"><strong>sdsioRead</strong></a> (<a href="./#typedef-sdsioid_t"><strong>sdsioId_t</strong></a> id, void * buf, uint32_t buf_size) <br><em>Read data from I/O stream.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">int32_t</td>
+<td style="text-align: left;"><a href="#function-sdsiouninit"><strong>sdsioUninit</strong></a> (void) <br><em>Un-initialize SDS I/O.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">uint32_t</td>
+<td style="text-align: left;"><a href="#function-sdsiowrite"><strong>sdsioWrite</strong></a> (<a href="./#typedef-sdsioid_t"><strong>sdsioId_t</strong></a> id, const void * buf, uint32_t buf_size) <br><em>Write data to I/O stream.</em></td>
+</tr>
+</tbody>
+</table>
+<h2 id="detailed-description">Detailed Description</h2>
+<p>The stream data can be written to an output device or read from an input device. Typically these interfaces communicate to an SDS I/O server that reads or writes SDS data files. </p>
+<h2 id="public-types-documentation">Public Types Documentation</h2>
+<h3 id="typedef-sdsioid_t">typedef sdsioId_t</h3>
+<p><em>Identifier.</em> </p>
+<pre><code>typedef void* sdsioId_t;
+</code></pre>
+<p>handle to SDS I/O stream</p>
+<p>todo test </p>
+<hr>
+
+<h3 id="enum-sdsiomode_t">enum sdsioMode_t</h3>
+<p><em>Open Mode.</em> </p>
+<pre><code>enum sdsioMode_t {
+    sdsioModeRead = 0,
+    sdsioModeWrite = 1
+};
+</code></pre>
+<p>todo </p>
+<hr>
+<h2 id="public-functions-documentation">Public Functions Documentation</h2>
+<h3 id="function-sdsioclose">function sdsioClose</h3>
+<p><em>Close I/O stream.</em> </p>
+<pre><code>int32_t sdsioClose (
+    sdsioId_t id
+) 
+</code></pre>
+<p>todo</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id</code> <a href="./#typedef-sdsioid_t"><strong>sdsioId_t</strong></a> handle to SDS I/O stream </li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>return code </p>
+<hr>
+
+<h3 id="function-sdsioendofstream">function sdsioEndOfStream</h3>
+<p><em>Check if end of stream has been reached.</em> </p>
+<pre><code>int32_t sdsioEndOfStream (
+    sdsioId_t id
+) 
+</code></pre>
+<p>todo</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id</code> <a href="./#typedef-sdsioid_t"><strong>sdsioId_t</strong></a> handle to SDS I/O stream </li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>nonzero if end of stream, else 0 </p>
+<hr>
+
+<h3 id="function-sdsioinit">function sdsioInit</h3>
+<p><em>Initialize SDS I/O.</em> </p>
+<pre><code>int32_t sdsioInit (
+    void
+) 
+</code></pre>
+<p>todo</p>
+<p><strong>Returns:</strong></p>
+<p>return code </p>
+<hr>
+
+<h3 id="function-sdsioopen">function sdsioOpen</h3>
+<p><em>Open I/O stream.</em> </p>
+<pre><code>sdsioId_t sdsioOpen (
+    const char * name,
+    sdsioMode_t mode
+) 
+</code></pre>
+<p>todo</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>name</code> stream name (pointer to NULL terminated string) </li>
+<li><code>mode</code> <a href="./#enum-sdsiomode_t"><strong>sdsioMode_t</strong></a> open mode </li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p><a href="./#typedef-sdsioid_t"><strong>sdsioId_t</strong></a> </p>
+<hr>
+
+<h3 id="function-sdsioread">function sdsioRead</h3>
+<p><em>Read data from I/O stream.</em> </p>
+<pre><code>uint32_t sdsioRead (
+    sdsioId_t id,
+    void * buf,
+    uint32_t buf_size
+) 
+</code></pre>
+<p>todo</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id</code> <a href="./#typedef-sdsioid_t"><strong>sdsioId_t</strong></a> handle to SDS I/O stream </li>
+<li><code>buf</code> pointer to buffer for data to read </li>
+<li><code>buf_size</code> buffer size in bytes </li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>number of bytes read </p>
+<hr>
+
+<h3 id="function-sdsiouninit">function sdsioUninit</h3>
+<p><em>Un-initialize SDS I/O.</em> </p>
+<pre><code>int32_t sdsioUninit (
+    void
+) 
+</code></pre>
+<p>todo</p>
+<p><strong>Returns:</strong></p>
+<p>return code </p>
+<hr>
+
+<h3 id="function-sdsiowrite">function sdsioWrite</h3>
+<p><em>Write data to I/O stream.</em> </p>
+<pre><code>uint32_t sdsioWrite (
+    sdsioId_t id,
+    const void * buf,
+    uint32_t buf_size
+) 
+</code></pre>
+<p>todo</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id</code> <a href="./#typedef-sdsioid_t"><strong>sdsioId_t</strong></a> handle to SDS I/O stream </li>
+<li><code>buf</code> pointer to buffer with data to write </li>
+<li><code>buf_size</code> buffer size in bytes </li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>number of bytes written </p>
+<hr>
+
+<hr />
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/ARM-software/SDS-Framework" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
