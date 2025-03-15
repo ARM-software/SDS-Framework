@@ -1,44 +1,12 @@
-/**
-\defgroup Defines
-\brief Error and Event Codes
-@{
-*/
-
-/*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====*/
-/**
-\defgroup SDS_Errors SDS Error Codes
-\brief SDS Player Error Codes
-\details The following values are returned by most functions.
-@{
-\def SDS_PLAY_OK 
-\def SDS_PLAY_ERROR
-@}
-*/
-
-/*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====*/
-/**
-\defgroup SDS_Event_Codes SDS Event Codes
-\brief SDS Player Event Codes
-\details The following values are passed as event value to \ref sdsPlayEvent_t.
-@{
-\def SDS_PLAY_EVENT_IO_ERROR 
-@}
-*/
-
-/**
-@}
-/
-
-
 /*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====*/
 /**
 \defgroup SDS_Circular_Buffer SDS Circular Buffer
 \brief sds.h: SDS circular buffer handling for data streams
 \details
 The stream data is written to and read from a circular buffer allocated in RAM. Event callback function which is triggered on data threshold reached can be registered.
-
 @{
 */
+
 /**
 \typedef sdsId_t
 \details
@@ -99,6 +67,7 @@ todo
 /**
 @}
 */
+
 // end group SDS_Circular_Buffer
 
 
@@ -319,4 +288,35 @@ todo
 @}
 */
 // end group SDS_Player
+
+/*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====*/
+/**
+\defgroup Defines
+\brief Error and Event Codes
+@{
+*/
+
+/**
+\defgroup SDS_Errors SDS Error Codes
+\brief SDS Player Error Codes
+\details The following values are returned by most functions.
+@{
+\def SDS_PLAY_OK 
+\def SDS_PLAY_ERROR
+@}
+*/
+
+/**
+\defgroup SDS_Event_Codes SDS Event Codes
+\brief SDS Player Event Codes
+\details The following values are passed as event value to \ref sdsPlayEvent_t.
+@{
+\def SDS_PLAY_EVENT_IO_ERROR 
+@}
+*/
+
+/**
+@}
+*/
+// end group Defines
 
