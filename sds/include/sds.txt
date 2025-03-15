@@ -291,8 +291,7 @@ todo
 
 /*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====*/
 /**
-\defgroup Defines
-\brief Error and Event Codes
+\defgroup Define Define Values
 @{
 */
 
@@ -302,7 +301,10 @@ todo
 \details The following values are returned by most functions.
 @{
 \def SDS_PLAY_OK 
+\brief SDS function execution completed.
+
 \def SDS_PLAY_ERROR
+\brief Error during sds_play function execution. 
 @}
 */
 
@@ -311,7 +313,8 @@ todo
 \brief SDS Player Event Codes
 \details The following values are passed as event value to \ref sdsPlayEvent_t.
 @{
-\def SDS_PLAY_EVENT_IO_ERROR 
+\def SDS_PLAY_EVENT_IO_ERROR
+\brief I/O Error during sds_play function execution. 
 @}
 */
 

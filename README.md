@@ -37,14 +37,18 @@ Directory                         | Description
 
 The SDS Framework is licensed under [![License](https://img.shields.io/github/license/arm-software/sds-framework?label)](https://github.com/ARM-software/sds-framework/blob/main/LICENSE).
 
-## Contributions and Pull Requests
+## Documentation
 
-Contributions are accepted under [![License](https://img.shields.io/github/license/arm-software/CMSIS_6?label)](https://github.com/ARM-software/CMSIS_6/blob/main/LICENSE). Only submit contributions where you have authored all of the code.
-
-The documentation is generated using [MKDocs](https://www.mkdocs.org/) with the following additional plugins:
+The [documentation](https://arm-software.github.io/SDS-Framework/main/index.html) is generated using [Doxygen](https://www.doxygen.nl/) and [MKDocs](https://www.mkdocs.org/) with the following additional plugins:
 
 - [mermaid2](https://mkdocs-mermaid2.readthedocs.io/en/latest/) for sequence diagrams.
 - [mkdoxy](https://pypi.org/project/mkdoxy) for API documentation.
+
+Use `mkdocs serve` to generate the documentation on a local computer.
+
+## Contributions and Pull Requests
+
+Contributions are accepted under [![License](https://img.shields.io/github/license/arm-software/CMSIS_6?label)](https://github.com/ARM-software/CMSIS_6/blob/main/LICENSE). Only submit contributions where you have authored all of the code.
 
 ### Issues and Labels
 
