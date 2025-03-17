@@ -27,6 +27,11 @@ sds\_rec.h _: SDS Recorder for writing SDS files via communication or file I/O i
 
 
 
+## Public Types
+
+| Type | Name |
+| ---: | :--- |
+| typedef void \* | [**sdsRecId\_t**](#typedef-sdsrecid_t)  <br>_Handle to SDS file for recording._  |
 
 
 
@@ -51,11 +56,11 @@ sds\_rec.h _: SDS Recorder for writing SDS files via communication or file I/O i
 
 | Type | Name |
 | ---: | :--- |
-|  int32\_t | [**sdsRecClose**](#function-sdsrecclose) (sdsRecId\_t id) <br>_Close recorder stream._  |
+|  int32\_t | [**sdsRecClose**](#function-sdsrecclose) ([**sdsRecId\_t**](group__SDS__Recorder.md#typedef-sdsrecid_t) id) <br>_Close recorder stream._  |
 |  int32\_t | [**sdsRecInit**](#function-sdsrecinit) (sdsRecEvent\_t event\_cb) <br>_Initialize recorder._  |
-|  sdsRecId\_t | [**sdsRecOpen**](#function-sdsrecopen) (const char \* name, void \* buf, uint32\_t buf\_size, uint32\_t io\_threshold) <br>_Open recorder stream._  |
+|  [**sdsRecId\_t**](group__SDS__Recorder.md#typedef-sdsrecid_t) | [**sdsRecOpen**](#function-sdsrecopen) (const char \* name, void \* buf, uint32\_t buf\_size, uint32\_t io\_threshold) <br>_Open recorder stream._  |
 |  int32\_t | [**sdsRecUninit**](#function-sdsrecuninit) (void) <br>_Uninitialize recorder._  |
-|  uint32\_t | [**sdsRecWrite**](#function-sdsrecwrite) (sdsRecId\_t id, uint32\_t timestamp, const void \* buf, uint32\_t buf\_size) <br> |
+|  uint32\_t | [**sdsRecWrite**](#function-sdsrecwrite) ([**sdsRecId\_t**](group__SDS__Recorder.md#typedef-sdsrecid_t) id, uint32\_t timestamp, const void \* buf, uint32\_t buf\_size) <br> |
 
 
 
@@ -91,6 +96,26 @@ Todo
 
 
     
+## Public Types Documentation
+
+
+
+
+### typedef sdsRecId\_t 
+
+_Handle to SDS file for recording._ 
+```
+typedef void* sdsRecId_t;
+```
+
+
+
+todo 
+
+
+        
+
+<hr>
 ## Public Functions Documentation
 
 
@@ -115,7 +140,7 @@ todo
 **Parameters:**
 
 
-* `id` sdsRecId\_t handle to SDS file for recording 
+* `id` [**sdsRecId\_t**](group__SDS__Recorder.md#typedef-sdsrecid_t) handle to SDS file for recording 
 
 
 
@@ -201,7 +226,7 @@ todo
 
 **Returns:**
 
-sdsRecId\_t handle to SDS file for recording 
+[**sdsRecId\_t**](group__SDS__Recorder.md#typedef-sdsrecid_t) handle to SDS file for recording 
 
 
 

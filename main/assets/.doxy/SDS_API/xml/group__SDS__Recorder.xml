@@ -3,6 +3,23 @@
   <compounddef id="group__SDS__Recorder" kind="group">
     <compoundname>SDS_Recorder</compoundname>
     <title>SDS Recorder</title>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" prot="public" static="no">
+        <type>void *</type>
+        <definition>typedef void* sdsRecId_t</definition>
+        <argsstring></argsstring>
+        <name>sdsRecId_t</name>
+        <briefdescription>
+<para>Handle to SDS file for recording. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>todo </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_rec.h" line="31" column="14" bodyfile="sds/include/sds_rec.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
     <sectiondef kind="func">
       <memberdef kind="function" id="group__SDS__Recorder_1ga0bbd6c7399c5ee176998917a891287d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -33,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec.h" line="50" column="9" declfile="sds/include/sds_rec.h" declline="50" declcolumn="9"/>
+        <location file="sds/include/sds_rec.h" line="49" column="9" declfile="sds/include/sds_rec.h" declline="49" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Recorder_1gaad4d5deabc60bfadf5985468ffe4f7db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -54,10 +71,10 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec.h" line="57" column="9" declfile="sds/include/sds_rec.h" declline="57" declcolumn="9"/>
+        <location file="sds/include/sds_rec.h" line="56" column="9" declfile="sds/include/sds_rec.h" declline="56" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Recorder_1gac58a60e789f4f94196e6b5136d25bd5d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>sdsRecId_t</type>
+        <type><ref refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" kindref="member">sdsRecId_t</ref></type>
         <definition>sdsRecId_t sdsRecOpen</definition>
         <argsstring>(const char *name, void *buf, uint32_t buf_size, uint32_t io_threshold)</argsstring>
         <name>sdsRecOpen</name>
@@ -115,13 +132,13 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>sdsRecId_t handle to SDS file for recording </para>
+<simplesect kind="return"><para><ref refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" kindref="member">sdsRecId_t</ref> handle to SDS file for recording </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec.h" line="68" column="12" declfile="sds/include/sds_rec.h" declline="68" declcolumn="12"/>
+        <location file="sds/include/sds_rec.h" line="67" column="12" declfile="sds/include/sds_rec.h" declline="67" declcolumn="12"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Recorder_1ga42fa9edcd84d4253aced358147e1489b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -129,7 +146,7 @@
         <argsstring>(sdsRecId_t id)</argsstring>
         <name>sdsRecClose</name>
         <param>
-          <type>sdsRecId_t</type>
+          <type><ref refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" kindref="member">sdsRecId_t</ref></type>
           <declname>id</declname>
         </param>
         <briefdescription>
@@ -142,7 +159,7 @@
 <parametername direction="in">id</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>sdsRecId_t handle to SDS file for recording </para>
+<para><ref refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" kindref="member">sdsRecId_t</ref> handle to SDS file for recording </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -152,7 +169,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec.h" line="76" column="9" declfile="sds/include/sds_rec.h" declline="76" declcolumn="9"/>
+        <location file="sds/include/sds_rec.h" line="75" column="9" declfile="sds/include/sds_rec.h" declline="75" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Recorder_1ga9e529c7325d12d141658e1bf9de98ff4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint32_t</type>
@@ -160,7 +177,7 @@
         <argsstring>(sdsRecId_t id, uint32_t timestamp, const void *buf, uint32_t buf_size)</argsstring>
         <name>sdsRecWrite</name>
         <param>
-          <type>sdsRecId_t</type>
+          <type><ref refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" kindref="member">sdsRecId_t</ref></type>
           <declname>id</declname>
         </param>
         <param>
@@ -182,7 +199,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec.h" line="87" column="10" declfile="sds/include/sds_rec.h" declline="87" declcolumn="10"/>
+        <location file="sds/include/sds_rec.h" line="86" column="10" declfile="sds/include/sds_rec.h" declline="86" declcolumn="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

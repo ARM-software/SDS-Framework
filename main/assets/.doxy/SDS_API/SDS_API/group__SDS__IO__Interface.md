@@ -31,7 +31,7 @@ sdsio.h _: SDS I/O Interface for data streams_[More...](#detailed-description)
 
 | Type | Name |
 | ---: | :--- |
-| typedef void \* | [**sdsioId\_t**](#typedef-sdsioid_t)  <br>_Identifier._  |
+| typedef void \* | [**sdsioId\_t**](#typedef-sdsioid_t)  <br>_Handle to SDS I/O stream._  |
 | enum  | [**sdsioMode\_t**](#enum-sdsiomode_t)  <br>_Open Mode._  |
 
 
@@ -106,14 +106,11 @@ The stream data can be written to an output device or read from an input device.
 
 ### typedef sdsioId\_t 
 
-_Identifier._ 
+_Handle to SDS I/O stream._ 
 ```
 typedef void* sdsioId_t;
 ```
 
-
-
-handle to SDS I/O stream
 
 
 todo test 

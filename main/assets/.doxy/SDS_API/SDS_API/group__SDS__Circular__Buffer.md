@@ -31,7 +31,7 @@ sds.h _: SDS circular buffer handling for data streams_[More...](#detailed-descr
 
 | Type | Name |
 | ---: | :--- |
-| typedef void \* | [**sdsId\_t**](#typedef-sdsid_t)  <br>_Identifier._  |
+| typedef void \* | [**sdsId\_t**](#typedef-sdsid_t)  <br>_Handle to SDS buffer stream._  |
 | typedef void(\* | [**sdsPlayEvent\_t**](#typedef-sdsplayevent_t)  <br>_Call back function for SDS circular buffer handling._  |
 
 
@@ -57,12 +57,12 @@ sds.h _: SDS circular buffer handling for data streams_[More...](#detailed-descr
 
 | Type | Name |
 | ---: | :--- |
-|  int32\_t | [**sdsClear**](#function-sdsclear) ([**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) id) <br>_Clear stream data._  |
-|  int32\_t | [**sdsClose**](#function-sdsclose) ([**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) id) <br>_Close stream._  |
-|  uint32\_t | [**sdsGetCount**](#function-sdsgetcount) ([**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) id) <br>_Get data count in stream._  |
-|  uint32\_t | [**sdsRead**](#function-sdsread) ([**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) id, void \* buf, uint32\_t buf\_size) <br>_Read data from stream._  |
-|  int32\_t | [**sdsRegisterEvents**](#function-sdsregisterevents) ([**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) id, sdsEvent\_t event\_cb, uint32\_t event\_mask, void \* event\_arg) <br>_Register stream events._  |
-|  uint32\_t | [**sdsWrite**](#function-sdswrite) ([**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) id, const void \* buf, uint32\_t buf\_size) <br>_Write data to stream._  |
+|  int32\_t | [**sdsClear**](#function-sdsclear) ([**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) id) <br>_Clear buffer stream data._  |
+|  int32\_t | [**sdsClose**](#function-sdsclose) ([**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) id) <br>_Close buffer stream._  |
+|  uint32\_t | [**sdsGetCount**](#function-sdsgetcount) ([**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) id) <br>_Get data count in buffer stream._  |
+|  uint32\_t | [**sdsRead**](#function-sdsread) ([**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) id, void \* buf, uint32\_t buf\_size) <br>_Read data from buffer stream._  |
+|  int32\_t | [**sdsRegisterEvents**](#function-sdsregisterevents) ([**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) id, sdsEvent\_t event\_cb, uint32\_t event\_mask, void \* event\_arg) <br>_Register buffer stream events._  |
+|  uint32\_t | [**sdsWrite**](#function-sdswrite) ([**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) id, const void \* buf, uint32\_t buf\_size) <br>_Write data to buffer stream._  |
 
 
 
@@ -105,14 +105,11 @@ The stream data is written to and read from a circular buffer allocated in RAM. 
 
 ### typedef sdsId\_t 
 
-_Identifier._ 
+_Handle to SDS buffer stream._ 
 ```
 typedef void* sdsId_t;
 ```
 
-
-
-handle to SDS stream
 
 
 todo test 
@@ -157,7 +154,7 @@ todo
 
 ### function sdsClear 
 
-_Clear stream data._ 
+_Clear buffer stream data._ 
 ```
 int32_t sdsClear (
     sdsId_t id
@@ -171,7 +168,7 @@ int32_t sdsClear (
 **Parameters:**
 
 
-* `id` [**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) handle to SDS stream 
+* `id` [**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) handle to SDS buffer stream 
 
 
 
@@ -191,7 +188,7 @@ todo
 
 ### function sdsClose 
 
-_Close stream._ 
+_Close buffer stream._ 
 ```
 int32_t sdsClose (
     sdsId_t id
@@ -205,7 +202,7 @@ int32_t sdsClose (
 **Parameters:**
 
 
-* `id` [**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) handle to SDS stream 
+* `id` [**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) handle to SDS buffer stream 
 
 
 
@@ -225,7 +222,7 @@ todo
 
 ### function sdsGetCount 
 
-_Get data count in stream._ 
+_Get data count in buffer stream._ 
 ```
 uint32_t sdsGetCount (
     sdsId_t id
@@ -239,13 +236,13 @@ uint32_t sdsGetCount (
 **Parameters:**
 
 
-* `id` [**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) handle to SDS stream 
+* `id` [**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) handle to SDS buffer stream 
 
 
 
 **Returns:**
 
-number of bytes in stream
+number of bytes in buffer stream
 
 
 todo 
@@ -259,7 +256,7 @@ todo
 
 ### function sdsRead 
 
-_Read data from stream._ 
+_Read data from buffer stream._ 
 ```
 uint32_t sdsRead (
     sdsId_t id,
@@ -275,7 +272,7 @@ uint32_t sdsRead (
 **Parameters:**
 
 
-* `id` [**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) handle to SDS stream 
+* `id` [**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) handle to SDS buffer stream 
 * `buf` pointer to buffer for data to read 
 * `buf_size` buffer size in bytes 
 
@@ -297,7 +294,7 @@ todo
 
 ### function sdsRegisterEvents 
 
-_Register stream events._ 
+_Register buffer stream events._ 
 ```
 int32_t sdsRegisterEvents (
     sdsId_t id,
@@ -314,7 +311,7 @@ int32_t sdsRegisterEvents (
 **Parameters:**
 
 
-* `id` [**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) handle to SDS stream 
+* `id` [**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) handle to SDS buffer stream 
 * `event_cb` pointer to sdsEvent\_t 
 * `event_mask` event mask 
 * `event_arg` event argument 
@@ -337,7 +334,7 @@ todo
 
 ### function sdsWrite 
 
-_Write data to stream._ 
+_Write data to buffer stream._ 
 ```
 uint32_t sdsWrite (
     sdsId_t id,
@@ -353,7 +350,7 @@ uint32_t sdsWrite (
 **Parameters:**
 
 
-* `id` [**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) handle to SDS stream 
+* `id` [**sdsId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsid_t) handle to SDS buffer stream 
 * `buf` pointer to buffer with data to write 
 * `buf_size` buffer size in bytes 
 

@@ -111,10 +111,6 @@
 <td style="text-align: right;">typedef void(*</td>
 <td style="text-align: left;"><a href="#typedef-sdsrecevent_t"><strong>sdsRecEvent_t</strong></a>  <br><em>Event callback function.</em></td>
 </tr>
-<tr>
-<td style="text-align: right;">typedef void *</td>
-<td style="text-align: left;"><a href="#typedef-sdsrecid_t"><strong>sdsRecId_t</strong></a>  <br><em>Identifier.</em></td>
-</tr>
 </tbody>
 </table>
 <h2 id="macros">Macros</h2>
@@ -145,13 +141,6 @@
 <p><em>Event callback function.</em> </p>
 <pre><code class="language-C++">typedef void(* sdsRecEvent_t) (sdsRecId_t id, uint32_t event);
 </code></pre>
-<hr>
-
-<h3 id="typedef-sdsrecid_t">typedef sdsRecId_t</h3>
-<p><em>Identifier.</em> </p>
-<pre><code class="language-C++">typedef void* sdsRecId_t;
-</code></pre>
-<p>handle to SDS file for recording </p>
 <hr>
 <h2 id="macro-definition-documentation">Macro Definition Documentation</h2>
 <h3 id="define-sds_rec_error">define SDS_REC_ERROR</h3>

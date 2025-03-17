@@ -31,7 +31,7 @@ sds\_play.h _: SDS Player for reading SDS files via communication or file I/O in
 
 | Type | Name |
 | ---: | :--- |
-| typedef void \* | [**sdsPlayId\_t**](#typedef-sdsplayid_t)  <br>_Identifier._  |
+| typedef void \* | [**sdsPlayId\_t**](#typedef-sdsplayid_t)  <br>_Handle to SDS file for playback._  |
 
 
 
@@ -104,17 +104,14 @@ The SDS Player functions allow to playback SDS files via a file I/O interface. T
 
 ### typedef sdsPlayId\_t 
 
-_Identifier._ 
+_Handle to SDS file for playback._ 
 ```
 typedef void* sdsPlayId_t;
 ```
 
 
 
-handle to SDS file for playback
-
-
-todo test 
+todo 
 
 
         

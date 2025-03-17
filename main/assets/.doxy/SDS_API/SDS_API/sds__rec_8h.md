@@ -33,7 +33,6 @@
 | Type | Name |
 | ---: | :--- |
 | typedef void(\* | [**sdsRecEvent\_t**](#typedef-sdsrecevent_t)  <br>_Event callback function._  |
-| typedef void \* | [**sdsRecId\_t**](#typedef-sdsrecid_t)  <br>_Identifier._  |
 
 
 
@@ -103,24 +102,6 @@ typedef void(* sdsRecEvent_t) (sdsRecId_t id, uint32_t event);
 
 
 
-
-<hr>
-
-
-
-### typedef sdsRecId\_t 
-
-_Identifier._ 
-```C++
-typedef void* sdsRecId_t;
-```
-
-
-
-handle to SDS file for recording 
-
-
-        
 
 <hr>
 ## Macro Definition Documentation

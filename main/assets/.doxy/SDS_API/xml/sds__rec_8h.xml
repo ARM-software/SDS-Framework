@@ -26,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec.h" line="35" column="9" bodyfile="sds/include/sds_rec.h" bodystart="35" bodyend="-1"/>
+        <location file="sds/include/sds_rec.h" line="34" column="9" bodyfile="sds/include/sds_rec.h" bodystart="34" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="sds__rec_8h_1af0885a848f31b04b201da81d00d61f10" prot="public" static="no">
         <name>SDS_REC_ERROR</name>
@@ -38,7 +38,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec.h" line="36" column="9" bodyfile="sds/include/sds_rec.h" bodystart="36" bodyend="-1"/>
+        <location file="sds/include/sds_rec.h" line="35" column="9" bodyfile="sds/include/sds_rec.h" bodystart="35" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="sds__rec_8h_1a75490cb3b29e42e1222049abf60525bd" prot="public" static="no">
         <name>SDS_REC_EVENT_IO_ERROR</name>
@@ -51,25 +51,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec.h" line="39" column="9" bodyfile="sds/include/sds_rec.h" bodystart="39" bodyend="-1"/>
+        <location file="sds/include/sds_rec.h" line="38" column="9" bodyfile="sds/include/sds_rec.h" bodystart="38" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">
-      <memberdef kind="typedef" id="sds__rec_8h_1a74f4782dac60266af1ff0db4a0a0072a" prot="public" static="no">
-        <type>void *</type>
-        <definition>typedef void* sdsRecId_t</definition>
-        <argsstring></argsstring>
-        <name>sdsRecId_t</name>
-        <briefdescription>
-<para>Identifier. </para>
-        </briefdescription>
-        <detaileddescription>
-<para>handle to SDS file for recording </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_rec.h" line="32" column="14" bodyfile="sds/include/sds_rec.h" bodystart="32" bodyend="-1"/>
-      </memberdef>
+      <member refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" kind="typedef"><name>sdsRecId_t</name></member>
       <memberdef kind="typedef" id="sds__rec_8h_1a85129d55a2b10c809a6399c7ca55a758" prot="public" static="no">
         <type>void(*</type>
         <definition>typedef void(* sdsRecEvent_t) (sdsRecId_t id, uint32_t event)</definition>
@@ -82,7 +68,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec.h" line="42" column="9" bodyfile="sds/include/sds_rec.h" bodystart="42" bodyend="-1"/>
+        <location file="sds/include/sds_rec.h" line="41" column="9" bodyfile="sds/include/sds_rec.h" bodystart="41" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -127,30 +113,30 @@
 <codeline lineno="28"><highlight class="normal"></highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">//<sp/>====<sp/>SDS<sp/>Recorder<sp/>====</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*sdsRecId_t;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
-<codeline lineno="33"><highlight class="normal"></highlight></codeline>
-<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_REC_OK<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_REC_ERROR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(-1)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="37"><highlight class="normal"></highlight></codeline>
-<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_REC_EVENT_IO_ERROR<sp/><sp/>(1UL<sp/>&lt;&lt;<sp/>0)<sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="40"><highlight class="normal"></highlight></codeline>
-<codeline lineno="42"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>void<sp/>(*sdsRecEvent_t)<sp/>(sdsRecId_t<sp/>id,<sp/>uint32_t<sp/>event);</highlight></codeline>
-<codeline lineno="43"><highlight class="normal"></highlight></codeline>
-<codeline lineno="50" refid="group__SDS__Recorder_1ga0bbd6c7399c5ee176998917a891287d4" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Recorder_1ga0bbd6c7399c5ee176998917a891287d4" kindref="member">sdsRecInit</ref><sp/>(sdsRecEvent_t<sp/>event_cb);</highlight></codeline>
-<codeline lineno="51"><highlight class="normal"></highlight></codeline>
-<codeline lineno="57" refid="group__SDS__Recorder_1gaad4d5deabc60bfadf5985468ffe4f7db" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Recorder_1gaad4d5deabc60bfadf5985468ffe4f7db" kindref="member">sdsRecUninit</ref><sp/>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="58"><highlight class="normal"></highlight></codeline>
-<codeline lineno="68" refid="group__SDS__Recorder_1gac58a60e789f4f94196e6b5136d25bd5d" refkind="member"><highlight class="normal">sdsRecId_t<sp/><ref refid="group__SDS__Recorder_1gac58a60e789f4f94196e6b5136d25bd5d" kindref="member">sdsRecOpen</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size,<sp/>uint32_t<sp/>io_threshold);</highlight></codeline>
-<codeline lineno="69"><highlight class="normal"></highlight></codeline>
-<codeline lineno="76" refid="group__SDS__Recorder_1ga42fa9edcd84d4253aced358147e1489b" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Recorder_1ga42fa9edcd84d4253aced358147e1489b" kindref="member">sdsRecClose</ref><sp/>(sdsRecId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="77"><highlight class="normal"></highlight></codeline>
-<codeline lineno="87" refid="group__SDS__Recorder_1ga9e529c7325d12d141658e1bf9de98ff4" refkind="member"><highlight class="normal">uint32_t<sp/><ref refid="group__SDS__Recorder_1ga9e529c7325d12d141658e1bf9de98ff4" kindref="member">sdsRecWrite</ref><sp/>(sdsRecId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/>uint32_t<sp/>timestamp,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
-<codeline lineno="88"><highlight class="normal"></highlight></codeline>
-<codeline lineno="89"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="90"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="91"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="92"><highlight class="normal"></highlight></codeline>
-<codeline lineno="93"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">/*<sp/>SDS_REC_H<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
+<codeline lineno="31" refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*<ref refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" kindref="member">sdsRecId_t</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_REC_OK<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_REC_ERROR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(-1)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_REC_EVENT_IO_ERROR<sp/><sp/>(1UL<sp/>&lt;&lt;<sp/>0)<sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>void<sp/>(*sdsRecEvent_t)<sp/>(<ref refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" kindref="member">sdsRecId_t</ref><sp/>id,<sp/>uint32_t<sp/>event);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49" refid="group__SDS__Recorder_1ga0bbd6c7399c5ee176998917a891287d4" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Recorder_1ga0bbd6c7399c5ee176998917a891287d4" kindref="member">sdsRecInit</ref><sp/>(sdsRecEvent_t<sp/>event_cb);</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="56" refid="group__SDS__Recorder_1gaad4d5deabc60bfadf5985468ffe4f7db" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Recorder_1gaad4d5deabc60bfadf5985468ffe4f7db" kindref="member">sdsRecUninit</ref><sp/>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67" refid="group__SDS__Recorder_1gac58a60e789f4f94196e6b5136d25bd5d" refkind="member"><highlight class="normal"><ref refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" kindref="member">sdsRecId_t</ref><sp/><ref refid="group__SDS__Recorder_1gac58a60e789f4f94196e6b5136d25bd5d" kindref="member">sdsRecOpen</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size,<sp/>uint32_t<sp/>io_threshold);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75" refid="group__SDS__Recorder_1ga42fa9edcd84d4253aced358147e1489b" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Recorder_1ga42fa9edcd84d4253aced358147e1489b" kindref="member">sdsRecClose</ref><sp/>(<ref refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" kindref="member">sdsRecId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86" refid="group__SDS__Recorder_1ga9e529c7325d12d141658e1bf9de98ff4" refkind="member"><highlight class="normal">uint32_t<sp/><ref refid="group__SDS__Recorder_1ga9e529c7325d12d141658e1bf9de98ff4" kindref="member">sdsRecWrite</ref><sp/>(<ref refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" kindref="member">sdsRecId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/>uint32_t<sp/>timestamp,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">/*<sp/>SDS_REC_H<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
     </programlisting>
     <location file="sds/include/sds_rec.h"/>
   </compounddef>

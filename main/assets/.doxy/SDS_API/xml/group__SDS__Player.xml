@@ -10,15 +10,14 @@
         <argsstring></argsstring>
         <name>sdsPlayId_t</name>
         <briefdescription>
-<para>Identifier. </para>
+<para>Handle to SDS file for playback. </para>
         </briefdescription>
         <detaileddescription>
-<para>handle to SDS file for playback</para>
-<para>todo test </para>
+<para>todo </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_play.h" line="32" column="14" bodyfile="sds/include/sds_play.h" bodystart="32" bodyend="-1"/>
+        <location file="sds/include/sds_play.h" line="31" column="14" bodyfile="sds/include/sds_play.h" bodystart="31" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -41,7 +40,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_play.h" line="62" column="9" declfile="sds/include/sds_play.h" declline="62" declcolumn="9"/>
+        <location file="sds/include/sds_play.h" line="61" column="9" declfile="sds/include/sds_play.h" declline="61" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Player_1gaf7748e57d267dd89151b1c76064b2a8f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="group__SDS__Player_1ga48b70fb4418a3234497c9184ae984376" kindref="member">sdsPlayId_t</ref></type>
@@ -108,7 +107,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_play.h" line="73" column="13" declfile="sds/include/sds_play.h" declline="73" declcolumn="13"/>
+        <location file="sds/include/sds_play.h" line="72" column="13" declfile="sds/include/sds_play.h" declline="72" declcolumn="13"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Player_1gaa27711ea15ffe5b041233765754302bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -139,7 +138,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_play.h" line="81" column="9" declfile="sds/include/sds_play.h" declline="81" declcolumn="9"/>
+        <location file="sds/include/sds_play.h" line="80" column="9" declfile="sds/include/sds_play.h" declline="80" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Player_1ga80feb400c5cbd35961e74c521fbe1802" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint32_t</type>
@@ -169,7 +168,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_play.h" line="92" column="10" declfile="sds/include/sds_play.h" declline="92" declcolumn="10"/>
+        <location file="sds/include/sds_play.h" line="91" column="10" declfile="sds/include/sds_play.h" declline="91" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Player_1gaf1b0208812f302b24be984165f4468eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint32_t</type>
@@ -200,7 +199,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_play.h" line="100" column="10" declfile="sds/include/sds_play.h" declline="100" declcolumn="10"/>
+        <location file="sds/include/sds_play.h" line="99" column="10" declfile="sds/include/sds_play.h" declline="99" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Player_1gac7de4a7650abe5d2ee8f4f4c6fde57b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -231,7 +230,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_play.h" line="108" column="9" declfile="sds/include/sds_play.h" declline="108" declcolumn="9"/>
+        <location file="sds/include/sds_play.h" line="107" column="9" declfile="sds/include/sds_play.h" declline="107" declcolumn="9"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

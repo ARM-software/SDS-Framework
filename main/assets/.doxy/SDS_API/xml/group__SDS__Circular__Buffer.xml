@@ -10,15 +10,14 @@
         <argsstring></argsstring>
         <name>sdsId_t</name>
         <briefdescription>
-<para>Identifier. </para>
+<para>Handle to SDS buffer stream. </para>
         </briefdescription>
         <detaileddescription>
-<para>handle to SDS stream</para>
 <para>todo test </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="32" column="14" bodyfile="sds/include/sds.h" bodystart="32" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="31" column="14" bodyfile="sds/include/sds.h" bodystart="31" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="group__SDS__Circular__Buffer_1gac4428df6973dd12416953c49b278b46c" prot="public" static="no">
         <type>void(*</type>
@@ -51,7 +50,7 @@ todo </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_play.h" line="47" column="9" bodyfile="sds/include/sds_play.h" bodystart="47" bodyend="-1"/>
+        <location file="sds/include/sds_play.h" line="46" column="9" bodyfile="sds/include/sds_play.h" bodystart="46" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -65,7 +64,7 @@ todo </para>
           <declname>id</declname>
         </param>
         <briefdescription>
-<para>Close stream. </para>
+<para>Close buffer stream. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -73,7 +72,7 @@ todo </para>
 <parametername direction="in">id</parametername>
 </parameternamelist>
 <parameterdescription>
-<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS stream </para>
+<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS buffer stream </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -83,7 +82,7 @@ todo </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="67" column="9" declfile="sds/include/sds.h" declline="67" declcolumn="9"/>
+        <location file="sds/include/sds.h" line="66" column="9" declfile="sds/include/sds.h" declline="66" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Circular__Buffer_1ga6bb703bed44e380e1095df0e17fb5a4f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -107,7 +106,7 @@ todo </para>
           <declname>event_arg</declname>
         </param>
         <briefdescription>
-<para>Register stream events. </para>
+<para>Register buffer stream events. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -115,7 +114,7 @@ todo </para>
 <parametername direction="in">id</parametername>
 </parameternamelist>
 <parameterdescription>
-<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS stream </para>
+<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS buffer stream </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -149,7 +148,7 @@ todo </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="78" column="9" declfile="sds/include/sds.h" declline="78" declcolumn="9"/>
+        <location file="sds/include/sds.h" line="77" column="9" declfile="sds/include/sds.h" declline="77" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Circular__Buffer_1ga24c1cda904934edb663913ef16a9a10a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint32_t</type>
@@ -169,7 +168,7 @@ todo </para>
           <declname>buf_size</declname>
         </param>
         <briefdescription>
-<para>Write data to stream. </para>
+<para>Write data to buffer stream. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -177,7 +176,7 @@ todo </para>
 <parametername direction="in">id</parametername>
 </parameternamelist>
 <parameterdescription>
-<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS stream </para>
+<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS buffer stream </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -203,7 +202,7 @@ todo </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="88" column="10" declfile="sds/include/sds.h" declline="88" declcolumn="10"/>
+        <location file="sds/include/sds.h" line="87" column="10" declfile="sds/include/sds.h" declline="87" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Circular__Buffer_1ga9193d33422dae3d136364f1992f0ddaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint32_t</type>
@@ -223,7 +222,7 @@ todo </para>
           <declname>buf_size</declname>
         </param>
         <briefdescription>
-<para>Read data from stream. </para>
+<para>Read data from buffer stream. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -231,7 +230,7 @@ todo </para>
 <parametername direction="in">id</parametername>
 </parameternamelist>
 <parameterdescription>
-<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS stream </para>
+<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS buffer stream </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -257,7 +256,7 @@ todo </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="98" column="10" declfile="sds/include/sds.h" declline="98" declcolumn="10"/>
+        <location file="sds/include/sds.h" line="97" column="10" declfile="sds/include/sds.h" declline="97" declcolumn="10"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Circular__Buffer_1gae961e1d5b6e812759de341b1a01f2fb4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -269,7 +268,7 @@ todo </para>
           <declname>id</declname>
         </param>
         <briefdescription>
-<para>Clear stream data. </para>
+<para>Clear buffer stream data. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -277,7 +276,7 @@ todo </para>
 <parametername direction="in">id</parametername>
 </parameternamelist>
 <parameterdescription>
-<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS stream </para>
+<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS buffer stream </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
@@ -287,7 +286,7 @@ todo </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="106" column="9" declfile="sds/include/sds.h" declline="106" declcolumn="9"/>
+        <location file="sds/include/sds.h" line="105" column="9" declfile="sds/include/sds.h" declline="105" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Circular__Buffer_1gae8e41a48e111458dc1784c8c4d733c7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>uint32_t</type>
@@ -299,7 +298,7 @@ todo </para>
           <declname>id</declname>
         </param>
         <briefdescription>
-<para>Get data count in stream. </para>
+<para>Get data count in buffer stream. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -307,11 +306,11 @@ todo </para>
 <parametername direction="in">id</parametername>
 </parameternamelist>
 <parameterdescription>
-<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS stream </para>
+<para><ref refid="group__SDS__Circular__Buffer_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS buffer stream </para>
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>number of bytes in stream</para>
+<simplesect kind="return"><para>number of bytes in buffer stream</para>
 </simplesect>
 todo </para>
         </detaileddescription>

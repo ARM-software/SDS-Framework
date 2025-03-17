@@ -36,7 +36,7 @@
     <member refid="sds__rec_8h_1ad95dfd9e1d4b0883b64a537ecc7dc308" kind="define"><name>SDS_REC_OK</name></member>
     <member refid="sds__rec_8h_1af0885a848f31b04b201da81d00d61f10" kind="define"><name>SDS_REC_ERROR</name></member>
     <member refid="sds__rec_8h_1a75490cb3b29e42e1222049abf60525bd" kind="define"><name>SDS_REC_EVENT_IO_ERROR</name></member>
-    <member refid="sds__rec_8h_1a74f4782dac60266af1ff0db4a0a0072a" kind="typedef"><name>sdsRecId_t</name></member>
+    <member refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" kind="typedef"><name>sdsRecId_t</name></member>
     <member refid="sds__rec_8h_1a85129d55a2b10c809a6399c7ca55a758" kind="typedef"><name>sdsRecEvent_t</name></member>
     <member refid="group__SDS__Recorder_1ga0bbd6c7399c5ee176998917a891287d4" kind="function"><name>sdsRecInit</name></member>
     <member refid="group__SDS__Recorder_1gaad4d5deabc60bfadf5985468ffe4f7db" kind="function"><name>sdsRecUninit</name></member>
@@ -81,6 +81,7 @@
     <member refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41a2e552b9f633629884f6d5205e384ca94" kind="enumvalue"><name>sdsioModeWrite</name></member>
   </compound>
   <compound refid="group__SDS__Recorder" kind="group"><name>SDS_Recorder</name>
+    <member refid="group__SDS__Recorder_1ga74f4782dac60266af1ff0db4a0a0072a" kind="typedef"><name>sdsRecId_t</name></member>
     <member refid="group__SDS__Recorder_1ga0bbd6c7399c5ee176998917a891287d4" kind="function"><name>sdsRecInit</name></member>
     <member refid="group__SDS__Recorder_1gaad4d5deabc60bfadf5985468ffe4f7db" kind="function"><name>sdsRecUninit</name></member>
     <member refid="group__SDS__Recorder_1gac58a60e789f4f94196e6b5136d25bd5d" kind="function"><name>sdsRecOpen</name></member>
