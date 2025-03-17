@@ -19,42 +19,57 @@ The core of the SDS-Framework is a circular buffer handling (`sds.c/h`) that is 
 
 ## Usage
 
-The following diagram shows the usage of the SDS Recorder and Player functions.  Management is a separate thread that controls the overall execution. Algorithm is a thread that executes Signal Conditioning (SC) and ML Model.
+The following diagram shows the usage of the SDS Recorder and Player functions (executed in `sdsRecPlayThread`).  The `sdsControlThread` controls the overall execution. `AlgorithmThread` is the thread that executes Signal Conditioning (SC) and ML Model.
 
 ```mermaid
 sequenceDiagram
-    participant Management
-    participant SDS Player
-    participant SDS Recorder
-    participant Algorithm
-    Management->>SDS Player: sdsPlayOpen `SCinput`
-    Management->>SDS Recorder: sdsRecOpen `SCoutput`
-    Management->>SDS Recorder: sdsRecOpen `MLoutput`
-    Management->>Algorithm: Activate Algorithm
-    Activate Algorithm
+    participant sdsControlThread
+    participant sdsRecPlayThread
+    participant AlgorithmThread
+    sdsControlThread->>sdsRecPlayThread: sdsPlayOpen `SCinput`
+    sdsControlThread->>sdsRecPlayThread: sdsRecOpen `SCoutput`
+    sdsControlThread->>sdsRecPlayThread: sdsRecOpen `MLoutput`
+    sdsControlThread->>AlgorithmThread: Activate Algorithm
+    Activate AlgorithmThread
     loop periodic
-        SDS Player->>Algorithm: sdsPlayReads `SCinput` (with timestamp)
-        Note over Algorithm: Execute Signal Conditioning
-        Algorithm->>SDS Recorder: sdsRecWrite `SCoutput`
-        Note over Algorithm: Execute ML Model
-        Algorithm->>SDS Recorder: sdsRecWrite `MLoutput`
+        sdsRecPlayThread->>AlgorithmThread: sdsPlayRead `SCinput` (with Timestamp)
+        Note over AlgorithmThread: Execute Signal Conditioning
+        AlgorithmThread->>sdsRecPlayThread: sdsRecWrite `SCoutput`
+        Note over AlgorithmThread: Execute ML Model
+        AlgorithmThread->>sdsRecPlayThread: sdsRecWrite `MLoutput`
     end
-    Management->>Algorithm: Deactivate Algorithm
-    Deactivate Algorithm
-    Management->>SDS Player: sdsPlayClose `SCinput`
-    Management->>SDS Recorder: sdsRecClose `SCoutput`
-    Management->>SDS Recorder: sdsRecClose `MCoutput`
+    sdsControlThread->>AlgorithmThread: Deactivate Algorithm
+    Deactivate AlgorithmThread
+    sdsControlThread->>sdsRecPlayThread: sdsPlayClose `SCinput`
+    sdsControlThread->>sdsRecPlayThread: sdsRecClose `SCoutput`
+    sdsControlThread->>sdsRecPlayThread: sdsRecClose `MCoutput`
 ```
+
+## SDS Data Files
 
 Each data stream is stored in a separate SDS data file. In the diagram below `SCinput.0.sds` is the input to Signal Conditioning, `SCoutput.0.sds` is the output of Signal Conditioning, and `MLoutput.0.sds` is the output of the ML Model. Each execution of the algorithm is represented in a data block with a `timestamp`. The `timestamp` allows to correlate the blocks of different streams. In the above example, all blocks of one algorithm execution have the same timestamp value.
 
 ![SDS Files](images/SDS-Files.png)
 
-ToDo When does sdsRecInit require an event handler?
+### Timestamp
 
-**Example:** Recording of an accelerometer data stream
+The timestamp is a 32-bit unsigned value and is used for:
 
-The following code snippets show the usage of the **Recorder Interface**.
+- Alignment of different data streams that have the same timestamp value.
+- Order of the SDS data files captured during execution.
+- Combining multiple SDS file records with the same timestamp value.
+
+The same timestamp connects different SDS file records. It is therefore useful to
+use the same timestamp for the recording of one iteration of a DSP or ML algorithm.
+In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timestamp value.
+
+### SDS Data File Format
+
+The SDS data file format is described [here](https://github.com/ARM-software/SDS-Framework/tree/main/schema).  Each call to `sdsRecWrite` writes one data block.
+
+## Code Example
+
+The following code snippets show the usage of the **Recorder Interface**. In this case an accelerometer data stream is recorded.
 
 ```c
 // *** variable definitions ***
@@ -65,7 +80,7 @@ struct {                          // sensor data stream format
 } accelerometer [30];             // number of samples in one data stream record
 
 sdsRecId_t *accel_id,             // data stream id
-uint8_t accel_buf[1000];          // data stream buffer for circular buffer handling
+uint8_t accel_buf[(sizeof(accel_buf)*2)+0x800];      // data stream buffer for circular buffer handling
      :
 // *** function calls ***
    sdsRecInit(NULL);              // init SDS Recorder  
@@ -91,38 +106,7 @@ The size of the data stream buffer depends on several factors such as:
 - the size of the data stream as it is recommended that the buffer is at least three the size of a single data stream.
 - the frequency of the algorithm execution. Fast execution speeds may require a larger buffer.
 
-A a guideline, the buffer size should be 3 times the **block size**. As a minimum 0x1000 (4 KB) is recommended.
-
-ToDo: Threshold should be optional
-
-**Recommended Buffer Size:**
-
-The table below contains recommended buffer sizes depending on the communication technology used:
-
-ToDo
-
-Communication  | Buffer Size | Description
-:--------------|:------------|:----------------
-Network        | 4096        | Default size of Ethernet record is xxxx bytes
-USB Device     | xxx         | .
-FileSystem     | xxx         | .
-
-## Timestamp
-
-The timestamp is a 32-bit unsigned value and is used for:
-
-- Alignment of different data streams that have the same timestamp value.
-- Order of the SDS data files captured during execution.
-- Combining multiple SDS file records with the same timestamp value.
-
-The same timestamp connects different SDS file records. It is therefore useful to
-use the same timestamp for the recording of one iteration of a DSP or ML algorithm.
-In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timestamp value.
-
-## SDS File Format
-
-The SDS file format is described [here](https://github.com/ARM-software/SDS-Framework/tree/main/schema).  Each call to 
-`sdsRecWrite` writes one data block.
+A a guideline, the buffer size should be 2 times the **block size** + 2KB. As a minimum 0x1000 (4 KB) is recommended.
 
 ## SDSIO Server Protocol
 
@@ -238,24 +222,26 @@ ToDo: I don't understand why this command is needed as **SDSIO_CMD_READ** return
 This is the message sequence of the SDS DataTest example when connected to MDK-Middleware Ethernet.
 It contains the following threads that executes on the target.
 
-- Management: Overall execution management
+- Control: Overall execution Control
 - Algorithm: Algorithm under test
 - Recorder: SDS Recorder thread (sdsRecThread)
 - Playback: SDS Playback thread (sdsPlayThread)
 
 The Server is the SDSIO Server executing on the target system.
 
+ToDo rework this diagram
+
 ```mermaid
 sequenceDiagram
-    participant Management
+    participant Control
     participant Algorithm
     create participant Recorder as SDS Recorder
     participant Server as SDSIO Server
-    Management->>Recorder: sdsRecInit
-    Note over Management: sdsRecOpen
-    Management->>Server: SDSIO_CMD_OPEN
+    Control->>Recorder: sdsRecInit
+    Note over Control: sdsRecOpen
+    Control->>Server: SDSIO_CMD_OPEN
     activate Server
-    Server-->>Management: Response
+    Server-->>Control: Response
     activate Algorithm
     loop periodic
         Note over Algorithm: sdsRecWrite
@@ -265,13 +251,13 @@ sequenceDiagram
         end
     end
     deactivate Algorithm
-    Note over Management: sdsRecClose
-    Management->>Recorder: Close Trigger
+    Note over Control: sdsRecClose
+    Control->>Recorder: Close Trigger
     loop send all data
         Recorder->>Server: SDSIO_CMD_WRITE
     end
-    Recorder->>Management: Close Confirm
-    Management->>Server: SDSIO_CMD_CLOSE
+    Recorder->>Control: Close Confirm
+    Control->>Server: SDSIO_CMD_CLOSE
     deactivate Server
 ```
 
@@ -293,8 +279,9 @@ but sds_rec.c does not really use this information
 
 - Threshold event is only set when complete write was possible, is this correct? https://github.com/ARM-software/SDS-Framework/blob/main/sds/source/sds_rec.c#L298 
 
-https://github.com/Arm-Examples/SDS-Examples/blob/main/Hardware/DataTest/rec_management.c
-- do we really need `recdone`?
+-----
+
+ToDo review this section
 
 ## Guidelines for Stream Buffer sizing and Threshold settings
 
