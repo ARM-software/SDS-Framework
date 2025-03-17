@@ -153,6 +153,11 @@ Todo
 @{
 */
 
+/**
+\typedef sdsRecId_t
+\details
+todo
+*/
 
 /**
 \fn          int32_t sdsRecInit (sdsRecEvent_t event_cb)
@@ -216,9 +221,9 @@ that uses a memory card in the target system as storage.
 /**
 \typedef sdsPlayId_t
 \details
-todo test
-
+todo
 */
+
 
 /**
 \typedef void (*sdsPlayEvent_t) (sdsPlayId_t id, uint32_t event)

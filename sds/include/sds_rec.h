@@ -28,8 +28,7 @@ extern "C"
 
 // ==== SDS Recorder ====
 
-/// Identifier
-typedef void *sdsRecId_t;                   ///< handle to SDS file for recording
+typedef void *sdsRecId_t;                   ///< Handle to SDS file for recording
 
 /// Function return codes
 #define SDS_REC_OK              (0)         ///< Operation completed successfully

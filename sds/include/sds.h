@@ -28,8 +28,7 @@ extern "C"
 
 // ==== Synchronous Data Stream (SDS) ====
 
-/// Identifier
-typedef void *sdsId_t;                      ///< handle to SDS stream
+typedef void *sdsId_t;                      ///< Handle to SDS buffer stream
 
 /// Function return codes
 #define SDS_OK                  (0)         ///< Operation completed successfully
@@ -49,27 +48,27 @@ typedef void (*sdsEvent_t) (sdsId_t id, uint32_t event, void *arg);
 
 /**
   \fn          sdsId_t sdsOpen (void *buf, uint32_t buf_size, uint32_t record_size)
-  \brief       Open stream.
+  \brief       Open buffer stream.
   \param[in]   buf            pointer to buffer for stream
   \param[in]   buf_size       buffer size in bytes
   \param[in]   threshold_low  data low threshold in bytes
   \param[in]   threshold_high data high threshold in bytes
-  \return      \ref sdsId_t   Handle to SDS stream
+  \return      \ref sdsId_t   Handle to SDS buffer stream
 */
 sdsId_t sdsOpen (void *buf, uint32_t buf_size, uint32_t threshold_low, uint32_t threshold_high);
 
 /**
   \fn          int32_t sdsClose (sdsId_t id)
-  \brief       Close stream.
-  \param[in]   id             \ref sdsId_t handle to SDS stream
+  \brief       Close buffer stream.
+  \param[in]   id             \ref sdsId_t handle to SDS buffer stream
   \return      return code
 */
 int32_t sdsClose (sdsId_t id);
 
 /**
   \fn          int32_t  sdsRegisterEvents (sdsId_t id, sdsEvent_t event_cb, uint32_t event_mask, void *event_arg)
-  \brief       Register stream events.
-  \param[in]   id             \ref sdsId_t handle to SDS stream
+  \brief       Register buffer stream events.
+  \param[in]   id             \ref sdsId_t handle to SDS buffer stream
   \param[in]   event_cb       pointer to \ref sdsEvent_t
   \param[in]   event_mask     event mask
   \param[in]   event_arg      event argument
@@ -79,8 +78,8 @@ int32_t sdsRegisterEvents (sdsId_t id, sdsEvent_t event_cb, uint32_t event_mask,
 
 /**
   \fn          uint32_t sdsWrite (sdsId_t id, const void *buf, uint32_t buf_size)
-  \brief       Write data to stream.
-  \param[in]   id             \ref sdsId_t handle to SDS stream
+  \brief       Write data to buffer stream.
+  \param[in]   id             \ref sdsId_t handle to SDS buffer stream
   \param[in]   buf            pointer to buffer with data to write
   \param[in]   buf_size       buffer size in bytes
   \return      number of bytes written
@@ -89,8 +88,8 @@ uint32_t sdsWrite (sdsId_t id, const void *buf, uint32_t buf_size);
 
 /**
   \fn          uint32_t sdsRead (sdsId_t id, void *buf, uint32_t buf_size)
-  \brief       Read data from stream.
-  \param[in]   id             \ref sdsId_t handle to SDS stream
+  \brief       Read data from buffer stream.
+  \param[in]   id             \ref sdsId_t handle to SDS buffer stream
   \param[out]  buf            pointer to buffer for data to read
   \param[in]   buf_size       buffer size in bytes
   \return      number of bytes read
@@ -99,17 +98,18 @@ uint32_t sdsRead (sdsId_t id, void *buf, uint32_t buf_size);
 
 /**
   \fn          int32_t sdsClear (sdsId_t id)
-  \brief       Clear stream data.
-  \param[in]   id             \ref sdsId_t handle to SDS stream
+  \brief       Clear buffer stream data.
+  \param[in]   id             \ref sdsId_t handle to SDS buffer stream
   \return      return code
 */
 int32_t sdsClear (sdsId_t id);
 
 /**
   \fn          uint32_t sdsGetCount (sdsId_t id)
-  \brief       Get data count in stream.
-  \param[in]   id             \ref sdsId_t handle to SDS stream
-  \return      number of bytes in stream
+  \brief       Get data count in buffer stream.
+  \param[in]   id             \ref sdsId_t handle to SDS buffer
+   stream
+  \return      number of bytes in buffer stream
 */
 uint32_t sdsGetCount (sdsId_t id);
 

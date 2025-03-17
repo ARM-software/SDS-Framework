@@ -28,8 +28,7 @@ extern "C"
 
 // ==== Synchronous Data Stream Input/Output (SDS I/O) ====
 
-/// Identifier
-typedef void *sdsioId_t;        ///< handle to SDS I/O stream
+typedef void *sdsioId_t;        ///< Handle to SDS I/O stream
 
 /// Open Mode
 typedef enum {

@@ -28,8 +28,7 @@ extern "C"
 
 // ==== SDS Player ====
 
-/// Identifier
-typedef void *sdsPlayId_t;                  ///< handle to SDS file for playback
+typedef void *sdsPlayId_t;                  ///< Handle to SDS file for playback
 
 /// Function return codes
 #define SDS_PLAY_OK             (0)         ///< Operation completed successfully
