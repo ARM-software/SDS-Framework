@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2025 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,19 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Name:    sdsio_config_vcom_mdk.h
- * Purpose: SDS IO via USB Virtual COM Port (Keil::USB:Device:CDC) configuration options
+ * Name:    sdsio_client_config_socket.h
+ * Purpose: SDS IO Client via Socket (IoT Utility:Socket) configuration options
  * Rev.:    V1.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>SDS IO via USB Virtual COM Port (Keil::USB:Device:CDC)
+// <h>SDS IO Client via Socket (IoT Utility:Socket)
 
-//   <o>USB Device index <0-255>
-//   <i>Index of USB Device
-//   <i>Default: 0
-#define SDSIO_USB_DEVICE_INDEX  0U
+//   <s.16>SDSIO-Server IP
+//   <i>SDSIO socket server IPv4 address
+//   <i>Default: "0.0.0.0"
+#define SDSIO_SERVER_IP           "0.0.0.0"
+
+//   <o>SDSIO-Server port
+//   <i>SDSIO socket server port
+//   <i>Default: 5050
+#define SDSIO_SERVER_PORT         5050U
+
+//   <o>Socket receive timeout
+//   <i>Socket receive timeout in ms
+//   <i>Default: 5000
+#define SDSIO_SOCKET_RECEIVE_TOUT 5000U
 
 // </h>
 

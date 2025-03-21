@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2025 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,14 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Name:    sdsio_config_serial_usart.h
- * Purpose: SDS IO via Serial Port (CMSIS Driver:USART) configuration options
+ * Name:    sdsio_client_config_serial_usart.h
+ * Purpose: SDS IO Client via Serial Port (CMSIS Driver:USART) configuration options
  * Rev.:    V1.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>SDS IO via Serial Port (CMSIS Driver:USART)
+// <h>SDS IO Client via Serial Port (CMSIS Driver:USART)
 
 //   <o>USART driver number (Driver_USART#) <0-255>
 //   <i>Exported USART driver control block number (Driver_USART#)
