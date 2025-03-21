@@ -27,6 +27,7 @@
       -- SDS:IO:Socket             -> SDS:IO:Client.Socket
       -- SDS:IO:VCOM.MDK USB       -> SDS:IO:Client.VCOM (MDK USB)
       -- SDS:IO:Serial.CMSIS USART -> SDS:IO:Client.Serial (CMSIS USART)
+      - Added SDS:IO:Client.Custom component and the corresponding driver
     </release>
   </releases>
 
@@ -139,6 +140,20 @@
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
         <file category="source" name="sds/source/sdsio/client/serial/usart/sdsio_client_serial.c"/>
         <file category="header" name="sds/config/sdsio_client_config_serial_usart.h" attr="config" version="1.0.0"/>
+      </files>
+    </component>
+
+    <!-- SDS I/O (Custom client) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="Client" Cvariant="Custom" Capiversion="1.0.0" Cversion="1.0.0">
+      <description>Access to SDS data files via SDSIO Client (Custom I/O Client)</description>
+      <RTE_Components_h>
+        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
+        #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output via SDSIO Client*/
+        #define RTE_SDS_IO_CLIENT_CUSTOM                /* Synchronous Data Stream Input/Output via SDSIO Client (Client - Custom) */
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
+        <file category="source" name="sds/source/sdsio/client/template/sdsio_client_custom.c" attr="template"/>
       </files>
     </component>
 
