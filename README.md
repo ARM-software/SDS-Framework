@@ -2,20 +2,7 @@
 
 The **Synchronous Data Stream (SDS) Framework** implements a data stream management, provides methods and helper tools for developing and optimizing embedded applications that integrate DSP and ML algorithms. This framework may be used stand-alone, but also in combination with [**CMSIS-Stream**](https://github.com/ARM-software/CMSIS-Stream) that allows to combine algorithms using a compute graph.
 
-## Features
-
-- Implements a flexible data stream management for sensor, audio, and video interfaces that process data streams.
-- Supports data streams from multiple interfaces (i.e. for sensor fusion) including provisions for time drifts.
-- **Record real-world data** with original data sources of the target hardware for analysis and development.
-- **Playback real-world data** for algorithm validation using target hardware or [Arm Virtual Hardware - FVP](https://github.com/arm-software/avh).
-
-The captured data streams are stored in SDS data files. A [YAML metadata file](./schema/README.md) can be used to describe the content. The SDS data files have several use cases such as:
-
-- Input to Digital Signal Processing (DSP) development tools such as filter designers
-- Input to Machine Learning (ML) model classification, training, and performance optimization 
-- Verify execution of DSP algorithm on Cortex-M targets with off-line tools
-
-[Python-based utilities](./utilities/README.md) are provided for recording, playback, visualization, and data conversion
+Refer to [Overview](./overview/README.md) for more details.
 
 ## Repository structure
 
