@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2025 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,42 +16,15 @@
  * limitations under the License.
  */
 
-// SDS I/O interface via Serial Port (CMSIS Driver:USART)
+// SDS I/O Client
 
 #include <string.h>
 
 #include "cmsis_os2.h"
 
 #include "sdsio.h"
-#include "Driver_USART.h"
-#include "sdsio_config_serial_usart.h"
+#include "sdsio_client.h"
 
-// Expansion macro used to create CMSIS Driver references
-#define EXPAND_SYMBOL(name, port)   name##port
-#define CREATE_SYMBOL(name, port)   EXPAND_SYMBOL(name, port)
-
-// CMSIS-Driver USART reference (Driver_USART#)
-#define CMSIS_USART_DRIVER          CREATE_SYMBOL(Driver_USART, SDSIO_USART_DRIVER_NUMBER)
-
-// Extern CMSIS-Driver USART
-extern ARM_DRIVER_USART             CMSIS_USART_DRIVER;
-
-static ARM_DRIVER_USART *pDrvUSART = &CMSIS_USART_DRIVER;
-
-// SDS I/O header
-typedef struct {
-  uint32_t command;
-  uint32_t sdsio_id;
-  uint32_t argument;
-  uint32_t data_size;
-} header_t;
-
-// Commands
-#define SDSIO_CMD_OPEN          1U
-#define SDSIO_CMD_CLOSE         2U
-#define SDSIO_CMD_WRITE         3U
-#define SDSIO_CMD_READ          4U
-#define SDSIO_CMD_EOS           5U
 
 // Lock function
 #ifndef SDSIO_NO_LOCK
@@ -75,158 +48,25 @@ static inline void sdsioLock       (void) {}
 static inline void sdsioUnLock     (void) {}
 #endif
 
-static osEventFlagsId_t sdsioEventFlagId;
-
-/**
-  USART Callback
-*/
-static void USART_Callback (uint32_t event) {
-  if ((event & ARM_USART_EVENT_SEND_COMPLETE) != 0U) {
-    osEventFlagsSet(sdsioEventFlagId, ARM_USART_EVENT_SEND_COMPLETE);
-  }
-  if ((event & ARM_USART_EVENT_RECEIVE_COMPLETE) != 0U) {
-    osEventFlagsSet(sdsioEventFlagId, ARM_USART_EVENT_RECEIVE_COMPLETE);
-  }
-}
-
-/**
-  \fn          uint32_t sdsioSend (const header_t *header, const void *data, uint32_t data_size)
-  \brief       Send data via USART
-  \param[in]   header       pointer to header
-  \param[in]   data         pointer to buffer with data to send
-  \param[in]   data_size    data size in bytes
-  \return      number of bytes sent (including header)
-*/
-static uint32_t sdsioSend (const header_t *header, const void *data, uint32_t data_size) {
-  uint32_t num, status;
-
-  if (header == NULL) {
-    return 0U;
-  }
-
-  // Send header
-  num = 0U;
-  if (pDrvUSART->Send((const uint8_t *)header, sizeof(header_t)) == ARM_DRIVER_OK) {
-    status = osEventFlagsWait(sdsioEventFlagId,
-                              ARM_USART_EVENT_SEND_COMPLETE,
-                              osFlagsWaitAll,
-                              SDSIO_USART_TIMEOUT);
-    if ((status & osFlagsError) == 0U) {
-      num = sizeof(header_t);
-    }
-  }
-
-  // Send data
-  if ((num != 0U) && (data != NULL) && (data_size != 0U)) {
-    if (pDrvUSART->Send(data, data_size) == ARM_DRIVER_OK) {
-      status = osEventFlagsWait(sdsioEventFlagId,
-                                ARM_USART_EVENT_SEND_COMPLETE,
-                                osFlagsWaitAll,
-                                SDSIO_USART_TIMEOUT);
-      if ((status & osFlagsError) == 0U) {
-        num += data_size;
-      }
-    }
-  }
-
-  return num;
-}
-
-/**
-  \fn          uint32_t sdsioReceive (header_t *header, void *data, uint32_t data_size)
-  \brief       Receive data via USART
-  \param[out]  header       pointer to header
-  \param[out]  data         pointer to buffer for data to read
-  \param[in]   data_size    data size in bytes
-  \return      number of bytes received (including header)
-*/
-static uint32_t sdsioReceive (header_t *header, void *data, uint32_t data_size) {
-  uint32_t num, size, status;
-
-  if (header == NULL) {
-    return 0U;
-  }
-
-  // Receive header
-  num = 0U;
-  if (pDrvUSART->Receive(header, sizeof(header_t)) == ARM_DRIVER_OK) {
-    status = osEventFlagsWait(sdsioEventFlagId,
-                              ARM_USART_EVENT_RECEIVE_COMPLETE,
-                              osFlagsWaitAll,
-                              SDSIO_USART_TIMEOUT);
-    if ((status & osFlagsError) == 0U) {
-      num = sizeof(header_t);
-    }
-  }
-
-  // Receive data
-  if ((num != 0U) && (header->data_size != 0U) &&
-      (data != NULL) && (data_size != 0U)) {
-
-    if (header->data_size < data_size) {
-      size = header->data_size;
-    } else {
-      size = data_size;
-    }
-    if (pDrvUSART->Receive(data, size) == ARM_DRIVER_OK) {
-      status = osEventFlagsWait(sdsioEventFlagId,
-                                ARM_USART_EVENT_RECEIVE_COMPLETE,
-                                osFlagsWaitAll,
-                                SDSIO_USART_TIMEOUT);
-      if ((status & osFlagsError) == 0U) {
-        num += data_size;
-      }
-    }
-  }
-
-  return num;
-}
-
-
 // SDS I/O functions
 
 /** Initialize I/O interface */
 int32_t sdsioInit (void) {
-  int32_t status = ARM_DRIVER_ERROR;
   int32_t ret;
 
   sdsioLockCreate();
-  sdsioEventFlagId = osEventFlagsNew(NULL);
 
-  if (sdsioEventFlagId != NULL) {
-    status = pDrvUSART->Initialize(USART_Callback);
-  }
-  if (status == ARM_DRIVER_OK) {
-    status = pDrvUSART->PowerControl(ARM_POWER_FULL);
-  }
-  if (status == ARM_DRIVER_OK) {
-    pDrvUSART->Control(ARM_USART_MODE_ASYNCHRONOUS |
-                       SDSIO_USART_DATA_BITS       |
-                       SDSIO_USART_PARITY          |
-                       SDSIO_USART_STOP_BITS,
-                       SDSIO_USART_BAUDRATE);
-  }
-  if (status == ARM_DRIVER_OK) {
-    status = pDrvUSART->Control(ARM_USART_CONTROL_RX, 1U);
-  }
-  if (status == ARM_DRIVER_OK) {
-    status = pDrvUSART->Control(ARM_USART_CONTROL_TX, 1U);
-  }
-  if (status == ARM_DRIVER_OK) {
-    ret = SDSIO_OK;
-  } else {
+  ret = sdsioClientInit();
+  if (ret != SDSIO_OK) {
     sdsioLockDelete();
-    ret = SDSIO_ERROR;
   }
+
   return ret;
 }
 
 /** Un-initialize I/O interface */
 int32_t sdsioUninit (void) {
-  pDrvUSART->Control(ARM_USART_CONTROL_RX, 0U);
-  pDrvUSART->Control(ARM_USART_CONTROL_TX, 0U);
-  pDrvUSART->PowerControl(ARM_POWER_OFF);
-  pDrvUSART->Uninitialize();
+  sdsioClientUninit();
   sdsioLockDelete();
   return SDSIO_OK;
 }
@@ -262,11 +102,11 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
 
     // Send header + data
     size = sizeof(header_t) + data_size;
-    if (sdsioSend(&header, name, data_size) == size) {
+    if (sdsioClientSend(&header, name, data_size) == size) {
 
       // Receive header
       size = sizeof(header_t);
-      if (sdsioReceive(&header, NULL, 0U) == size) {
+      if (sdsioClientReceive(&header, NULL, 0U) == size) {
         if ((header.command   == SDSIO_CMD_OPEN) &&
             (header.argument  == mode)           &&
             (header.data_size == 0U)) {
@@ -305,7 +145,7 @@ int32_t sdsioClose (sdsioId_t id) {
 
     // Send Header
     size = sizeof(header_t);
-    if (sdsioSend(&header, NULL, 0U) == size) {
+    if (sdsioClientSend(&header, NULL, 0U) == size) {
       ret = SDSIO_OK;
     }
 
@@ -339,7 +179,7 @@ uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
 
     // Send header + data
     size = sizeof(header_t) + buf_size;
-    if (sdsioSend(&header, buf, buf_size) == size) {
+    if (sdsioClientSend(&header, buf, buf_size) == size) {
       num = buf_size;
     }
 
@@ -360,7 +200,7 @@ uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
   Receive:
     header: command   = SDSIO_CMD_READ
             sdsio_id  = sdsio identifier
-            argument  = not used
+            argument  = nonzero = end of stream, else 0
             data_size = number of data bytes read
     data    data read
 */
@@ -377,13 +217,16 @@ uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
     header.data_size = 0U;
 
     // Send header
-    if (sdsioSend(&header, NULL, 0U) == sizeof(header_t)) {
+    if (sdsioClientSend(&header, NULL, 0U) == sizeof(header_t)) {
 
       // Receive header + data
-      if (sdsioReceive(&header, buf, buf_size) >= sizeof(header_t)) {
+      if (sdsioClientReceive(&header, buf, buf_size) >= sizeof(header_t)) {
         if ((header.command   == SDSIO_CMD_READ) &&
             (header.sdsio_id  == (uint32_t)id)   &&
             (header.data_size <= buf_size)) {
+
+          // Note: End of stream information in response argument is currently not used
+
           num = header.data_size;
         }
       }
@@ -423,9 +266,9 @@ int32_t sdsioEndOfStream (sdsioId_t id) {
     header.data_size = 0U;
 
     // Send Header
-    if (sdsioSend(&header, NULL, 0U) == sizeof(header_t)) {
+    if (sdsioClientSend(&header, NULL, 0U) == sizeof(header_t)) {
       // Receive header
-      if (sdsioReceive(&header, NULL, 0U) == sizeof(header_t)) {
+      if (sdsioClientReceive(&header, NULL, 0U) == sizeof(header_t)) {
         if ((header.command   == SDSIO_CMD_EOS) &&
             (header.sdsio_id  == (uint32_t)id)  &&
             (header.data_size == 0U)) {
