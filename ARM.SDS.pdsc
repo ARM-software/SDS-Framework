@@ -25,6 +25,8 @@
       SDSIO:
       - Gathered common SDSIO client code into sdsio_client.c/.h; low-level I/O dependant code remain in individual drivers
       - Added SDS:IO:Custom component and driver
+      SDS Recorder and Player:
+      - Replaced legacy SDS:Recorder and SDS:Player components and drivers with combined SDS:RecPlay component and driver.
     </release>
   </releases>
 
@@ -52,14 +54,8 @@
       <description>SDS IO via File System (Semihosting)</description>
       <require Cclass="CMSIS-View" Cgroup="Event Recorder" Cvariant="Semihosting"/>
     </condition>
-    <condition id="SDS Recorder with CMSIS-RTOS2">
-      <description>SDS Recorder with CMSIS-RTOS2</description>
-      <require Cclass="CMSIS" Cgroup="RTOS2"/>
-      <require Cclass="SDS"   Cgroup="Buffer"/>
-      <require Cclass="SDS"   Cgroup="IO"/>
-    </condition>
-    <condition id="SDS Player with CMSIS-RTOS2">
-      <description>SDS Player with CMSIS-RTOS2</description>
+    <condition id="SDS Recorder and Player with CMSIS-RTOS2">
+      <description>SDS Recorder and Player with CMSIS-RTOS2</description>
       <require Cclass="CMSIS" Cgroup="RTOS2"/>
       <require Cclass="SDS"   Cgroup="Buffer"/>
       <require Cclass="SDS"   Cgroup="IO"/>
@@ -177,29 +173,16 @@
       </files>
     </component>
 
-    <!-- SDS Recorder -->
-    <component Cclass="SDS" Cgroup="Recorder" Cvariant="CMSIS-RTOS2" Cversion="2.0.0" condition="SDS Recorder with CMSIS-RTOS2">
-      <description>Record to Output device</description>
+    <!-- SDS Recorder and Player -->
+    <component Cclass="SDS" Cgroup="RecPlay" Cvariant="CMSIS-RTOS2" Cversion="1.0.0" condition="SDS Recorder and Player with CMSIS-RTOS2">
+      <description>Recorder/Player interface for data stream</description>
       <RTE_Components_h>
-        #define RTE_SDS_RECORDER                /* Synchronous Data Stream Recorder */
+        #define RTE_SDS_REC_PLAY                        /* Synchronous Data Stream Recorder and Player */
       </RTE_Components_h>
       <files>
-        <file category="header" name="sds/include/sds_rec.h"/>
-        <file category="source" name="sds/source/sds_rec.c"/>
-        <file category="header" name="sds/config/sds_rec_config.h" attr="config" version="2.0.0"/>
-      </files>
-    </component>
-
-    <!-- SDS Player -->
-    <component Cclass="SDS" Cgroup="Player" Cvariant="CMSIS-RTOS2" Cversion="2.0.0" condition="SDS Player with CMSIS-RTOS2">
-      <description>Play from Input device</description>
-      <RTE_Components_h>
-        #define RTE_SDS_PLAYER                  /* Synchronous Data Stream Player */
-      </RTE_Components_h>
-      <files>
-        <file category="header" name="sds/include/sds_play.h"/>
-        <file category="source" name="sds/source/sds_play.c"/>
-        <file category="header" name="sds/config/sds_play_config.h" attr="config" version="2.0.0"/>
+        <file category="header" name="sds/include/sds_rec_play.h"/>
+        <file category="source" name="sds/source/sds_rec_play.c"/>
+        <file category="header" name="sds/config/sds_rec_play_config.h" attr="config" version="1.0.0"/>
       </files>
     </component>
   </components>
