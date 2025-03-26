@@ -8,7 +8,7 @@
 
 
 
-sds\_rec.h _: SDS Recorder for writing SDS files via communication or file I/O interface._[More...](#detailed-description)
+_sds\_rec.h: SDS Recorder for writing SDS files via communication or file I/O interface._ [More...](#detailed-description)
 
 
 
@@ -27,11 +27,6 @@ sds\_rec.h _: SDS Recorder for writing SDS files via communication or file I/O i
 
 
 
-## Public Types
-
-| Type | Name |
-| ---: | :--- |
-| typedef void \* | [**sdsRecId\_t**](#typedef-sdsrecid_t)  <br>_Handle to SDS file for recording._  |
 
 
 
@@ -56,11 +51,7 @@ sds\_rec.h _: SDS Recorder for writing SDS files via communication or file I/O i
 
 | Type | Name |
 | ---: | :--- |
-|  int32\_t | [**sdsRecClose**](#function-sdsrecclose) ([**sdsRecId\_t**](group__SDS__Recorder.md#typedef-sdsrecid_t) id) <br>_Close recorder stream._  |
-|  int32\_t | [**sdsRecInit**](#function-sdsrecinit) (sdsRecEvent\_t event\_cb) <br>_Initialize recorder._  |
-|  [**sdsRecId\_t**](group__SDS__Recorder.md#typedef-sdsrecid_t) | [**sdsRecOpen**](#function-sdsrecopen) (const char \* name, void \* buf, uint32\_t buf\_size, uint32\_t io\_threshold) <br>_Open recorder stream._  |
-|  int32\_t | [**sdsRecUninit**](#function-sdsrecuninit) (void) <br>_Uninitialize recorder._  |
-|  uint32\_t | [**sdsRecWrite**](#function-sdsrecwrite) ([**sdsRecId\_t**](group__SDS__Recorder.md#typedef-sdsrecid_t) id, uint32\_t timestamp, const void \* buf, uint32\_t buf\_size) <br> |
+|  sdsRecPlayId\_t | [**sdsRecOpen**](#function-sdsrecopen) (const char \* name, void \* buf, uint32\_t buf\_size, uint32\_t io\_threshold) <br>_Open recorder stream._  |
 
 
 
@@ -96,102 +87,8 @@ Todo
 
 
     
-## Public Types Documentation
-
-
-
-
-### typedef sdsRecId\_t 
-
-_Handle to SDS file for recording._ 
-```
-typedef void* sdsRecId_t;
-```
-
-
-
-todo 
-
-
-        
-
-<hr>
 ## Public Functions Documentation
 
-
-
-
-### function sdsRecClose 
-
-_Close recorder stream._ 
-```
-int32_t sdsRecClose (
-    sdsRecId_t id
-) 
-```
-
-
-
-todo
-
-
-
-
-**Parameters:**
-
-
-* `id` [**sdsRecId\_t**](group__SDS__Recorder.md#typedef-sdsrecid_t) handle to SDS file for recording 
-
-
-
-**Returns:**
-
-return code 
-
-
-
-
-
-        
-
-<hr>
-
-
-
-### function sdsRecInit 
-
-_Initialize recorder._ 
-```
-int32_t sdsRecInit (
-    sdsRecEvent_t event_cb
-) 
-```
-
-
-
-todo
-
-
-
-
-**Parameters:**
-
-
-* `event_cb` pointer to sdsRecEvent\_t callback function 
-
-
-
-**Returns:**
-
-return code 
-
-
-
-
-
-        
-
-<hr>
 
 
 
@@ -199,7 +96,7 @@ return code
 
 _Open recorder stream._ 
 ```
-sdsRecId_t sdsRecOpen (
+sdsRecPlayId_t sdsRecOpen (
     const char * name,
     void * buf,
     uint32_t buf_size,
@@ -226,62 +123,10 @@ todo
 
 **Returns:**
 
-[**sdsRecId\_t**](group__SDS__Recorder.md#typedef-sdsrecid_t) handle to SDS file for recording 
+sdsRecPlayId\_t handle to SDS Recorder/Player stream 
 
 
 
-
-
-        
-
-<hr>
-
-
-
-### function sdsRecUninit 
-
-_Uninitialize recorder._ 
-```
-int32_t sdsRecUninit (
-    void
-) 
-```
-
-
-
-todo
-
-
-
-
-**Returns:**
-
-return code 
-
-
-
-
-
-        
-
-<hr>
-
-
-
-### function sdsRecWrite 
-
-```
-uint32_t sdsRecWrite (
-    sdsRecId_t id,
-    uint32_t timestamp,
-    const void * buf,
-    uint32_t buf_size
-) 
-```
-
-
-
-todo 
 
 
         

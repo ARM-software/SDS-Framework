@@ -3,27 +3,11 @@
   <compounddef id="group__SDS__Event__Codes" kind="group">
     <compoundname>SDS_Event_Codes</compoundname>
     <title>SDS Event Codes</title>
-    <sectiondef kind="define">
-      <memberdef kind="define" id="group__SDS__Event__Codes_1ga607b2b4ced9971b99b2289dd111888f5" prot="public" static="no">
-        <name>SDS_PLAY_EVENT_IO_ERROR</name>
-        <initializer>(1UL &lt;&lt; 0)</initializer>
-        <briefdescription>
-<para>I/O Error during sds_play function execution. </para>
-        </briefdescription>
-        <detaileddescription>
-<para>Event codes.</para>
-<para>I/O Error </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_play.h" line="38" column="9" bodyfile="sds/include/sds_play.h" bodystart="38" bodyend="-1"/>
-      </memberdef>
-    </sectiondef>
     <briefdescription>
 <para>SDS Player Event Codes. </para>
     </briefdescription>
     <detaileddescription>
-<para>The following values are passed as event value to <ref refid="group__SDS__Circular__Buffer_1gac4428df6973dd12416953c49b278b46c" kindref="member">sdsPlayEvent_t</ref>. </para>
+<para>The following values are passed as event value to sdsPlayEvent_t. </para>
     </detaileddescription>
   </compounddef>
 </doxygen>

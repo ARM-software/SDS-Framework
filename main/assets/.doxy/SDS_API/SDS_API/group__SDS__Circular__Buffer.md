@@ -32,7 +32,6 @@ sds.h _: SDS circular buffer handling for data streams_[More...](#detailed-descr
 | Type | Name |
 | ---: | :--- |
 | typedef void \* | [**sdsId\_t**](#typedef-sdsid_t)  <br>_Handle to SDS buffer stream._  |
-| typedef void(\* | [**sdsPlayEvent\_t**](#typedef-sdsplayevent_t)  <br>_Call back function for SDS circular buffer handling._  |
 
 
 
@@ -113,35 +112,6 @@ typedef void* sdsId_t;
 
 
 todo test 
-
-
-        
-
-<hr>
-
-
-
-### typedef sdsPlayEvent\_t 
-
-_Call back function for SDS circular buffer handling._ 
-```
-typedef void(* sdsPlayEvent_t) (sdsPlayId_t id, uint32_t event);
-```
-
-
-
-Call back function for player events.
-
-
-
-
-**Parameters:**
-
-
-* `id` handle to SDS file for playback 
-* `event` event code
-
-todo 
 
 
         

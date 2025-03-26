@@ -3,35 +3,6 @@
   <compounddef id="group__SDS__Errors" kind="group">
     <compoundname>SDS_Errors</compoundname>
     <title>SDS Error Codes</title>
-    <sectiondef kind="define">
-      <memberdef kind="define" id="group__SDS__Errors_1ga46cd26d34d8645e568904ae7d1b339e7" prot="public" static="no">
-        <name>SDS_PLAY_OK</name>
-        <initializer>(0)</initializer>
-        <briefdescription>
-<para>SDS function execution completed. </para>
-        </briefdescription>
-        <detaileddescription>
-<para>Function return codes.</para>
-<para>Operation completed successfully </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_play.h" line="34" column="9" bodyfile="sds/include/sds_play.h" bodystart="34" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="group__SDS__Errors_1gae66ed83b49afe0693f0a33611fd2f997" prot="public" static="no">
-        <name>SDS_PLAY_ERROR</name>
-        <initializer>(-1)</initializer>
-        <briefdescription>
-<para>Error during sds_play function execution. </para>
-        </briefdescription>
-        <detaileddescription>
-<para>Operation failed. </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_play.h" line="35" column="9" bodyfile="sds/include/sds_play.h" bodystart="35" bodyend="-1"/>
-      </memberdef>
-    </sectiondef>
     <briefdescription>
 <para>SDS Player Error Codes. </para>
     </briefdescription>

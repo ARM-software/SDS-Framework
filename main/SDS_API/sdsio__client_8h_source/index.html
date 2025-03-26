@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>File sds_play.h - SDS-Framework</title>
+    <title>File sdsio_client.h - SDS-Framework</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "File sds_play.h";
-        var mkdocs_page_input_path = "SDS_API/sds__play_8h.md";
+        var mkdocs_page_name = "File sdsio_client.h";
+        var mkdocs_page_input_path = "SDS_API/sdsio__client_8h_source.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -82,9 +82,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">File sds_play.h</li>
+      <li class="breadcrumb-item active">File sdsio_client.h</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/sds__play_8h.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/sdsio__client_8h_source.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -92,37 +92,69 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="file-sds_playh">File sds_play.h</h1>
-<p><a href="../files/"><strong>FileList</strong></a> <strong>&gt;</strong> <a href="../dir_d09908635ef304ba819d3349bcb716bf/"><strong>include</strong></a> <strong>&gt;</strong> <a href="./"><strong>sds_play.h</strong></a></p>
-<p><a href="../sds__play_8h_source/">Go to the source code of this file</a></p>
-<ul>
-<li><code>#include &lt;stdint.h&gt;</code></li>
-</ul>
-<h2 id="public-functions">Public Functions</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: right;">Type</th>
-<th style="text-align: left;">Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdsplayinit"><strong>sdsPlayInit</strong></a> (<a href="../group__SDS__Circular__Buffer/#typedef-sdsplayevent_t"><strong>sdsPlayEvent_t</strong></a> event_cb) <br></td>
-</tr>
-</tbody>
-</table>
-<h2 id="public-functions-documentation">Public Functions Documentation</h2>
-<h3 id="function-sdsplayinit">function sdsPlayInit</h3>
-<pre><code class="language-C++">int32_t sdsPlayInit (
-    sdsPlayEvent_t event_cb
-) 
-</code></pre>
-<hr>
+                <h1 id="file-sdsio_clienth">File sdsio_client.h</h1>
+<p><a href="../files/"><strong>File List</strong></a> <strong>&gt;</strong> <a href="../dir_d09908635ef304ba819d3349bcb716bf/"><strong>include</strong></a> <strong>&gt;</strong> <a href="../sdsio__client_8h/"><strong>sdsio_client.h</strong></a></p>
+<p><a href="../sdsio__client_8h/">Go to the documentation of this file</a></p>
+<pre><code class="language-C++">/*
+ * Copyright (c) 2025 Arm Limited. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-<hr />
-<p>The documentation for this class was generated from the following file <code>sds/include/sds_play.h</code></p>
+#ifndef SDSIO_CLIENT_H
+#define SDSIO_CLIENT_H
+
+#ifdef  __cplusplus
+ extern &quot;C&quot;
+{
+#endif
+
+// SDSIO Client works in pair with SDSIO Server. Communication protocol is documented in the following link:
+// https://arm-software.github.io/SDS-Framework/main/theory/#sdsio-server-protocol
+
+ // SDS I/O header
+typedef struct {
+  uint32_t command;
+  uint32_t sdsio_id;
+  uint32_t argument;
+  uint32_t data_size;
+} header_t;
+
+// Commands
+#define SDSIO_CMD_OPEN          1U
+#define SDSIO_CMD_CLOSE         2U
+#define SDSIO_CMD_WRITE         3U
+#define SDSIO_CMD_READ          4U
+#define SDSIO_CMD_EOS           5U
+
+// Function prototypes
+
+int32_t sdsioClientInit (void);
+
+int32_t sdsioClientUninit (void);
+
+uint32_t sdsioClientSend (const header_t *header, const void *data, uint32_t data_size);
+
+uint32_t sdsioClientReceive (header_t *header, void *data, uint32_t data_size);
+
+#ifdef  __cplusplus
+}
+#endif
+
+#endif  /* SDSIO_CLIENT_H */
+</code></pre>
               
             </div>
           </div><footer>

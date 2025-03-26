@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Group SDS_Circular_Buffer - SDS-Framework</title>
+    <title>File sdsio_client.h - SDS-Framework</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Group SDS_Circular_Buffer";
-        var mkdocs_page_input_path = "SDS_API/group__SDS__Circular__Buffer.md";
+        var mkdocs_page_name = "File sdsio_client.h";
+        var mkdocs_page_input_path = "SDS_API/sdsio__client_8h.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -82,9 +82,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Group SDS_Circular_Buffer</li>
+      <li class="breadcrumb-item active">File sdsio_client.h</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__Circular__Buffer.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/sdsio__client_8h.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -92,10 +92,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="group-sds_circular_buffer">Group SDS_Circular_Buffer</h1>
-<p><a href="../modules/"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="./"><strong>SDS_Circular_Buffer</strong></a></p>
-<p>sds.h <em>: SDS circular buffer handling for data streams</em><a href="#detailed-description">More...</a></p>
-<h2 id="public-types">Public Types</h2>
+                <h1 id="file-sdsio_clienth">File sdsio_client.h</h1>
+<p><a href="../files/"><strong>FileList</strong></a> <strong>&gt;</strong> <a href="../dir_d09908635ef304ba819d3349bcb716bf/"><strong>include</strong></a> <strong>&gt;</strong> <a href="./"><strong>sdsio_client.h</strong></a></p>
+<p><a href="../sdsio__client_8h_source/">Go to the source code of this file</a></p>
+<h2 id="classes">Classes</h2>
 <table>
 <thead>
 <tr>
@@ -105,8 +105,8 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: right;">typedef void *</td>
-<td style="text-align: left;"><a href="#typedef-sdsid_t"><strong>sdsId_t</strong></a>  <br><em>Handle to SDS buffer stream.</em></td>
+<td style="text-align: right;">struct</td>
+<td style="text-align: left;"><a href="../structheader__t/"><strong>header_t</strong></a> <br></td>
 </tr>
 </tbody>
 </table>
@@ -121,145 +121,137 @@
 <tbody>
 <tr>
 <td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdsclear"><strong>sdsClear</strong></a> (<a href="./#typedef-sdsid_t"><strong>sdsId_t</strong></a> id) <br><em>Clear buffer stream data.</em></td>
+<td style="text-align: left;"><a href="#function-sdsioclientinit"><strong>sdsioClientInit</strong></a> (void) <br><em>Initialize SDS I/O Client.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">uint32_t</td>
+<td style="text-align: left;"><a href="#function-sdsioclientreceive"><strong>sdsioClientReceive</strong></a> (<a href="../structheader__t/"><strong>header_t</strong></a> * header, void * data, uint32_t data_size) <br><em>Receive data from SDSIO-Server.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">uint32_t</td>
+<td style="text-align: left;"><a href="#function-sdsioclientsend"><strong>sdsioClientSend</strong></a> (const <a href="../structheader__t/"><strong>header_t</strong></a> * header, const void * data, uint32_t data_size) <br><em>Send data to SDSIO-Server.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdsclose"><strong>sdsClose</strong></a> (<a href="./#typedef-sdsid_t"><strong>sdsId_t</strong></a> id) <br><em>Close buffer stream.</em></td>
-</tr>
-<tr>
-<td style="text-align: right;">uint32_t</td>
-<td style="text-align: left;"><a href="#function-sdsgetcount"><strong>sdsGetCount</strong></a> (<a href="./#typedef-sdsid_t"><strong>sdsId_t</strong></a> id) <br><em>Get data count in buffer stream.</em></td>
-</tr>
-<tr>
-<td style="text-align: right;">uint32_t</td>
-<td style="text-align: left;"><a href="#function-sdsread"><strong>sdsRead</strong></a> (<a href="./#typedef-sdsid_t"><strong>sdsId_t</strong></a> id, void * buf, uint32_t buf_size) <br><em>Read data from buffer stream.</em></td>
-</tr>
-<tr>
-<td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdsregisterevents"><strong>sdsRegisterEvents</strong></a> (<a href="./#typedef-sdsid_t"><strong>sdsId_t</strong></a> id, sdsEvent_t event_cb, uint32_t event_mask, void * event_arg) <br><em>Register buffer stream events.</em></td>
-</tr>
-<tr>
-<td style="text-align: right;">uint32_t</td>
-<td style="text-align: left;"><a href="#function-sdswrite"><strong>sdsWrite</strong></a> (<a href="./#typedef-sdsid_t"><strong>sdsId_t</strong></a> id, const void * buf, uint32_t buf_size) <br><em>Write data to buffer stream.</em></td>
+<td style="text-align: left;"><a href="#function-sdsioclientuninit"><strong>sdsioClientUninit</strong></a> (void) <br><em>Un-Initialize SDS I/O Client.</em></td>
 </tr>
 </tbody>
 </table>
-<h2 id="detailed-description">Detailed Description</h2>
-<p>The stream data is written to and read from a circular buffer allocated in RAM. Event callback function which is triggered on data threshold reached can be registered. </p>
-<h2 id="public-types-documentation">Public Types Documentation</h2>
-<h3 id="typedef-sdsid_t">typedef sdsId_t</h3>
-<p><em>Handle to SDS buffer stream.</em> </p>
-<pre><code>typedef void* sdsId_t;
-</code></pre>
-<p>todo test </p>
-<hr>
+<h2 id="macros">Macros</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Type</th>
+<th style="text-align: left;">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="./#define-sdsio_cmd_close"><strong>SDSIO_CMD_CLOSE</strong></a>  <code>2U</code><br></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="./#define-sdsio_cmd_eos"><strong>SDSIO_CMD_EOS</strong></a>  <code>5U</code><br></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="./#define-sdsio_cmd_open"><strong>SDSIO_CMD_OPEN</strong></a>  <code>1U</code><br></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="./#define-sdsio_cmd_read"><strong>SDSIO_CMD_READ</strong></a>  <code>4U</code><br></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="./#define-sdsio_cmd_write"><strong>SDSIO_CMD_WRITE</strong></a>  <code>3U</code><br></td>
+</tr>
+</tbody>
+</table>
 <h2 id="public-functions-documentation">Public Functions Documentation</h2>
-<h3 id="function-sdsclear">function sdsClear</h3>
-<p><em>Clear buffer stream data.</em> </p>
-<pre><code>int32_t sdsClear (
-    sdsId_t id
+<h3 id="function-sdsioclientinit">function sdsioClientInit</h3>
+<p><em>Initialize SDS I/O Client.</em> </p>
+<pre><code class="language-C++">int32_t sdsioClientInit (
+    void
 ) 
 </code></pre>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><code>id</code> <a href="./#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS buffer stream </li>
-</ul>
 <p><strong>Returns:</strong></p>
-<p>return code</p>
-<p>todo </p>
+<p>SDIOS_OK: initialization success SDSIO_ERROR: initialization failed </p>
 <hr>
 
-<h3 id="function-sdsclose">function sdsClose</h3>
-<p><em>Close buffer stream.</em> </p>
-<pre><code>int32_t sdsClose (
-    sdsId_t id
+<h3 id="function-sdsioclientreceive">function sdsioClientReceive</h3>
+<p><em>Receive data from SDSIO-Server.</em> </p>
+<pre><code class="language-C++">uint32_t sdsioClientReceive (
+    header_t * header,
+    void * data,
+    uint32_t data_size
 ) 
 </code></pre>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="./#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS buffer stream </li>
+<li><code>header</code> pointer to header </li>
+<li><code>data</code> pointer to buffer for data to read </li>
+<li><code>data_size</code> data size in bytes </li>
 </ul>
 <p><strong>Returns:</strong></p>
-<p>return code</p>
-<p>todo </p>
+<p>number of bytes received (including header) </p>
 <hr>
 
-<h3 id="function-sdsgetcount">function sdsGetCount</h3>
-<p><em>Get data count in buffer stream.</em> </p>
-<pre><code>uint32_t sdsGetCount (
-    sdsId_t id
+<h3 id="function-sdsioclientsend">function sdsioClientSend</h3>
+<p><em>Send data to SDSIO-Server.</em> </p>
+<pre><code class="language-C++">uint32_t sdsioClientSend (
+    const header_t * header,
+    const void * data,
+    uint32_t data_size
 ) 
 </code></pre>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="./#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS buffer stream </li>
+<li><code>header</code> pointer to header </li>
+<li><code>data</code> pointer to buffer with data to send </li>
+<li><code>data_size</code> data size in bytes </li>
 </ul>
 <p><strong>Returns:</strong></p>
-<p>number of bytes in buffer stream</p>
-<p>todo </p>
+<p>number of bytes sent (including header) </p>
 <hr>
 
-<h3 id="function-sdsread">function sdsRead</h3>
-<p><em>Read data from buffer stream.</em> </p>
-<pre><code>uint32_t sdsRead (
-    sdsId_t id,
-    void * buf,
-    uint32_t buf_size
+<h3 id="function-sdsioclientuninit">function sdsioClientUninit</h3>
+<p><em>Un-Initialize SDS I/O Client.</em> </p>
+<pre><code class="language-C++">int32_t sdsioClientUninit (
+    void
 ) 
 </code></pre>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><code>id</code> <a href="./#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS buffer stream </li>
-<li><code>buf</code> pointer to buffer for data to read </li>
-<li><code>buf_size</code> buffer size in bytes </li>
-</ul>
 <p><strong>Returns:</strong></p>
-<p>number of bytes read</p>
-<p>todo </p>
+<p>SDIOS_OK: un-initialization success SDSIO_ERROR: un-initialization failed </p>
+<hr>
+<h2 id="macro-definition-documentation">Macro Definition Documentation</h2>
+<h3 id="define-sdsio_cmd_close">define SDSIO_CMD_CLOSE</h3>
+<pre><code class="language-C++">#define SDSIO_CMD_CLOSE `2U`
+</code></pre>
 <hr>
 
-<h3 id="function-sdsregisterevents">function sdsRegisterEvents</h3>
-<p><em>Register buffer stream events.</em> </p>
-<pre><code>int32_t sdsRegisterEvents (
-    sdsId_t id,
-    sdsEvent_t event_cb,
-    uint32_t event_mask,
-    void * event_arg
-) 
+<h3 id="define-sdsio_cmd_eos">define SDSIO_CMD_EOS</h3>
+<pre><code class="language-C++">#define SDSIO_CMD_EOS `5U`
 </code></pre>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><code>id</code> <a href="./#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS buffer stream </li>
-<li><code>event_cb</code> pointer to sdsEvent_t </li>
-<li><code>event_mask</code> event mask </li>
-<li><code>event_arg</code> event argument </li>
-</ul>
-<p><strong>Returns:</strong></p>
-<p>return code</p>
-<p>todo </p>
 <hr>
 
-<h3 id="function-sdswrite">function sdsWrite</h3>
-<p><em>Write data to buffer stream.</em> </p>
-<pre><code>uint32_t sdsWrite (
-    sdsId_t id,
-    const void * buf,
-    uint32_t buf_size
-) 
+<h3 id="define-sdsio_cmd_open">define SDSIO_CMD_OPEN</h3>
+<pre><code class="language-C++">#define SDSIO_CMD_OPEN `1U`
 </code></pre>
-<p><strong>Parameters:</strong></p>
-<ul>
-<li><code>id</code> <a href="./#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS buffer stream </li>
-<li><code>buf</code> pointer to buffer with data to write </li>
-<li><code>buf_size</code> buffer size in bytes </li>
-</ul>
-<p><strong>Returns:</strong></p>
-<p>number of bytes written</p>
-<p>todo </p>
+<hr>
+
+<h3 id="define-sdsio_cmd_read">define SDSIO_CMD_READ</h3>
+<pre><code class="language-C++">#define SDSIO_CMD_READ `4U`
+</code></pre>
+<hr>
+
+<h3 id="define-sdsio_cmd_write">define SDSIO_CMD_WRITE</h3>
+<pre><code class="language-C++">#define SDSIO_CMD_WRITE `3U`
+</code></pre>
 <hr>
 
 <hr />
+<p>The documentation for this class was generated from the following file <code>sds/include/sdsio_client.h</code></p>
               
             </div>
           </div><footer>

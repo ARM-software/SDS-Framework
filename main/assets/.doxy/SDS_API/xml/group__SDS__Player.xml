@@ -3,48 +3,10 @@
   <compounddef id="group__SDS__Player" kind="group">
     <compoundname>SDS_Player</compoundname>
     <title>SDS Player</title>
-    <sectiondef kind="typedef">
-      <memberdef kind="typedef" id="group__SDS__Player_1ga48b70fb4418a3234497c9184ae984376" prot="public" static="no">
-        <type>void *</type>
-        <definition>typedef void* sdsPlayId_t</definition>
-        <argsstring></argsstring>
-        <name>sdsPlayId_t</name>
-        <briefdescription>
-<para>Handle to SDS file for playback. </para>
-        </briefdescription>
-        <detaileddescription>
-<para>todo </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_play.h" line="31" column="14" bodyfile="sds/include/sds_play.h" bodystart="31" bodyend="-1"/>
-      </memberdef>
-    </sectiondef>
     <sectiondef kind="func">
-      <memberdef kind="function" id="group__SDS__Player_1ga6185bbc098cce95c3bc7e2f9eabc1730" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>int32_t</type>
-        <definition>int32_t sdsPlayUninit</definition>
-        <argsstring>(void)</argsstring>
-        <name>sdsPlayUninit</name>
-        <param>
-          <type>void</type>
-        </param>
-        <briefdescription>
-<para>Uninitialize player. </para>
-        </briefdescription>
-        <detaileddescription>
-<para>todo</para>
-<para><simplesect kind="return"><para>return code </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_play.h" line="61" column="9" declfile="sds/include/sds_play.h" declline="61" declcolumn="9"/>
-      </memberdef>
-      <memberdef kind="function" id="group__SDS__Player_1gaf7748e57d267dd89151b1c76064b2a8f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="group__SDS__Player_1ga48b70fb4418a3234497c9184ae984376" kindref="member">sdsPlayId_t</ref></type>
-        <definition>sdsPlayId_t sdsPlayOpen</definition>
+      <memberdef kind="function" id="group__SDS__Player_1gaca2c18042b9a6024bf01471b1941f741" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>sdsRecPlayId_t</type>
+        <definition>sdsRecPlayId_t sdsPlayOpen</definition>
         <argsstring>(const char *name, void *buf, uint32_t buf_size, uint32_t io_threshold)</argsstring>
         <name>sdsPlayOpen</name>
         <param>
@@ -101,140 +63,17 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para><ref refid="group__SDS__Player_1ga48b70fb4418a3234497c9184ae984376" kindref="member">sdsPlayId_t</ref> handle to SDS file for playback </para>
+<simplesect kind="return"><para>sdsRecPlayId_t handle to SDS Recorder/Player stream </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_play.h" line="72" column="13" declfile="sds/include/sds_play.h" declline="72" declcolumn="13"/>
-      </memberdef>
-      <memberdef kind="function" id="group__SDS__Player_1gaa27711ea15ffe5b041233765754302bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>int32_t</type>
-        <definition>int32_t sdsPlayClose</definition>
-        <argsstring>(sdsPlayId_t id)</argsstring>
-        <name>sdsPlayClose</name>
-        <param>
-          <type><ref refid="group__SDS__Player_1ga48b70fb4418a3234497c9184ae984376" kindref="member">sdsPlayId_t</ref></type>
-          <declname>id</declname>
-        </param>
-        <briefdescription>
-<para>Close player stream. </para>
-        </briefdescription>
-        <detaileddescription>
-<para>todo x</para>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername direction="in">id</parametername>
-</parameternamelist>
-<parameterdescription>
-<para><ref refid="group__SDS__Player_1ga48b70fb4418a3234497c9184ae984376" kindref="member">sdsPlayId_t</ref> handle to SDS file for playback </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<simplesect kind="return"><para>return code </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_play.h" line="80" column="9" declfile="sds/include/sds_play.h" declline="80" declcolumn="9"/>
-      </memberdef>
-      <memberdef kind="function" id="group__SDS__Player_1ga80feb400c5cbd35961e74c521fbe1802" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>uint32_t</type>
-        <definition>uint32_t sdsPlayRead</definition>
-        <argsstring>(sdsPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size)</argsstring>
-        <name>sdsPlayRead</name>
-        <param>
-          <type><ref refid="group__SDS__Player_1ga48b70fb4418a3234497c9184ae984376" kindref="member">sdsPlayId_t</ref></type>
-          <declname>id</declname>
-        </param>
-        <param>
-          <type>uint32_t *</type>
-          <declname>timestamp</declname>
-        </param>
-        <param>
-          <type>void *</type>
-          <declname>buf</declname>
-        </param>
-        <param>
-          <type>uint32_t</type>
-          <declname>buf_size</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para>todo x </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_play.h" line="91" column="10" declfile="sds/include/sds_play.h" declline="91" declcolumn="10"/>
-      </memberdef>
-      <memberdef kind="function" id="group__SDS__Player_1gaf1b0208812f302b24be984165f4468eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>uint32_t</type>
-        <definition>uint32_t sdsPlayGetSize</definition>
-        <argsstring>(sdsPlayId_t id)</argsstring>
-        <name>sdsPlayGetSize</name>
-        <param>
-          <type><ref refid="group__SDS__Player_1ga48b70fb4418a3234497c9184ae984376" kindref="member">sdsPlayId_t</ref></type>
-          <declname>id</declname>
-        </param>
-        <briefdescription>
-<para>Get record data size from Player stream. </para>
-        </briefdescription>
-        <detaileddescription>
-<para>todo</para>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername direction="in">id</parametername>
-</parameternamelist>
-<parameterdescription>
-<para><ref refid="group__SDS__Player_1ga48b70fb4418a3234497c9184ae984376" kindref="member">sdsPlayId_t</ref> handle to SDS file for playback </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<simplesect kind="return"><para>number of data bytes in record </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_play.h" line="99" column="10" declfile="sds/include/sds_play.h" declline="99" declcolumn="10"/>
-      </memberdef>
-      <memberdef kind="function" id="group__SDS__Player_1gac7de4a7650abe5d2ee8f4f4c6fde57b0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>int32_t</type>
-        <definition>int32_t sdsPlayEndOfStream</definition>
-        <argsstring>(sdsPlayId_t id)</argsstring>
-        <name>sdsPlayEndOfStream</name>
-        <param>
-          <type><ref refid="group__SDS__Player_1ga48b70fb4418a3234497c9184ae984376" kindref="member">sdsPlayId_t</ref></type>
-          <declname>id</declname>
-        </param>
-        <briefdescription>
-<para>Check if end of stream has been reached. </para>
-        </briefdescription>
-        <detaileddescription>
-<para>todo</para>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername direction="in">id</parametername>
-</parameternamelist>
-<parameterdescription>
-<para><ref refid="group__SDS__Player_1ga48b70fb4418a3234497c9184ae984376" kindref="member">sdsPlayId_t</ref> handle to SDS file for playback </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<simplesect kind="return"><para>nonzero if end of stream, else 0 </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_play.h" line="107" column="9" declfile="sds/include/sds_play.h" declline="107" declcolumn="9"/>
+        <location file="sds/include/sds_rec_play.h" line="102" column="16" declfile="sds/include/sds_rec_play.h" declline="102" declcolumn="16"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
-<para><ref refid="sds__play_8h_source" kindref="compound">sds_play.h</ref>: SDS Player for reading SDS files via communication or file I/O interface. </para>
+<para>sds_play.h: SDS Player for reading SDS files via communication or file I/O interface. </para>
     </briefdescription>
     <detaileddescription>
 <para>The SDS Player functions allow to playback SDS files via a file I/O interface. The files are either read via a communication stack that is connected to the SDSIO server or via a File System interface that uses a memory card in the target system as storage. </para>

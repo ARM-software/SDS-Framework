@@ -3,9 +3,9 @@
   <compounddef id="dir_d09908635ef304ba819d3349bcb716bf" kind="dir">
     <compoundname>sds/include</compoundname>
     <innerfile refid="sds_8h">sds.h</innerfile>
-    <innerfile refid="sds__play_8h">sds_play.h</innerfile>
-    <innerfile refid="sds__rec_8h">sds_rec.h</innerfile>
+    <innerfile refid="sds__rec__play_8h">sds_rec_play.h</innerfile>
     <innerfile refid="sdsio_8h">sdsio.h</innerfile>
+    <innerfile refid="sdsio__client_8h">sdsio_client.h</innerfile>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
