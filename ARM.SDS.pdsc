@@ -24,6 +24,7 @@
       - environment name attribute updated from "cmsis" to "csolution" for compliance
       SDSIO:
       - Gathered common SDSIO client code into sdsio_client.c/.h; low-level I/O dependant code remain in individual drivers
+      - Added SDS:IO:Custom component and driver
     </release>
   </releases>
 
@@ -133,6 +134,19 @@
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
         <file category="source" name="sds/source/sdsio/serial/usart/sdsio_client_serial.c"/>
         <file category="header" name="sds/config/sdsio_config_serial_usart.h" attr="config" version="1.0.0"/>
+      </files>
+    </component>
+
+    <!-- SDS I/O (Custom client) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="Custom" Capiversion="1.0.0" Cversion="1.0.0">
+      <description>I/O via Custom I/O to SDSIO Server</description>
+      <RTE_Components_h>
+        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
+        #define RTE_SDS_IO_CUSTOM                       /* Synchronous Data Stream Input/Output via Custom I/O */
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
+        <file category="source" name="sds/source/sdsio/template/sdsio_client_custom.c" attr="template"/>
       </files>
     </component>
 
