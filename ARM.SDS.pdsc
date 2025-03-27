@@ -142,7 +142,7 @@
       </RTE_Components_h>
       <files>
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
-        <file category="source" name="sds/source/sdsio/template/sdsio_client_custom.c" attr="template"/>
+        <file category="source" name="sds/source/sdsio/template/sdsio_client_custom.c" attr="template" select="Custom SDS I/O Client Driver"/>
       </files>
     </component>
 
