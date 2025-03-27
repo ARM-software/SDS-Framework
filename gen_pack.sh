@@ -67,6 +67,7 @@ PACKCHK_ARGS=()
 #
 PACKCHK_DEPS="
 ARM.CMSIS.pdsc
+ARM.CMSIS-RTX.pdsc
 Keil.MDK-Middleware.pdsc
 MDK-Packs.IoT_Socket.pdsc
 ARM.CMSIS-View.pdsc
