@@ -31,6 +31,7 @@ PACK_BUILD=./build
 PACK_DIRS="
 audio
 examples
+overview
 schema
 sds
 utilities
