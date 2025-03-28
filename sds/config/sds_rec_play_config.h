@@ -36,3 +36,9 @@
 // </h>
 
 //------------- <<< end of configuration section >>> ---------------------------
+
+// Timeout value for opening the player stream in milliseconds
+#define SDS_REC_PLAY_OPEN_TOUT     3000U
+
+// Timeout value for closing the recorder/player stream in milliseconds
+#define SDS_REC_PLAY_CLOSE_TOUT    3000U

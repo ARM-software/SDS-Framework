@@ -33,6 +33,7 @@ typedef void *sdsRecPlayId_t;                   ///< handle to SDS Recorder/Play
 /// Function return codes
 #define SDS_REC_PLAY_OK             (0)         ///< Operation completed successfully
 #define SDS_REC_PLAY_ERROR          (-1)        ///< Operation failed
+#define SDS_REC_PLAY_ERROR_TIMEOUT  (-2)        ///< Operation failed: Timeout
 
 /// Event codes
 #define SDS_REC_PLAY_EVENT_IO_ERROR (1UL << 0)  ///< I/O Error
