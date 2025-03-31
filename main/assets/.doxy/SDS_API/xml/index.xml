@@ -27,6 +27,7 @@
   <compound refid="sds__rec__play_8h" kind="file"><name>sds_rec_play.h</name>
     <member refid="sds__rec__play_8h_1a177e52a9bfee53a688cc7ab98b135439" kind="define"><name>SDS_REC_PLAY_OK</name></member>
     <member refid="sds__rec__play_8h_1a4b30a7d800fe0f67fee04dadd23f0ff6" kind="define"><name>SDS_REC_PLAY_ERROR</name></member>
+    <member refid="sds__rec__play_8h_1a207d07b150a9fe48db8e900a86177898" kind="define"><name>SDS_REC_PLAY_ERROR_TIMEOUT</name></member>
     <member refid="sds__rec__play_8h_1a21e5026dbbcce40727a72a3aa7e85769" kind="define"><name>SDS_REC_PLAY_EVENT_IO_ERROR</name></member>
     <member refid="sds__rec__play_8h_1a91a6334159e31346891a3d21db5c5d37" kind="typedef"><name>sdsRecPlayId_t</name></member>
     <member refid="sds__rec__play_8h_1abc0b41916556eb206326e497392e922c" kind="typedef"><name>sdsRecPlayEvent_t</name></member>

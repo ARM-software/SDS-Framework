@@ -10,6 +10,7 @@
 * **SDS\_EVENT\_DATA\_LOW** ([**sds.h**](sds_8h.md))
 * **SDS\_OK** ([**sds.h**](sds_8h.md))
 * **SDS\_REC\_PLAY\_ERROR** ([**sds\_rec\_play.h**](sds__rec__play_8h.md))
+* **SDS\_REC\_PLAY\_ERROR\_TIMEOUT** ([**sds\_rec\_play.h**](sds__rec__play_8h.md))
 * **SDS\_REC\_PLAY\_EVENT\_IO\_ERROR** ([**sds\_rec\_play.h**](sds__rec__play_8h.md))
 * **SDS\_REC\_PLAY\_OK** ([**sds\_rec\_play.h**](sds__rec__play_8h.md))
 * **SDSIO\_ERROR** ([**sdsio.h**](sdsio_8h.md))

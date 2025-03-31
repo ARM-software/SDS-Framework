@@ -42,6 +42,7 @@ typedef void *sdsRecPlayId_t;
 
 #define SDS_REC_PLAY_OK             (0)         
 #define SDS_REC_PLAY_ERROR          (-1)        
+#define SDS_REC_PLAY_ERROR_TIMEOUT  (-2)        
 
 #define SDS_REC_PLAY_EVENT_IO_ERROR (1UL << 0)  
 

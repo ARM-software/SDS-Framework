@@ -98,6 +98,7 @@
 | Type | Name |
 | ---: | :--- |
 | define  | [**SDS\_REC\_PLAY\_ERROR**](sds__rec__play_8h.md#define-sds_rec_play_error)  `(-1)`<br>_Operation failed._  |
+| define  | [**SDS\_REC\_PLAY\_ERROR\_TIMEOUT**](sds__rec__play_8h.md#define-sds_rec_play_error_timeout)  `(-2)`<br>_Operation failed: Timeout._  |
 | define  | [**SDS\_REC\_PLAY\_EVENT\_IO\_ERROR**](sds__rec__play_8h.md#define-sds_rec_play_event_io_error)  `(1UL &lt;&lt; 0)`<br>_Event codes._  |
 | define  | [**SDS\_REC\_PLAY\_OK**](sds__rec__play_8h.md#define-sds_rec_play_ok)  `(0)`<br>_Function return codes._  |
 
@@ -389,6 +390,20 @@ uint32_t sdsRecWrite (
 _Operation failed._ 
 ```C++
 #define SDS_REC_PLAY_ERROR `(-1)`
+```
+
+
+
+
+<hr>
+
+
+
+### define SDS\_REC\_PLAY\_ERROR\_TIMEOUT 
+
+_Operation failed: Timeout._ 
+```C++
+#define SDS_REC_PLAY_ERROR_TIMEOUT `(-2)`
 ```
 
 
