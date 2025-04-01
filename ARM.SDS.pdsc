@@ -21,12 +21,14 @@
       - Add QeexoV2CSV to SDS conversion
       - Revamp argparse interface with multiple subparsers
       Examples:
-      - environment name attribute updated from "cmsis" to "csolution" for compliance
+      - Environment name attribute updated from "cmsis" to "csolution" for compliance
+      SDS Buffer:
+      - Renamed sds.h/c to sds_buffer.h/c and updated all related function and macro namespaces (e.g., sdsOpen to sdsBufferOpen)
       SDSIO:
       - Gathered common SDSIO client code into sdsio_client.c/.h; low-level I/O dependant code remain in individual drivers
       - Added SDS:IO:Custom component and driver
       SDS Recorder and Player:
-      - Replaced legacy SDS:Recorder and SDS:Player components and drivers with combined SDS:RecPlay component and driver.
+      - Replaced legacy SDS:Recorder and SDS:Player components and drivers with combined SDS:RecPlay component and driver
     </release>
   </releases>
 
@@ -77,15 +79,15 @@
 
   <components>
     <!-- SDS -->
-    <component Cclass="SDS" Cgroup="Buffer" Cversion="1.0.0">
+    <component Cclass="SDS" Cgroup="Buffer" Cversion="2.0.0">
       <description>Non-blocking read/write to a circular buffer</description>
       <RTE_Components_h>
-        #define RTE_SDS_BUFFER                          /* Synchronous Data Stream (Buffer) */
+        #define RTE_SDS_BUFFER                          /* Synchronous Data Stream Buffer */
       </RTE_Components_h>
       <files>
-        <file category="header" name="sds/include/sds.h"/>
-        <file category="source" name="sds/source/sds.c"/>
-        <file category="header" name="sds/config/sds_config.h" attr="config" version="1.0.0"/>
+        <file category="header" name="sds/include/sds_buffer.h"/>
+        <file category="source" name="sds/source/sds_buffer.c"/>
+        <file category="header" name="sds/config/sds_buffer_config.h" attr="config" version="1.0.0"/>
       </files>
     </component>
 

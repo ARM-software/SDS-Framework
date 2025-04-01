@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2023-2025 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,17 +16,17 @@
  * limitations under the License.
  *
  * Name:    sds_config.h
- * Purpose: SDS configuration options
+ * Purpose: SDS Buffer configuration options
  * Rev.:    V1.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>Synchronous Data Stream (SDS)
+// <h>Synchronous Data Stream (SDS) Buffer
 
-//   <o>Maximum number of streams
+//   <o>Maximum number of SDS Buffer streams
 //   <i>Default: 16
-#define SDS_MAX_STREAMS         16U
+#define SDS_BUFFER_MAX_STREAMS  16U
 
 // </h>
 
