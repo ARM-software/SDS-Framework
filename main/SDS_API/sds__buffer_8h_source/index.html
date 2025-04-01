@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>File sds.h - SDS-Framework</title>
+    <title>File sds_buffer.h - SDS-Framework</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "File sds.h";
-        var mkdocs_page_input_path = "SDS_API/sds_8h.md";
+        var mkdocs_page_name = "File sds_buffer.h";
+        var mkdocs_page_input_path = "SDS_API/sds__buffer_8h_source.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -82,9 +82,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">File sds.h</li>
+      <li class="breadcrumb-item active">File sds_buffer.h</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/sds_8h.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/sds__buffer_8h_source.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -92,113 +92,69 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="file-sdsh">File sds.h</h1>
-<p><a href="../files/"><strong>FileList</strong></a> <strong>&gt;</strong> <a href="../dir_d09908635ef304ba819d3349bcb716bf/"><strong>include</strong></a> <strong>&gt;</strong> <a href="./"><strong>sds.h</strong></a></p>
-<p><a href="../sds_8h_source/">Go to the source code of this file</a></p>
-<ul>
-<li><code>#include &lt;stdint.h&gt;</code></li>
-</ul>
-<h2 id="public-types">Public Types</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: right;">Type</th>
-<th style="text-align: left;">Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: right;">typedef void(*</td>
-<td style="text-align: left;"><a href="#typedef-sdsevent_t"><strong>sdsEvent_t</strong></a>  <br></td>
-</tr>
-</tbody>
-</table>
-<h2 id="public-functions">Public Functions</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: right;">Type</th>
-<th style="text-align: left;">Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: right;"><a href="../group__SDS__Circular__Buffer/#typedef-sdsid_t"><strong>sdsId_t</strong></a></td>
-<td style="text-align: left;"><a href="#function-sdsopen"><strong>sdsOpen</strong></a> (void * buf, uint32_t buf_size, uint32_t threshold_low, uint32_t threshold_high) <br></td>
-</tr>
-</tbody>
-</table>
-<h2 id="macros">Macros</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: right;">Type</th>
-<th style="text-align: left;">Name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="./#define-sds_error"><strong>SDS_ERROR</strong></a>  <code>(-1)</code><br><em>Operation failed.</em></td>
-</tr>
-<tr>
-<td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="./#define-sds_event_data_high"><strong>SDS_EVENT_DATA_HIGH</strong></a>  <code>(1UL &amp;lt;&amp;lt; 1)</code><br><em>Data above or equal to threshold.</em></td>
-</tr>
-<tr>
-<td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="./#define-sds_event_data_low"><strong>SDS_EVENT_DATA_LOW</strong></a>  <code>(1UL &amp;lt;&amp;lt; 0)</code><br><em>Events.</em></td>
-</tr>
-<tr>
-<td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="./#define-sds_ok"><strong>SDS_OK</strong></a>  <code>(0)</code><br><em>Function return codes.</em></td>
-</tr>
-</tbody>
-</table>
-<h2 id="public-types-documentation">Public Types Documentation</h2>
-<h3 id="typedef-sdsevent_t">typedef sdsEvent_t</h3>
-<pre><code class="language-C++">typedef void(* sdsEvent_t) (sdsId_t id, uint32_t event, void *arg);
-</code></pre>
-<hr>
-<h2 id="public-functions-documentation">Public Functions Documentation</h2>
-<h3 id="function-sdsopen">function sdsOpen</h3>
-<pre><code class="language-C++">sdsId_t sdsOpen (
-    void * buf,
-    uint32_t buf_size,
-    uint32_t threshold_low,
-    uint32_t threshold_high
-) 
-</code></pre>
-<hr>
-<h2 id="macro-definition-documentation">Macro Definition Documentation</h2>
-<h3 id="define-sds_error">define SDS_ERROR</h3>
-<p><em>Operation failed.</em> </p>
-<pre><code class="language-C++">#define SDS_ERROR `(-1)`
-</code></pre>
-<hr>
+                <h1 id="file-sds_bufferh">File sds_buffer.h</h1>
+<p><a href="../files/"><strong>File List</strong></a> <strong>&gt;</strong> <a href="../dir_d09908635ef304ba819d3349bcb716bf/"><strong>include</strong></a> <strong>&gt;</strong> <a href="../sds__buffer_8h/"><strong>sds_buffer.h</strong></a></p>
+<p><a href="../sds__buffer_8h/">Go to the documentation of this file</a></p>
+<pre><code class="language-C++">/*
+ * Copyright (c) 2022-2025 Arm Limited. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the License); you may
+ * not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-<h3 id="define-sds_event_data_high">define SDS_EVENT_DATA_HIGH</h3>
-<p><em>Data above or equal to threshold.</em> </p>
-<pre><code class="language-C++">#define SDS_EVENT_DATA_HIGH `(1UL &lt;&lt; 1)`
-</code></pre>
-<hr>
+#ifndef SDS_BUFFER_H
+#define SDS_BUFFER_H
 
-<h3 id="define-sds_event_data_low">define SDS_EVENT_DATA_LOW</h3>
-<p><em>Events.</em> </p>
-<pre><code class="language-C++">#define SDS_EVENT_DATA_LOW `(1UL &lt;&lt; 0)`
-</code></pre>
-<p>Data bellow or equal to threshold </p>
-<hr>
+#ifdef  __cplusplus
+extern &quot;C&quot;
+{
+#endif
 
-<h3 id="define-sds_ok">define SDS_OK</h3>
-<p><em>Function return codes.</em> </p>
-<pre><code class="language-C++">#define SDS_OK `(0)`
-</code></pre>
-<p>Operation completed successfully </p>
-<hr>
+#include &lt;stdint.h&gt;
 
-<hr />
-<p>The documentation for this class was generated from the following file <code>sds/include/sds.h</code></p>
+// ==== Synchronous Data Stream (SDS) Buffer ====
+
+typedef void *sdsBufferId_t;                        
+
+#define SDS_BUFFER_OK                   (0)         
+#define SDS_BUFFER_ERROR                (-1)        
+
+#define SDS_BUFFER_EVENT_DATA_LOW       (1UL &lt;&lt; 0)  
+#define SDS_BUFFER_EVENT_DATA_HIGH      (1UL &lt;&lt; 1)  
+
+typedef void (*sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg);
+
+sdsBufferId_t sdsBufferOpen (void *buf, uint32_t buf_size, uint32_t threshold_low, uint32_t threshold_high);
+
+int32_t sdsBufferClose (sdsBufferId_t id);
+
+int32_t sdsBufferRegisterEvents (sdsBufferId_t id, sdsBufferEvent_t event_cb, uint32_t event_mask, void *event_arg);
+
+uint32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size);
+
+uint32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size);
+
+int32_t sdsBufferClear (sdsBufferId_t id);
+
+uint32_t sdsBufferGetCount (sdsBufferId_t id);
+
+#ifdef  __cplusplus
+}
+#endif
+
+#endif  /* SDS_BUFFER_H */
+</code></pre>
               
             </div>
           </div><footer>

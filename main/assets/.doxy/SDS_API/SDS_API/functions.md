@@ -5,7 +5,13 @@
 
 ## s
 
-* **sdsOpen** ([**sds.h**](sds_8h.md))
+* **sdsBufferClear** ([**sds\_buffer.h**](sds__buffer_8h.md))
+* **sdsBufferClose** ([**sds\_buffer.h**](sds__buffer_8h.md))
+* **sdsBufferGetCount** ([**sds\_buffer.h**](sds__buffer_8h.md))
+* **sdsBufferOpen** ([**sds\_buffer.h**](sds__buffer_8h.md))
+* **sdsBufferRead** ([**sds\_buffer.h**](sds__buffer_8h.md))
+* **sdsBufferRegisterEvents** ([**sds\_buffer.h**](sds__buffer_8h.md))
+* **sdsBufferWrite** ([**sds\_buffer.h**](sds__buffer_8h.md))
 * **sdsPlayClose** ([**sds\_rec\_play.h**](sds__rec__play_8h.md))
 * **sdsPlayEndOfStream** ([**sds\_rec\_play.h**](sds__rec__play_8h.md))
 * **sdsPlayGetSize** ([**sds\_rec\_play.h**](sds__rec__play_8h.md))

@@ -18,15 +18,7 @@ Here is a list of all modules:
 
 
 
-* [**SDS Circular Buffer**](group__SDS__Circular__Buffer.md) sds.h _: SDS circular buffer handling for data streams_
-    
-
-
-
-
-
-
-
+* [**SDS Circular Buffer**](group__SDS__Circular__Buffer.md) _sds.h: SDS circular buffer handling for data streams_ 
 
 
 

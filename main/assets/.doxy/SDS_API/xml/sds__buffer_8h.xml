@@ -1,0 +1,487 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="sds__buffer_8h" kind="file" language="C++">
+    <compoundname>sds_buffer.h</compoundname>
+    <includes local="no">stdint.h</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>sds/include/sds_buffer.h</label>
+        <link refid="sds__buffer_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="sds__buffer_8h_1ada5802a42b145a41f23bca98b38b800c" prot="public" static="no">
+        <name>SDS_BUFFER_OK</name>
+        <initializer>(0)</initializer>
+        <briefdescription>
+<para>Function return codes. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Operation completed successfully </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="34" column="9" bodyfile="sds/include/sds_buffer.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="sds__buffer_8h_1a677df880ac1830a58f4b5760858b0d5b" prot="public" static="no">
+        <name>SDS_BUFFER_ERROR</name>
+        <initializer>(-1)</initializer>
+        <briefdescription>
+<para>Operation failed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="35" column="9" bodyfile="sds/include/sds_buffer.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="sds__buffer_8h_1a7cb9be7e9c0942aac1fc9424613b0c69" prot="public" static="no">
+        <name>SDS_BUFFER_EVENT_DATA_LOW</name>
+        <initializer>(1UL &lt;&lt; 0)</initializer>
+        <briefdescription>
+<para>Events. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Data bellow or equal to threshold </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="38" column="9" bodyfile="sds/include/sds_buffer.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="sds__buffer_8h_1ace7390e82ed34e762f013bdbd1fe6bbb" prot="public" static="no">
+        <name>SDS_BUFFER_EVENT_DATA_HIGH</name>
+        <initializer>(1UL &lt;&lt; 1)</initializer>
+        <briefdescription>
+<para>Data above or equal to threshold. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="39" column="9" bodyfile="sds/include/sds_buffer.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="sds__buffer_8h_1ae47a52c5320db63b7546d03dee701e40" prot="public" static="no">
+        <type>void *</type>
+        <definition>typedef void* sdsBufferId_t</definition>
+        <argsstring></argsstring>
+        <name>sdsBufferId_t</name>
+        <briefdescription>
+<para>Handle to SDS buffer stream. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="31" column="14" bodyfile="sds/include/sds_buffer.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="sds__buffer_8h_1a35588c55fad370bf29efa09d859d4ba4" prot="public" static="no">
+        <type>void(*</type>
+        <definition>typedef void(* sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg)</definition>
+        <argsstring>)(sdsBufferId_t id, uint32_t event, void *arg)</argsstring>
+        <name>sdsBufferEvent_t</name>
+        <briefdescription>
+<para>Call back function for SDS circular buffer handling. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>handle to SDS file for playback </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">event</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>event code </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">arg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to argument </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="48" column="9" bodyfile="sds/include/sds_buffer.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="sds__buffer_8h_1a192198f64a0c5211f5ba322cc8ebf141" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>sdsBufferId_t</type>
+        <definition>sdsBufferId_t sdsBufferOpen</definition>
+        <argsstring>(void *buf, uint32_t buf_size, uint32_t threshold_low, uint32_t threshold_high)</argsstring>
+        <name>sdsBufferOpen</name>
+        <param>
+          <type>void *</type>
+          <declname>buf</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>buf_size</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>threshold_low</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>threshold_high</declname>
+        </param>
+        <briefdescription>
+<para>Open SDS buffer stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to buffer for stream </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer size in bytes </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">threshold_low</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>data low threshold in bytes </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">threshold_high</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>data high threshold in bytes </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>sdsId_t Handle to SDS buffer stream </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="59" column="15" declfile="sds/include/sds_buffer.h" declline="59" declcolumn="15"/>
+      </memberdef>
+      <memberdef kind="function" id="sds__buffer_8h_1ac4e4dae9493c3c5ef09945d4008fd4d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsBufferClose</definition>
+        <argsstring>(sdsBufferId_t id)</argsstring>
+        <name>sdsBufferClose</name>
+        <param>
+          <type>sdsBufferId_t</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Close SDS buffer stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sdsBufferId_t handle to SDS buffer stream </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>return code </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="67" column="9" declfile="sds/include/sds_buffer.h" declline="67" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="sds__buffer_8h_1a0e35ab7f4c66035234c1cf19faf6e9fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsBufferRegisterEvents</definition>
+        <argsstring>(sdsBufferId_t id, sdsBufferEvent_t event_cb, uint32_t event_mask, void *event_arg)</argsstring>
+        <name>sdsBufferRegisterEvents</name>
+        <param>
+          <type>sdsBufferId_t</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>sdsBufferEvent_t</type>
+          <declname>event_cb</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>event_mask</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>event_arg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="78" column="9" declfile="sds/include/sds_buffer.h" declline="78" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="sds__buffer_8h_1a9b8d09943857f40bf1e546d112f91aec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t sdsBufferWrite</definition>
+        <argsstring>(sdsBufferId_t id, const void *buf, uint32_t buf_size)</argsstring>
+        <name>sdsBufferWrite</name>
+        <param>
+          <type>sdsBufferId_t</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>buf</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>buf_size</declname>
+        </param>
+        <briefdescription>
+<para>Write data to SDS buffer stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sdsBufferId_t handle to SDS buffer stream </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to buffer with data to write </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer size in bytes </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of bytes written </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="88" column="10" declfile="sds/include/sds_buffer.h" declline="88" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="sds__buffer_8h_1a8f36f89766f84ffa19020d50b5c50b28" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t sdsBufferRead</definition>
+        <argsstring>(sdsBufferId_t id, void *buf, uint32_t buf_size)</argsstring>
+        <name>sdsBufferRead</name>
+        <param>
+          <type>sdsBufferId_t</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>buf</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>buf_size</declname>
+        </param>
+        <briefdescription>
+<para>Read data from SDS buffer stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sdsBufferId_t handle to SDS buffer stream </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to buffer for data to read </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer size in bytes </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of bytes read </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="98" column="10" declfile="sds/include/sds_buffer.h" declline="98" declcolumn="10"/>
+      </memberdef>
+      <memberdef kind="function" id="sds__buffer_8h_1a464297b2b8925a6d34b99f19a873200f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsBufferClear</definition>
+        <argsstring>(sdsBufferId_t id)</argsstring>
+        <name>sdsBufferClear</name>
+        <param>
+          <type>sdsBufferId_t</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Clear SDS buffer stream data. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sdsBufferId_t handle to SDS buffer stream </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>return code </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="106" column="9" declfile="sds/include/sds_buffer.h" declline="106" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="sds__buffer_8h_1a97d940ae41691cee4436de89ec03505b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>uint32_t</type>
+        <definition>uint32_t sdsBufferGetCount</definition>
+        <argsstring>(sdsBufferId_t id)</argsstring>
+        <name>sdsBufferGetCount</name>
+        <param>
+          <type>sdsBufferId_t</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Get data count in SDS buffer stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sdsBufferId_t handle to SDS buffer stream </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of bytes in buffer stream </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="115" column="10" declfile="sds/include/sds_buffer.h" declline="115" declcolumn="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>2022-2025<sp/>Arm<sp/>Limited.<sp/>All<sp/>rights<sp/>reserved.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>SPDX-License-Identifier:<sp/>Apache-2.0</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the<sp/>License);<sp/>you<sp/>may</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance<sp/>with<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/>www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,<sp/>software</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an<sp/>AS<sp/>IS<sp/>BASIS,<sp/>WITHOUT</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>See<sp/>the<sp/>License<sp/>for<sp/>the<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>limitations<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>SDS_BUFFER_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_BUFFER_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stdint.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">//<sp/>====<sp/>Synchronous<sp/>Data<sp/>Stream<sp/>(SDS)<sp/>Buffer<sp/>====</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*sdsBufferId_t;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_BUFFER_OK<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_BUFFER_ERROR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(-1)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_BUFFER_EVENT_DATA_LOW<sp/><sp/><sp/><sp/><sp/><sp/><sp/>(1UL<sp/>&lt;&lt;<sp/>0)<sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_BUFFER_EVENT_DATA_HIGH<sp/><sp/><sp/><sp/><sp/><sp/>(1UL<sp/>&lt;&lt;<sp/>1)<sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>void<sp/>(*sdsBufferEvent_t)<sp/>(sdsBufferId_t<sp/>id,<sp/>uint32_t<sp/>event,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*arg);</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="59"><highlight class="normal">sdsBufferId_t<sp/>sdsBufferOpen<sp/>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size,<sp/>uint32_t<sp/>threshold_low,<sp/>uint32_t<sp/>threshold_high);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"></highlight></codeline>
+<codeline lineno="67"><highlight class="normal">int32_t<sp/>sdsBufferClose<sp/>(sdsBufferId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal">int32_t<sp/>sdsBufferRegisterEvents<sp/>(sdsBufferId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/>sdsBufferEvent_t<sp/>event_cb,<sp/>uint32_t<sp/>event_mask,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*event_arg);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal">uint32_t<sp/>sdsBufferWrite<sp/>(sdsBufferId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal">uint32_t<sp/>sdsBufferRead<sp/>(sdsBufferId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="106"><highlight class="normal">int32_t<sp/>sdsBufferClear<sp/>(sdsBufferId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="115"><highlight class="normal">uint32_t<sp/>sdsBufferGetCount<sp/>(sdsBufferId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">/*<sp/>SDS_BUFFER_H<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
+    </programlisting>
+    <location file="sds/include/sds_buffer.h"/>
+  </compounddef>
+</doxygen>
