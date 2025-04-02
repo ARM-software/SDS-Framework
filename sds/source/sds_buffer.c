@@ -85,7 +85,7 @@ __STATIC_INLINE uint32_t atomic_wr32_if_zero (uint32_t *mem, uint32_t val) {
 }
 #endif
 
-static sdsBuffer_t *sdsAlloc (void) {
+static sdsBuffer_t *sdsBufferAlloc (void) {
   sdsBuffer_t *sds_buffer = NULL;
   uint32_t     n;
 
@@ -117,7 +117,7 @@ sdsBufferId_t sdsBufferOpen (void *buf, uint32_t buf_size, uint32_t threshold_lo
 
   // Buffer pointer needs to be valid
   if ((buf != NULL) && (buf_size != 0U)) {
-    sds_buffer = sdsAlloc();
+    sds_buffer = sdsBufferAlloc();
     if (sds_buffer != NULL) {
       memset(sds_buffer, 0, sizeof(sdsBuffer_t));
       sds_buffer->buf            = buf;
@@ -235,7 +235,7 @@ uint32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size) {
 }
 
 // Clear SDS Buffer stream data
-int32_t sdsClear (sdsBufferId_t id) {
+int32_t sdsBufferClear (sdsBufferId_t id) {
   sdsBuffer_t *sds_buffer = id;
   uint32_t     cnt_used, cnt_limit;
 

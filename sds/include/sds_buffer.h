@@ -41,7 +41,7 @@ typedef void *sdsBufferId_t;                        ///< Handle to SDS buffer st
 /**
   \typedef void (*sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg)
   \brief       Call back function for SDS circular buffer handling
-  \param[in]   id             handle to SDS file for playback
+  \param[in]   id             \ref sdsBufferId_t handle to SDS buffer stream
   \param[in]   event          event code
   \param[in]   arg            pointer to argument
 */
@@ -67,7 +67,7 @@ sdsBufferId_t sdsBufferOpen (void *buf, uint32_t buf_size, uint32_t threshold_lo
 int32_t sdsBufferClose (sdsBufferId_t id);
 
 /**
-  \fn          int32_t  sdsBufferRegisterEvents (sdsBufferId_t id, sdsEvent_t event_cb, uint32_t event_mask, void *event_arg)
+  \fn          int32_t sdsBufferRegisterEvents (sdsBufferId_t id, sdsBufferEvent_t event_cb, uint32_t event_mask, void *event_arg)
   \brief       Register SDS buffer stream events.
   \param[in]   id             \ref sdsBufferId_t handle to SDS buffer stream
   \param[in]   event_cb       pointer to \ref sdsEvent_t
@@ -108,8 +108,7 @@ int32_t sdsBufferClear (sdsBufferId_t id);
 /**
   \fn          uint32_t sdsBufferGetCount (sdsBufferId_t id)
   \brief       Get data count in SDS buffer stream.
-  \param[in]   id             \ref sdsBufferId_t handle to SDS buffer
-   stream
+  \param[in]   id             \ref sdsBufferId_t handle to SDS buffer stream
   \return      number of bytes in buffer stream
 */
 uint32_t sdsBufferGetCount (sdsBufferId_t id);
