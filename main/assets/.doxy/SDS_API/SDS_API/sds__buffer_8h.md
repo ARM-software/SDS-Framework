@@ -63,7 +63,7 @@
 |  uint32\_t | [**sdsBufferGetCount**](#function-sdsbuffergetcount) (sdsBufferId\_t id) <br>_Get data count in SDS buffer stream._  |
 |  sdsBufferId\_t | [**sdsBufferOpen**](#function-sdsbufferopen) (void \* buf, uint32\_t buf\_size, uint32\_t threshold\_low, uint32\_t threshold\_high) <br>_Open SDS buffer stream._  |
 |  uint32\_t | [**sdsBufferRead**](#function-sdsbufferread) (sdsBufferId\_t id, void \* buf, uint32\_t buf\_size) <br>_Read data from SDS buffer stream._  |
-|  int32\_t | [**sdsBufferRegisterEvents**](#function-sdsbufferregisterevents) (sdsBufferId\_t id, sdsBufferEvent\_t event\_cb, uint32\_t event\_mask, void \* event\_arg) <br> |
+|  int32\_t | [**sdsBufferRegisterEvents**](#function-sdsbufferregisterevents) (sdsBufferId\_t id, sdsBufferEvent\_t event\_cb, uint32\_t event\_mask, void \* event\_arg) <br>_Register SDS buffer stream events._  |
 |  uint32\_t | [**sdsBufferWrite**](#function-sdsbufferwrite) (sdsBufferId\_t id, const void \* buf, uint32\_t buf\_size) <br>_Write data to SDS buffer stream._  |
 
 
@@ -120,7 +120,7 @@ typedef void(* sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg);
 **Parameters:**
 
 
-* `id` handle to SDS file for playback 
+* `id` sdsBufferId\_t handle to SDS buffer stream 
 * `event` event code 
 * `arg` pointer to argument 
 
@@ -331,6 +331,7 @@ number of bytes read
 
 ### function sdsBufferRegisterEvents 
 
+_Register SDS buffer stream events._ 
 ```C++
 int32_t sdsBufferRegisterEvents (
     sdsBufferId_t id,
@@ -342,6 +343,27 @@ int32_t sdsBufferRegisterEvents (
 
 
 
+
+
+**Parameters:**
+
+
+* `id` sdsBufferId\_t handle to SDS buffer stream 
+* `event_cb` pointer to sdsEvent\_t 
+* `event_mask` event mask 
+* `event_arg` event argument 
+
+
+
+**Returns:**
+
+return code 
+
+
+
+
+
+        
 
 <hr>
 

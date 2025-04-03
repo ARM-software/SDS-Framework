@@ -95,7 +95,7 @@
 <parametername direction="in">id</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>handle to SDS file for playback </para>
+<para>sdsBufferId_t handle to SDS buffer stream </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -241,8 +241,45 @@
           <declname>event_arg</declname>
         </param>
         <briefdescription>
+<para>Register SDS buffer stream events. </para>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sdsBufferId_t handle to SDS buffer stream </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">event_cb</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to sdsEvent_t </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">event_mask</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>event mask </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">event_arg</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>event argument </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>return code </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -414,7 +451,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_buffer.h" line="115" column="10" declfile="sds/include/sds_buffer.h" declline="115" declcolumn="10"/>
+        <location file="sds/include/sds_buffer.h" line="114" column="10" declfile="sds/include/sds_buffer.h" declline="114" declcolumn="10"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
@@ -474,13 +511,13 @@
 <codeline lineno="99"><highlight class="normal"></highlight></codeline>
 <codeline lineno="106"><highlight class="normal">int32_t<sp/>sdsBufferClear<sp/>(sdsBufferId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="107"><highlight class="normal"></highlight></codeline>
-<codeline lineno="115"><highlight class="normal">uint32_t<sp/>sdsBufferGetCount<sp/>(sdsBufferId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="116"><highlight class="normal"></highlight></codeline>
-<codeline lineno="117"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="118"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="119"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="120"><highlight class="normal"></highlight></codeline>
-<codeline lineno="121"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">/*<sp/>SDS_BUFFER_H<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal">uint32_t<sp/>sdsBufferGetCount<sp/>(sdsBufferId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">/*<sp/>SDS_BUFFER_H<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
     </programlisting>
     <location file="sds/include/sds_buffer.h"/>
   </compounddef>
