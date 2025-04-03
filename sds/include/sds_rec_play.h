@@ -28,7 +28,7 @@ extern "C"
 
 // ==== SDS Recorder and Player ====
 
-typedef void *sdsRecPlayId_t;                   ///< handle to SDS Recorder/Player stream
+typedef void *sdsRecPlayId_t;                   ///< Handle to SDS Recorder/Player stream
 
 /// Function return codes
 #define SDS_REC_PLAY_OK             (0)         ///< Operation completed successfully
@@ -62,15 +62,15 @@ int32_t sdsRecPlayInit (sdsRecPlayEvent_t event_cb);
 int32_t sdsRecPlayUninit (void);
 
 /**
-  \fn          sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size, uint32_t io_threshold)
+  \fn          sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size)
   \brief       Open recorder stream.
   \param[in]   name           stream name (pointer to NULL terminated string)
-  \param[in]   buf            pointer to buffer for stream
+  \param[in]   buf            pointer to buffer for recorder stream
   \param[in]   buf_size       buffer size in bytes
-  \param[in]   io_threshold   threshold in bytes to trigger I/O write (when equal or above threshold)
-  \return      \ref sdsRecPlayId_t handle to SDS Recorder/Player stream
+  \return      \ref sdsRecPlayId_t handle to SDS Recorder/Player stream if operation is successful,
+               or NULL if the operation failed
 */
-sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size, uint32_t io_threshold);
+sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size);
 
 /**
   \fn          int32_t sdsRecClose (sdsRecPlayId_t id)
@@ -81,26 +81,26 @@ sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size, uint3
 int32_t sdsRecClose (sdsRecPlayId_t id);
 
 /**
-  \fn          uint32_t sdsRecWrite (sdsRecPlayId_t id, const void *buf, uint32_t buf_size)
-  \brief       Write record data and timestamp to recorder stream.
+  \fn          uint32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uint32_t buf_size)
+  \brief       Write entire data block along with its timestamp to the recorder stream.
   \param[in]   id             \ref sdsRecPlayId_t handle to SDS Recorder/Player stream
-  \param[in]   timestamp      record timestamp in ticks
-  \param[in]   buf            pointer to buffer with data to write
-  \param[in]   buf_size       buffer size in bytes
-  \return      number of data bytes written
+  \param[in]   timestamp      timestamp in ticks
+  \param[in]   buf            pointer to the data block buffer to be written
+  \param[in]   buf_size       size of the data block buffer in bytes
+  \return      size of the entire data block written in bytes if the operation is successful,
+               or 0 if the entire data block could not be written successfully
 */
 uint32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uint32_t buf_size);
 
 /**
-  \fn          sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size, uint32_t io_threshold)
+  \fn          sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size)
   \brief       Open player stream.
   \param[in]   name           stream name (pointer to NULL terminated string)
-  \param[in]   buf            pointer to buffer for stream
+  \param[in]   buf            pointer to buffer for player stream
   \param[in]   buf_size       buffer size in bytes
-  \param[in]   io_threshold   threshold in bytes to trigger I/O read (when below threshold)
   \return      \ref sdsRecPlayId_t handle to SDS Recorder/Player stream
 */
-sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size, uint32_t io_threshold);
+sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size);
 
 /**
   \fn          int32_t sdsPlayClose (sdsRecPlayId_t id)
@@ -112,20 +112,21 @@ int32_t sdsPlayClose (sdsRecPlayId_t id);
 
 /**
   \fn          uint32_t sdsPlayRead (sdsRecPlayId_t id, void *buf, uint32_t buf_size)
-  \brief       Read record data and timestamp from Player stream.
+  \brief       Read entire data block along with its timestamp from the player stream.
   \param[in]   id             \ref sdsRecPlayId_t handle to SDS Recorder/Player stream
-  \param[out]  timestamp      pointer to buffer for record timestamp in ticks
-  \param[out]  buf            pointer to buffer for data to read
-  \param[in]   buf_size       buffer size in bytes
-  \return      number of data bytes read
+  \param[out]  timestamp      pointer to buffer for a timestamp in ticks
+  \param[out]  buf            pointer to the data block buffer to be read
+  \param[in]   buf_size       size of the data block buffer in bytes
+  \return      size of the entire data block read in bytes if the operation is successful,
+               or 0 if the entire data block could not be read successfully
 */
 uint32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size);
 
 /**
   \fn          uint32_t sdsPlayGetSize (sdsRecPlayId_t id)
-  \brief       Get record data size from Player stream.
+  \brief       Get data block size from Player stream.
   \param[in]   id             \ref sdsRecPlayId_t handle to SDS Recorder/Player stream
-  \return      number of data bytes in record
+  \return      number of bytes in data block
 */
 uint32_t sdsPlayGetSize (sdsRecPlayId_t id);
 

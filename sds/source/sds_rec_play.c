@@ -35,7 +35,7 @@
 // Record header
 typedef struct {
   uint32_t    timestamp;        // Timestamp in ticks
-  uint32_t    data_size;        // Data size in bytes
+  uint32_t    data_size;        // Size of a data block in bytes
 } recPlayHead_t;
 #define HEAD_SIZE sizeof(recPlayHead_t)
 
@@ -417,7 +417,7 @@ int32_t sdsRecPlayUninit (void) {
 // SDS Recorder functions:
 
 // Open recorder stream.
-sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size, uint32_t io_threshold) {
+sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size) {
   sdsRecPlay_t *rec_play = NULL;
   uint32_t      index;
 
@@ -427,8 +427,7 @@ sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size, uint3
   }
 
   // Check if parameters are valid.
-  if ((name != NULL) && (buf != NULL) &&
-      (buf_size != 0U) && (io_threshold <= buf_size)) {
+  if ((name != NULL) && (buf != NULL) && (buf_size != 0U)) {
 
     // Atomic allocation of a new control block for the recorder stream.
     rec_play = sdsRecPlayAlloc(&index);
@@ -440,7 +439,6 @@ sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size, uint3
       rec_play->event_threshold = 0U;
       rec_play->flags           = 0U;
       rec_play->buf_size        = buf_size;
-      rec_play->threshold       = io_threshold;
 
       // Set states.
       rec_play->state.opened    = 0U;
@@ -448,8 +446,17 @@ sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size, uint3
       rec_play->state.rw_active = 0U;
       rec_play->state.opening   = 0U; // Opening state is not used for recorder.
 
+      // Set threshold value for the recorder stream.
+      if ((buf_size / 3) < SDS_IO_INTERFACE_TRANSFER_SIZE) {
+        // Set threshold to 1/3 of the buffer size.
+        rec_play->threshold = buf_size / 3;
+      } else {
+        // Set threshold to SDS I/O interface efficient transfer size.
+        rec_play->threshold = SDS_IO_INTERFACE_TRANSFER_SIZE;
+      }
+
       // Open sds stream (buffer) and sdsio stream (sds file).
-      rec_play->sds_buffer = sdsBufferOpen(buf, buf_size, 0U, io_threshold);
+      rec_play->sds_buffer = sdsBufferOpen(buf, buf_size, 0U, rec_play->threshold);
       rec_play->sdsio = sdsioOpen(name, sdsioModeWrite);
 
       if (rec_play->sds_buffer != NULL) {
@@ -563,11 +570,11 @@ uint32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, ui
 
       // Check if header + data fits into the buffer.
       if ((buf_size + sizeof(recPlayHead_t)) <= (rec_play->buf_size - sdsBufferGetCount(rec_play->sds_buffer))) {
-        // Header: timestamp, data size.
+        // Header: timestamp, data block size.
         head.timestamp = timestamp;
         head.data_size = buf_size;
 
-        // Write header and data: Buffer size has been validated, so write operations are expected to succeed.
+        // Write header and data block: Buffer size has been validated, so write operations are expected to succeed.
         sdsBufferWrite(rec_play->sds_buffer, &head, sizeof(recPlayHead_t));
         num = sdsBufferWrite(rec_play->sds_buffer, buf, buf_size);
 
@@ -589,7 +596,7 @@ uint32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, ui
 // SDS Player functions:
 
 // Open player stream.
-sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size, uint32_t io_threshold) {
+sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size) {
   sdsRecPlay_t *rec_play = NULL;
   uint8_t       err      = 0U;
   uint32_t      index, flags;
@@ -600,8 +607,7 @@ sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size, uint
   }
 
   // Check if parameters are valid.
-  if ((name != NULL) && (buf != NULL) &&
-      (buf_size != 0U) && (io_threshold <= buf_size)) {
+  if ((name != NULL) && (buf != NULL) && (buf_size != 0U)) {
 
     // Atomic allocation of a new control block for the player stream.
     rec_play = sdsRecPlayAlloc(&index);
@@ -613,7 +619,6 @@ sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size, uint
       rec_play->event_threshold = 0U;
       rec_play->flags           = 0U;
       rec_play->buf_size        = buf_size;
-      rec_play->threshold       = io_threshold;
       rec_play->head.timestamp  = 0U;
       rec_play->head.data_size  = 0U;
 
@@ -623,8 +628,17 @@ sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size, uint
       rec_play->state.rw_active = 0U;
       rec_play->state.opening   = 1U;
 
+      // Set threshold value for the recorder stream.
+      if ((buf_size / 3) < SDS_IO_INTERFACE_TRANSFER_SIZE) {
+        // Set threshold to 1/3 of the buffer size.
+        rec_play->threshold = buf_size / 3;
+      } else {
+        // Set threshold to SDS I/O interface efficient transfer size.
+        rec_play->threshold = SDS_IO_INTERFACE_TRANSFER_SIZE;
+      }
+
       // Open sds stream (buffer) and sdsio stream (sds file).
-      rec_play->sds_buffer = sdsBufferOpen(buf, buf_size, io_threshold, 0U);
+      rec_play->sds_buffer = sdsBufferOpen(buf, buf_size, rec_play->threshold, 0U);
       rec_play->sdsio = sdsioOpen(name, sdsioModeRead);
 
       if (rec_play->sds_buffer != NULL) {
@@ -755,7 +769,7 @@ uint32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_
     // Verify if parameters are valid.
     if ((buf != NULL) && (buf_size != 0U)) {
 
-      // Get size of available data.
+      // Get size of available data block.
       size = sdsBufferGetCount(rec_play->sds_buffer);
 
       // Check if header was already read:
@@ -765,11 +779,11 @@ uint32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_
         size -= HEAD_SIZE;
       }
 
-      if ((rec_play->head.data_size != 0U)   &&      // Check if Header is valid and data size in header is valid.
+      if ((rec_play->head.data_size != 0U)   &&      // Check if Header is valid and data block size in header is valid.
           (rec_play->head.data_size <= size) &&      // Check if whole record is available in the SDS Stream Buffer.
           (rec_play->head.data_size <= buf_size)) {  // Check if whole record fits into the provided buffer.
 
-        // Read data from SDS Stream Buffer:
+        // Read data block from SDS Stream Buffer:
         // Buffer size has been validated, so read operation is expected to succeed.
         num = sdsBufferRead(rec_play->sds_buffer, buf, rec_play->head.data_size);
 
@@ -797,7 +811,7 @@ uint32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_
   return num;
 }
 
-// Get record data size from Player stream
+// Get data block size from Player stream
 uint32_t sdsPlayGetSize (sdsRecPlayId_t id) {
   sdsRecPlay_t *rec_play = id;
   uint32_t      size     = 0U;
@@ -831,7 +845,7 @@ uint32_t sdsPlayGetSize (sdsRecPlayId_t id) {
       }
     }
 
-    // Get data size from the header.
+    // Get data block size from the header.
     size = rec_play->head.data_size;
   }
   // Clear read/write active state.
