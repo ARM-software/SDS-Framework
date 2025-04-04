@@ -44,11 +44,11 @@ class RecordManager:
         if len(record) == self.HEADER_SIZE:
             # Extract timestamp
             self.timestamp.append(struct.unpack("I", record[:self.TIMESTAMP_SIZE])[0])
-        
+
             # Extract data size
             data_size = struct.unpack("I", record[self.TIMESTAMP_SIZE:])[0]
             self.data_size.append(data_size)
-        
+
             # Read the data based on the size
             data = bytearray(file.read(data_size))
             # Add the data to the buffer
@@ -57,7 +57,7 @@ class RecordManager:
             # Header is incomplete, error or EOF
             return False
         return True
-        
+
     # Extract all data from .sds recording and return a dictionary
     # Dictionary consists of: timestamp, data_size, raw_data
     def getData(self, file):
@@ -84,10 +84,10 @@ def checkSizes(filename,data):
     size = 0
     for n in range(len(data["data_size"])):
         size += 8 + data["data_size"][n]
-        
+
     file_size = os.path.getsize(filename)
 
-    info["filesize"] = file_size     
+    info["filesize"] = file_size
     info["datasize"] = size
 
     if file_size != size:
@@ -103,23 +103,23 @@ def checkTimestamps(data):
     # Check if timestamps are in ascending order
     for n in range(1,data_len):
         if data["timestamp"][n] < data["timestamp"][n-1]:
-            info["record_id"] = n     
-            return False 
+            info["record_id"] = n
+            return False
 
     #Check jitter, save index where jitter is max
-    interval = int((data["timestamp"][-1] - data["timestamp"][0]) / (data_len-1))
+    interval = (data["timestamp"][-1] - data["timestamp"][0]) / (data_len-1)
 
     jitter = index = int(0)
-    timestamp = int(data["timestamp"][0] + interval)  
+    timestamp = int(data["timestamp"][0] + interval)
     for n in range(1,data_len):
-        diff = int(abs(data["timestamp"][n] - timestamp))
+        diff = round(abs(data["timestamp"][n] - timestamp))
         if diff > jitter:
             jitter = diff
             index  = n
         timestamp += interval
-  
-    info["records"] = data_len     
-    info["interval"]= interval     
+
+    info["records"] = data_len
+    info["interval"]= round(interval)
     info["jitter"]  = jitter
     info["index"]   = index
 
@@ -137,7 +137,7 @@ def main():
 
     args = parser.parse_args()
     filename = args.sds
-       
+
     # Check if the file exists
     if not os.path.isfile(filename):
         print(f"Error: The file '{filename}' does not exist.")
@@ -149,7 +149,7 @@ def main():
     file = open(filename, "rb")
     data = Record.getData(file)
     file.close()
-    
+
     if checkSizes(filename,data) == False:
         print(f"Error: File size mismatch. Expected {info["datasize"]} bytes, but file contains {info["filesize"]} bytes.")
         sys.exit(1)
@@ -158,15 +158,15 @@ def main():
         print(f"Error: Timestamp not in ascending order in record {info["record_id"]}.")
         sys.exit(1)
 
-    if info["jitter"] == 0: txt_add = ""  
+    if info["jitter"] == 0: txt_add = ""
     else:                   txt_add = ", record " + str(info["index"])
-    
+
     print(f"File    : {filename}")
     print(f"Size    : {info["filesize"]:,} bytes")
     print(f"Records : {info["records"]}")
     print(f"Interval: {info["interval"]}ms")
     print(f"Jitter  : {info["jitter"]}ms" + txt_add)
-    
+
     print("Validation passed")
 
 # main
