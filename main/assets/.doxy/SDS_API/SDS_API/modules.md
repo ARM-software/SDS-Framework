@@ -19,6 +19,16 @@ Here is a list of all modules:
 
 
 * [**SDS Circular Buffer**](group__SDS__Circular__Buffer.md) _sds.h: SDS circular buffer handling for data streams_ 
+    
+
+
+
+
+
+
+
+
+
 
 
 
@@ -36,14 +46,18 @@ Here is a list of all modules:
 
 
 
-* [**SDS Player**](group__SDS__Player.md) _sds\_play.h: SDS Player for reading SDS files via communication or file I/O interface._ 
+* [**SDS Recorder and Player**](group__SDS__Recorder__Player.md) sds\_rec\_play.h _: SDS Recorder and Player for writing and reading SDS files via communication or file I/O interface._
     
 
 
 
 
-* [**SDS Recorder**](group__SDS__Recorder.md) _sds\_rec.h: SDS Recorder for writing SDS files via communication or file I/O interface._ 
-    
+
+
+
+
+
+
 
 
 

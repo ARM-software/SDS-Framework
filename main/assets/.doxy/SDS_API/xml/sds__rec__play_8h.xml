@@ -67,20 +67,7 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">
-      <memberdef kind="typedef" id="sds__rec__play_8h_1a91a6334159e31346891a3d21db5c5d37" prot="public" static="no">
-        <type>void *</type>
-        <definition>typedef void* sdsRecPlayId_t</definition>
-        <argsstring></argsstring>
-        <name>sdsRecPlayId_t</name>
-        <briefdescription>
-<para>handle to SDS Recorder/Player stream </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="31" column="14" bodyfile="sds/include/sds_rec_play.h" bodystart="31" bodyend="-1"/>
-      </memberdef>
+      <member refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kind="typedef"><name>sdsRecPlayId_t</name></member>
       <memberdef kind="typedef" id="sds__rec__play_8h_1abc0b41916556eb206326e497392e922c" prot="public" static="no">
         <type>void(*</type>
         <definition>typedef void(* sdsRecPlayEvent_t) (sdsRecPlayId_t id, uint32_t event)</definition>
@@ -115,236 +102,16 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
-      <memberdef kind="function" id="sds__rec__play_8h_1ac8362dbc509cb878fa330da3a80ee044" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>int32_t</type>
-        <definition>int32_t sdsRecPlayInit</definition>
-        <argsstring>(sdsRecPlayEvent_t event_cb)</argsstring>
-        <name>sdsRecPlayInit</name>
-        <param>
-          <type>sdsRecPlayEvent_t</type>
-          <declname>event_cb</declname>
-        </param>
-        <briefdescription>
-<para>Initialize recorder and player. </para>
-        </briefdescription>
-        <detaileddescription>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername direction="in">event_cb</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>pointer to sdsRecPlayEvent_t callback function </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<simplesect kind="return"><para>return code </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="55" column="9" declfile="sds/include/sds_rec_play.h" declline="55" declcolumn="9"/>
-      </memberdef>
-      <memberdef kind="function" id="sds__rec__play_8h_1a7e78ce16473390833db5ed3e6efb8cf1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>int32_t</type>
-        <definition>int32_t sdsRecPlayUninit</definition>
-        <argsstring>(void)</argsstring>
-        <name>sdsRecPlayUninit</name>
-        <param>
-          <type>void</type>
-        </param>
-        <briefdescription>
-<para>Uninitialize recorder and player. </para>
-        </briefdescription>
-        <detaileddescription>
-<para><simplesect kind="return"><para>return code </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="62" column="9" declfile="sds/include/sds_rec_play.h" declline="62" declcolumn="9"/>
-      </memberdef>
-      <member refid="group__SDS__Recorder_1ga1f59bfa4bc185f960d64008d38f6d3ca" kind="function"><name>sdsRecOpen</name></member>
-      <memberdef kind="function" id="sds__rec__play_8h_1a7b010ae467e0ad6cdfb97569da2597a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>int32_t</type>
-        <definition>int32_t sdsRecClose</definition>
-        <argsstring>(sdsRecPlayId_t id)</argsstring>
-        <name>sdsRecClose</name>
-        <param>
-          <type>sdsRecPlayId_t</type>
-          <declname>id</declname>
-        </param>
-        <briefdescription>
-<para>Close recorder stream. </para>
-        </briefdescription>
-        <detaileddescription>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername direction="in">id</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>sdsRecPlayId_t handle to SDS Recorder/Player stream </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<simplesect kind="return"><para>return code </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="81" column="9" declfile="sds/include/sds_rec_play.h" declline="81" declcolumn="9"/>
-      </memberdef>
-      <memberdef kind="function" id="sds__rec__play_8h_1af471bc66f840a8afb9a42a815ebf3d08" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>uint32_t</type>
-        <definition>uint32_t sdsRecWrite</definition>
-        <argsstring>(sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uint32_t buf_size)</argsstring>
-        <name>sdsRecWrite</name>
-        <param>
-          <type>sdsRecPlayId_t</type>
-          <declname>id</declname>
-        </param>
-        <param>
-          <type>uint32_t</type>
-          <declname>timestamp</declname>
-        </param>
-        <param>
-          <type>const void *</type>
-          <declname>buf</declname>
-        </param>
-        <param>
-          <type>uint32_t</type>
-          <declname>buf_size</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="92" column="10" declfile="sds/include/sds_rec_play.h" declline="92" declcolumn="10"/>
-      </memberdef>
-      <member refid="group__SDS__Player_1gaca2c18042b9a6024bf01471b1941f741" kind="function"><name>sdsPlayOpen</name></member>
-      <memberdef kind="function" id="sds__rec__play_8h_1abaef35fad3049663a108750c2561e8ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>int32_t</type>
-        <definition>int32_t sdsPlayClose</definition>
-        <argsstring>(sdsRecPlayId_t id)</argsstring>
-        <name>sdsPlayClose</name>
-        <param>
-          <type>sdsRecPlayId_t</type>
-          <declname>id</declname>
-        </param>
-        <briefdescription>
-<para>Close player stream. </para>
-        </briefdescription>
-        <detaileddescription>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername direction="in">id</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>sdsRecPlayId_t handle to SDS Recorder/Player stream </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<simplesect kind="return"><para>return code </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="111" column="9" declfile="sds/include/sds_rec_play.h" declline="111" declcolumn="9"/>
-      </memberdef>
-      <memberdef kind="function" id="sds__rec__play_8h_1a54e9e5bcf496baff9618148dd2873196" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>uint32_t</type>
-        <definition>uint32_t sdsPlayRead</definition>
-        <argsstring>(sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size)</argsstring>
-        <name>sdsPlayRead</name>
-        <param>
-          <type>sdsRecPlayId_t</type>
-          <declname>id</declname>
-        </param>
-        <param>
-          <type>uint32_t *</type>
-          <declname>timestamp</declname>
-        </param>
-        <param>
-          <type>void *</type>
-          <declname>buf</declname>
-        </param>
-        <param>
-          <type>uint32_t</type>
-          <declname>buf_size</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="122" column="10" declfile="sds/include/sds_rec_play.h" declline="122" declcolumn="10"/>
-      </memberdef>
-      <memberdef kind="function" id="sds__rec__play_8h_1a9cb0e3535a39c152c08c77de9aae4a91" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>uint32_t</type>
-        <definition>uint32_t sdsPlayGetSize</definition>
-        <argsstring>(sdsRecPlayId_t id)</argsstring>
-        <name>sdsPlayGetSize</name>
-        <param>
-          <type>sdsRecPlayId_t</type>
-          <declname>id</declname>
-        </param>
-        <briefdescription>
-<para>Get record data size from Player stream. </para>
-        </briefdescription>
-        <detaileddescription>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername direction="in">id</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>sdsRecPlayId_t handle to SDS Recorder/Player stream </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<simplesect kind="return"><para>number of data bytes in record </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="130" column="10" declfile="sds/include/sds_rec_play.h" declline="130" declcolumn="10"/>
-      </memberdef>
-      <memberdef kind="function" id="sds__rec__play_8h_1a36439d56d9e3fa250b1fc41504fb87fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>int32_t</type>
-        <definition>int32_t sdsPlayEndOfStream</definition>
-        <argsstring>(sdsRecPlayId_t id)</argsstring>
-        <name>sdsPlayEndOfStream</name>
-        <param>
-          <type>sdsRecPlayId_t</type>
-          <declname>id</declname>
-        </param>
-        <briefdescription>
-<para>Check if end of stream has been reached. </para>
-        </briefdescription>
-        <detaileddescription>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername direction="in">id</parametername>
-</parameternamelist>
-<parameterdescription>
-<para>sdsRecPlayId_t handle to SDS Recorder/Player stream </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<simplesect kind="return"><para>nonzero if end of stream, else 0 </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="138" column="9" declfile="sds/include/sds_rec_play.h" declline="138" declcolumn="9"/>
-      </memberdef>
+      <member refid="group__SDS__Recorder__Player_1gac8362dbc509cb878fa330da3a80ee044" kind="function"><name>sdsRecPlayInit</name></member>
+      <member refid="group__SDS__Recorder__Player_1ga7e78ce16473390833db5ed3e6efb8cf1" kind="function"><name>sdsRecPlayUninit</name></member>
+      <member refid="group__SDS__Recorder__Player_1ga23cdde344f40bcc5d06931473bb8b719" kind="function"><name>sdsRecOpen</name></member>
+      <member refid="group__SDS__Recorder__Player_1ga7b010ae467e0ad6cdfb97569da2597a1" kind="function"><name>sdsRecClose</name></member>
+      <member refid="group__SDS__Recorder__Player_1gaf471bc66f840a8afb9a42a815ebf3d08" kind="function"><name>sdsRecWrite</name></member>
+      <member refid="group__SDS__Recorder__Player_1ga22965fa58400c58e13376134bf1eafa8" kind="function"><name>sdsPlayOpen</name></member>
+      <member refid="group__SDS__Recorder__Player_1gabaef35fad3049663a108750c2561e8ca" kind="function"><name>sdsPlayClose</name></member>
+      <member refid="group__SDS__Recorder__Player_1ga54e9e5bcf496baff9618148dd2873196" kind="function"><name>sdsPlayRead</name></member>
+      <member refid="group__SDS__Recorder__Player_1ga9cb0e3535a39c152c08c77de9aae4a91" kind="function"><name>sdsPlayGetSize</name></member>
+      <member refid="group__SDS__Recorder__Player_1ga36439d56d9e3fa250b1fc41504fb87fb" kind="function"><name>sdsPlayEndOfStream</name></member>
     </sectiondef>
     <briefdescription>
     </briefdescription>
@@ -381,7 +148,7 @@
 <codeline lineno="28"><highlight class="normal"></highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">//<sp/>====<sp/>SDS<sp/>Recorder<sp/>and<sp/>Player<sp/>====</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*sdsRecPlayId_t;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="31" refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*<ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
 <codeline lineno="32"><highlight class="normal"></highlight></codeline>
 <codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_REC_PLAY_OK<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_REC_PLAY_ERROR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(-1)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
@@ -389,33 +156,33 @@
 <codeline lineno="37"><highlight class="normal"></highlight></codeline>
 <codeline lineno="39"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_REC_PLAY_EVENT_IO_ERROR<sp/>(1UL<sp/>&lt;&lt;<sp/>0)<sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="40"><highlight class="normal"></highlight></codeline>
-<codeline lineno="47"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>void<sp/>(*sdsRecPlayEvent_t)<sp/>(sdsRecPlayId_t<sp/>id,<sp/>uint32_t<sp/>event);</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>void<sp/>(*sdsRecPlayEvent_t)<sp/>(<ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref><sp/>id,<sp/>uint32_t<sp/>event);</highlight></codeline>
 <codeline lineno="48"><highlight class="normal"></highlight></codeline>
-<codeline lineno="55"><highlight class="normal">int32_t<sp/>sdsRecPlayInit<sp/>(sdsRecPlayEvent_t<sp/>event_cb);</highlight></codeline>
+<codeline lineno="55" refid="group__SDS__Recorder__Player_1gac8362dbc509cb878fa330da3a80ee044" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Recorder__Player_1gac8362dbc509cb878fa330da3a80ee044" kindref="member">sdsRecPlayInit</ref><sp/>(sdsRecPlayEvent_t<sp/>event_cb);</highlight></codeline>
 <codeline lineno="56"><highlight class="normal"></highlight></codeline>
-<codeline lineno="62"><highlight class="normal">int32_t<sp/>sdsRecPlayUninit<sp/>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="62" refid="group__SDS__Recorder__Player_1ga7e78ce16473390833db5ed3e6efb8cf1" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Recorder__Player_1ga7e78ce16473390833db5ed3e6efb8cf1" kindref="member">sdsRecPlayUninit</ref><sp/>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="63"><highlight class="normal"></highlight></codeline>
-<codeline lineno="73" refid="group__SDS__Recorder_1ga1f59bfa4bc185f960d64008d38f6d3ca" refkind="member"><highlight class="normal">sdsRecPlayId_t<sp/><ref refid="group__SDS__Recorder_1ga1f59bfa4bc185f960d64008d38f6d3ca" kindref="member">sdsRecOpen</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size,<sp/>uint32_t<sp/>io_threshold);</highlight></codeline>
+<codeline lineno="73" refid="group__SDS__Recorder__Player_1ga23cdde344f40bcc5d06931473bb8b719" refkind="member"><highlight class="normal"><ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref><sp/><ref refid="group__SDS__Recorder__Player_1ga23cdde344f40bcc5d06931473bb8b719" kindref="member">sdsRecOpen</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
 <codeline lineno="74"><highlight class="normal"></highlight></codeline>
-<codeline lineno="81"><highlight class="normal">int32_t<sp/>sdsRecClose<sp/>(sdsRecPlayId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="81" refid="group__SDS__Recorder__Player_1ga7b010ae467e0ad6cdfb97569da2597a1" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Recorder__Player_1ga7b010ae467e0ad6cdfb97569da2597a1" kindref="member">sdsRecClose</ref><sp/>(<ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="82"><highlight class="normal"></highlight></codeline>
-<codeline lineno="92"><highlight class="normal">uint32_t<sp/>sdsRecWrite<sp/>(sdsRecPlayId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/>uint32_t<sp/>timestamp,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
-<codeline lineno="93"><highlight class="normal"></highlight></codeline>
-<codeline lineno="103" refid="group__SDS__Player_1gaca2c18042b9a6024bf01471b1941f741" refkind="member"><highlight class="normal">sdsRecPlayId_t<sp/><ref refid="group__SDS__Player_1gaca2c18042b9a6024bf01471b1941f741" kindref="member">sdsPlayOpen</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size,<sp/>uint32_t<sp/>io_threshold);</highlight></codeline>
+<codeline lineno="93" refid="group__SDS__Recorder__Player_1gaf471bc66f840a8afb9a42a815ebf3d08" refkind="member"><highlight class="normal">uint32_t<sp/><ref refid="group__SDS__Recorder__Player_1gaf471bc66f840a8afb9a42a815ebf3d08" kindref="member">sdsRecWrite</ref><sp/>(<ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/>uint32_t<sp/>timestamp,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103" refid="group__SDS__Recorder__Player_1ga22965fa58400c58e13376134bf1eafa8" refkind="member"><highlight class="normal"><ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref><sp/><ref refid="group__SDS__Recorder__Player_1ga22965fa58400c58e13376134bf1eafa8" kindref="member">sdsPlayOpen</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
 <codeline lineno="104"><highlight class="normal"></highlight></codeline>
-<codeline lineno="111"><highlight class="normal">int32_t<sp/>sdsPlayClose<sp/>(sdsRecPlayId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="111" refid="group__SDS__Recorder__Player_1gabaef35fad3049663a108750c2561e8ca" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Recorder__Player_1gabaef35fad3049663a108750c2561e8ca" kindref="member">sdsPlayClose</ref><sp/>(<ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="112"><highlight class="normal"></highlight></codeline>
-<codeline lineno="122"><highlight class="normal">uint32_t<sp/>sdsPlayRead<sp/>(sdsRecPlayId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/>uint32_t<sp/>*timestamp,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
-<codeline lineno="123"><highlight class="normal"></highlight></codeline>
-<codeline lineno="130"><highlight class="normal">uint32_t<sp/>sdsPlayGetSize<sp/>(sdsRecPlayId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="131"><highlight class="normal"></highlight></codeline>
-<codeline lineno="138"><highlight class="normal">int32_t<sp/>sdsPlayEndOfStream<sp/>(sdsRecPlayId_t<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
-<codeline lineno="139"><highlight class="normal"></highlight></codeline>
-<codeline lineno="140"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="141"><highlight class="normal">}</highlight></codeline>
-<codeline lineno="142"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="143"><highlight class="normal"></highlight></codeline>
-<codeline lineno="144"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">/*<sp/>SDS_REC_PLAY_H<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
+<codeline lineno="123" refid="group__SDS__Recorder__Player_1ga54e9e5bcf496baff9618148dd2873196" refkind="member"><highlight class="normal">uint32_t<sp/><ref refid="group__SDS__Recorder__Player_1ga54e9e5bcf496baff9618148dd2873196" kindref="member">sdsPlayRead</ref><sp/>(<ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/>uint32_t<sp/>*timestamp,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131" refid="group__SDS__Recorder__Player_1ga9cb0e3535a39c152c08c77de9aae4a91" refkind="member"><highlight class="normal">uint32_t<sp/><ref refid="group__SDS__Recorder__Player_1ga9cb0e3535a39c152c08c77de9aae4a91" kindref="member">sdsPlayGetSize</ref><sp/>(<ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139" refid="group__SDS__Recorder__Player_1ga36439d56d9e3fa250b1fc41504fb87fb" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Recorder__Player_1ga36439d56d9e3fa250b1fc41504fb87fb" kindref="member">sdsPlayEndOfStream</ref><sp/>(<ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">/*<sp/>SDS_REC_PLAY_H<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
     </programlisting>
     <location file="sds/include/sds_rec_play.h"/>
   </compounddef>
