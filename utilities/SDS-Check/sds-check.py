@@ -98,35 +98,55 @@ def checkSizes(filename,data):
 # check timestamps
 def checkTimestamps(data):
     data_len = len(data["timestamp"])
+    info["records"] = data_len
+
     if data_len < 2: return True
 
     # Check if timestamps are in ascending order
+    # and find max time-delta
+    info["delta_time"] = int(0)
     for n in range(1,data_len):
         if data["timestamp"][n] < data["timestamp"][n-1]:
+            # Error: Not in ascending order
             info["record_id"] = n
             return False
+        if data["timestamp"][n] - data["timestamp"][n-1] > info["delta_time"]:
+            info["delta_time"]  = data["timestamp"][n] - data["timestamp"][n-1]
+            info["delta_index"] = n 
 
-    #Check jitter, save index where jitter is max
+    # Check whether timestamps are duplicated
+    # and save the index at which sequence begins
+    info["dup_count"] = count = int(0)
+    for n in range(1,data_len):
+        if data["timestamp"][n] == data["timestamp"][n-1]:
+            count += 1
+            if count > info["dup_count"]:
+                if count == 1:
+                    info["dup_index"] = n
+                info["dup_count"] = count
+        else:
+            count = 0
+
+
+    #Check the jitter, save the index at which the jitter is greatest
     interval = (data["timestamp"][-1] - data["timestamp"][0]) / (data_len-1)
+    timestamp = data["timestamp"][0] + interval
 
-    jitter = index = int(0)
-    timestamp = int(data["timestamp"][0] + interval)
+    info["interval"] = round(interval)
+    info["jitter"] = int(0)
+
     for n in range(1,data_len):
         diff = round(abs(data["timestamp"][n] - timestamp))
-        if diff > jitter:
-            jitter = diff
-            index  = n
+        if diff > info["jitter"]:
+            info["jitter"] = diff
+            info["index"]  = n
         timestamp += interval
-
-    info["records"] = data_len
-    info["interval"]= round(interval)
-    info["jitter"]  = jitter
-    info["index"]   = index
 
     return True
 
 # main
 def main():
+    # Process arguments
     formatter = lambda prog: argparse.HelpFormatter(prog,max_help_position=60)
     parser = argparse.ArgumentParser(description="SDS data validation",
                                      formatter_class=formatter)
@@ -158,14 +178,22 @@ def main():
         print(f"Error: Timestamp not in ascending order in record {info["record_id"]}.")
         sys.exit(1)
 
-    if info["jitter"] == 0: txt_add = ""
-    else:                   txt_add = ", record " + str(info["index"])
+    # Print summary
+    print(f"File     : {filename}")
+    print(f"Size     : {info["filesize"]:,} bytes")
+    print(f"Records  : {info["records"]}")
+    print(f"Interval : {info["interval"]}ms")
 
-    print(f"File    : {filename}")
-    print(f"Size    : {info["filesize"]:,} bytes")
-    print(f"Records : {info["records"]}")
-    print(f"Interval: {info["interval"]}ms")
-    print(f"Jitter  : {info["jitter"]}ms" + txt_add)
+    if info["jitter"] > 0:
+        print(f"Jitter   : {info["jitter"]}ms, record {info["index"]}")
+    else:
+        print("Jitter   : 0ms")
+
+    if info["delta_time"] > info["interval"]:
+        print(f"DeltaTime: {info["delta_time"]}ms, record {info["delta_index"]}")
+
+    if info["dup_count"] > 0:
+        print(f"DupStamps: {info["dup_count"]}, record {info["dup_index"]}")
 
     print("Validation passed")
 
