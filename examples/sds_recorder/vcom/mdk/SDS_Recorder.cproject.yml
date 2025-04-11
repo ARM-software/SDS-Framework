@@ -1,9 +1,10 @@
 project:
   packs:
-   - pack: ARM::SDS
-   - pack: ARM::CMSIS@>=6.0.0
-   - pack: ARM::CMSIS-RTX@>=5.8.0
-   - pack: Keil::MDK-Middleware@7.17.0
+    - pack: ARM::SDS
+    - pack: ARM::CMSIS
+    - pack: ARM::CMSIS-RTX
+    - pack: Keil::MDK-Middleware
+    - pack: ARM::CMSIS-DSP
 
   connections:
     - connect: Demo Application
@@ -24,11 +25,11 @@ project:
     - component: Keil::USB&MDK-Plus:CORE&Release
     - component: Keil::USB&MDK-Plus:Device
     - component: Keil::USB&MDK-Plus:Device:CDC
-
+    - component: ARM::CMSIS:DSP&Source
 
   groups:
     - group: Documentation
-      files: 
+      files:
         - file: ./README.md
     - group: Source Files
       files:

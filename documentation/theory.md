@@ -51,6 +51,17 @@ Each data stream is stored in a separate SDS data file. In the diagram below `SC
 
 ![SDS Files](images/SDS-Files.png)
 
+- Each call to the [function `sdsRecWrite`](../SDS_API/group___s_d_s___recorder___player) writes one data block.
+- Each call to the [function `sdsPlayRead`](../SDS_API/group___s_d_s___recorder___player) reads one data block.
+
+### Filenames
+
+SDS data filenames use the following file format: `<name>.<file-index>.sds`. `<name>` is the base file name of the SDS data file. The `<file-index>` is a sequential number starting from `0`.
+
+- The [function `sdsRecOpen`](../SDS_API/group___s_d_s___recorder___player) gets the `<name>` as a parameter. When connected to a file system (for example the [SDSIO-Server](utilities.md#sdsio-server)), existing files starting with `<file-index>="0"` are iterated. The first available `<file-index>` that does not exist will used as filename to record data. For example, if the file `SensorX.10.sds` already exists, the filename `SensorX.11.sds` will be used.
+
+- The [function `sdsPlayOpen`](../SDS_API/group___s_d_s___recorder___player) gets the `<name>` as a parameter. When connected to a file system (for example using the [SDSIO-Server](utilities.md#sdsio-server)), the first call uses the `<file-index>="0"`. Each call to [`sdsPlayOpen`](../SDS_API/group___s_d_s___recorder___player) increments the `<file-index>`.
+
 ### Timestamp
 
 The timestamp is a 32-bit unsigned value and is used for:
@@ -63,9 +74,77 @@ The same timestamp connects different SDS file records. It is therefore useful t
 use the same timestamp for the recording of one iteration of a DSP or ML algorithm.
 In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timestamp value.
 
-### SDS Data File Format
+#### File Format
 
-The SDS data file format is described [here](https://github.com/ARM-software/SDS-Framework/tree/main/schema).  Each call to `sdsRecWrite` writes one data block.
+The **SDS Framework** uses a binary data file format to store the individual data streams. It supports the recording and playback of multiple data streams that may have jitters.  Therefore each stream contains timestamp information that allows to correlate the data streams as it is for example required in a sensor fusion application.
+
+The binary data format (stored in `*.<n>.sds` data files) has a record structure with a variable size. Each record has the following format:
+
+1. **timestamp**: record timestamp in tick-frequency (32-bit unsigned integer, little endian)
+2. **data size**: number of data bytes in the record (32-bit unsigned integer, little endian)
+3. **binary data**: SDS stream (little endian, no padding) as described with the `*.sds.yml` file.
+
+#### YAML Metadata Format
+
+The content of each data stream may be described in a [YAML](https://en.wikipedia.org/wiki/YAML) metadata file that is created by the user. The following section defines the YAML format of this metadata file. The file `sds.schema.json` is a schema description of the SDS Format Description.
+
+`sds:`                               | Start of the SDS Format Description
+:------------------------------------|---------------------------------------------------
+&nbsp;&nbsp;&nbsp; `name:`           | Name of the Synchronous Data Stream (SDS)
+&nbsp;&nbsp;&nbsp; `description:`    | Additional descriptive text (optional)
+&nbsp;&nbsp;&nbsp; `frequency:`      | Capture frequency of the SDS
+&nbsp;&nbsp;&nbsp; `tick-frequency:` | Tick frequency of the timestamp value (optional); default: 1000 for 1 milli-second interval
+&nbsp;&nbsp;&nbsp; `content:`        | List of values captured (see below)
+
+`content:`                           | List of values captured (in the order of the data file)
+:------------------------------------|---------------------------------------------------
+`- value:`                           | Name of the value
+&nbsp;&nbsp;&nbsp; `type:`           | Data type of the value
+&nbsp;&nbsp;&nbsp; `offset:`         | Offset of the value (optional); default: 0
+&nbsp;&nbsp;&nbsp; `scale:`          | Scale factor of the value (optional); default: 1.0
+&nbsp;&nbsp;&nbsp; `unit:`           | Physical unit of the value (optional); default: no units
+
+**Example**
+
+This example defines a data stream with the name "sensorX" that contains the values of a gyroscope, temperature sensor, and additional raw data (that are not further described).
+
+![image](./images/SDS-Metainfo.png)
+
+The binary data that are coming form this sensors are stored in data files with the following file format: `<sensor-name>.<file-index>.sds`. In this example the files names could be:
+
+```yml
+   sensorX.0.sds   # capture 0
+   sensorX.1.sds   # capture 1
+```
+
+The following `sensorX.sds.yml` provides the format description of the SDS `sensorX` binary data files and maybe used by data conversion utilities and data viewers.
+
+```yml
+sds:                   # describes a synchronous data stream
+  name: sensorX        # user defined name
+  description: Gyroscope stream with 1KHz, plus additional user data
+  frequency: 1000
+  content:
+  - value: x           # Value name is 'x'
+    type:  uint16_t    # stored using a 16-bit unsigned int
+    scale: 0.2         # value is scaled by 0.2
+    unit: dps          # base unit of the value
+  - value: y
+    type: uint16_t
+    scale: 0.2
+    unit: dps
+  - value: z
+    type: uint16_t
+    unit: dps          # scale 1.0 is default
+  - value: temp
+    type: float
+    unit: degree Celsius
+  - value: raw
+    type: uint16_t     # raw data, no scale or unit given
+  - value: flag
+    type: uint32_t:1   # a single bit stored in a 32-bit int
+```
+
 
 ## Code Example
 
