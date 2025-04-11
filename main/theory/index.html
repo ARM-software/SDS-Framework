@@ -178,17 +178,17 @@
 <p>Each data stream is stored in a separate SDS data file. In the diagram below <code>SCinput.0.sds</code> is the input to Signal Conditioning, <code>SCoutput.0.sds</code> is the output of Signal Conditioning, and <code>MLoutput.0.sds</code> is the output of the ML Model. Each execution of the algorithm is represented in a data block with a <code>timestamp</code>. The <code>timestamp</code> allows to correlate the blocks of different streams. In the above example, all blocks of one algorithm execution have the same timestamp value.</p>
 <p><img alt="SDS Files" src="../images/SDS-Files.png"/></p>
 <ul>
-<li>Each call to the <a href="../SDS_API/group___s_d_s___recorder___player">function <code>sdsRecWrite</code></a> writes one data block.</li>
-<li>Each call to the <a href="../SDS_API/group___s_d_s___recorder___player">function <code>sdsPlayRead</code></a> reads one data block.</li>
+<li>Each call to the function <code>sdsRecWrite</code> writes one data block.</li>
+<li>Each call to the function <code>sdsPlayRead</code> reads one data block.</li>
 </ul>
 <h3 id="filenames">Filenames</h3>
 <p>SDS data filenames use the following file format: <code>&lt;name&gt;.&lt;file-index&gt;.sds</code>. <code>&lt;name&gt;</code> is the base file name of the SDS data file. The <code>&lt;file-index&gt;</code> is a sequential number starting from <code>0</code>.</p>
 <ul>
 <li>
-<p>The <a href="../SDS_API/group___s_d_s___recorder___player">function <code>sdsRecOpen</code></a> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example the <a href="../utilities/#sdsio-server">SDSIO-Server</a>), existing files starting with <code>&lt;file-index&gt;="0"</code> are iterated. The first available <code>&lt;file-index&gt;</code> that does not exist will used as filename to record data. For example, if the file <code>SensorX.10.sds</code> already exists, the filename <code>SensorX.11.sds</code> will be used.</p>
+<p>The function <code>sdsRecOpen</code> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example the <a href="../utilities/#sdsio-server">SDSIO-Server</a>), existing files starting with <code>&lt;file-index&gt;="0"</code> are iterated. The first available <code>&lt;file-index&gt;</code> that does not exist will used as filename to record data. For example, if the file <code>SensorX.10.sds</code> already exists, the filename <code>SensorX.11.sds</code> will be used.</p>
 </li>
 <li>
-<p>The <a href="../SDS_API/group___s_d_s___recorder___player">function <code>sdsPlayOpen</code></a> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example using the <a href="../utilities/#sdsio-server">SDSIO-Server</a>), the first call uses the <code>&lt;file-index&gt;="0"</code>. Each call to <a href="../SDS_API/group___s_d_s___recorder___player"><code>sdsPlayOpen</code></a> increments the <code>&lt;file-index&gt;</code>.</p>
+<p>The function <code>sdsPlayOpen</code> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example using the <a href="../utilities/#sdsio-server">SDSIO-Server</a>), the first call uses the <code>&lt;file-index&gt;="0"</code>. Each call to <code>sdsPlayOpen</code> increments the <code>&lt;file-index&gt;</code>.</p>
 </li>
 </ul>
 <h3 id="timestamp">Timestamp</h3>
