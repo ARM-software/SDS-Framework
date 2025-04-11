@@ -22,7 +22,7 @@ import struct
 import argparse
 import os.path
 
-info = {"": 0}
+info = {}
 
 class RecordManager:
     def __init__(self):
@@ -81,52 +81,83 @@ class RecordManager:
 
 # check sizes
 def checkSizes(filename,data):
-    size = 0
+    data_size = 0
+    smallest  = largest = data["data_size"][0]
+
+    # check data size, find the smallest and largest record
     for n in range(len(data["data_size"])):
-        size += 8 + data["data_size"][n]
+        if data["data_size"][n] > largest:
+            largest = data["data_size"][n]
+        elif data["data_size"][n] < smallest:
+            smallest = data["data_size"][n]
+        data_size += data["data_size"][n]
 
-    file_size = os.path.getsize(filename)
+    info["file_size"] = os.path.getsize(filename)
+    info["data_size"] = 8 * len(data["data_size"]) + data_size
+    info["block_size"]= round(data_size / len(data["data_size"]))
+    info["smallest"]  = smallest
+    info["largest"]   = largest
 
-    info["filesize"] = file_size
-    info["datasize"] = size
-
-    if file_size != size:
-        return False
-
-    return True
+    return info["file_size"] == info["data_size"]
 
 # check timestamps
 def checkTimestamps(data):
     data_len = len(data["timestamp"])
+    info["records"] = data_len
+
     if data_len < 2: return True
 
     # Check if timestamps are in ascending order
+    # and find the largest delta time
+    info["delta_time"] = int(0)
     for n in range(1,data_len):
         if data["timestamp"][n] < data["timestamp"][n-1]:
+            # Error: Not in ascending order
             info["record_id"] = n
             return False
+        if data["timestamp"][n] - data["timestamp"][n-1] > info["delta_time"]:
+            info["delta_time"]  = data["timestamp"][n] - data["timestamp"][n-1]
+            info["delta_index"] = n
 
-    #Check jitter, save index where jitter is max
+    # Check whether timestamps are duplicated
+    # and save the index at which sequence begins
+    info["dup_count"] = count = int(0)
+    for n in range(1,data_len):
+        if data["timestamp"][n] == data["timestamp"][n-1]:
+            count += 1
+            if count > info["dup_count"]:
+                if count == 1:
+                    info["dup_index"] = n
+                info["dup_count"] = count
+        else:
+            count = 0
+
+
+    #Check the jitter, save the index at which the jitter is greatest
     interval = (data["timestamp"][-1] - data["timestamp"][0]) / (data_len-1)
+    timestamp = data["timestamp"][0] + interval
 
-    jitter = index = int(0)
-    timestamp = int(data["timestamp"][0] + interval)
+    info["interval"] = round(interval)
+    info["jitter"] = int(0)
+
     for n in range(1,data_len):
         diff = round(abs(data["timestamp"][n] - timestamp))
-        if diff > jitter:
-            jitter = diff
-            index  = n
+        if diff > info["jitter"]:
+            info["jitter"] = diff
+            info["index"]  = n
         timestamp += interval
-
-    info["records"] = data_len
-    info["interval"]= round(interval)
-    info["jitter"]  = jitter
-    info["index"]   = index
 
     return True
 
+# Convert int value to dot formatted string
+def dot(value):
+    if value < 1000:    return str(value)
+    if value < 1000000: return str(value//1000)    + '.' + str(value%1000).zfill(3)
+    else:               return str(value//1000000) + '.' + str(value%1000000//1000).zfill(3) + '.' +  str(value%1000).zfill(3)
+
 # main
 def main():
+    # Process arguments
     formatter = lambda prog: argparse.HelpFormatter(prog,max_help_position=60)
     parser = argparse.ArgumentParser(description="SDS data validation",
                                      formatter_class=formatter)
@@ -150,22 +181,39 @@ def main():
     data = Record.getData(file)
     file.close()
 
-    if checkSizes(filename,data) == False:
-        print(f"Error: File size mismatch. Expected {info["datasize"]} bytes, but file contains {info["filesize"]} bytes.")
+    if not checkSizes(filename,data):
+        print(f"Error: File size mismatch. Expected {dot(info["data_size"])} bytes, but file contains {dot(info["file_size"])} bytes.")
         sys.exit(1)
 
-    if checkTimestamps(data) == False:
-        print(f"Error: Timestamp not in ascending order in record {info["record_id"]}.")
+    if not checkTimestamps(data):
+        print(f"Error: Timestamp not in ascending order in record {dot(info["record_id"])}.")
         sys.exit(1)
 
-    if info["jitter"] == 0: txt_add = ""
-    else:                   txt_add = ", record " + str(info["index"])
+    # Print summary
+    print(f"File     : {filename}")
+    print(f"DataSize : {dot(info["file_size"])} bytes")
+    print(f"Records  : {dot(info["records"])}")
 
-    print(f"File    : {filename}")
-    print(f"Size    : {info["filesize"]:,} bytes")
-    print(f"Records : {info["records"]}")
-    print(f"Interval: {info["interval"]}ms")
-    print(f"Jitter  : {info["jitter"]}ms" + txt_add)
+    print(f"BlockSize: {dot(info["block_size"])} bytes")
+    if info["largest"] > info["block_size"] or info["smallest"] < info["block_size"]:
+        print(f"Largest  : {dot(info["largest"])} bytes")
+        print(f"Smallest : {dot(info["smallest"])} bytes")
+
+    print(f"Interval : {dot(info["interval"])} ms")
+
+    datarate = round((info["block_size"] * 1000) / info["interval"])
+    print(f"DataRate : {dot(datarate)} byte/s")
+
+    if info["jitter"] > 0:
+        print(f"Jitter   : {dot(info["jitter"])} ms, record {dot(info["index"])}")
+    else:
+        print("Jitter   : 0 ms")
+
+    if info["delta_time"] > info["interval"]:
+        print(f"DeltaTime: {dot(info["delta_time"])} ms, record {dot(info["delta_index"])}")
+
+    if info["dup_count"] > 0:
+        print(f"DupStamps: {dot(info["dup_count"])}, record {dot(info["dup_index"])}")
 
     print("Validation passed")
 
