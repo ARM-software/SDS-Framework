@@ -51,16 +51,16 @@ Each data stream is stored in a separate SDS data file. In the diagram below `SC
 
 ![SDS Files](images/SDS-Files.png)
 
-- Each call to the [function `sdsRecWrite`](../SDS_API/group___s_d_s___recorder___player) writes one data block.
-- Each call to the [function `sdsPlayRead`](../SDS_API/group___s_d_s___recorder___player) reads one data block.
+- Each call to the function `sdsRecWrite` writes one data block.
+- Each call to the function `sdsPlayRead` reads one data block.
 
 ### Filenames
 
 SDS data filenames use the following file format: `<name>.<file-index>.sds`. `<name>` is the base file name of the SDS data file. The `<file-index>` is a sequential number starting from `0`.
 
-- The [function `sdsRecOpen`](../SDS_API/group___s_d_s___recorder___player) gets the `<name>` as a parameter. When connected to a file system (for example the [SDSIO-Server](utilities.md#sdsio-server)), existing files starting with `<file-index>="0"` are iterated. The first available `<file-index>` that does not exist will used as filename to record data. For example, if the file `SensorX.10.sds` already exists, the filename `SensorX.11.sds` will be used.
+- The function `sdsRecOpen` gets the `<name>` as a parameter. When connected to a file system (for example the [SDSIO-Server](utilities.md#sdsio-server)), existing files starting with `<file-index>="0"` are iterated. The first available `<file-index>` that does not exist will used as filename to record data. For example, if the file `SensorX.10.sds` already exists, the filename `SensorX.11.sds` will be used.
 
-- The [function `sdsPlayOpen`](../SDS_API/group___s_d_s___recorder___player) gets the `<name>` as a parameter. When connected to a file system (for example using the [SDSIO-Server](utilities.md#sdsio-server)), the first call uses the `<file-index>="0"`. Each call to [`sdsPlayOpen`](../SDS_API/group___s_d_s___recorder___player) increments the `<file-index>`.
+- The function `sdsPlayOpen` gets the `<name>` as a parameter. When connected to a file system (for example using the [SDSIO-Server](utilities.md#sdsio-server)), the first call uses the `<file-index>="0"`. Each call to `sdsPlayOpen` increments the `<file-index>`.
 
 ### Timestamp
 

@@ -1,13 +1,14 @@
 # SDS Interface
 
-The SDSIO components offer flexible recorder and playback interfaces. You may choose between these interface components that can be easily integrated into the target system:
+The SDSIO components offer flexible recorder and playback interfaces. You may choose between these interface components that are stored in the folder `./sds/sdsio`. These interfaces can be accessed as CMSIS software components for integration into the target system:
 
 ```yml
   - component: SDS:IO:Socket                     # Socket Interface (Ethernet or WiFi)
   - component: SDS:IO:VCOM&MDK USB               # USB Interface
   - component: SDS:IO:Serial&CMSIS USART         # USART Interface
   - component: SDS:IO:File System&MDK FS         # Memory card
-  - component: SDS:IO:File System&Semihosting    # Simulation or Debugger
+  - component: SDS:IO:File System&Semihosting    # Simulation or Debugger via Semihosting interface
+  - component: SDS:IO:Custom                     # Source code template for custom implementation
 ```
 
 To simplify usage further, the following pre-configured SDS interface layers in *csolution project format* are available. These connect via various interfaces to the SDSIO server that for read/write access to SDS data files.
@@ -17,12 +18,13 @@ To simplify usage further, the following pre-configured SDS interface layers in 
 
 ![SDS Interface](images/SDSIO.png)
 
-
  The SDS interface layers can be further tailored for the application requirements. For example by removing the playback interface component when only recording is required.
 
 ```yml
   component: SDS:Player&CMSIS-RTOS2              # remove this when not required
 ```
+
+
 
 ## Layer: Network/SDS_Interface
 
