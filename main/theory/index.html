@@ -51,9 +51,15 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#sds-data-files">SDS Data Files</a>
 <ul>
-<li class="toctree-l3"><a class="reference internal" href="#timestamp">Timestamp</a>
+<li class="toctree-l3"><a class="reference internal" href="#filenames">Filenames</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#sds-data-file-format">SDS Data File Format</a>
+<li class="toctree-l3"><a class="reference internal" href="#timestamp">Timestamp</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#file-format">File Format</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#yaml-metadata-format">YAML Metadata Format</a>
+</li>
+</ul>
 </li>
 </ul>
 </li>
@@ -171,6 +177,20 @@
 <h2 id="sds-data-files">SDS Data Files</h2>
 <p>Each data stream is stored in a separate SDS data file. In the diagram below <code>SCinput.0.sds</code> is the input to Signal Conditioning, <code>SCoutput.0.sds</code> is the output of Signal Conditioning, and <code>MLoutput.0.sds</code> is the output of the ML Model. Each execution of the algorithm is represented in a data block with a <code>timestamp</code>. The <code>timestamp</code> allows to correlate the blocks of different streams. In the above example, all blocks of one algorithm execution have the same timestamp value.</p>
 <p><img alt="SDS Files" src="../images/SDS-Files.png"/></p>
+<ul>
+<li>Each call to the <a href="../SDS_API/group___s_d_s___recorder___player">function <code>sdsRecWrite</code></a> writes one data block.</li>
+<li>Each call to the <a href="../SDS_API/group___s_d_s___recorder___player">function <code>sdsPlayRead</code></a> reads one data block.</li>
+</ul>
+<h3 id="filenames">Filenames</h3>
+<p>SDS data filenames use the following file format: <code>&lt;name&gt;.&lt;file-index&gt;.sds</code>. <code>&lt;name&gt;</code> is the base file name of the SDS data file. The <code>&lt;file-index&gt;</code> is a sequential number starting from <code>0</code>.</p>
+<ul>
+<li>
+<p>The <a href="../SDS_API/group___s_d_s___recorder___player">function <code>sdsRecOpen</code></a> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example the <a href="../utilities/#sdsio-server">SDSIO-Server</a>), existing files starting with <code>&lt;file-index&gt;="0"</code> are iterated. The first available <code>&lt;file-index&gt;</code> that does not exist will used as filename to record data. For example, if the file <code>SensorX.10.sds</code> already exists, the filename <code>SensorX.11.sds</code> will be used.</p>
+</li>
+<li>
+<p>The <a href="../SDS_API/group___s_d_s___recorder___player">function <code>sdsPlayOpen</code></a> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example using the <a href="../utilities/#sdsio-server">SDSIO-Server</a>), the first call uses the <code>&lt;file-index&gt;="0"</code>. Each call to <a href="../SDS_API/group___s_d_s___recorder___player"><code>sdsPlayOpen</code></a> increments the <code>&lt;file-index&gt;</code>.</p>
+</li>
+</ul>
 <h3 id="timestamp">Timestamp</h3>
 <p>The timestamp is a 32-bit unsigned value and is used for:</p>
 <ul>
@@ -181,8 +201,108 @@
 <p>The same timestamp connects different SDS file records. It is therefore useful to
 use the same timestamp for the recording of one iteration of a DSP or ML algorithm.
 In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timestamp value.</p>
-<h3 id="sds-data-file-format">SDS Data File Format</h3>
-<p>The SDS data file format is described <a href="https://github.com/ARM-software/SDS-Framework/tree/main/schema">here</a>.  Each call to <code>sdsRecWrite</code> writes one data block.</p>
+<h4 id="file-format">File Format</h4>
+<p>The <strong>SDS Framework</strong> uses a binary data file format to store the individual data streams. It supports the recording and playback of multiple data streams that may have jitters.  Therefore each stream contains timestamp information that allows to correlate the data streams as it is for example required in a sensor fusion application.</p>
+<p>The binary data format (stored in <code>*.&lt;n&gt;.sds</code> data files) has a record structure with a variable size. Each record has the following format:</p>
+<ol>
+<li><strong>timestamp</strong>: record timestamp in tick-frequency (32-bit unsigned integer, little endian)</li>
+<li><strong>data size</strong>: number of data bytes in the record (32-bit unsigned integer, little endian)</li>
+<li><strong>binary data</strong>: SDS stream (little endian, no padding) as described with the <code>*.sds.yml</code> file.</li>
+</ol>
+<h4 id="yaml-metadata-format">YAML Metadata Format</h4>
+<p>The content of each data stream may be described in a <a href="https://en.wikipedia.org/wiki/YAML">YAML</a> metadata file that is created by the user. The following section defines the YAML format of this metadata file. The file <code>sds.schema.json</code> is a schema description of the SDS Format Description.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>sds:</code></th>
+<th>Start of the SDS Format Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">    <code>name:</code></td>
+<td>Name of the Synchronous Data Stream (SDS)</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>description:</code></td>
+<td>Additional descriptive text (optional)</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>frequency:</code></td>
+<td>Capture frequency of the SDS</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>tick-frequency:</code></td>
+<td>Tick frequency of the timestamp value (optional); default: 1000 for 1 milli-second interval</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>content:</code></td>
+<td>List of values captured (see below)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>content:</code></th>
+<th>List of values captured (in the order of the data file)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- value:</code></td>
+<td>Name of the value</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>type:</code></td>
+<td>Data type of the value</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>offset:</code></td>
+<td>Offset of the value (optional); default: 0</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>scale:</code></td>
+<td>Scale factor of the value (optional); default: 1.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>unit:</code></td>
+<td>Physical unit of the value (optional); default: no units</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<p>This example defines a data stream with the name "sensorX" that contains the values of a gyroscope, temperature sensor, and additional raw data (that are not further described).</p>
+<p><img alt="image" src="../images/SDS-Metainfo.png"/></p>
+<p>The binary data that are coming form this sensors are stored in data files with the following file format: <code>&lt;sensor-name&gt;.&lt;file-index&gt;.sds</code>. In this example the files names could be:</p>
+<pre><code class="language-yml">   sensorX.0.sds   # capture 0
+   sensorX.1.sds   # capture 1
+</code></pre>
+<p>The following <code>sensorX.sds.yml</code> provides the format description of the SDS <code>sensorX</code> binary data files and maybe used by data conversion utilities and data viewers.</p>
+<pre><code class="language-yml">sds:                   # describes a synchronous data stream
+  name: sensorX        # user defined name
+  description: Gyroscope stream with 1KHz, plus additional user data
+  frequency: 1000
+  content:
+  - value: x           # Value name is 'x'
+    type:  uint16_t    # stored using a 16-bit unsigned int
+    scale: 0.2         # value is scaled by 0.2
+    unit: dps          # base unit of the value
+  - value: y
+    type: uint16_t
+    scale: 0.2
+    unit: dps
+  - value: z
+    type: uint16_t
+    unit: dps          # scale 1.0 is default
+  - value: temp
+    type: float
+    unit: degree Celsius
+  - value: raw
+    type: uint16_t     # raw data, no scale or unit given
+  - value: flag
+    type: uint32_t:1   # a single bit stored in a 32-bit int
+</code></pre>
 <h2 id="code-example">Code Example</h2>
 <p>The following code snippets show the usage of the <strong>Recorder Interface</strong>. In this case an accelerometer data stream is recorded.</p>
 <pre><code class="language-c">// *** variable definitions ***
