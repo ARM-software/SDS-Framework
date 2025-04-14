@@ -76,22 +76,21 @@ todo
 \defgroup SDS_IO_Interface SDS I/O Interface
 \brief sdsio.h: SDS I/O Interface for data streams
 \details
-The stream data can be written to an output device or read from an input device.  Typically these interfaces communicate to an
-SDS I/O server that reads or writes SDS data files.
+The SDS I/O interface reads or writes SDS data from a circular buffer. 
+
 @{
 */
 
 /**
 \typedef sdsioId_t
 \details
-todo test
-
+This *pointer* defines the handle to SDS I/O data stream. It is used to identify a data stream across the different functions.
 */
 
 /**
 \typedef sdsioMode_t
 \details
-todo
+This *enum* identifies the *read* or *write* mode to SDS I/O data streams.
 */
 
 /**
@@ -148,7 +147,8 @@ todo
 \defgroup SDS_Recorder_Player SDS Recorder and Player
 \brief sds_rec_play.h: SDS Recorder and Player for writing and reading SDS files via communication or file I/O interface.
 \details
-Todo
+ via a communication stack, file system, or semihosting interface.
+Refer to the chapter SDS Interface for an overview.
 
 @{
 */
@@ -156,8 +156,8 @@ Todo
 /**
 \typedef sdsRecPlayId_t
 \details
-
-todo
+This *pointer* defines the handle to SDS recorder or player stream. It is used to identify a data stream across the different functions for 
+the SDS Recorder and Player system.
 
 */
 
@@ -165,7 +165,7 @@ todo
 \fn          int32_t sdsRecPlayInit (sdsRecPlayEvent_t event_cb)
 \details
 Initializes the SDS Recorder and Player system. This function allocates resources, initializes underlying
-SDS I/O interface and starts the background worker thread. An optional callback function can be
+SDS I/O interface and starts the `sdsRecPlayThread` worker thread. An optional callback function can be
 registered to receive notifications (e.g., I/O errors). This function must be called once before
 any recorder or player streams are opened.
 
@@ -174,7 +174,7 @@ any recorder or player streams are opened.
 /**
 \fn          int32_t sdsRecPlayUninit (void)
 \details
-Deinitializes the SDS Recorder and Player system. The background thread is stopped, and internal resources
+De-initializes the SDS Recorder and Player system. The `sdsRecPlayThread` worker thread is stopped, and internal resources
 are released. All open recorder or player streams must be closed by the user before calling this function.
 Once uninitialized, the system must be initialized again before use.
 
@@ -183,7 +183,7 @@ Once uninitialized, the system must be initialized again before use.
 /**
 \fn          sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size)
 \details
-Opens a recorder stream for writing timestamped data blocks to the SDS file. The `buf` parameter specifies
+Opens a recorder stream for writing timestamps and data blocks to the SDS file. The `buf` parameter specifies
 a user-allocated memory region that serves as an internal circular buffer. The buffer size must be sufficient
 to accommodate at least the largest data block size plus 8 bytes for the record header.
 
@@ -207,13 +207,13 @@ The stream handle becomes invalid after successful closing.
 /**
   \fn          uint32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uint32_t buf_size)
 \details
-Writes a data block along with its associated header, which includes the timestamp and the size of the data block, to the
-internal circular buffer. A worker thread asynchronously reads the data from the internal circular buffer and writes
+Writes a data block with header (timestamp and size of data block) to the
+internal circular buffer. The `sdsRecPlayThread` worker thread asynchronously reads the data from the internal circular buffer and writes
 it to the SDS file using the underlying SDS I/O interface. This approach ensures efficient, non-blocking data handling
 and optimal performance.
 
-Before writing, the function ensures that both the header and the data block can fit entirely into the internal buffer.
-If there is insufficient space to accommodate either, the operation is aborted, and the function returns 0.
+Before writing, the function ensures that the data block can fit into the internal buffer.
+If there is insufficient space, the operation is aborted, and the function returns 0.
 
 On success, the function writes the header and data block to the stream buffer and returns the number of data bytes written
 (excluding the header).
@@ -226,12 +226,12 @@ can write to different streams concurrently, enabling parallel operations across
 /**
 \fn          sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size)
 \details
-Opens a player stream for reading timestamped data blocks from the SDS file. The `buf` parameter specifies a user-allocated
+Opens a player stream for reading timestamp and data blocks from the SDS file. The `buf` parameter specifies a user-allocated
 memory region that serves as an internal circular buffer. The buffer size must be sufficient to accommodate at least
 the largest data block size plus 8 bytes for the record header.
 
 The `name` parameter specifies the base name of the SDS input file. The function attempts to locate and open the file
-`name.index.sds`, where `index` is an auto-incrementing value. If no matching file is found, the function returns an error.
+`<name>.<index>.sds`, where `<index>` is an auto-incrementing value. If no matching file is found, the function returns an error.
 
 Note that this function can be blocking for some time as it initially fills the internal circular buffer with data from the SDS file.
 
@@ -251,7 +251,7 @@ The stream handle becomes invalid after successful closing.
 /**
 \fn          uint32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size)
 \details
-Reads a data block along with its associated timestamp from the internal circular buffer. A worker thread asynchronously
+Reads a data block along with its associated timestamp from the internal circular buffer. The `sdsRecPlayThread` worker thread asynchronously
 reads the data from the SDS file using the underlying SDS I/O interface and writes it to the internal circular buffer.
 This approach ensures efficient, non-blocking data handling and optimal performance.
 

@@ -18,14 +18,6 @@ To simplify usage further, the following pre-configured SDS interface layers in 
 
 ![SDS Interface](images/SDSIO.png)
 
- The SDS interface layers can be further tailored for the application requirements. For example by removing the playback interface component when only recording is required.
-
-```yml
-  component: SDS:Player&CMSIS-RTOS2              # remove this when not required
-```
-
-
-
 ## Layer: Network/SDS_Interface
 
 The [`Network/SDS_Interface.clayer`](https://github.com/Arm-Examples/SDS-Examples/tree/main/SDS_Interface/Network) is configured for recording and playback via Ethernet interface. It is using the MDK-Middleware Network component.

@@ -34,7 +34,7 @@ typedef void *sdsioId_t;        ///< Handle to SDS I/O stream
 typedef enum {
   sdsioModeRead  = 0,           ///< Open for read (binary)
   sdsioModeWrite = 1            ///< Open for write (binary)
-} sdsioMode_t;                  ///< Open mode
+} sdsioMode_t;                  ///< Open mode (read/write)
 
 /// Function return codes
 #define SDSIO_OK                (0)         ///< Operation completed successfully

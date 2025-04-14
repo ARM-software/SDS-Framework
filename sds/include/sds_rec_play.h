@@ -63,12 +63,11 @@ int32_t sdsRecPlayUninit (void);
 
 /**
   \fn          sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size)
-  \brief       Open recorder stream.
+  \brief       Open recorder stream (write mode).
   \param[in]   name           stream name (pointer to NULL terminated string)
   \param[in]   buf            pointer to buffer for recorder stream
   \param[in]   buf_size       buffer size in bytes
-  \return      \ref sdsRecPlayId_t handle to SDS Recorder/Player stream if operation is successful,
-               or NULL if the operation failed
+  \return      \ref sdsRecPlayId_t handle to SDS Recorder/Player stream or NULL if operation failed
 */
 sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size);
 
@@ -94,11 +93,11 @@ uint32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, ui
 
 /**
   \fn          sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size)
-  \brief       Open player stream.
+  \brief       Open player stream (read mode).
   \param[in]   name           stream name (pointer to NULL terminated string)
   \param[in]   buf            pointer to buffer for player stream
   \param[in]   buf_size       buffer size in bytes
-  \return      \ref sdsRecPlayId_t handle to SDS Recorder/Player stream
+  \return      \ref sdsRecPlayId_t handle to SDS Recorder/Player stream or NULL if operation failed
 */
 sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size);
 
@@ -117,8 +116,7 @@ int32_t sdsPlayClose (sdsRecPlayId_t id);
   \param[out]  timestamp      pointer to buffer for a timestamp in ticks
   \param[out]  buf            pointer to the data block buffer to be read
   \param[in]   buf_size       size of the data block buffer in bytes
-  \return      size of the entire data block read in bytes if the operation is successful,
-               or 0 if the entire data block could not be read successfully
+  \return      number of bytes in data block read or 0 if the read operation failed
 */
 uint32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size);
 
