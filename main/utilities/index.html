@@ -63,6 +63,10 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">Utilities</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#sdsio-server">SDSIO-Server</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a>
@@ -92,6 +96,24 @@
     <li class="toctree-l4"><a class="reference internal" href="#qeexo-v2-csv">Qeexo V2 CSV</a>
     </li>
         </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sds-check">SDS-Check</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_3">Usage</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#summary-report">Summary Report</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#size-consistency-check">Size consistency check</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#timestamp-consistency-check">Timestamp consistency check</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#jitter-check">Jitter check</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#delta-time-check">Delta time check</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#duplicate-timestamp-check">Duplicate timestamp check</a>
     </li>
         </ul>
     </li>
@@ -136,7 +158,37 @@
 <li><a href="#sdsio-server"><strong>SDSIO-Server:</strong></a> enables recording and playback of SDS data files via socket (TCP/IP) or serial (UART) connection.</li>
 <li><a href="#sds-view"><strong>SDS-View:</strong></a> graphical data viewer for SDS data files.</li>
 <li><a href="#sds-convert"><strong>SDS-Convert:</strong></a> convert SDS data files into CSV, Qeexo V2 CSV, or WAV format.</li>
+<li><a href="#sds-check"><strong>SDS-Check:</strong></a> check SDS data files for correctness and consistency.</li>
 </ul>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>Python 3.9 or later with packages:<ul>
+<li>pyyaml</li>
+<li>numpy</li>
+<li>matplotlib</li>
+<li>ifaddr==0.2.0</li>
+<li>pyserial==3.5</li>
+</ul>
+</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<ul>
+<li>Verify the install Python version with:</li>
+</ul>
+<pre><code class="language-txt">python --version
+</code></pre>
+<ul>
+<li>Option 1: Use a Python environment:</li>
+</ul>
+<pre><code class="language-txt">python -m venv sds                 // create environment with name sds
+sds\Scripts\activate               
+pip install -r requirements.txt
+</code></pre>
+<ul>
+<li>Option 2: Install the required Python packages:</li>
+</ul>
+<pre><code class="language-txt">pip install pyyaml numpy matplotlib
+</code></pre>
 <h2 id="sdsio-server">SDSIO-Server</h2>
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities/SDSIO-Server"><strong>SDSIO-Server</strong></a> enables recording and playback of SDS data files via socket (TCP/IP) or serial (UART) connection.
 It communicates with the target using these <a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio">SDSIO interfaces</a>:</p>
@@ -299,6 +351,135 @@ optional:
 <p>Convert Qeexo V2 CSV files to SDS data files:</p>
 <pre><code class="language-bash">python sds-convert qeexo_v2_csv -i accelerometer_data.csv -o accelerometer.sds
 </code></pre>
+<h2 id="sds-check">SDS-Check</h2>
+<p>Check SDS data files for correctness and consistency. The following checks are performed:</p>
+<ul>
+<li><a href="#size-consistency-check">Size consistency check</a>: data size of all records should match the size of
+the SDS file.</li>
+<li><a href="#timestamp-consistency-check">Timestamp consistency check</a>: verify that timestamps of the records
+are in ascending order.</li>
+<li><a href="#jitter-check">Jitter check</a>: print the record with maximum deviation of an average timestamp interval.</li>
+<li><a href="#delta-time-check">Delta time check</a>: find the record with largest timestamps difference to the following record.</li>
+<li><a href="#duplicate-timestamp-check">Duplicate timestamp check</a>: find records that have identical timestamps.</li>
+</ul>
+<h3 id="usage_3">Usage</h3>
+<p>Print help (<em>common</em>) with:</p>
+<pre><code class="language-txt">python sds-check.py --help
+
+usage: sds-check.py [-h] -s [&lt;sds_file&gt;]
+
+SDS data validation
+
+options:
+  -h, --help       show this help message and exit
+
+required:
+  -s [&lt;sds_file&gt;]  SDS data recording file
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-txt">python sds-check.py -s Accelerometer.0.sds
+File     : Accelerometer.0.sds
+DataSize : 156.020 bytes
+Records  : 289
+BlockSize: 532 bytes
+Largest  : 552 bytes
+Smallest : 462 bytes
+Interval : 50 ms
+DataRate : 10.640 byte/s
+Jitter   : 0 ms
+Validation passed
+</code></pre>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>Note
+    The time values assume an tick rate of 1000Hz.</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<h3 id="summary-report">Summary Report</h3>
+<p>After processing the SDS data file, the SDS-Check utility prints a summary report with statistics:</p>
+<ul>
+<li><strong>DataSize</strong>:  total size of the data in bytes,</li>
+<li><strong>Records</strong>:   total number of records,</li>
+<li><strong>BlockSize</strong>: average block size of a data record,</li>
+<li><strong>Largest</strong>:   largest block size, if different from the average block size (optional),</li>
+<li><strong>Smallest</strong>:  smallest block size, if different from the average block size (optional),</li>
+<li><strong>Interval</strong>:  time interval of the recording in milliseconds,</li>
+<li><strong>DataRate</strong>:  recorded data rate in bytes per second,</li>
+<li><strong>Jitter</strong>:    deviation from the expected timestamps,</li>
+<li><strong>DeltaTime</strong>: largest difference of the neighboring timestamps, if deviating from the recording interval (optional),</li>
+<li><strong>DupStamps</strong>: number of reused timestamps, if found (optional).</li>
+</ul>
+<h3 id="size-consistency-check">Size consistency check</h3>
+<p>This check processes the SDS data records and calculates the total size of the SDS data.
+It is the sum of all data records (header + data). This data size should match the size of
+the SDS file.</p>
+<p>If the sizes do not match this error is printed:</p>
+<pre><code class="language-txt">Error: File size mismatch. Expected 360 bytes, but file contains 363 bytes.
+</code></pre>
+<h3 id="timestamp-consistency-check">Timestamp consistency check</h3>
+<p>This check processes the SDS records and ensures that the timestamps recorded in the records
+are arranged in ascending order. If the utility detects that the timestamp of the subsequent
+data record is lower than the current one, this error is printed:</p>
+<pre><code class="language-txt">Error: Timestamp not in ascending order in record 23.
+</code></pre>
+<h3 id="jitter-check">Jitter check</h3>
+<p>This check processes the SDS data records and searches for a maximum deviation of the recorded
+timestamps from the expected ones. If the deviation is found, the record number is saved. The
+maximum deviation is evaluated as <strong>jitter</strong> and printed out in the summary report.</p>
+<pre><code class="language-txt">File     : Gyroscope.0.sds
+DataSize : 153.334 bytes
+Records  : 284
+BlockSize: 532 bytes
+Largest  : 606 bytes
+Smallest : 444 bytes
+Interval : 50 ms
+DataRate : 10.640 byte/s
+Jitter   : 0 ms
+Validation passed
+</code></pre>
+<h3 id="delta-time-check">Delta time check</h3>
+<p>This check processes the SDS records and tries to find the largest difference in timestamps
+between two neighboring records, called <strong>DeltaTime</strong>.</p>
+<p>For normally recorded files, the delta time and the recording interval are identical, so no information
+about the delta time status is printed. If the delta time and the recording interval are not identical,
+i.e. a difference is detected, the record number is also saved and the <strong>DeltaTime</strong> is print in
+the summary report.</p>
+<pre><code class="language-txt">File     : Temperature.0.sds
+DataSize : 360 bytes
+Records  : 30
+BlockSize: 4 bytes
+Interval : 1.024 ms
+DataRate : 4 byte/s
+Jitter   : 59 ms, record 19
+DeltaTime: 1.050 ms, record 2
+Validation passed
+</code></pre>
+<p>This is not an error, but a report of an anomaly. If the delta time is long compared to the sampling
+interval, e.g. a few times longer, this could indicate that one or more data records are missing from
+the recorded file.</p>
+<h3 id="duplicate-timestamp-check">Duplicate timestamp check</h3>
+<p>This check processes the SDS records in search of reused timestamps, the so-called <strong>Duplicate</strong>
+timestamps. This means that the same timestamp is used in several consecutive data records.</p>
+<p>This may indicate that the recording loop in an embedded application is not set up correctly. It is also
+possible that duplicate timestamps are caused by unexpected thread delays in the embedded application.</p>
+<p>Duplicate timestamps are not found in normal recording files. If multiple timestamps with the same value
+are found in the SDS file, <strong>DupStamps</strong> will be added in the summary report.</p>
+<pre><code class="language-txt">File     : DataInput.0.sds
+DataSize : 17.509.440 bytes
+Records  : 47.580
+BlockSize: 360 bytes
+Interval : 1 ms
+DataRate : 360.000 byte/s
+Jitter   : 4 ms, record 4
+DeltaTime: 5 ms, record 5
+DupStamps: 4, record 1
+Validation passed
+</code></pre>
+<p>This is not an error, but a report of an anomaly. The report contains the number of records with
+the same timestamp and the position in the SDS file where the anomaly was detected (record number).
+Please note that only the first occurrence of a duplicate timestamp is reported.</p>
               
             </div>
           </div><footer>

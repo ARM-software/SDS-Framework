@@ -549,11 +549,13 @@ During these operations, other system processes may experience limited CPU avail
 <li><strong>Increasing the priority of critical threads</strong>.</li>
 <li><strong>Reducing the threshold setting</strong>, which shortens the duration of each transfer but increases the frequency of transfers.</li>
 </ol>
-<blockquote>
-<p><strong>Note:</strong> Thresholds operate based on discrete record sizes. A threshold is only triggered when a write or read operation
-surpasses (for write) or falls below (for read) the set limit.
-When handling large records, breaking them into smaller chunks may be necessary to optimize system performance.</p>
-</blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>Thresholds operate based on discrete record sizes. A threshold is only triggered when a write or read operation surpasses (for write) or falls below (for read) the set limit.</li>
+<li>When handling large records, breaking them into smaller chunks may be necessary to optimize system performance.</li>
+</ul>
+</div>
 <h3 id="additional-settings-affecting-io-bandwidth">Additional Settings Affecting I/O Bandwidth</h3>
 <p>Several additional factors influence I/O bandwidth, including:</p>
 <ol>
