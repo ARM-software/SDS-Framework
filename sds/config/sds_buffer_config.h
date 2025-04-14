@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Name:    sds_config.h
+ * Name:    sds_buffer_config.h
  * Purpose: SDS Buffer configuration options
  * Rev.:    V1.0.0
  */

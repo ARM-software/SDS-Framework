@@ -40,7 +40,7 @@ typedef void *sdsBufferId_t;                        ///< Handle to SDS buffer st
 
 /**
   \typedef void (*sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg)
-  \brief       Call back function for SDS circular buffer handling
+  \brief       Callback function for SDS circular buffer handling
   \param[in]   id             \ref sdsBufferId_t handle to SDS buffer stream
   \param[in]   event          event code
   \param[in]   arg            pointer to argument
@@ -54,7 +54,7 @@ typedef void (*sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg);
   \param[in]   buf_size       buffer size in bytes
   \param[in]   threshold_low  data low threshold in bytes
   \param[in]   threshold_high data high threshold in bytes
-  \return      \ref sdsId_t   Handle to SDS buffer stream
+  \return      \ref sdsBufferId_t Handle to SDS buffer stream
 */
 sdsBufferId_t sdsBufferOpen (void *buf, uint32_t buf_size, uint32_t threshold_low, uint32_t threshold_high);
 

@@ -27,17 +27,17 @@
 
 // Control block
 typedef struct {
-  sdsBufferEvent_t event_cb;
-  uint32_t         event_mask;
-  void            *event_arg;
-  uint8_t         *buf;
-  uint32_t         buf_size;
-  uint32_t         threshold_high;
-  uint32_t         threshold_low;
-  uint32_t         cnt_in;
-  uint32_t         cnt_out;
-  uint32_t         idx_in;
-  uint32_t         idx_out;
+           sdsBufferEvent_t  event_cb;
+           uint32_t          event_mask;
+           void             *event_arg;
+           uint8_t          *buf;
+           uint32_t          buf_size;
+           uint32_t          threshold_high;
+           uint32_t          threshold_low;
+  volatile uint32_t          cnt_in;
+  volatile uint32_t          cnt_out;
+  volatile uint32_t          idx_in;
+  volatile uint32_t          idx_out;
 } sdsBuffer_t;
 
 // Allocate memory for the SDS Buffer streams depending on configured maximum number of streams.
