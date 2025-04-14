@@ -40,7 +40,7 @@ typedef void *sdsRecPlayId_t;                   ///< Handle to SDS Recorder/Play
 
 /**
   \typedef void (*sdsRecPlayEvent_t) (sdsRecPlayId_t id, uint32_t event)
-  \brief       Call back function for recorder and player events
+  \brief       Callback function for recorder and player events
   \param[in]   id             handle to SDS Recorder/Player stream
   \param[in]   event          event code
 */

@@ -50,7 +50,7 @@ typedef struct {
 // Control block
 typedef struct {
          uint8_t        index;              // Index of the RecPlay stream in pRecPlayStreams array
-         uint8_t        stream_type;        // Type of the stream (SDS_REC_PLAY_TYPE_REC or SDS_REC_PLAY_TYPE_PLAY)
+         uint8_t        mode;               // Stream mode (SDS_REC_PLAY_MODE_REC or SDS_REC_PLAY_MODE_PLAY)
          uint8_t        event_threshold;    // Threshold event flag
 volatile uint8_t        flags;              // Stream flags: SDS_REC_PLAY_FLAG_ ..
          uint32_t       buf_size;           // Size of the buffer used for the stream
@@ -74,7 +74,14 @@ static uint8_t sdsRecPlayBuf[SDS_REC_PLAY_BUF_SIZE];
 // Event callback
 static sdsRecPlayEvent_t sdsRecPlayEvent = NULL;
 
-// Thread Id
+// Thread Resources
+static const osThreadAttr_t sdsRecPlayThreadAttr = {
+  "SDS_RecPlay_Thread",
+  osThreadDetached,
+  NULL, 0, NULL, 0,
+  SDS_REC_PLAY_THREAD_PRIORITY,
+  0, 0
+};
 static osThreadId_t sdsRecPlayThreadId;
 
 // Close event flags
@@ -86,13 +93,13 @@ static osEventFlagsId_t sdsRecPlayOpenEventFlags;
 // Event definitions
 #define SDS_REC_PLAY_EVENT_FLAG_MASK ((1UL << SDS_REC_PLAY_MAX_STREAMS) - 1)
 
-// Stream types
-#define SDS_REC_PLAY_TYPE_REC         (1U << 0)
-#define SDS_REC_PLAY_TYPE_PLAY        (1U << 1)
+// Stream modes
+#define SDS_REC_PLAY_MODE_REC         (1U << 0)
+#define SDS_REC_PLAY_MODE_PLAY        (1U << 1)
 
 // Flag definitions
-#define SDS_REC_PLAY_FLAG_OPEN        (1U << 0)
-#define SDS_REC_PLAY_FLAG_CLOSE       (1U << 1)
+#define SDS_REC_PLAY_FLAG_OPEN_DONE   (1U << 0)
+#define SDS_REC_PLAY_FLAG_CLOSE_DONE  (1U << 1)
 #define SDS_REC_PLAY_FLAG_EOS         (1U << 2)
 
 // Helper functions:
@@ -173,8 +180,9 @@ static void sdsRecPlayEventCallback (sdsBufferId_t id, uint32_t event, void *arg
 static void sdsRecHandler (sdsRecPlay_t *rec_play) {
   uint32_t bytes_remaining, bytes_to_transfer, bytes_transferred;
 
-  if ((rec_play->flags & SDS_REC_PLAY_FLAG_CLOSE) != 0U) {
-    // Stream is in closing state. Exit the function.
+  if ((rec_play->flags & SDS_REC_PLAY_FLAG_CLOSE_DONE) != 0U) {
+    // State of the stream is closing or closed.
+    // Closing state has been processed by sdsRecPlayThread. Exit the function.
     return;
   }
 
@@ -211,11 +219,12 @@ static void sdsRecHandler (sdsRecPlay_t *rec_play) {
   }
 
   if (rec_play->state.closing != 0U) {
-    // State of the stream is closing:
-    //   All data has been successfully read from the stream buffer and written to the SDS I/O interface.
-    //   Set the internal close flag and notify the thread waiting for the event in the sdsRecClose
-    //   function to finalize the closing of the recorder stream.
-    rec_play->flags |= SDS_REC_PLAY_FLAG_CLOSE;
+    // State of the stream is closing.
+    // All data has been successfully read from the stream buffer and written to the SDS I/O interface.
+
+    // Set the internal SDS_REC_PLAY_FLAG_CLOSE_DONE flag to mark that sdsRecPlayThread has finished processing the closing state.
+    rec_play->flags |= SDS_REC_PLAY_FLAG_CLOSE_DONE;
+    // Notify the thread waiting for the event in the sdsRecClose function to finalize the closing of the recorder stream.
     osEventFlagsSet(sdsRecPlayCloseEventFlags, 1U << rec_play->index);
   }
 }
@@ -224,16 +233,16 @@ static void sdsRecHandler (sdsRecPlay_t *rec_play) {
 static void sdsPlayHandler (sdsRecPlay_t *rec_play) {
   uint32_t bytes_remaining, bytes_to_transfer, bytes_transferred;
 
-  if ((rec_play->flags & SDS_REC_PLAY_FLAG_CLOSE) != 0U) {
-    // Stream is in closing state. Exit the function.
+  if ((rec_play->flags & SDS_REC_PLAY_FLAG_CLOSE_DONE) != 0U) {
+    // State of the stream is closing or closed.
+    // Closing state has been processed by sdsRecPlayThread. Exit the function.
     return;
   }
   if (rec_play->state.closing != 0U) {
-    // State of the stream is closing:
-    //   Thread sdsRecPlayThread has stopped reading data from SDS I/O interface.
-    //   Set the internal close flag and notify the thread waiting for the event in the sdsPlayClose
-    //   function to finalize the closing of the player stream.
-    rec_play->flags |= SDS_REC_PLAY_FLAG_CLOSE;
+    // State of the stream is closing. Thread sdsRecPlayThread has stopped reading data from SDS I/O interface.
+    // Set the internal SDS_REC_PLAY_FLAG_CLOSE_DONE flag to mark that sdsRecPlayThread has finished processing the closing state.
+    rec_play->flags |= SDS_REC_PLAY_FLAG_CLOSE_DONE;
+    // Notify the thread waiting for the event in the sdsPlayClose function to finalize the closing of the player stream.
     osEventFlagsSet(sdsRecPlayCloseEventFlags, 1U << rec_play->index);
     return;
   }
@@ -270,19 +279,15 @@ static void sdsPlayHandler (sdsRecPlay_t *rec_play) {
       sdsBufferWrite(rec_play->sds_buffer, sdsRecPlayBuf, bytes_transferred);
     }
 
-    // Verify if the stream is in the opening state and ensure that the SDS Stream Buffer
-    // is initially populated with data from the SDS I/O interface.
-    if ((rec_play->flags & SDS_REC_PLAY_FLAG_OPEN) == 0U) {
-      if (rec_play->state.opening != 0U) {
-        // State of the stream is opening:
-        //    Check if SDS Stream Buffer is filled with data from the SDS I/O interface (at least to threshold or EOS).
-        if ((sdsBufferGetCount(rec_play->sds_buffer) >= rec_play->threshold) || ((rec_play->flags & SDS_REC_PLAY_FLAG_EOS) != 0U)) {
-          // Stream buffer is filled with data from the SDS I/O interface.
-          // Set the open flag and notify the thread waiting for the event in the sdsPlayOpen
-          // function to finalize the opening of the player stream.
-          rec_play->flags |= SDS_REC_PLAY_FLAG_OPEN;
-          osEventFlagsSet(sdsRecPlayOpenEventFlags, 1U << rec_play->index);
-        }
+    // Check if the stream is in the opening state and the processing of the state is not completed.
+    if ((rec_play->state.opening != 0U) && ((rec_play->flags & SDS_REC_PLAY_FLAG_OPEN_DONE) == 0U)) {
+      // Check if SDS Stream Buffer is filled with data from the SDS I/O interface (at least to threshold or EOS).
+      if ((sdsBufferGetCount(rec_play->sds_buffer) >= rec_play->threshold) || ((rec_play->flags & SDS_REC_PLAY_FLAG_EOS) != 0U)) {
+        // Stream buffer is filled with data from the SDS I/O interface.
+        // Set the internal SDS_REC_PLAY_FLAG_OPEN_DONE flag to mark that sdsPlayHandler has finished processing the opening state.
+        rec_play->flags |= SDS_REC_PLAY_FLAG_OPEN_DONE;
+        // Notify the thread waiting for the event in the sdsPlayOpen function to finalize the opening of the player stream.
+        osEventFlagsSet(sdsRecPlayOpenEventFlags, 1U << rec_play->index);
       }
     }
 
@@ -324,10 +329,10 @@ static __NO_RETURN void sdsRecPlayThread (void *arg) {
           continue;
         }
 
-        if (rec_play->stream_type == SDS_REC_PLAY_TYPE_REC) {
+        if (rec_play->mode == SDS_REC_PLAY_MODE_REC) {
           // Recorder stream.
           sdsRecHandler(rec_play);
-        } else if (rec_play->stream_type == SDS_REC_PLAY_TYPE_PLAY) {
+        } else if (rec_play->mode == SDS_REC_PLAY_MODE_PLAY) {
           // Player stream.
           sdsPlayHandler(rec_play);
         }
@@ -350,7 +355,7 @@ int32_t sdsRecPlayInit (sdsRecPlayEvent_t event_cb) {
 
   // Create working thread for recorder and player.
   if (ret == SDS_REC_PLAY_OK) {
-    sdsRecPlayThreadId = osThreadNew(sdsRecPlayThread, NULL, NULL);
+    sdsRecPlayThreadId = osThreadNew(sdsRecPlayThread, NULL, &sdsRecPlayThreadAttr);
     if (sdsRecPlayThreadId == NULL) {
       ret = SDS_REC_PLAY_ERROR;
     }
@@ -435,7 +440,7 @@ sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size) {
 
       // Set control block parameters.
       rec_play->index           = index & 0xFFU;
-      rec_play->stream_type     = SDS_REC_PLAY_TYPE_REC;
+      rec_play->mode            = SDS_REC_PLAY_MODE_REC;
       rec_play->event_threshold = 0U;
       rec_play->flags           = 0U;
       rec_play->buf_size        = buf_size;
@@ -447,12 +452,12 @@ sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size) {
       rec_play->state.opening   = 0U; // Opening state is not used for recorder.
 
       // Set threshold value for the recorder stream.
-      if ((buf_size / 3) < SDS_IO_INTERFACE_TRANSFER_SIZE) {
+      if ((buf_size / 3) < SDS_REC_PLAY_IO_TRANSFER_SIZE) {
         // Set threshold to 1/3 of the buffer size.
         rec_play->threshold = buf_size / 3;
       } else {
         // Set threshold to SDS I/O interface efficient transfer size.
-        rec_play->threshold = SDS_IO_INTERFACE_TRANSFER_SIZE;
+        rec_play->threshold = SDS_REC_PLAY_IO_TRANSFER_SIZE;
       }
 
       // Open sds stream (buffer) and sdsio stream (sds file).
@@ -490,7 +495,8 @@ sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size) {
 int32_t sdsRecClose (sdsRecPlayId_t id) {
   sdsRecPlay_t *rec_play = id;
   int32_t       ret      = SDS_REC_PLAY_ERROR;
-  uint32_t      event_mask, flags;
+  int32_t       err      = SDS_REC_PLAY_OK;
+  uint32_t      event_mask, flags, expirationTick;
 
   if (sdsRecPlayInitialized == 0U) {
     // Recorder/Player is not initialized. Exit the function.
@@ -512,20 +518,36 @@ int32_t sdsRecClose (sdsRecPlayId_t id) {
 
   // Wait until writing to SDS Stream Buffer is completed.
   // Writing to SDS Stream Buffer (RAM) is expected to be fast, so this loop should not take long.
-  while (rec_play->state.rw_active != 0U);
-
-  // Before recorder stream is closed sdsRecPlayThread should send all data in SDS Stream Buffer via SDS I/O interface.
-  // Notify sdsRecPlayThread to process this stream by setting the corresponding thread flag.
-  osThreadFlagsSet(sdsRecPlayThreadId, event_mask);
-
-  // Wait for notification from sdsRecPlayThread that thread has transferred all data from SDS Stream Buffer.
-  flags = osEventFlagsWait(sdsRecPlayCloseEventFlags, event_mask, osFlagsWaitAll, SDS_REC_PLAY_CLOSE_TOUT);
-  if ((flags & osFlagsError) != 0U) {
-    if (flags == osFlagsErrorTimeout) {
-      // Timeout occurred.
-      ret = SDS_REC_PLAY_ERROR_TIMEOUT;
+  expirationTick = osKernelGetTickCount() + SDS_REC_PLAY_CLOSE_TOUT;
+  while (osKernelGetTickCount() < expirationTick) {
+    if (rec_play->state.rw_active == 0U) {
+      break;
+    } else {
+      // Wait 1 ms to allow writer thread to finish writing to the buffer.
+      osDelay(1);
     }
-  } else {
+  }
+  if (rec_play->state.rw_active != 0U) {
+    // Timeout occurred.
+    err = SDS_REC_PLAY_ERROR_TIMEOUT;
+  }
+
+  if (err == SDS_REC_PLAY_OK) {
+    // Before recorder stream is closed sdsRecPlayThread should send all data in SDS Stream Buffer via SDS I/O interface.
+    // Notify sdsRecPlayThread to process this stream by setting the corresponding thread flag.
+    osThreadFlagsSet(sdsRecPlayThreadId, event_mask);
+
+    // Wait for notification from sdsRecPlayThread that thread has transferred all data from SDS Stream Buffer.
+    flags = osEventFlagsWait(sdsRecPlayCloseEventFlags, event_mask, osFlagsWaitAll, SDS_REC_PLAY_CLOSE_TOUT);
+    if ((flags & osFlagsError) != 0U) {
+      if (flags == osFlagsErrorTimeout) {
+        // Timeout occurred.
+        err = SDS_REC_PLAY_ERROR_TIMEOUT;
+      }
+    }
+  }
+
+  if (err == SDS_REC_PLAY_OK) {
     // Close streams and free control block.
     sdsBufferClose(rec_play->sds_buffer);
     sdsioClose(rec_play->sdsio);
@@ -615,7 +637,7 @@ sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size) {
 
       // Set control block parameters.
       rec_play->index           = index & 0xFFU;
-      rec_play->stream_type     = SDS_REC_PLAY_TYPE_PLAY;
+      rec_play->mode            = SDS_REC_PLAY_MODE_PLAY;
       rec_play->event_threshold = 0U;
       rec_play->flags           = 0U;
       rec_play->buf_size        = buf_size;
@@ -629,12 +651,12 @@ sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size) {
       rec_play->state.opening   = 1U;
 
       // Set threshold value for the recorder stream.
-      if ((buf_size / 3) < SDS_IO_INTERFACE_TRANSFER_SIZE) {
+      if ((buf_size / 3) < SDS_REC_PLAY_IO_TRANSFER_SIZE) {
         // Set threshold to 1/3 of the buffer size.
-        rec_play->threshold = buf_size / 3;
+        rec_play->threshold = buf_size - (buf_size / 3);
       } else {
         // Set threshold to SDS I/O interface efficient transfer size.
-        rec_play->threshold = SDS_IO_INTERFACE_TRANSFER_SIZE;
+        rec_play->threshold = buf_size - SDS_REC_PLAY_IO_TRANSFER_SIZE;
       }
 
       // Open sds stream (buffer) and sdsio stream (sds file).
