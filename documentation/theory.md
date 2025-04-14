@@ -145,7 +145,6 @@ sds:                   # describes a synchronous data stream
     type: uint32_t:1   # a single bit stored in a 32-bit int
 ```
 
-
 ## Code Example
 
 The following code snippets show the usage of the **Recorder Interface**. In this case an accelerometer data stream is recorded.
@@ -407,9 +406,9 @@ If the system requires additional CPU resources for other tasks, adjustments can
 1. **Increasing the priority of critical threads**.
 2. **Reducing the threshold setting**, which shortens the duration of each transfer but increases the frequency of transfers.
 
-> **Note:** Thresholds operate based on discrete record sizes. A threshold is only triggered when a write or read operation
-> surpasses (for write) or falls below (for read) the set limit.
-> When handling large records, breaking them into smaller chunks may be necessary to optimize system performance.
+!!! Note
+    - Thresholds operate based on discrete record sizes. A threshold is only triggered when a write or read operation surpasses (for write) or falls below (for read) the set limit.
+    - When handling large records, breaking them into smaller chunks may be necessary to optimize system performance.
 
 ### Additional Settings Affecting I/O Bandwidth
 
