@@ -95,7 +95,7 @@ sdsio.h _: SDS I/O Interface for data streams_[More...](#detailed-description)
 ## Detailed Description
 
 
-The stream data can be written to an output device or read from an input device. Typically these interfaces communicate to an SDS I/O server that reads or writes SDS data files. 
+The SDS I/O interface reads or writes SDS data from a circular buffer. 
 
 
     
@@ -113,7 +113,7 @@ typedef void* sdsioId_t;
 
 
 
-todo test 
+This _pointer_ defines the handle to SDS I/O data stream. It is used to identify a data stream across the different functions. 
 
 
         
@@ -134,7 +134,7 @@ enum sdsioMode_t {
 
 
 
-todo 
+This _enum_ identifies the _read_ or _write_ mode to SDS I/O data streams. 
 
 
         

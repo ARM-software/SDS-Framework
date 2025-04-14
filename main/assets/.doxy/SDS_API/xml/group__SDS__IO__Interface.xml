@@ -23,7 +23,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.txt" line="102" column="9" declfile="sds/include/sds.txt" declline="102" declcolumn="9"/>
+        <location file="sds/include/sds.txt" line="101" column="9" declfile="sds/include/sds.txt" declline="101" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__IO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -272,7 +272,7 @@
 <para>Handle to SDS I/O stream. </para>
         </briefdescription>
         <detaileddescription>
-<para>todo test </para>
+<para>This <emphasis>pointer</emphasis> defines the handle to SDS I/O data stream. It is used to identify a data stream across the different functions. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -305,7 +305,7 @@
 <para>Open Mode. </para>
         </briefdescription>
         <detaileddescription>
-<para>todo </para>
+<para>This <emphasis>enum</emphasis> identifies the <emphasis>read</emphasis> or <emphasis>write</emphasis> mode to SDS I/O data streams. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -316,7 +316,7 @@
 <para><ref refid="sdsio_8h_source" kindref="compound">sdsio.h</ref>: SDS I/O Interface for data streams </para>
     </briefdescription>
     <detaileddescription>
-<para>The stream data can be written to an output device or read from an input device. Typically these interfaces communicate to an SDS I/O server that reads or writes SDS data files. </para>
+<para>The SDS I/O interface reads or writes SDS data from a circular buffer. </para>
     </detaileddescription>
   </compounddef>
 </doxygen>

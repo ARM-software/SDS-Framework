@@ -113,9 +113,6 @@
 <li><a href="#layer-usbsds_interface">USB Interface</a> using the MDK-Middleware USB components.</li>
 </ul>
 <p><img alt="SDS Interface" src="../images/SDSIO.png" /></p>
-<p>The SDS interface layers can be further tailored for the application requirements. For example by removing the playback interface component when only recording is required.</p>
-<pre><code class="language-yml">  component: SDS:Player&amp;CMSIS-RTOS2              # remove this when not required
-</code></pre>
 <h2 id="layer-networksds_interface">Layer: Network/SDS_Interface</h2>
 <p>The <a href="https://github.com/Arm-Examples/SDS-Examples/tree/main/SDS_Interface/Network"><code>Network/SDS_Interface.clayer</code></a> is configured for recording and playback via Ethernet interface. It is using the MDK-Middleware Network component.</p>
 <h2 id="layer-usbsds_interface">Layer: USB/SDS_Interface</h2>

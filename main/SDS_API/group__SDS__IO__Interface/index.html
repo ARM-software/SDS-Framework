@@ -154,13 +154,13 @@
 </tbody>
 </table>
 <h2 id="detailed-description">Detailed Description</h2>
-<p>The stream data can be written to an output device or read from an input device. Typically these interfaces communicate to an SDS I/O server that reads or writes SDS data files. </p>
+<p>The SDS I/O interface reads or writes SDS data from a circular buffer. </p>
 <h2 id="public-types-documentation">Public Types Documentation</h2>
 <h3 id="typedef-sdsioid_t">typedef sdsioId_t</h3>
 <p><em>Handle to SDS I/O stream.</em> </p>
 <pre><code>typedef void* sdsioId_t;
 </code></pre>
-<p>todo test </p>
+<p>This <em>pointer</em> defines the handle to SDS I/O data stream. It is used to identify a data stream across the different functions. </p>
 <hr>
 
 <h3 id="enum-sdsiomode_t">enum sdsioMode_t</h3>
@@ -170,7 +170,7 @@
     sdsioModeWrite = 1
 };
 </code></pre>
-<p>todo </p>
+<p>This <em>enum</em> identifies the <em>read</em> or <em>write</em> mode to SDS I/O data streams. </p>
 <hr>
 <h2 id="public-functions-documentation">Public Functions Documentation</h2>
 <h3 id="function-sdsioclose">function sdsioClose</h3>
