@@ -25,6 +25,7 @@
 #include "sdsio.h"
 #include "sdsio_client.h"
 
+static uint8_t sdsio_client_initialized = 0U;
 
 // Lock function
 #ifndef SDSIO_NO_LOCK
@@ -48,17 +49,71 @@ static inline void sdsioLock       (void) {}
 static inline void sdsioUnLock     (void) {}
 #endif
 
+// Internal helper functions
+/**
+  Ping Server to check if it is active.
+  Send:
+    header: command   = SDSIO_CMD_PING
+            sdsio_id  = not used
+            argument  = not used
+            data_size = 0
+    data:   no data
+  Receive:
+    header: command   = SDSIO_CMD_PING_SERVER
+            sdsio_id  = not used
+            argument  = nonzero = server is active
+            data_size = 0
+    data:   no data
+*/
+static int32_t PingServer (void) {
+  int32_t  server_active = 0;
+  header_t header;
+
+  header.command   = SDSIO_CMD_PING;
+  header.sdsio_id  = 0U;
+  header.argument  = 0U;
+  header.data_size = 0U;
+
+  // Send Header
+  if (sdsioClientSend(&header, NULL, 0U) == sizeof(header_t)) {
+    // Receive header
+    if (sdsioClientReceive(&header, NULL, 0U) == sizeof(header_t)) {
+      if ((header.command   == SDSIO_CMD_PING) &&
+          (header.argument  != 0U)  &&
+          (header.data_size == 0U)) {
+        server_active = 1;
+      }
+    }
+  }
+
+  return server_active;
+}
+
+
 // SDS I/O functions
 
 /** Initialize I/O interface */
 int32_t sdsioInit (void) {
   int32_t ret;
 
+  if (sdsio_client_initialized != 0U) {
+    // SDS I/O Client already initialized
+    return SDSIO_OK;
+  }
+
   sdsioLockCreate();
 
   ret = sdsioClientInit();
+  if (ret == SDSIO_OK) {
+    if (PingServer() == 0) {
+      // SDS I/O Server not active
+      ret = SDSIO_ERROR;
+    }
+  }
   if (ret != SDSIO_OK) {
     sdsioLockDelete();
+  } else {
+    sdsio_client_initialized = 1U;
   }
 
   return ret;
@@ -66,8 +121,15 @@ int32_t sdsioInit (void) {
 
 /** Un-initialize I/O interface */
 int32_t sdsioUninit (void) {
+
+  if (sdsio_client_initialized == 0U) {
+    // SDS I/O Client not initialized
+    return SDSIO_OK;
+  }
   sdsioClientUninit();
   sdsioLockDelete();
+  sdsio_client_initialized = 0U;
+
   return SDSIO_OK;
 }
 
@@ -90,6 +152,11 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
   uint32_t sdsio_id = 0U;
   header_t header;
   uint32_t size, data_size;
+
+  if (sdsio_client_initialized == 0U) {
+    // SDS I/O Client not initialized
+    return SDSIO_OK;
+  }
 
   if (name != NULL) {
     sdsioLock();
@@ -135,6 +202,11 @@ int32_t sdsioClose (sdsioId_t id) {
   header_t header;
   uint32_t size;
 
+  if (sdsio_client_initialized == 0U) {
+    // SDS I/O Client not initialized
+    return SDSIO_OK;
+  }
+
   if (id != NULL) {
     sdsioLock();
 
@@ -168,6 +240,11 @@ uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
   uint32_t num = 0U;
   header_t header;
   uint32_t size;
+
+  if (sdsio_client_initialized == 0U) {
+    // SDS I/O Client not initialized
+    return SDSIO_OK;
+  }
 
   if ((id != NULL) && (buf != NULL) && (buf_size != 0U)) {
     sdsioLock();
@@ -207,6 +284,11 @@ uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
 uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
   uint32_t num = 0U;
   header_t header;
+
+  if (sdsio_client_initialized == 0U) {
+    // SDS I/O Client not initialized
+    return SDSIO_OK;
+  }
 
   if ((id != NULL) && (buf != NULL) && (buf_size != 0U)) {
     sdsioLock();
@@ -256,6 +338,11 @@ uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
 int32_t sdsioEndOfStream (sdsioId_t id) {
   int32_t  eos = 0;
   header_t header;
+
+  if (sdsio_client_initialized == 0U) {
+    // SDS I/O Client not initialized
+    return SDSIO_OK;
+  }
 
   if (id != NULL) {
     sdsioLock();
