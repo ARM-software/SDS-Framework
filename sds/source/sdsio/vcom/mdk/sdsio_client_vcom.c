@@ -19,21 +19,108 @@
 // SDS I/O Client via USB Virtual COM Port (Keil::USB:Device:CDC)
 
 #include "rl_usb.h"                     // Keil.MDK-Plus::USB:CORE
+#include "cmsis_os2.h"
 
 #include "sdsio.h"
 #include "sdsio_client.h"
 #include "sdsio_config_vcom_mdk.h"
 
+// Initialize CDC line coding structure
 static CDC_LINE_CODING cdc_acm_line_coding = { 0U, 0U, 0U, 0U };
-// Called upon USB Host request to change communication settings.ed or not processed.
-bool USBD_CDC0_ACM_SetLineCoding (const CDC_LINE_CODING *line_coding) {
+
+ // SDS IO event flag identifier
+static osEventFlagsId_t sdsioEventFlagId;
+
+// SDS IO event flag values
+#define SDSIO_CLIENT_EVENT_DATA_SENT        (1UL << 0)
+#define SDSIO_CLIENT_EVENT_DATA_RECEIVED    (1UL << 1)
+
+// Expansion macro used to create USBD_CDCn_ACM_ Callback functions
+#define EXPAND_SYMBOL(prefix, value, suffix) prefix##value##suffix
+#define CREATE_SYMBOL(prefix, value, suffix) EXPAND_SYMBOL(prefix, value, suffix)
+
+// Called upon USB Host request to change communication settings.
+// bool USBD_CDCn_ACM_SetLineCoding (const CDC_LINE_CODING *line_coding)
+bool CREATE_SYMBOL(USBD_CDC, SDSIO_VCOM_USB_CDC_INSTANCE, _ACM_SetLineCoding) (const CDC_LINE_CODING *line_coding) {
   cdc_acm_line_coding = *line_coding;
   return true;
 }
+
 // Called upon USB Host request to retrieve communication settings.
-bool USBD_CDC0_ACM_GetLineCoding (CDC_LINE_CODING *line_coding) {
+// bool USBD_CDCn_ACM_GetLineCoding (CDC_LINE_CODING *line_coding)
+bool CREATE_SYMBOL(USBD_CDC, SDSIO_VCOM_USB_CDC_INSTANCE, _ACM_GetLineCoding) (CDC_LINE_CODING *line_coding) {
   *line_coding = cdc_acm_line_coding;
   return true;
+}
+
+// Called when all data was sent on Bulk IN Endpoint.
+// void USBD_CDCn_ACM_DataSent (void)
+void CREATE_SYMBOL(USBD_CDC, SDSIO_VCOM_USB_CDC_INSTANCE, _ACM_DataSent) (void) {
+  osEventFlagsSet(sdsioEventFlagId, SDSIO_CLIENT_EVENT_DATA_SENT);
+}
+
+// Called when new data is received on Bulk OUT Endpoint.
+// void USBD_CDCn_ACM_DataReceived (uint32_t len)
+void CREATE_SYMBOL(USBD_CDC, SDSIO_VCOM_USB_CDC_INSTANCE, _ACM_DataReceived) (uint32_t len) {
+  osEventFlagsSet(sdsioEventFlagId, SDSIO_CLIENT_EVENT_DATA_RECEIVED);
+}
+
+// Write data to USBD VCOM: return on success or error, or timeout.
+static uint32_t sdsioClientVCOMWrite (const uint8_t * buf, uint32_t buf_size) {
+  uint32_t cnt = 0U;
+  int32_t  vcom_status, event_status;
+
+  while (cnt < buf_size) {
+    vcom_status = USBD_CDC_ACM_WriteData(SDSIO_VCOM_USB_CDC_INSTANCE,
+                                         buf + cnt,
+                                        (int32_t)(buf_size - cnt));
+    if (vcom_status < 0) {
+      // Error happened.
+      break;
+    }
+    cnt += (uint32_t)vcom_status;
+    if (cnt < buf_size) {
+      // Wait for data sent event.
+      event_status = osEventFlagsWait(sdsioEventFlagId,
+                                      SDSIO_CLIENT_EVENT_DATA_SENT,
+                                      osFlagsWaitAll,
+                                      SDSIO_VCOM_TIMEOUT);
+      if ((event_status & osFlagsError) != 0U) {
+        break;
+      }
+    }
+  }
+
+  return cnt;
+}
+
+// Read data from USBD VCOM: return on success or error, or timeout.
+static uint32_t sdsioClientVCOMRead (uint8_t *buf, uint32_t buf_size) {
+  uint32_t cnt = 0U;
+  int32_t  vcom_status, event_status;
+
+  while (cnt < buf_size) {
+    vcom_status = USBD_CDC_ACM_ReadData(SDSIO_VCOM_USB_CDC_INSTANCE,
+                                    buf + cnt,
+                                    (int32_t)(buf_size - cnt));
+    if (vcom_status < 0) {
+        // Error happened.
+        break;
+    }
+    cnt += (uint32_t)vcom_status;
+    if (cnt < buf_size) {
+      // Wait for data received event.
+      event_status = osEventFlagsWait(sdsioEventFlagId,
+                                      SDSIO_CLIENT_EVENT_DATA_RECEIVED,
+                                      osFlagsWaitAll,
+                                      SDSIO_VCOM_TIMEOUT);
+      if ((event_status & osFlagsError) != 0U) {
+        break;
+      }
+    }
+  }
+
+  return cnt;
 }
 
 /**
@@ -44,11 +131,26 @@ bool USBD_CDC0_ACM_GetLineCoding (CDC_LINE_CODING *line_coding) {
 */
 int32_t sdsioClientInit (void) {
   int32_t ret = SDSIO_ERROR;
+  uint32_t expirationTick;
 
-  if (USBD_Initialize(SDSIO_USB_DEVICE_INDEX) == usbOK) {
-    if (USBD_Connect(SDSIO_USB_DEVICE_INDEX) == usbOK) {
-      while (USBD_Configured(SDSIO_USB_DEVICE_INDEX) == false);
-      ret = SDSIO_OK;
+  sdsioEventFlagId = osEventFlagsNew(NULL);
+  if (sdsioEventFlagId == NULL) {
+    return SDSIO_ERROR;
+  }
+
+  expirationTick = osKernelGetTickCount() + SDSIO_VCOM_TIMEOUT;
+
+  if (USBD_Initialize(SDSIO_VCOM_USB_DEVICE_INDEX) == usbOK) {
+    if (USBD_Connect(SDSIO_VCOM_USB_DEVICE_INDEX) == usbOK) {
+
+      while (osKernelGetTickCount() < expirationTick) {
+        if (USBD_Configured(SDSIO_VCOM_USB_DEVICE_INDEX) == true) {
+          ret = SDSIO_OK;
+          break;
+        } else {
+          osDelay(1);
+        }
+      }
     }
   }
 
@@ -62,8 +164,8 @@ int32_t sdsioClientInit (void) {
                SDSIO_ERROR: un-initialization failed
 */
 int32_t sdsioClientUninit (void) {
-  USBD_Disconnect(SDSIO_USB_DEVICE_INDEX);
-  USBD_Uninitialize(SDSIO_USB_DEVICE_INDEX);
+  USBD_Disconnect(SDSIO_VCOM_USB_DEVICE_INDEX);
+  USBD_Uninitialize(SDSIO_VCOM_USB_DEVICE_INDEX);
   return SDSIO_OK;
 }
 
@@ -76,45 +178,19 @@ int32_t sdsioClientUninit (void) {
   \return      number of bytes sent (including header)
 */
 uint32_t sdsioClientSend (const header_t *header, const void *data, uint32_t data_size) {
-  uint32_t cnt, num;
-  int32_t  status;
+  uint32_t num;
 
   if (header == NULL) {
     return 0U;
   }
 
   // Send header
-  cnt = 0U;
-  while (cnt < sizeof(header_t)) {
-    status = USBD_CDC_ACM_WriteData(SDSIO_USB_DEVICE_INDEX,
-                                    (const uint8_t *)header + cnt,
-                                    (int32_t)(sizeof(header_t) - cnt));
-    if (status >= 0) {
-      cnt += (uint32_t)status;
-    } else {
-      cnt = 0U;
-      break;
-    }
-  }
+  num = sdsioClientVCOMWrite((const uint8_t *)header, sizeof(header_t));
 
   // Send data
-  num = cnt;
-  cnt = 0U;
-  if ((num != 0U) && (data != NULL) && (data_size != 0U)) {
-    while (cnt < data_size) {
-      status = USBD_CDC_ACM_WriteData(SDSIO_USB_DEVICE_INDEX,
-                                      (const uint8_t *)data + cnt,
-                                      (int32_t)(data_size - cnt));
-      if (status >= 0) {
-        cnt += (uint32_t)status;
-      } else {
-        cnt = 0U;
-        break;
-      }
-    }
+  if ((num == sizeof(header_t)) && (data != NULL) && (data_size != 0U)) {
+    num += sdsioClientVCOMWrite((const uint8_t *)data, data_size);
   }
-
-  num += cnt;
 
   return num;
 }
@@ -128,52 +204,25 @@ uint32_t sdsioClientSend (const header_t *header, const void *data, uint32_t dat
   \return      number of bytes received (including header)
 */
 uint32_t sdsioClientReceive (header_t *header, void *data, uint32_t data_size) {
-  uint32_t cnt, num, size;
-  int32_t  status;
+  uint32_t num, size;
 
   if (header == NULL) {
     return 0U;
   }
 
   // Receive header
-  cnt = 0U;
-  while (cnt < sizeof(header_t)) {
-    status = USBD_CDC_ACM_ReadData(SDSIO_USB_DEVICE_INDEX,
-                                   (uint8_t *)header + cnt,
-                                   (int32_t)(sizeof(header_t) - cnt));
-    if (status >= 0) {
-      cnt += (uint32_t)status;
-    } else {
-      cnt = 0U;
-      break;
-    }
-  }
+  num = sdsioClientVCOMRead((uint8_t *)header, sizeof(header_t));
 
   // Receive data
-  num = cnt;
-  cnt = 0U;
-  if ((num != 0U) && (header->data_size != 0U) &&
+  if ((num == sizeof(header_t)) && (header->data_size != 0U) &&
       (data != NULL) && (data_size != 0U)) {
-
     if (header->data_size < data_size) {
       size = header->data_size;
     } else {
       size = data_size;
     }
-    while (cnt < size) {
-      status = USBD_CDC_ACM_ReadData(SDSIO_USB_DEVICE_INDEX,
-                                     (uint8_t *)data + cnt,
-                                     (int32_t)(size - cnt));
-      if (status >= 0) {
-        cnt += (uint32_t)status;
-      } else {
-        cnt = 0U;
-        break;
-      }
-    }
+    num += sdsioClientVCOMRead((uint8_t *)data, size);
   }
-
-  num += cnt;
 
   return num;
 }

@@ -106,7 +106,7 @@
     </component>
 
     <!-- SDS I/O (VCOM - MDK_USB) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="VCOM" Cvariant="MDK USB" Capiversion="1.0.0" Cversion="1.0.2" condition="SDS IO via VCOM - MDK USB">
+    <component Cclass="SDS" Cgroup="IO" Csub="VCOM" Cvariant="MDK USB" Capiversion="1.0.0" Cversion="2.0.0" condition="SDS IO via VCOM - MDK USB">
       <description>I/O via USB Virtual COM Port to SDSIO Server (using component Keil::USB:Device:CDC)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -116,7 +116,7 @@
       <files>
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
         <file category="source" name="sds/source/sdsio/vcom/mdk/sdsio_client_vcom.c"/>
-        <file category="header" name="sds/config/sdsio_config_vcom_mdk.h" attr="config" version="1.0.0"/>
+        <file category="header" name="sds/config/sdsio_config_vcom_mdk.h" attr="config" version="2.0.0"/>
       </files>
     </component>
 

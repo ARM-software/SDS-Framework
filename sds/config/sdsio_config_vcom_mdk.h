@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2023-2025 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,17 +17,27 @@
  *
  * Name:    sdsio_config_vcom_mdk.h
  * Purpose: SDS IO via USB Virtual COM Port (Keil::USB:Device:CDC) configuration options
- * Rev.:    V1.0.0
+ * Rev.:    V2.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
 // <h>SDS IO via USB Virtual COM Port (Keil::USB:Device:CDC)
 
-//   <o>USB Device index <0-255>
+//   <o>USB Device index <0-3>
 //   <i>Index of USB Device
 //   <i>Default: 0
-#define SDSIO_USB_DEVICE_INDEX  0U
+#define SDSIO_VCOM_USB_DEVICE_INDEX     0
+
+//   <o>USB Device CDC ACM instance <0-3>
+//   <i>Index of CDC Class
+//   <i>Default: 0
+#define SDSIO_VCOM_USB_CDC_INSTANCE     0
+
+//   <o>Transfer timeout
+//   <i>Send and receive timeout in kernel ticks
+//   <i>Default: 3000
+#define SDSIO_VCOM_TIMEOUT              3000U
 
 // </h>
 
