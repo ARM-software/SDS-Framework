@@ -180,8 +180,7 @@ uint8_t accel_buf[(sizeof(accel_buf)*2)+0x800];      // data stream buffer for c
 
 The size of the data stream buffer depends on several factors such as:
 
-- the communication interface used as the technology may impose certain buffer sizes to maximize the transfer rate.
-- the size of the data stream as it is recommended that the buffer is at least three the size of a single data stream.
+- the communication interface technology that may impose specific buffer size requirements to maximize data transfer rates.
 - the frequency of the algorithm execution. Fast execution speeds may require a larger buffer.
 
 A a guideline, the buffer size should be 2 times the **block size** + 2KB. As a minimum 0x1000 (4 KB) is recommended.
