@@ -84,7 +84,7 @@ uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size);
 /**
   \fn          uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size)
   \brief       Read data from I/O stream.
-  \param[in]   id             \ref sdsioId_t handle to SDS I/O stream 
+  \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
   \param[out]  buf            pointer to buffer for data to read
   \param[in]   buf_size       buffer size in bytes
   \return      number of bytes read
@@ -95,7 +95,7 @@ uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size);
   \fn          int32_t sdsioEndOfStream (sdsioId_t id)
   \brief       Check if end of stream has been reached.
   \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
-  \return      nonzero if end of stream, else 0
+  \return      positive nonzero value if end of stream, else 0; negative value on error
 */
 int32_t sdsioEndOfStream (sdsioId_t id);
 

@@ -155,7 +155,7 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
 
   if (sdsio_client_initialized == 0U) {
     // SDS I/O Client not initialized
-    return SDSIO_ERROR;
+    return NULL;
   }
 
   if (name != NULL) {
@@ -243,7 +243,7 @@ uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
 
   if (sdsio_client_initialized == 0U) {
     // SDS I/O Client not initialized
-    return SDSIO_ERROR;
+    return 0U;
   }
 
   if ((id != NULL) && (buf != NULL) && (buf_size != 0U)) {
@@ -287,7 +287,7 @@ uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
 
   if (sdsio_client_initialized == 0U) {
     // SDS I/O Client not initialized
-    return SDSIO_ERROR;
+    return 0U;
   }
 
   if ((id != NULL) && (buf != NULL) && (buf_size != 0U)) {
