@@ -121,7 +121,7 @@
 <tbody>
 <tr>
 <td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdsioclientinit"><strong>sdsioClientInit</strong></a> (void) <br><em>Initialize SDS I/O Client.</em></td>
+<td style="text-align: left;"><a href="#function-sdsioclientinit"><strong>sdsioClientInit</strong></a> (void) <br><em>Initialize SDSIO Client and ping SDSIO Server to verify connection.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">uint32_t</td>
@@ -133,7 +133,7 @@
 </tr>
 <tr>
 <td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdsioclientuninit"><strong>sdsioClientUninit</strong></a> (void) <br><em>Un-Initialize SDS I/O Client.</em></td>
+<td style="text-align: left;"><a href="#function-sdsioclientuninit"><strong>sdsioClientUninit</strong></a> (void) <br><em>Un-Initialize SDSIO Client.</em></td>
 </tr>
 </tbody>
 </table>
@@ -160,6 +160,10 @@
 </tr>
 <tr>
 <td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="./#define-sdsio_cmd_ping"><strong>SDSIO_CMD_PING</strong></a>  <code>6U</code><br></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
 <td style="text-align: left;"><a href="./#define-sdsio_cmd_read"><strong>SDSIO_CMD_READ</strong></a>  <code>4U</code><br></td>
 </tr>
 <tr>
@@ -170,13 +174,13 @@
 </table>
 <h2 id="public-functions-documentation">Public Functions Documentation</h2>
 <h3 id="function-sdsioclientinit">function sdsioClientInit</h3>
-<p><em>Initialize SDS I/O Client.</em> </p>
+<p><em>Initialize SDSIO Client and ping SDSIO Server to verify connection.</em> </p>
 <pre><code class="language-C++">int32_t sdsioClientInit (
     void
 ) 
 </code></pre>
 <p><strong>Returns:</strong></p>
-<p>SDIOS_OK: initialization success SDSIO_ERROR: initialization failed </p>
+<p>SDSIO_OK: initialization success SDSIO_ERROR: initialization or ping server failed </p>
 <hr>
 
 <h3 id="function-sdsioclientreceive">function sdsioClientReceive</h3>
@@ -216,7 +220,7 @@
 <hr>
 
 <h3 id="function-sdsioclientuninit">function sdsioClientUninit</h3>
-<p><em>Un-Initialize SDS I/O Client.</em> </p>
+<p><em>Un-Initialize SDSIO Client.</em> </p>
 <pre><code class="language-C++">int32_t sdsioClientUninit (
     void
 ) 
@@ -237,6 +241,11 @@
 
 <h3 id="define-sdsio_cmd_open">define SDSIO_CMD_OPEN</h3>
 <pre><code class="language-C++">#define SDSIO_CMD_OPEN `1U`
+</code></pre>
+<hr>
+
+<h3 id="define-sdsio_cmd_ping">define SDSIO_CMD_PING</h3>
+<pre><code class="language-C++">#define SDSIO_CMD_PING `6U`
 </code></pre>
 <hr>
 

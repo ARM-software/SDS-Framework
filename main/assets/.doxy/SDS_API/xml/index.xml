@@ -61,6 +61,7 @@
     <member refid="sdsio__client_8h_1a4de48b3b2771c6d8cf8dd23762ca88bd" kind="define"><name>SDSIO_CMD_WRITE</name></member>
     <member refid="sdsio__client_8h_1a5f590e25db16864b790486529b198d43" kind="define"><name>SDSIO_CMD_READ</name></member>
     <member refid="sdsio__client_8h_1a70917da92a8f3b285de077ff7604402b" kind="define"><name>SDSIO_CMD_EOS</name></member>
+    <member refid="sdsio__client_8h_1ab6cfde472e1f500f95b24a60b1ddfbca" kind="define"><name>SDSIO_CMD_PING</name></member>
     <member refid="sdsio__client_8h_1a218439059dfa1e5eeac94eccc105ce78" kind="function"><name>sdsioClientInit</name></member>
     <member refid="sdsio__client_8h_1a1b2e6dfd8729d1aeeda575f91a029f50" kind="function"><name>sdsioClientUninit</name></member>
     <member refid="sdsio__client_8h_1a152c2662ad6fbcffd8c8f9ffa5d2c1f8" kind="function"><name>sdsioClientSend</name></member>

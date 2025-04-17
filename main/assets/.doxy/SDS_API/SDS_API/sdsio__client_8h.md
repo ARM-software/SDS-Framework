@@ -56,10 +56,10 @@
 
 | Type | Name |
 | ---: | :--- |
-|  int32\_t | [**sdsioClientInit**](#function-sdsioclientinit) (void) <br>_Initialize SDS I/O Client._  |
+|  int32\_t | [**sdsioClientInit**](#function-sdsioclientinit) (void) <br>_Initialize SDSIO Client and ping SDSIO Server to verify connection._  |
 |  uint32\_t | [**sdsioClientReceive**](#function-sdsioclientreceive) ([**header\_t**](structheader__t.md) \* header, void \* data, uint32\_t data\_size) <br>_Receive data from SDSIO-Server._  |
 |  uint32\_t | [**sdsioClientSend**](#function-sdsioclientsend) (const [**header\_t**](structheader__t.md) \* header, const void \* data, uint32\_t data\_size) <br>_Send data to SDSIO-Server._  |
-|  int32\_t | [**sdsioClientUninit**](#function-sdsioclientuninit) (void) <br>_Un-Initialize SDS I/O Client._  |
+|  int32\_t | [**sdsioClientUninit**](#function-sdsioclientuninit) (void) <br>_Un-Initialize SDSIO Client._  |
 
 
 
@@ -94,6 +94,7 @@
 | define  | [**SDSIO\_CMD\_CLOSE**](sdsio__client_8h.md#define-sdsio_cmd_close)  `2U`<br> |
 | define  | [**SDSIO\_CMD\_EOS**](sdsio__client_8h.md#define-sdsio_cmd_eos)  `5U`<br> |
 | define  | [**SDSIO\_CMD\_OPEN**](sdsio__client_8h.md#define-sdsio_cmd_open)  `1U`<br> |
+| define  | [**SDSIO\_CMD\_PING**](sdsio__client_8h.md#define-sdsio_cmd_ping)  `6U`<br> |
 | define  | [**SDSIO\_CMD\_READ**](sdsio__client_8h.md#define-sdsio_cmd_read)  `4U`<br> |
 | define  | [**SDSIO\_CMD\_WRITE**](sdsio__client_8h.md#define-sdsio_cmd_write)  `3U`<br> |
 
@@ -104,7 +105,7 @@
 
 ### function sdsioClientInit 
 
-_Initialize SDS I/O Client._ 
+_Initialize SDSIO Client and ping SDSIO Server to verify connection._ 
 ```C++
 int32_t sdsioClientInit (
     void
@@ -117,7 +118,7 @@ int32_t sdsioClientInit (
 
 **Returns:**
 
-SDIOS\_OK: initialization success SDSIO\_ERROR: initialization failed 
+SDSIO\_OK: initialization success SDSIO\_ERROR: initialization or ping server failed 
 
 
 
@@ -207,7 +208,7 @@ number of bytes sent (including header)
 
 ### function sdsioClientUninit 
 
-_Un-Initialize SDS I/O Client._ 
+_Un-Initialize SDSIO Client._ 
 ```C++
 int32_t sdsioClientUninit (
     void
@@ -265,6 +266,19 @@ SDIOS\_OK: un-initialization success SDSIO\_ERROR: un-initialization failed
 
 ```C++
 #define SDSIO_CMD_OPEN `1U`
+```
+
+
+
+
+<hr>
+
+
+
+### define SDSIO\_CMD\_PING 
+
+```C++
+#define SDSIO_CMD_PING `6U`
 ```
 
 
