@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2023-2025 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -17,7 +17,7 @@
  *
  * Name:    sdsio_config_socket.h
  * Purpose: SDS IO via Socket (IoT Utility:Socket) configuration options
- * Rev.:    V1.0.0
+ * Rev.:    V2.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
@@ -27,17 +27,17 @@
 //   <s.16>SDSIO-Server IP
 //   <i>SDSIO socket server IPv4 address
 //   <i>Default: "0.0.0.0"
-#define SDSIO_SERVER_IP           "0.0.0.0"
+#define SDSIO_SOCKET_SERVER_IP          "0.0.0.0"
 
 //   <o>SDSIO-Server port
 //   <i>SDSIO socket server port
 //   <i>Default: 5050
-#define SDSIO_SERVER_PORT         5050U
+#define SDSIO_SOCKET_SERVER_PORT        5050U
 
-//   <o>Socket receive timeout
-//   <i>Socket receive timeout in ms
+//   <o>Socket timeout
+//   <i>Socket receive timeout in kernel Ticks
 //   <i>Default: 5000
-#define SDSIO_SOCKET_RECEIVE_TOUT 5000U
+#define SDSIO_SOCKET_RECEIVE_TOUT       5000U
 
 // </h>
 

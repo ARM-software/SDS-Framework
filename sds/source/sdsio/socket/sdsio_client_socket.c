@@ -10,17 +10,17 @@
  * www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an AS IS BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * distributed under the License is distributed on an AS IS BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
 // SDS I/O Client via Socket (IoT Utility:Socket)
-#include <stdio.h>
+#include <stdlib.h>
 
 #include "cmsis_os2.h"
-
+#include "cmsis_compiler.h"
 #include "iot_socket.h"
 
 #include "sdsio.h"
@@ -29,6 +29,32 @@
 
 static int32_t socket = -1;
 
+// Socket startup function must be provided by a user application.
+// Typically it is part of IoT Socket layer.
+extern int32_t socket_startup (void);
+
+// Retrieve the socket address from the configuration
+static int32_t sdsioSocketGetIP(uint8_t *ip_buf, uint32_t buf_size) {
+  int32_t i;
+  char   *p, *end;
+
+  if ((ip_buf == NULL) || (buf_size < 4)) {
+    return -1;
+  }
+
+  p = SDSIO_SOCKET_SERVER_IP;
+  for (i = 0; i < 4; i++, p = end + 1) {
+    ip_buf[i] = (uint8_t)strtoul(p, &end, 10);
+    if (i < 3 && *end != '.') {
+      break;
+    }
+  }
+  if (i != 4) {
+    return -1;
+  }
+  return 0;
+}
+
 /**
   \fn          int32_t sdsioClientInit (void)
   \brief       Initialize SDS I/O Client via IoT Socket
@@ -36,26 +62,45 @@ static int32_t socket = -1;
                SDSIO_ERROR: initialization failed
 */
 int32_t sdsioClientInit (void) {
-  int32_t  ret  = SDSIO_ERROR;
-  uint32_t tout = SDSIO_SOCKET_RECEIVE_TOUT;
+  int32_t  ret = SDSIO_ERROR;
+  int32_t  err = 0;
+  uint32_t opt_val;
   uint8_t  ip[4];
 
+  // Check if client is initialized
   if (socket == -1) {
-    if (sscanf(SDSIO_SERVER_IP, "%hhd.%hhd.%hhd.%hhd", &ip[0], &ip[1], &ip[2], &ip[3]) == 4) {
+
+    // Socket startup function must be provided by a user application.
+    // Typically it is part of IoT Socket layer.
+    err = socket_startup();
+
+    // Get socket address
+    if (err == 0) {
+      err = sdsioSocketGetIP(ip, sizeof(ip));
+    }
+
+    if (err == 0) {
+      // Create socket
       socket = iotSocketCreate(IOT_SOCKET_AF_INET, IOT_SOCKET_SOCK_STREAM, IOT_SOCKET_IPPROTO_TCP);
     }
     if (socket >= 0) {
-      iotSocketSetOpt(socket, IOT_SOCKET_SO_RCVTIMEO, &tout, sizeof(tout));
-      if (iotSocketConnect(socket, (const uint8_t *)ip, 4, SDSIO_SERVER_PORT) == 0) {
-        ret = SDSIO_OK;
-      } else {
+      opt_val = SDSIO_SOCKET_RECEIVE_TOUT;
+      iotSocketSetOpt(socket, IOT_SOCKET_SO_RCVTIMEO, &opt_val, sizeof(opt_val));
+      opt_val = 1;
+      iotSocketSetOpt(socket, IOT_SOCKET_SO_KEEPALIVE, &opt_val, sizeof(opt_val));
+
+      if (iotSocketConnect(socket, (const uint8_t *)ip, 4, SDSIO_SOCKET_SERVER_PORT) != 0) {
         iotSocketClose(socket);
         socket = -1;
+        err = -1;
       }
     }
-  } else {
-    // sdsio is already initialized
+  }
+
+  if ((err == 0) && (socket >= 0)) {
     ret = SDSIO_OK;
+  } else {
+    ret = SDSIO_ERROR;
   }
 
   return ret;
@@ -99,10 +144,8 @@ uint32_t sdsioClientSend (const header_t *header, const void *data, uint32_t dat
       cnt += (uint32_t)status;
     } else {
       // Error
-      if (status != IOT_SOCKET_EAGAIN) {
-        cnt = 0U;
-        break;
-      }
+      cnt = 0U;
+      break;
     }
   }
 
@@ -118,10 +161,8 @@ uint32_t sdsioClientSend (const header_t *header, const void *data, uint32_t dat
         cnt += (uint32_t)status;
       } else {
         // Error
-        if (status != IOT_SOCKET_EAGAIN) {
-          cnt = 0U;
-          break;
-        }
+        cnt = 0U;
+        break;
       }
     }
   }
@@ -157,10 +198,8 @@ uint32_t sdsioClientReceive (header_t *header, void *data, uint32_t data_size) {
       cnt += (uint32_t)status;
     } else {
       // Error
-      if (status != IOT_SOCKET_EAGAIN) {
-        cnt = 0U;
-        break;
-      }
+      cnt = 0U;
+      break;
     }
   }
 
@@ -183,10 +222,8 @@ uint32_t sdsioClientReceive (header_t *header, void *data, uint32_t data_size) {
         cnt += (uint32_t)status;
       } else {
         // Error
-        if (status != IOT_SOCKET_EAGAIN) {
-          cnt = 0U;
-          break;
-        }
+        cnt = 0U;
+        break;
       }
     }
   }
