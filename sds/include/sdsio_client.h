@@ -41,15 +41,15 @@ typedef struct {
 #define SDSIO_CMD_WRITE         3U      // SDS I/O Stream Write
 #define SDSIO_CMD_READ          4U      // SDS I/O Stream Read
 #define SDSIO_CMD_EOS           5U      // SDS I/O End Of Stream
-#define SDSIO_CMD_PING          6U      // SDS I/O Pinsg Server
+#define SDSIO_CMD_PING          6U      // SDS I/O Ping Server
 
 // Function prototypes
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDS I/O Client and Pings SDS I/O Server to verify connection with the server
+  \brief       Initialize SDS I/O Client and Ping SDS I/O Server to verify connection with the server
   \return      SDIOS_OK: initialization success
-               SDSIO_ERROR: initialization failed
+               SDSIO_ERROR: initialization or ping server failed
 */
 int32_t sdsioClientInit (void);
 

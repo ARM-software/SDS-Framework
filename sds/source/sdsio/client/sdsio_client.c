@@ -59,7 +59,7 @@ static inline void sdsioUnLock     (void) {}
             data_size = 0
     data:   no data
   Receive:
-    header: command   = SDSIO_CMD_PING_SERVER
+    header: command   = SDSIO_CMD_PING
             sdsio_id  = not used
             argument  = nonzero = server is active
             data_size = 0
@@ -155,7 +155,7 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
 
   if (sdsio_client_initialized == 0U) {
     // SDS I/O Client not initialized
-    return SDSIO_OK;
+    return SDSIO_ERROR;
   }
 
   if (name != NULL) {
@@ -204,7 +204,7 @@ int32_t sdsioClose (sdsioId_t id) {
 
   if (sdsio_client_initialized == 0U) {
     // SDS I/O Client not initialized
-    return SDSIO_OK;
+    return SDSIO_ERROR;
   }
 
   if (id != NULL) {
@@ -243,7 +243,7 @@ uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
 
   if (sdsio_client_initialized == 0U) {
     // SDS I/O Client not initialized
-    return SDSIO_OK;
+    return SDSIO_ERROR;
   }
 
   if ((id != NULL) && (buf != NULL) && (buf_size != 0U)) {
@@ -287,7 +287,7 @@ uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
 
   if (sdsio_client_initialized == 0U) {
     // SDS I/O Client not initialized
-    return SDSIO_OK;
+    return SDSIO_ERROR;
   }
 
   if ((id != NULL) && (buf != NULL) && (buf_size != 0U)) {
@@ -341,7 +341,7 @@ int32_t sdsioEndOfStream (sdsioId_t id) {
 
   if (sdsio_client_initialized == 0U) {
     // SDS I/O Client not initialized
-    return SDSIO_OK;
+    return SDSIO_ERROR;
   }
 
   if (id != NULL) {
