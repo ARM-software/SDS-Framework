@@ -106,7 +106,7 @@
 <tbody>
 <tr>
 <td style="text-align: right;">typedef void(*</td>
-<td style="text-align: left;"><a href="#typedef-sdsbufferevent_t"><strong>sdsBufferEvent_t</strong></a>  <br><em>Call back function for SDS circular buffer handling.</em></td>
+<td style="text-align: left;"><a href="#typedef-sdsbufferevent_t"><strong>sdsBufferEvent_t</strong></a>  <br><em>Callback function for SDS circular buffer handling.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">typedef void *</td>
@@ -157,7 +157,7 @@
 <p>The stream data is written to and read from a circular buffer allocated in RAM. Event callback function which is triggered on data threshold reached can be registered. </p>
 <h2 id="public-types-documentation">Public Types Documentation</h2>
 <h3 id="typedef-sdsbufferevent_t">typedef sdsBufferEvent_t</h3>
-<p><em>Call back function for SDS circular buffer handling.</em> </p>
+<p><em>Callback function for SDS circular buffer handling.</em> </p>
 <pre><code>typedef void(* sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg);
 </code></pre>
 <p>todo</p>
@@ -239,7 +239,7 @@
 <li><code>threshold_high</code> data high threshold in bytes </li>
 </ul>
 <p><strong>Returns:</strong></p>
-<p>sdsId_t Handle to SDS buffer stream </p>
+<p><a href="./#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> Handle to SDS buffer stream </p>
 <hr>
 
 <h3 id="function-sdsbufferread">function sdsBufferRead</h3>

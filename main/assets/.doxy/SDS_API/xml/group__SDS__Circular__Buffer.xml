@@ -25,7 +25,7 @@
         <argsstring>)(sdsBufferId_t id, uint32_t event, void *arg)</argsstring>
         <name>sdsBufferEvent_t</name>
         <briefdescription>
-<para>Call back function for SDS circular buffer handling. </para>
+<para>Callback function for SDS circular buffer handling. </para>
         </briefdescription>
         <detaileddescription>
 <para>todo</para>
@@ -121,7 +121,7 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>sdsId_t Handle to SDS buffer stream </para>
+<simplesect kind="return"><para><ref refid="group__SDS__Circular__Buffer_1gae47a52c5320db63b7546d03dee701e40" kindref="member">sdsBufferId_t</ref> Handle to SDS buffer stream </para>
 </simplesect>
 </para>
         </detaileddescription>

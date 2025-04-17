@@ -74,7 +74,7 @@
         <argsstring>)(sdsRecPlayId_t id, uint32_t event)</argsstring>
         <name>sdsRecPlayEvent_t</name>
         <briefdescription>
-<para>Call back function for recorder and player events. </para>
+<para>Callback function for recorder and player events. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>

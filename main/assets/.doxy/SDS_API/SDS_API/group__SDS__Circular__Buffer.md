@@ -31,7 +31,7 @@ _sds.h: SDS circular buffer handling for data streams_ [More...](#detailed-descr
 
 | Type | Name |
 | ---: | :--- |
-| typedef void(\* | [**sdsBufferEvent\_t**](#typedef-sdsbufferevent_t)  <br>_Call back function for SDS circular buffer handling._  |
+| typedef void(\* | [**sdsBufferEvent\_t**](#typedef-sdsbufferevent_t)  <br>_Callback function for SDS circular buffer handling._  |
 | typedef void \* | [**sdsBufferId\_t**](#typedef-sdsbufferid_t)  <br>_Handle to SDS buffer stream._  |
 
 
@@ -106,7 +106,7 @@ The stream data is written to and read from a circular buffer allocated in RAM. 
 
 ### typedef sdsBufferEvent\_t 
 
-_Call back function for SDS circular buffer handling._ 
+_Callback function for SDS circular buffer handling._ 
 ```
 typedef void(* sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg);
 ```
@@ -296,7 +296,7 @@ todo
 
 **Returns:**
 
-sdsId\_t Handle to SDS buffer stream 
+[**sdsBufferId\_t**](group__SDS__Circular__Buffer.md#typedef-sdsbufferid_t) Handle to SDS buffer stream 
 
 
 

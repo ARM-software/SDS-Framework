@@ -32,7 +32,7 @@
 
 | Type | Name |
 | ---: | :--- |
-| typedef void(\* | [**sdsRecPlayEvent\_t**](#typedef-sdsrecplayevent_t)  <br>_Call back function for recorder and player events._  |
+| typedef void(\* | [**sdsRecPlayEvent\_t**](#typedef-sdsrecplayevent_t)  <br>_Callback function for recorder and player events._  |
 
 
 
@@ -96,7 +96,7 @@
 
 ### typedef sdsRecPlayEvent\_t 
 
-_Call back function for recorder and player events._ 
+_Callback function for recorder and player events._ 
 ```C++
 typedef void(* sdsRecPlayEvent_t) (sdsRecPlayId_t id, uint32_t event);
 ```
