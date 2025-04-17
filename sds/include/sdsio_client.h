@@ -24,10 +24,10 @@
 {
 #endif
 
-// SDSIO Client works in pair with SDSIO Server. Communication protocol is documented in the following link:
+// SDSIO Client works in a pair with SDSIO Server. Communication protocol is documented in the following link:
 // https://arm-software.github.io/SDS-Framework/main/theory/#sdsio-server-protocol
 
- // SDS I/O header
+ // SDSIO header
 typedef struct {
   uint32_t command;
   uint32_t sdsio_id;
@@ -35,26 +35,27 @@ typedef struct {
   uint32_t data_size;
 } header_t;
 
-// Commands
+// SDSIO Server Command IDs
 #define SDSIO_CMD_OPEN          1U
 #define SDSIO_CMD_CLOSE         2U
 #define SDSIO_CMD_WRITE         3U
 #define SDSIO_CMD_READ          4U
 #define SDSIO_CMD_EOS           5U
+#define SDSIO_CMD_PING          6U
 
 // Function prototypes
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDS I/O Client
-  \return      SDIOS_OK: initialization success
-               SDSIO_ERROR: initialization failed
+  \brief       Initialize SDSIO Client and ping SDSIO Server to verify connection
+  \return      SDSIO_OK: initialization success
+               SDSIO_ERROR: initialization or ping server failed
 */
 int32_t sdsioClientInit (void);
 
 /**
   \fn          int32_t sdsioClientUninit (void)
-  \brief       Un-Initialize SDS I/O Client
+  \brief       Un-Initialize SDSIO Client
   \return      SDIOS_OK: un-initialization success
                SDSIO_ERROR: un-initialization failed
 */
