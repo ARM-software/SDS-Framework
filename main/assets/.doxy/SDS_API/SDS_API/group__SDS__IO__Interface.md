@@ -207,7 +207,7 @@ todo
 
 **Returns:**
 
-nonzero if end of stream, else 0 
+positive nonzero value if end of stream, else 0; negative value on error 
 
 
 

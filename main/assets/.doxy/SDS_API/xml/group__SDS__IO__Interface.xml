@@ -253,7 +253,7 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>nonzero if end of stream, else 0 </para>
+<simplesect kind="return"><para>positive nonzero value if end of stream, else 0; negative value on error </para>
 </simplesect>
 </para>
         </detaileddescription>
