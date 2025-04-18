@@ -30,7 +30,8 @@
 
 //   <o>Size of a internal working buffer for SDS Recorder and Player
 //   <i>Default: 8192
-//   <i>Buffer size must be ≥ largest data block size + 8 bytes (header)
+//   <i>Buffer size must be at least as large as
+//   <i>the largest data block size plus 8 bytes for the header.
 #define SDS_REC_PLAY_BUF_SIZE           8192U
 
 // </h>
