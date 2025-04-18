@@ -6,23 +6,24 @@
 
 The SDS-Framework includes the following utilities that are implemented in Python.
 
-- [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via socket (TCP/IP) or serial (UART) connection.
+- [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via socket (TCP/IP), USB Virtual COM Port (VCOM) or serial (UART) connection.
 - [**SDS-View:**](#sds-view) graphical data viewer for SDS data files.
 - [**SDS-Convert:**](#sds-convert) convert SDS data files into CSV, Qeexo V2 CSV, or WAV format.
 - [**SDS-Check:**](#sds-check) check SDS data files for correctness and consistency.
 
 ## Requirements
 
-- Python 3.9 or later with packages:
-    - pyyaml
-    - numpy
+- **Python 3.9** or later with packages:
+    - ifaddr
     - matplotlib
-    - ifaddr==0.2.0
-    - pyserial==3.5
+    - numpy
+    - pandas
+    - pyyaml
+    - pyserial
 
 ## Setup
 
-- Verify the install Python version with:
+- Verify the installed Python version with:
 
 ```txt
 python --version
@@ -36,20 +37,20 @@ sds\Scripts\activate
 pip install -r requirements.txt
 ```
 
-- Option 2: Install the required Python packages:
+- Option 2: Install the required Python packages with `pip`:
 
 ```txt
-pip install pyyaml numpy matplotlib
+pip install ifaddr matplotlib numpy pandas pyyaml pyserial
 ```
 
 ## SDSIO-Server
 
-The Python utility [**SDSIO-Server**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities/SDSIO-Server) enables recording and playback of SDS data files via socket (TCP/IP) or serial (UART) connection.
+The Python utility [**SDSIO-Server**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) enables recording and playback of SDS data files via socket (TCP/IP), USB Virtual COM Port (VCOM) or serial (UART) connection.
 It communicates with the target using these [SDSIO interfaces](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio):
 
 - [serial/usart](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/serial/usart) for serial communication via CMSIS-Driver USART.
-- [socket](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/socket) for TCP/IP communication using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.
-- [vcom/mdk](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/vcom/mdk) for serial communication via USB VCom using MDK-Middleware.
+- [socket](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/socket) for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.
+- [vcom/mdk](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/vcom/mdk) for serial communication via USB Virtual COM Port (VCOM) using MDK-Middleware.
 
 The SDS data stream is recorded to files with the following naming convention:
 
@@ -62,7 +63,7 @@ The data content of the `<name>.<index>.sds` is described with metadata file `<n
 
 ### Usage
 
-- Setup the Python-based `sdsio-server.py` tool as described in [utilities/SDSIO-Server/README.md](https://github.com/ARM-software/SDS-Framework/edit/main/utilities/SDSIO-Server/README.md).
+- [Setup](#setup) the Python environment.
 - Depending on the SDS interface used on the target use either [Socket Mode](#socket-mode) or [Serial Mode](#serial-mode) as described below.
 - The SDSIO_Server terminates with `Ctrl+C`.
 
@@ -76,14 +77,24 @@ options:
   -h, --help               show this help message and exit
 
 optional:
-  --ipaddr <IP>            Server IP address (not allowed with argument --interface)
-  --interface <Interface>  Network interface (not allowed with argument --ipaddr)
+  --ipaddr <IP>            Server IP address (used on Win, default: computer IP)
+  --interface <Interface>  Network interface (used on MacOS or Linux)
   --port <TCP Port>        TCP port (default: 5050)
   --outdir <Output dir>    Output directory
 ```
 
+!!! Notes
+    - `--ipaddr` and `--interface` options are mutually exclusive.  
+    - SDSIO Server only supports IPv4 addresses.
+
 **Example:**
 
+For Microsoft Windows (using default computer IP):
+```bash
+python sdsio-server.py socket --outdir ./out_dir
+```
+
+For Linux:
 ```bash
 python sdsio-server.py socket --interface eth0 --outdir ./out_dir
 ```
@@ -107,6 +118,9 @@ optional:
   --outdir <Output dir>   Output directory
 ```
 
+!!! Note
+    This mode is also used for Virtual COM Port connection.
+
 **Example:**
 
 ```bash
@@ -115,15 +129,19 @@ python sdsio-server.py serial -p COM0 --baudrate 115200 --outdir ./out_dir
 
 ## SDS-View
 
-The Python utility [**SDSIO-View**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities/SDS-View) outputs a time-based plot of SDS data files (`<name>.<index>.sds`) based on the meta-data file (`<name>.sds.yml`.
+The Python utility [**SDSIO-View**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) outputs a time-based plot of SDS data files (`<name>.<index>.sds`) based on the meta-data file (`<name>.sds.yml`).
 
 The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description. All plots form a single recording will be displayed on the same figure (shared vertical scale).
 
 If there are 3 values described in the metadata file, an optional 3D view may be displayed.  
 
+### Limitations
+
+- Data in recording must all be of the same type (float, uint32_t, uint16_t, ...)
+
 ### Usage
 
-- Setup the Python-based `sds-view.py` tool as described in [utilities/SDS-View/README.md](https://github.com/ARM-software/SDS-Framework/edit/main/utilities/SDS-View/README.md).
+- [Setup](#setup) the Python environment.
 - Invoke the tool as explained below.
 
 ```txt
@@ -148,16 +166,22 @@ optional:
 python sds-view.py -y test/Gyroscope.sds.yml -s test/Gyroscope.0.sds
 ```
 
+**Example display:**
+
+![Example output](images/SDS-View.png)
+
 ## SDS-Convert
 
-The Python utility [**SDSIO-Convert**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities/SDS-Convert) converts SDS data files to selected format based on description in metadata (YAML) files.  
+The Python utility [**SDSIO-Convert**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) converts SDS data files to selected format based on description in metadata (YAML) files.  
 
 ### Usage
 
-- Setup the Python-based `sds-convert.py` tool as described in [utilities/SDS-Convert/README.md](https://github.com/ARM-software/SDS-Framework/edit/main/utilities/SDS-Convert/README.md).
+- [Setup](#setup) the Python environment.
 - Depending on the required format use the tool as shown below.
 
 #### Audio WAV
+
+Convert `.sds` file to audio WAV format. It takes one sensor and appends required wave header, derived from the parameters in the metadata file.
 
 ```txt
 usage: sds-convert.py audio_wav [-h] -i <input_file> [<input_file> ...] -o <output_file> [-y <yaml_file> [<yaml_file> ...]]
@@ -174,7 +198,33 @@ optional:
 ```
 
 !!! Note
-    The metadata and SDS data file pairs must be passed as arguments in the same order to decoded data correctly.
+    The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
+
+**Example of metadata yml file for mono microphone:**
+
+```yml
+sds:
+  name: Microphone
+  description: Mono microphone with 16kHz sample rate
+  frequency: 16000
+  content:
+  - value: Mono
+    type: int16_t
+```
+
+**Example of metadata yml file for stereo microphone:**
+
+```yml
+sds:
+  name: Microphone
+  description: Stereo microphone with 16kHz sample rate
+  frequency: 16000
+  content:
+  - value: Left channel
+    type: int16_t
+  - value: Right channel
+    type: int16_t
+```
 
 **Example:**
 
@@ -183,6 +233,10 @@ python sds-convert.py audio_wav -i Microphone.0.sds -o microphone.wav -y Microph
 ```
 
 #### Simple CSV
+
+Convert `.sds` file to simple CSV format. It takes one sensor and converts data for each record. In case of sensor with multiple channels, each channel will be presented in its own column.
+
+Timestamps in the output file will be seconds in floating point format type. Start and stop tick arguments are also floating point numbers in seconds.
 
 ```txt
 usage: sds-convert.py simple_csv [-h] -i <input_file> [<input_file> ...] -o <output_file> [-y <yaml_file> [<yaml_file> ...]] [--normalize] [--start-tick <start-tick>] [--stop-tick <stop-tick>]
@@ -202,7 +256,29 @@ optional:
 ```
 
 !!! Note
-    The metadata and SDS data file pairs must be passed as arguments in the same order to decoded data correctly.
+    The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
+
+**Example of metadata yml file for gyroscope:**
+
+```yml
+sds:
+  name: Gyroscope
+  description: Gyroscope with 1667Hz sample rate
+  frequency: 1667
+  content:
+  - value: x
+    type: int16_t
+    scale: 0.07
+    unit: dps
+  - value: y
+    type: int16_t
+    scale: 0.07
+    unit: dps
+  - value: z
+    type: int16_t
+    scale: 0.07
+    unit: dps
+```
 
 **Example:**
 
@@ -211,6 +287,18 @@ python sds-convert.py simple_csv  -i Gyroscope.0.sds -o gyroscope_simple.csv -y 
 ```
 
 #### Qeexo V2 CSV
+
+By default raw timestamps are used for the output file. User can override this behavior using `--normalize` flag.
+Output timestamps will then start with 0. User can also select start and stop tick for the data to be converter to the
+specified format using `--start-tick <tick>` and `--stop-tick <tick>` respectively. Both parameters are based on 
+timestamp format in the output file.
+
+Timestamps in the output file will be milliseconds in integer format type. Start and stop tick arguments are also integer numbers in milliseconds.
+
+By default interval of 50 ms is used for timestamp increments. User can override this setting by passing number of ms after `--interval` flag.
+User can also define text in label column by passing a string after `--label` flag.
+
+Link to [Qeexo V2 CSV format specification](https://docs.qeexo.com/guides/userguides/data-management#2-1-Data-format-specification).
 
 ```txt
 usage: sds-convert.py qeexo_v2_csv [-h] -i <input_file> [<input_file> ...] -o <output_file> [-y <yaml_file> [<yaml_file> ...]] [--normalize] [--start-tick <start-tick>] [--stop-tick <stop-tick>] [--label 'label'] [--interval <interval>] [--sds_index <sds_index>]
@@ -233,17 +321,39 @@ optional:
 ```
 
 !!! Note
-    The metadata and SDS data file pairs must be passed as arguments in the same order to decoded data correctly.
+    The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
+
+**Example of metadata yml file for accelerometer:**
+
+```yml
+sds:
+  name: Accelerometer
+  description: Accelerometer with 1667Hz sample rate
+  frequency: 1667
+  content:
+  - value: x
+    type: int16_t
+    scale: 0.000061
+    unit: G
+  - value: y
+    type: int16_t
+    scale: 0.000061
+    unit: G
+  - value: z
+    type: int16_t
+    scale: 0.000061
+    unit: G
+```
 
 **Examples:**
 
-Convert SDS data files to Qeexo V2 CSV files:
+Convert **SDS data** files to **Qeexo V2 CSV** files:
 
 ```bash
 python sds-convert.py qeexo_v2_csv -i Gyroscope.0.sds Accelerometer.0.sds -o sensor_fusion.csv -y Gyroscope.sds.yaml Accelerometer.sds.yaml --normalize --start-tick 200 --stop-tick 300
 ```
 
-Convert Qeexo V2 CSV files to SDS data files:
+Convert **Qeexo V2 CSV** files to **SDS data** files:
 
 ```bash
 python sds-convert qeexo_v2_csv -i accelerometer_data.csv -o accelerometer.sds
@@ -251,23 +361,22 @@ python sds-convert qeexo_v2_csv -i accelerometer_data.csv -o accelerometer.sds
 
 ## SDS-Check
 
-Check SDS data files for correctness and consistency. The following checks are performed:
+The Python utility [**SDSIO-Check**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) checks SDS data files for correctness and consistency.  
 
-- [Size consistency check](#size-consistency-check): data size of all records should match the size of
-the SDS file.
-- [Timestamp consistency check](#timestamp-consistency-check): verify that timestamps of the records
-are in ascending order.
-- [Jitter check](#jitter-check): print the record with maximum deviation of an average timestamp interval.
-- [Delta time check](#delta-time-check): find the record with largest timestamps difference to the following record.
+The following checks are performed:
+
+- [Size consistency check](#size-consistency-check): data size of all records should match the size of the SDS file.
+- [Timestamp consistency check](#timestamp-consistency-check): verify that timestamps of the records are in ascending order.
+- [Jitter check](#jitter-check): print the record with the largest deviation from the average timestamp interval.
+- [Delta time check](#delta-time-check): find the record with the largest timestamps difference from the following record.
 - [Duplicate timestamp check](#duplicate-timestamp-check): find records that have identical timestamps.
 
 ### Usage
 
-Print help (*common*) with:
+- [Setup](#setup) the Python environment.
+- Invoke the tool as explained below.
 
 ```txt
-python sds-check.py --help
-
 usage: sds-check.py [-h] -s [<sds_file>]
 
 SDS data validation
@@ -295,23 +404,23 @@ Jitter   : 0 ms
 Validation passed
 ```
 
->>> Note
-    The time values assume an tick rate of 1000Hz.
+!!! Note
+    The time values assume an tick rate of 1000 Hz.
 
 ### Summary Report
 
 After processing the SDS data file, the SDS-Check utility prints a summary report with statistics:
 
-- **DataSize**:  total size of the data in bytes,
-- **Records**:   total number of records,
-- **BlockSize**: average block size of a data record,
-- **Largest**:   largest block size, if different from the average block size (optional),
-- **Smallest**:  smallest block size, if different from the average block size (optional),
-- **Interval**:  time interval of the recording in milliseconds,
-- **DataRate**:  recorded data rate in bytes per second,
-- **Jitter**:    deviation from the expected timestamps,
-- **DeltaTime**: largest difference of the neighboring timestamps, if deviating from the recording interval (optional),
-- **DupStamps**: number of reused timestamps, if found (optional).
+- **DataSize**:  total size of the data in bytes
+- **Records**:   total number of records
+- **BlockSize**: average block size of a data record
+- **Largest**:   largest block size, if different from the average block size (optional)
+- **Smallest**:  smallest block size, if different from the average block size (optional)
+- **Interval**:  time interval of the recording in milliseconds
+- **DataRate**:  recorded data rate in bytes per second
+- **Jitter**:    deviation from the expected timestamps
+- **DeltaTime**: largest difference of the neighboring timestamps, if deviating from the recording interval (optional)
+- **DupStamps**: number of duplicated timestamps, if found (optional)
 
 ### Size consistency check
 
@@ -361,7 +470,7 @@ between two neighboring records, called **DeltaTime**.
 
 For normally recorded files, the delta time and the recording interval are identical, so no information
 about the delta time status is printed. If the delta time and the recording interval are not identical,
-i.e. a difference is detected, the record number is also saved and the **DeltaTime** is print in
+i.e. a difference is detected, the record number is also saved and the **DeltaTime** is printed in
 the summary report.
 
 ```txt
@@ -376,19 +485,19 @@ DeltaTime: 1.050 ms, record 2
 Validation passed
 ```
 
-This is not an error, but a report of an anomaly. If the delta time is long compared to the sampling
-interval, e.g. a few times longer, this could indicate that one or more data records are missing from
-the recorded file.
+This is not an error, but a report of an anomaly. If the time delta is significantly longer than the
+sampling interval —e.g., several times longer— it may indicate that one or more data records are missing
+from the recorded file.
 
 ### Duplicate timestamp check
 
-This check processes the SDS records in search of reused timestamps, the so-called **Duplicate**
-timestamps. This means that the same timestamp is used in several consecutive data records.
+This check processes the SDS records in search of duplicated timestamps.
+This means that the same timestamp is used in several consecutive data records.
 
 This may indicate that the recording loop in an embedded application is not set up correctly. It is also
 possible that duplicate timestamps are caused by unexpected thread delays in the embedded application.
 
-Duplicate timestamps are not found in normal recording files. If multiple timestamps with the same value
+Duplicate timestamps are unusual in typical recording files. If multiple timestamps with the same value
 are found in the SDS file, **DupStamps** will be added in the summary report.
 
 ```txt
@@ -406,4 +515,6 @@ Validation passed
 
 This is not an error, but a report of an anomaly. The report contains the number of records with
 the same timestamp and the position in the SDS file where the anomaly was detected (record number).
-Please note that only the first occurrence of a duplicate timestamp is reported.
+
+!!! Note 
+    Only the first occurrence of a duplicate timestamp is reported.

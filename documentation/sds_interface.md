@@ -1,6 +1,6 @@
 # SDS Interface
 
-The SDSIO components offer flexible recorder and playback interfaces. You may choose between these interface components that are stored in the folder `./sds/sdsio`. These interfaces can be accessed as CMSIS software components for integration into the target system:
+The SDSIO components offer flexible recorder and playback interfaces. You may choose between these interface components that are stored in the folder `./sds/source/sdsio`. These interfaces can be accessed as CMSIS software components for integration into the target system:
 
 ```yml
   - component: SDS:IO:Socket                     # Socket Interface (Ethernet or WiFi)
@@ -11,17 +11,17 @@ The SDSIO components offer flexible recorder and playback interfaces. You may ch
   - component: SDS:IO:Custom                     # Source code template for custom implementation
 ```
 
-To simplify usage further, the following pre-configured SDS interface layers in *csolution project format* are available. These connect via various interfaces to the SDSIO server that for read/write access to SDS data files.
+To simplify usage further, the following pre-configured SDS interface layers in *csolution project format* are available. These connect via various interfaces to the SDSIO Server, which provides read/write access to SDS data files.
 
 - [Ethernet Interface](#layer-networksds_interface) using the MDK-Middleware Network components.
 - [USB Interface](#layer-usbsds_interface) using the MDK-Middleware USB components.
 
 ![SDS Interface](images/SDSIO.png)
 
-## Layer: Network/SDS_Interface
+## Layer: SDS_Interface/Network
 
-The [`Network/SDS_Interface.clayer`](https://github.com/Arm-Examples/SDS-Examples/tree/main/SDS_Interface/Network) is configured for recording and playback via Ethernet interface. It is using the MDK-Middleware Network component.
+The [`SDS_Interface/Network/SDS_Interface.clayer`](https://github.com/Arm-Examples/SDS-Examples/tree/main/SDS_Interface/Network) is configured for recording and playback via Ethernet interface. It is using the MDK-Middleware Network component.
 
-## Layer: USB/SDS_Interface
+## Layer: SDS_Interface/USB
 
-The [`USB/SDS_Interface.clayer`](https://github.com/Arm-examples/SDS-Examples/tree/main/SDS_Interface/USB) is configured for recording and playback via Ethernet interface. It is using the MDK-Middleware Network component.
+The [`SDS_Interface/USB/SDS_Interface.clayer`](https://github.com/Arm-examples/SDS-Examples/tree/main/SDS_Interface/USB) is configured for recording and playback via USB interface. It is using the MDK-Middleware USB component.
