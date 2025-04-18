@@ -27,6 +27,11 @@
 
 static uint8_t sdsio_client_initialized = 0U;
 
+// Ping Server retries
+#ifndef SDSIO_CLIENT_PING_RETRY
+#define SDSIO_CLIENT_PING_RETRY       10U
+#endif
+
 // Lock function
 #ifndef SDSIO_NO_LOCK
 static osMutexId_t lock_id;
@@ -94,7 +99,8 @@ static int32_t PingServer (void) {
 
 /** Initialize I/O interface */
 int32_t sdsioInit (void) {
-  int32_t ret;
+  int32_t  ret;
+  uint32_t n;
 
   if (sdsio_client_initialized != 0U) {
     // SDS I/O Client already initialized
@@ -105,7 +111,14 @@ int32_t sdsioInit (void) {
 
   ret = sdsioClientInit();
   if (ret == SDSIO_OK) {
-    if (PingServer() == 0) {
+    for (n = 0U; n < SDSIO_CLIENT_PING_RETRY; n++){
+      if (PingServer() != 0) {
+        break;
+        // SDS I/O Server not active
+      }
+      osDelay(100U);
+    }
+    if (n == SDSIO_CLIENT_PING_RETRY) {
       // SDS I/O Server not active
       ret = SDSIO_ERROR;
     }
