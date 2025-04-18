@@ -55,9 +55,9 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">SDS Interface</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#layer-networksds_interface">Layer: Network/SDS_Interface</a>
+    <li class="toctree-l2"><a class="reference internal" href="#layer-sds_interfacenetwork">Layer: SDS_Interface/Network</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#layer-usbsds_interface">Layer: USB/SDS_Interface</a>
+    <li class="toctree-l2"><a class="reference internal" href="#layer-sds_interfaceusb">Layer: SDS_Interface/USB</a>
     </li>
     </ul>
                 </li>
@@ -99,7 +99,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="sds-interface">SDS Interface</h1>
-<p>The SDSIO components offer flexible recorder and playback interfaces. You may choose between these interface components that are stored in the folder <code>./sds/sdsio</code>. These interfaces can be accessed as CMSIS software components for integration into the target system:</p>
+<p>The SDSIO components offer flexible recorder and playback interfaces. You may choose between these interface components that are stored in the folder <code>./sds/source/sdsio</code>. These interfaces can be accessed as CMSIS software components for integration into the target system:</p>
 <pre><code class="language-yml">  - component: SDS:IO:Socket                     # Socket Interface (Ethernet or WiFi)
   - component: SDS:IO:VCOM&amp;MDK USB               # USB Interface
   - component: SDS:IO:Serial&amp;CMSIS USART         # USART Interface
@@ -107,16 +107,16 @@
   - component: SDS:IO:File System&amp;Semihosting    # Simulation or Debugger via Semihosting interface
   - component: SDS:IO:Custom                     # Source code template for custom implementation
 </code></pre>
-<p>To simplify usage further, the following pre-configured SDS interface layers in <em>csolution project format</em> are available. These connect via various interfaces to the SDSIO server that for read/write access to SDS data files.</p>
+<p>To simplify usage further, the following pre-configured SDS interface layers in <em>csolution project format</em> are available. These connect via various interfaces to the SDSIO Server, which provides read/write access to SDS data files.</p>
 <ul>
 <li><a href="#layer-networksds_interface">Ethernet Interface</a> using the MDK-Middleware Network components.</li>
 <li><a href="#layer-usbsds_interface">USB Interface</a> using the MDK-Middleware USB components.</li>
 </ul>
 <p><img alt="SDS Interface" src="../images/SDSIO.png" /></p>
-<h2 id="layer-networksds_interface">Layer: Network/SDS_Interface</h2>
-<p>The <a href="https://github.com/Arm-Examples/SDS-Examples/tree/main/SDS_Interface/Network"><code>Network/SDS_Interface.clayer</code></a> is configured for recording and playback via Ethernet interface. It is using the MDK-Middleware Network component.</p>
-<h2 id="layer-usbsds_interface">Layer: USB/SDS_Interface</h2>
-<p>The <a href="https://github.com/Arm-examples/SDS-Examples/tree/main/SDS_Interface/USB"><code>USB/SDS_Interface.clayer</code></a> is configured for recording and playback via Ethernet interface. It is using the MDK-Middleware Network component.</p>
+<h2 id="layer-sds_interfacenetwork">Layer: SDS_Interface/Network</h2>
+<p>The <a href="https://github.com/Arm-Examples/SDS-Examples/tree/main/SDS_Interface/Network"><code>SDS_Interface/Network/SDS_Interface.clayer</code></a> is configured for recording and playback via Ethernet interface. It is using the MDK-Middleware Network component.</p>
+<h2 id="layer-sds_interfaceusb">Layer: SDS_Interface/USB</h2>
+<p>The <a href="https://github.com/Arm-examples/SDS-Examples/tree/main/SDS_Interface/USB"><code>SDS_Interface/USB/SDS_Interface.clayer</code></a> is configured for recording and playback via USB interface. It is using the MDK-Middleware USB component.</p>
               
             </div>
           </div><footer>

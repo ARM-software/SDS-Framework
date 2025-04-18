@@ -71,32 +71,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#sdsio-message-sequence">SDSIO Message Sequence</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#guidelines-for-stream-buffer-sizing-and-threshold-settings">Guidelines for Stream Buffer sizing and Threshold settings</a>
-<ul>
-<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#stream-buffer-size">Stream Buffer Size</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#threshold-settings-for-sds-recorderplayer">Threshold Settings for SDS Recorder/Player</a>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#function-of-thresholds">Function of Thresholds</a>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="#impact-on-system-performance">Impact on System Performance</a>
-</li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#additional-settings-affecting-io-bandwidth">Additional Settings Affecting I/O Bandwidth</a>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#optimizing-io-buffering">Optimizing I/O Buffering</a>
-</li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#example-configurations-for-typical-ml-use-cases">Example configurations for typical ML use cases</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#best-practices-summary">Best Practices Summary</a>
-</li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -148,7 +122,7 @@
 <li><strong>Interval</strong>: is the periodic time interval that the compute node executes.</li>
 </ul>
 <p><img alt="SDSIO Interface for Player and Recorder" src="../images/SDS-InOut.png"/></p>
-<p>The core of the SDS-Framework is a circular buffer handling (<code>sds.c/h</code>) that is controlled by the Recorder/Player interface functions (<code>sdsRec.c/h</code>/<code>sdsPlay.c/h</code>). This circular buffer is the queue for the file I/O communication (<code>sdsio.c/h</code>). Using the Recorder/Player functions, the data stream under development may read and write data streams as shown in the diagram above.</p>
+<p>The core of the SDS-Framework is a circular buffer handling (<code>sds_buffer.c/h</code>) that is controlled by the Recorder/Player interface functions (<code>sds_rec_play.c/h</code>). This circular buffer is the queue for the file I/O communication (<code>sdsio_x.c / sdsio.h</code>). Using the Recorder/Player functions, the data stream under development may read and write data streams as shown in the diagram above.</p>
 <p><img alt="Implementation Files of SDS" src="../images/Theory_of_Operation.png"/></p>
 <h2 id="usage">Usage</h2>
 <p>The following diagram shows the usage of the SDS Recorder and Player functions (executed in <code>sdsRecPlayThread</code>).  The <code>sdsControlThread</code> controls the overall execution. <code>AlgorithmThread</code> is the thread that executes Signal Conditioning (SC) and ML Model.</p>
@@ -156,6 +130,7 @@
     participant sdsControlThread
     participant sdsRecPlayThread
     participant AlgorithmThread
+    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecPlayInit
     sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsPlayOpen `SCinput`
     sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecOpen `SCoutput`
     sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecOpen `MLoutput`
@@ -173,6 +148,7 @@
     sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsPlayClose `SCinput`
     sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecClose `SCoutput`
     sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecClose `MCoutput`
+    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecPlayUninit
 </div>
 <h2 id="sds-data-files">SDS Data Files</h2>
 <p>Each data stream is stored in a separate SDS data file. In the diagram below <code>SCinput.0.sds</code> is the input to Signal Conditioning, <code>SCoutput.0.sds</code> is the output of Signal Conditioning, and <code>MLoutput.0.sds</code> is the output of the ML Model. Each execution of the algorithm is represented in a data block with a <code>timestamp</code>. The <code>timestamp</code> allows to correlate the blocks of different streams. In the above example, all blocks of one algorithm execution have the same timestamp value.</p>
@@ -185,10 +161,11 @@
 <p>SDS data filenames use the following file format: <code>&lt;name&gt;.&lt;file-index&gt;.sds</code>. <code>&lt;name&gt;</code> is the base file name of the SDS data file. The <code>&lt;file-index&gt;</code> is a sequential number starting from <code>0</code>.</p>
 <ul>
 <li>
-<p>The function <code>sdsRecOpen</code> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example the <a href="../utilities/#sdsio-server">SDSIO-Server</a>), existing files starting with <code>&lt;file-index&gt;="0"</code> are iterated. The first available <code>&lt;file-index&gt;</code> that does not exist will used as filename to record data. For example, if the file <code>SensorX.10.sds</code> already exists, the filename <code>SensorX.11.sds</code> will be used.</p>
+<p>The function <code>sdsRecOpen</code> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example the <a href="../utilities/#sdsio-server">SDSIO-Server</a>), existing files starting with <code>&lt;file-index&gt;="0"</code> are iterated. The first available <code>&lt;file-index&gt;</code> that does not exist will be used as filename to record data. For example, if the file <code>SensorX.10.sds</code> already exists, the filename <code>SensorX.11.sds</code> will be used.</p>
 </li>
 <li>
-<p>The function <code>sdsPlayOpen</code> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example using the <a href="../utilities/#sdsio-server">SDSIO-Server</a>), the first call uses the <code>&lt;file-index&gt;="0"</code>. Each call to <code>sdsPlayOpen</code> increments the <code>&lt;file-index&gt;</code>.</p>
+<p>The function <code>sdsPlayOpen</code> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example using the <a href="../utilities/#sdsio-server">SDSIO-Server</a>), the first call uses the <code>&lt;file-index&gt;="0"</code>. Each call to <code>sdsPlayOpen</code> increments the <code>&lt;file-index&gt;</code>.<br/>
+  An alternative way to control the <code>&lt;file-index&gt;</code> is by using an additional file named <code>&lt;name&gt;.index.txt</code> . If this file exists, the numerical value it contains is used as the <code>&lt;file-index&gt;</code> for the next <code>sdsPlayOpen</code> operation. After the file is opened (for example by the <a href="../utilities/#sdsio-server">SDSIO-Server</a>), the value in <code>&lt;name&gt;.index.txt</code> is incremented by 1 in preparation for the next <code>sdsPlayOpen</code> call.</p>
 </li>
 </ul>
 <h3 id="timestamp">Timestamp</h3>
@@ -278,7 +255,7 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <pre><code class="language-yml">   sensorX.0.sds   # capture 0
    sensorX.1.sds   # capture 1
 </code></pre>
-<p>The following <code>sensorX.sds.yml</code> provides the format description of the SDS <code>sensorX</code> binary data files and maybe used by data conversion utilities and data viewers.</p>
+<p>The following <code>sensorX.sds.yml</code> provides the format description of the SDS <code>sensorX</code> binary data files and may be used by data conversion utilities and data viewers.</p>
 <pre><code class="language-yml">sds:                   # describes a synchronous data stream
   name: sensorX        # user defined name
   description: Gyroscope stream with 1KHz, plus additional user data
@@ -316,7 +293,7 @@ sdsRecId_t *accel_id,             // data stream id
 uint8_t accel_buf[(sizeof(accel_buf)*2)+0x800];      // data stream buffer for circular buffer handling
      :
 // *** function calls ***
-   sdsRecInit(NULL);              // init SDS Recorder  
+   sdsRecPlayInit(NULL);          // init SDS Recorder/Player  
      :
    // open data stream for recording
    accel_id = sdsRecOpen("Accel", accel_buf, sizeof(accel_buf), 2*(sizeof(accelerometer));
@@ -336,10 +313,11 @@ uint8_t accel_buf[(sizeof(accel_buf)*2)+0x800];      // data stream buffer for c
 <li>the communication interface technology that may impose specific buffer size requirements to maximize data transfer rates.</li>
 <li>the frequency of the algorithm execution. Fast execution speeds may require a larger buffer.</li>
 </ul>
-<p>A a guideline, the buffer size should be 2 times the <strong>block size</strong> + 2KB. As a minimum 0x1000 (4 KB) is recommended.</p>
+<p>As a guideline, the buffer size should be at least <strong>(2 × block size) + 2 KB</strong>.<br/>
+The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
 <h2 id="sdsio-server-protocol">SDSIO Server Protocol</h2>
 <p>The SDSIO Server uses a simple protocol for data exchange between a Host computer and the embedded target that integrates an <a href="../sds_interface/">SDSIO Interface</a>.  The protocol assumes that the correct communication to the server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.</p>
-<p>The following conventions describe the command semantic used in the following documentation"</p>
+<p>The following conventions describe the <strong>command semantic</strong> used in the following documentation:</p>
 <table>
 <thead>
 <tr>
@@ -371,7 +349,7 @@ uint8_t accel_buf[(sizeof(accel_buf)*2)+0x800];      // data stream buffer for c
 </tbody>
 </table>
 <p><strong>Commands:</strong></p>
-<p>Commands are send from the embedded target to the Host computer that is running the SDSIO Server.</p>
+<p>Commands are sent from the embedded target to the Host computer running the SDSIO Server.</p>
 <table>
 <thead>
 <tr>
@@ -384,27 +362,32 @@ uint8_t accel_buf[(sizeof(accel_buf)*2)+0x800];      // data stream buffer for c
 <tr>
 <td style="text-align: center;">1</td>
 <td style="text-align: left;">SDSIO_CMD_OPEN</td>
-<td style="text-align: left;">Open a SDS data file</td>
+<td style="text-align: left;">Open an SDS data file</td>
 </tr>
 <tr>
 <td style="text-align: center;">2</td>
 <td style="text-align: left;">SDSIO_CMD_CLOSE</td>
-<td style="text-align: left;">Close a SDS data file</td>
+<td style="text-align: left;">Close an SDS data file</td>
 </tr>
 <tr>
 <td style="text-align: center;">3</td>
 <td style="text-align: left;">SDSIO_CMD_WRITE</td>
-<td style="text-align: left;">Write to SDS data file</td>
+<td style="text-align: left;">Write to an SDS data file</td>
 </tr>
 <tr>
 <td style="text-align: center;">4</td>
 <td style="text-align: left;">SDSIO_CMD_READ</td>
-<td style="text-align: left;">Read from SDS data file</td>
+<td style="text-align: left;">Read from an SDS data file</td>
 </tr>
 <tr>
 <td style="text-align: center;">5</td>
 <td style="text-align: left;">SDSIO_CMD_EOS</td>
 <td style="text-align: left;">End of Stream</td>
+</tr>
+<tr>
+<td style="text-align: center;">6</td>
+<td style="text-align: left;">SDSIO_CMD_PING</td>
+<td style="text-align: left;">Ping Server</td>
 </tr>
 </tbody>
 </table>
@@ -412,13 +395,13 @@ uint8_t accel_buf[(sizeof(accel_buf)*2)+0x800];      // data stream buffer for c
 <p><strong>SDSIO_CMD_OPEN</strong></p>
 <p>The Command ID=1 <strong>SDSIO_CMD_OPEN</strong> opens an SDS data file on the Host computer.</p>
 <p>SDS data filenames use the following file format: <code>&lt;name&gt;.&lt;file-index&gt;.sds</code>. <code>Name</code> is the base file name of the SDS data file. <code>Len of Name</code> is the size of the string in bytes. <code>&lt;file-index&gt;</code> is a sequential number starting from <code>0</code>.</p>
-<p><code>Mode</code> defines <code>read</code> (value=0) or <code>write</code> (value=1) operation. For <code>write</code>, the server inserts the next available <code>&lt;file-index&gt;</code> number that does not exist yet (if <code>Name.3.sds</code> exists, the server creates <code>Name.4.sds</code>). For <code>read</code> the server maintains a list of <code>Names</code> that where previously used. When a Name was not used before it opens <code>&lt;file-index&gt;=0</code>, i.e. <code>Name.0.sds</code>.</p>
-<pre><code class="language-txt">| WORD | WORD **| WORD | WORD *******|++++++|
+<p><code>Mode</code> defines <code>read</code> (value=0) or <code>write</code> (value=1) operation. For <code>write</code>, the SDSIO Server inserts the next available <code>&lt;file-index&gt;</code> number that does not exist yet (if <code>Name.3.sds</code> exists, the server creates <code>Name.4.sds</code>). For <code>read</code> the server maintains a list of <code>Names</code> that where previously used. When a Name was not used before it opens <code>&lt;file-index&gt;=0</code>, i.e. <code>Name.0.sds</code>.</p>
+<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD *******|++++++|
 &gt;  1   |   0    | Mode | Len of Name | Name |
 |******|********|******|*************|++++++|
 </code></pre>
 <p>The Response ID=1 <strong>SDSIO_CMD_OPEN</strong> provides a <code>Handle</code> that is used to identify the file in subsequent commands.</p>
-<pre><code class="language-txt">| WORD | WORD **| WORD | WORD *******|
+<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD *******|
 &lt;  1   | Handle | Mode | 0           |
 |******|********|******|*************|
 </code></pre>
@@ -437,71 +420,142 @@ uint8_t accel_buf[(sizeof(accel_buf)*2)+0x800];      // data stream buffer for c
 <p><strong>SDSIO_CMD_READ</strong></p>
 <p>The Command ID=4 <strong>SDSIO_CMD_READ</strong> reads data from an SDS data file on the Host computer. The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</strong>. <code>Size</code> are the number of bytes that should be read.</p>
 <pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |
-&gt;  4   | Handle | Size |   0  |
+&gt;  4   | Handle | Size |  0   |
 |******|********|******|******|
 </code></pre>
 <p>The Response ID=4 <strong>SDSIO_CMD_READ</strong> provides the data read from an SDS data file on the HOST computer.
-<code>Size</code> is the <code>Data</code> size in bytes that is read.</p>
-<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |++++++|
-&lt;  4   | Handle |  0   | Size | Data |
-|******|********|******|******|++++++|
+<code>Size</code> is the <code>Data</code> size in bytes that was read and <code>Status</code> with nonzero = end of stream, else 0.</p>
+<pre><code class="language-txt">| WORD |  WORD  |  WORD  | WORD |++++++|
+&lt;  4   | Handle | Status | Size | Data |
+|******|********|********|******|++++++|
 </code></pre>
 <p><strong>SDSIO_CMD_EOS</strong></p>
 <p>The Command ID=5 <strong>SDSIO_CMD_EOS</strong> checks if the end of file is reached. The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</strong>.</p>
 <pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |
-&gt;  5   | Handle |  0   |   0  |
+&gt;  5   | Handle |  0   |  0   |
 |******|********|******|******|
 </code></pre>
-<p>The Response ID=5 <strong>SDSIO_CMD_EOS</strong> returs the <code>Status</code> with nonzero = end of stream, else 0</p>
-<pre><code class="language-txt">| WORD |  WORD  | WORD   | WORD |
-&lt;  5   | Handle | Status |   0  |
+<p>The Response ID=5 <strong>SDSIO_CMD_EOS</strong> returns the <code>Status</code> with nonzero = end of stream, else 0</p>
+<pre><code class="language-txt">| WORD |  WORD  |  WORD  | WORD |
+&lt;  5   | Handle | Status |  0   |
 |******|********|********|******|
 </code></pre>
-<p>ToDo: I don't understand why this command is needed as <strong>SDSIO_CMD_READ</strong> returns indirectly this status already.  Also the <code>nonzero</code> above needs work.</p>
+<p><strong>SDSIO_CMD_PING</strong></p>
+<p>The Command ID=6 <strong>SDSIO_CMD_PING</strong> verifies if the Server is active and reachable on the Host.</p>
+<pre><code class="language-txt">| WORD | WORD | WORD | WORD |
+&gt;  6   |  0   |  0   |  0   |
+|******|******|******|******|
+</code></pre>
+<p>The Response ID=6 <strong>SDSIO_CMD_PING</strong> returns the <code>Status</code> with nonzero = server active, else 0</p>
+<pre><code class="language-txt">| WORD | WORD |  WORD  | WORD |
+&lt;  6   |  0   | Status |  0   |
+|******|******|********|******|
+</code></pre>
 <h2 id="sdsio-message-sequence">SDSIO Message Sequence</h2>
 <p>This is the message sequence of the SDS DataTest example when connected to MDK-Middleware Ethernet.
-It contains the following threads that executes on the target.</p>
+It contains the following threads that execute on the target.</p>
 <ul>
-<li>Control: Overall execution Control</li>
-<li>Algorithm: Algorithm under test</li>
-<li>Recorder: SDS Recorder thread (sdsRecThread)</li>
-<li>Playback: SDS Playback thread (sdsPlayThread)</li>
+<li>Control: Overall execution Control thread (sdsControlThread)</li>
+<li>Algorithm: Algorithm under test thread (AlgorithmThread)</li>
+<li>Recorder/Playback: SDS Recorder/Playback thread (sdsRecPlayThread)</li>
 </ul>
 <p>The Server is the SDSIO Server executing on the target system.</p>
-<p>ToDo rework this diagram</p>
+<p><strong>Recording flowchart</strong></p>
 <div class="mermaid">sequenceDiagram
-    participant Control
-    participant Algorithm
-    create participant Recorder as SDS Recorder
+    participant sdsControlThread
+    activate sdsControlThread
+
+    participant AlgorithmThread
+    participant Recorder as sdsRecPlayThread
     participant Server as SDSIO Server
-    Control-&gt;&gt;Recorder: sdsRecInit
-    Note over Control: sdsRecOpen
-    Control-&gt;&gt;Server: SDSIO_CMD_OPEN
+
     activate Server
-    Server--&gt;&gt;Control: Response
-    activate Algorithm
+    Note over sdsControlThread: sdsRecPlayInit
+    sdsControlThread-&gt;&gt;Server: SDSIO_CMD_PING
+    Server--&gt;&gt;sdsControlThread: Response
+
+    sdsControlThread-&gt;&gt;Recorder: Create thread
+    activate Recorder
+
+    Note over sdsControlThread: sdsRecOpen
+    sdsControlThread-&gt;&gt;Server: SDSIO_CMD_OPEN
+    Server--&gt;&gt;sdsControlThread: Response
+
+    activate AlgorithmThread
     loop periodic
-        Note over Algorithm: sdsRecWrite
-        Algorithm-&gt;&gt;Recorder: Threshold Trigger
-        loop send all data
+        Note over AlgorithmThread: sdsRecWrite
+        AlgorithmThread-&gt;&gt;Recorder: Buffer data reached or crossed threshold
+        loop send all data from buffer
             Recorder-&gt;&gt;Server: SDSIO_CMD_WRITE
         end
     end
-    deactivate Algorithm
-    Note over Control: sdsRecClose
-    Control-&gt;&gt;Recorder: Close Trigger
-    loop send all data
+    deactivate AlgorithmThread
+
+    Note over sdsControlThread: sdsRecClose
+    sdsControlThread-&gt;&gt;Recorder: Close request
+    loop send all data from buffer
         Recorder-&gt;&gt;Server: SDSIO_CMD_WRITE
     end
-    Recorder-&gt;&gt;Control: Close Confirm
-    Control-&gt;&gt;Server: SDSIO_CMD_CLOSE
+    Recorder-&gt;&gt;sdsControlThread: Close confirm
+    sdsControlThread-&gt;&gt;Server: SDSIO_CMD_CLOSE
+
+    Note over sdsControlThread: sdsRecPlayUninit
+    sdsControlThread-&gt;&gt;Recorder: Terminate thread
+    deactivate Recorder
+
     deactivate Server
+    deactivate sdsControlThread
+</div>
+<p><strong>Playback flowchart</strong></p>
+<div class="mermaid">sequenceDiagram
+    participant sdsControlThread
+    activate sdsControlThread
+
+    participant AlgorithmThread
+    participant Playback as sdsRecPlayThread
+    participant Server as SDSIO Server
+
+    activate Server
+    Note over sdsControlThread: sdsRecPlayInit
+    sdsControlThread-&gt;&gt;Server: SDSIO_CMD_PING
+    Server--&gt;&gt;sdsControlThread: Response
+
+    sdsControlThread-&gt;&gt;Playback: Create thread
+    activate Playback
+
+    Note over sdsControlThread: sdsPlayOpen
+    sdsControlThread-&gt;&gt;Server: SDSIO_CMD_OPEN
+    Server--&gt;&gt;sdsControlThread: Response
+    sdsControlThread-&gt;&gt;Playback: Open request
+    loop read data until threshold
+        Playback-&gt;&gt;Server: SDSIO_CMD_READ
+        Server--&gt;&gt;Playback: Data
+    end
+    Playback-&gt;&gt;sdsControlThread: Open confirm
+
+    activate AlgorithmThread
+    loop periodic
+        Note over AlgorithmThread: sdsPlayRead
+        AlgorithmThread-&gt;&gt;Playback: Buffer data falls below threshold
+        loop read data to fill the buffer
+            Playback-&gt;&gt;Server: SDSIO_CMD_READ
+            Server--&gt;&gt;Playback: Data
+        end
+    end
+    deactivate AlgorithmThread
+
+    Note over sdsControlThread: sdsPlayClose
+    sdsControlThread-&gt;&gt;Server: SDSIO_CMD_CLOSE
+
+    Note over sdsControlThread: sdsRecPlayUninit
+    sdsControlThread-&gt;&gt;Playback: Terminate thread
+    deactivate Playback
+
+    deactivate Server
+    deactivate sdsControlThread
 </div>
 <p>ToDo:</p>
 <ul>
-<li>create similar diagram for Playback</li>
-<li>should Playback and Record use the same Thread?</li>
-<li>How is the buffer filled on PlayOpen?</li>
 <li>document control blocks in sds.c, sds_rec.c, and sds_play.c (comments might be sufficient)</li>
 </ul>
 <p>How does Threshold work?</p>
@@ -514,110 +568,6 @@ but sds_rec.c does not really use this information</p>
 <ul>
 <li>Threshold event is only set when complete write was possible, is this correct? https://github.com/ARM-software/SDS-Framework/blob/main/sds/source/sds_rec.c#L298 </li>
 </ul>
-<hr/>
-<p>ToDo review this section</p>
-<h2 id="guidelines-for-stream-buffer-sizing-and-threshold-settings">Guidelines for Stream Buffer sizing and Threshold settings</h2>
-<h3 id="overview">Overview</h3>
-<p>The <strong>SDS Recorder/Player</strong> uses memory buffers to manage data recording and playback efficiently.
-Proper buffer and threshold configurations optimize performance by balancing data production, consumption, and system resource utilization.</p>
-<h3 id="stream-buffer-size">Stream Buffer Size</h3>
-<p>The size of memory buffers affects the balance between data production and consumption.</p>
-<p>The <strong>absolute minimum stream buffer size</strong> should be large enough to store <strong>one maximum record along with its header (8 bytes)</strong>.</p>
-<p>The <strong>recommended stream buffer size</strong> should be large enough to store <strong>at least two maximum records along with headers (8 bytes per record)</strong> and
-can be rounded up for convenience.</p>
-<p>The record size generally corresponds to the data size used by the underlying technology.
-For example, in typical <strong>ML applications</strong>, the record size should ideally match the <strong>data slice required by the DSP process</strong>.</p>
-<p>If sufficient RAM is available, increasing the buffer size can improve performance.</p>
-<h3 id="threshold-settings-for-sds-recorderplayer">Threshold Settings for SDS Recorder/Player</h3>
-<h4 id="function-of-thresholds"><strong>Function of Thresholds</strong></h4>
-<ul>
-<li><strong>For the SDS Recorder:</strong> Determines when data writing to the <strong>I/O</strong> begins.</li>
-<li><strong>For the SDS Player:</strong> Determines when data reading from the <strong>I/O</strong> begins.</li>
-</ul>
-<p>The <strong>recommended threshold setting</strong> is <strong>half of the stream buffer size</strong>, enabling a <strong>double-buffering technique</strong> where one half of the buffer is transferred while the other half continues to fill or be consumed.</p>
-<p>A well-optimized system ensures timely data transfer over the I/O:</p>
-<ul>
-<li>For the <strong>Recorder</strong>: Previously acquired data must be transferred before the remaining of the buffer fills with new data.</li>
-<li>For the <strong>Player</strong>: New playback data should be transferred before the previously transferred playback data is consumed.</li>
-</ul>
-<h4 id="impact-on-system-performance"><strong>Impact on System Performance</strong></h4>
-<p>The threshold setting directly affects system performance, as <strong>I/O transfers temporarily occupy the CPU</strong>.
-During these operations, other system processes may experience limited CPU availability.</p>
-<p>If the system requires additional CPU resources for other tasks, adjustments can be made by:</p>
-<ol>
-<li><strong>Increasing the priority of critical threads</strong>.</li>
-<li><strong>Reducing the threshold setting</strong>, which shortens the duration of each transfer but increases the frequency of transfers.</li>
-</ol>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul>
-<li>Thresholds operate based on discrete record sizes. A threshold is only triggered when a write or read operation surpasses (for write) or falls below (for read) the set limit.</li>
-<li>When handling large records, breaking them into smaller chunks may be necessary to optimize system performance.</li>
-</ul>
-</div>
-<h3 id="additional-settings-affecting-io-bandwidth">Additional Settings Affecting I/O Bandwidth</h3>
-<p>Several additional factors influence I/O bandwidth, including:</p>
-<ol>
-<li><strong>Temporary Recorder/Player buffer size</strong> (configured in the <code>sds_rec_config.h</code> / <code>sds_play_config.h</code> files).</li>
-<li><strong>I/O low-level buffering</strong>.</li>
-</ol>
-<h4 id="optimizing-io-buffering"><strong>Optimizing I/O Buffering</strong></h4>
-<p>For <strong>optimal performance</strong>, the <strong>temporary Recorder/Player buffer size should match the I/O low-level buffer size</strong>.</p>
-<p>For some interfaces, the I/O low-level buffer size can be configurable, for others, it is fixed.</p>
-<p>Example: The <strong>USB Virtual COM interface</strong> allows I/O low-level buffer size configuration.
-It is recommended to set this buffer size as a multiple of the <strong>bulk endpoint maximum packet size</strong> (512 bytes for USB high-speed connections).</p>
-<h3 id="example-configurations-for-typical-ml-use-cases">Example configurations for typical ML use cases</h3>
-<table>
-<thead>
-<tr>
-<th><strong>ML Use Case</strong></th>
-<th><strong>DSP slice</strong></th>
-<th><strong>Calculation</strong></th>
-<th><strong>Buffer Size</strong></th>
-<th><strong>Threshold</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Motion detection</strong></td>
-<td>125 accelerometer samples</td>
-<td><code>2 × [(125 samples × 3 axes × 4 bytes per axis) + 8] = 3016 -&gt; rounded to 3072</code></td>
-<td><strong>3072 bytes</strong></td>
-<td><strong>1536</strong></td>
-</tr>
-<tr>
-<td><strong>Keyword spotting</strong></td>
-<td>250 ms of audio data samples (16kHz)</td>
-<td><code>2 × [(4,000 audio samples × 4 bytes per sample) + 8] = 32,016 -&gt; rounded to 32,768</code></td>
-<td><strong>32768 bytes</strong></td>
-<td><strong>16384</strong></td>
-</tr>
-<tr>
-<td><strong>Object detection</strong></td>
-<td>1 picture (320x320)</td>
-<td><code>2 × [(320 × 320 pixels × 4 bytes per pixel) + 8] = 819,216</code></td>
-<td><strong>819216 bytes</strong></td>
-<td><strong>409608</strong></td>
-</tr>
-</tbody>
-</table>
-<h3 id="best-practices-summary"><strong>Best Practices Summary</strong></h3>
-<ul>
-<li>
-<p><strong>Ensure buffer sizes align with DSP ata slice sizes</strong> for efficient ML processing.</p>
-</li>
-<li>
-<p><strong>Use double-buffering</strong> to enhance I/O efficiency.</p>
-</li>
-<li>
-<p><strong>Adjust threshold settings</strong> to balance performance and CPU usage.</p>
-</li>
-<li>
-<p><strong>Match temporary buffer sizes to I/O low-level buffer sizes</strong> where possible.</p>
-</li>
-</ul>
-<p>By following these guidelines, the <strong>SDS Recorder/Player</strong> can be configured efficiently to balance <strong>performance, latency, and CPU utilization</strong>,
-ensuring smooth data processing and system stability.</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
