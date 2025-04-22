@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Version: 2.6
 # Date: 2023-04-17
 # This bash script generates a CMSIS Software Pack:
@@ -30,6 +30,7 @@ PACK_BUILD=./build
 #
 PACK_DIRS="
 audio
+docs
 examples
 overview
 schema
@@ -95,6 +96,7 @@ Keil.IMXRT1050-EVKB_BSP.pdsc
 function preprocess() {
   # add custom steps here to be executed
   # before populating the pack build folder
+  ./documentation/gen_doc.sh
   return 0
 }
 

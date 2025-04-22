@@ -42,5 +42,5 @@ jobs:
           gen-pack-script: ./gen_pack.sh
           gen-pack-output: ./output
           gen-doc-script: ./documentation/gen_doc.sh
-          doc-path: ./site
+          doc-path: ./docs
 
