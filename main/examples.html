@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="img/favicon.ico" />
-    <title>SDS-Framework</title>
+    <title>Examples - SDS-Framework</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Home";
-        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_name = "Examples";
+        var mkdocs_page_input_path = "examples.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -40,16 +40,8 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="#">Home</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#target-audience">Target Audience</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#manual-chapters">Manual Chapters</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#revision-history">Revision History</a>
-    </li>
-    </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
                 </li>
               </ul>
               <ul>
@@ -64,8 +56,10 @@
                 <li class="toctree-l1"><a class="reference internal" href="sds_interface.html">SDS Interface</a>
                 </li>
               </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Examples</a>
+    <ul class="current">
+    </ul>
                 </li>
               </ul>
               <ul>
@@ -90,9 +84,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="index.html" class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Home</li>
+      <li class="breadcrumb-item active">Examples</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/index.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/examples.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -100,39 +94,45 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="sds-framework">SDS-Framework</h1>
-<p>This documentation explains the usage of the SDS-Framework for developing DSP, ML, or Edge AI algorithms.</p>
-<h2 id="target-audience">Target Audience</h2>
-<p>This user's guide assumes basic knowledge about Cortex-M software development. It is written for embedded software developers that work with C/C++ compiler toolchains and utilize microcontroller devices with Cortex-M processors and Ethos-U NPUs.</p>
-<h2 id="manual-chapters">Manual Chapters</h2>
-<ul>
-<li><a href="overview.html"><strong>Overview</strong></a> explains the of features of the SDS-Framework and outlines the possibilities.</li>
-<li><a href="theory.html"><strong>Theory of Operation</strong></a> explains data stream recording and playback.</li>
-<li><a href="sds_interface.html"><strong>SDS Interface</strong></a> describes the various interfaces (USB, Socket, File System) for connecting to the target.</li>
-<li><a href="examples.html"><strong>Examples</strong></a> lists the examples that are available.</li>
-<li><a href="utilities.html"><strong>Utilities</strong></a> explains Python based utilities that operate with SDS data files for converting, viewing, recording, and playback.</li>
-<li><a href="SDS_API/modules.html"><strong>API Modules</strong></a> describes the C interface of the SDS functions that may be used in the target system.</li>
-</ul>
-<h2 id="revision-history">Revision History</h2>
+                <h1 id="examples">Examples</h1>
+<!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD036 -->
+
+<p>SDS examples applications are provided in a separate <a href="https://github.com/Arm-Examples/sds-examples">GitHub repository</a> and shows the usage of the SDS-Framework.</p>
+<p><img alt="SDS Examples" src="images/Example_Structure.png" /></p>
+<p>The examples use <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#software-layers"><em>csolution project layers</em></a> to simplify targeting to different hardware boards.</p>
+<p>The <strong>Sensor Layer</strong> implements a data streaming interface to is described in the section <a href="overview.html"><strong>Overview</strong></a>. It is user code that is application specific.</p>
+<p>The <strong>Layer Type: SDS_Recorder</strong> connects the data streams to the SDS files. There are various ready to use implementations available as outlined in the table below. Several layer implementations use the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil/overview/">MDK-Middleware</a> for communication.</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Layer Type: SDS_Recorder</th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">1.1.0</td>
-<td style="text-align: left;">Initial release for SDS-Framework <a href="https://github.com/ARM-software/SDS-Framework/releases/tag/v1.1.0">1.1.0</a></td>
+<td style="text-align: left;"><code>SDS_Rec_Network.clayer.yml</code></td>
+<td style="text-align: left;">Connects via TCP/IP Network Ethernet to SDSIO Server.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>SDS_Rec_USB.clayer.yml</code></td>
+<td style="text-align: left;">Connects via USB Device VCom to SDSIO Server.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>SDS_Rec_FileSystem.clayer.yml</code></td>
+<td style="text-align: left;">Connects via FileSystem to a memory card.</td>
 </tr>
 </tbody>
 </table>
+<p>The <strong>Layer Type: Board</strong> is a standard board layer that provides a communication interface (<code>CMSIS_ETH</code>, <code>CMSIS_USB_Device</code>), a sensor interface (<code>I2C</code>, <code>SPI</code>), and a <code>CMSIS_VIO</code> interface for SDS recorder control. Other variants may have Audio or Video interfaces. <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#connections">Connections</a> help to identify the compatible software layers.</p>
+<p>The <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications">CMSIS-Toolbox section Reference Applications</a> for more information about the project structure.</p>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="overview.html" class="btn btn-neutral float-right" title="Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="sds_interface.html" class="btn btn-neutral float-left" title="SDS Interface"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="utilities.html" class="btn btn-neutral float-right" title="Utilities">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -159,8 +159,10 @@
         </span>
     
     
+      <span><a href="sds_interface.html" style="color: #fcfcfc">&laquo; Previous</a></span>
     
-      <span><a href="overview.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+      <span><a href="utilities.html" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
@@ -177,8 +179,3 @@
 
 </body>
 </html>
-
-<!--
-MkDocs version : 1.6.1
-Build Date UTC : 2025-04-22 10:24:42.484749+00:00
--->

@@ -27,8 +27,8 @@ find_linkchecker
 
 echo_log "Generating documentation ..."
 
-mkdocs build
+"${UTILITY_MKDOCS}" build -f "${DIRNAME}/../mkdocs.yml"  || exit
 
-check_links --timeout 120 "${DIRNAME}/../site/index.html" "${DIRNAME}"
+check_links --timeout 120 "${DIRNAME}/../docs/index.html" "${DIRNAME}"
 
 exit 0
