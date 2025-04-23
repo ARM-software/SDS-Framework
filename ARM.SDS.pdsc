@@ -65,7 +65,7 @@
   </conditions>
 
   <taxonomy>
-    <description Cclass="SDS" doc="sds/README.md">Synchronous Data Stream framework for developing DSP, ML, or Edge AI algorithms</description>
+    <description Cclass="SDS" doc="docs/index.html">Synchronous Data Stream framework for developing DSP, ML, or Edge AI algorithms</description>
   </taxonomy>
 
   <apis>
@@ -88,6 +88,7 @@
         <file category="header" name="sds/include/sds_buffer.h"/>
         <file category="source" name="sds/source/sds_buffer.c"/>
         <file category="header" name="sds/config/sds_buffer_config.h" attr="config" version="1.0.0"/>
+        <file category="doc"    name="docs/index.html"/>
       </files>
     </component>
 
@@ -102,6 +103,7 @@
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
         <file category="source" name="sds/source/sdsio/socket/sdsio_client_socket.c"/>
         <file category="header" name="sds/config/sdsio_config_socket.h" attr="config" version="2.0.0"/>
+        <file category="doc"    name="docs/index.html"/>
       </files>
     </component>
 
@@ -117,6 +119,7 @@
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
         <file category="source" name="sds/source/sdsio/vcom/mdk/sdsio_client_vcom.c"/>
         <file category="header" name="sds/config/sdsio_config_vcom_mdk.h" attr="config" version="2.0.0"/>
+        <file category="doc"    name="docs/index.html"/>
       </files>
     </component>
 
@@ -132,6 +135,7 @@
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
         <file category="source" name="sds/source/sdsio/serial/usart/sdsio_client_serial.c"/>
         <file category="header" name="sds/config/sdsio_config_serial_usart.h" attr="config" version="1.0.0"/>
+        <file category="doc"    name="docs/index.html"/>
       </files>
     </component>
 
@@ -145,6 +149,7 @@
       <files>
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
         <file category="source" name="sds/source/sdsio/template/sdsio_client_custom.c" attr="template" select="Custom SDS I/O Client Driver"/>
+        <file category="doc"    name="docs/index.html"/>
       </files>
     </component>
 
@@ -159,6 +164,7 @@
       <files>
         <file category="source" name="sds/source/sdsio/fs/mdk/sdsio_fs.c"/>
         <file category="header" name="sds/config/sdsio_config_fs_mdk.h" attr="config" version="1.0.0"/>
+        <file category="doc"    name="docs/index.html"/>
       </files>
     </component>
 
@@ -172,6 +178,7 @@
       </RTE_Components_h>
       <files>
         <file category="source" name="sds/source/sdsio/fs/semihosting/sdsio_fs.c"/>
+        <file category="doc"    name="docs/index.html"/>
       </files>
     </component>
 
@@ -185,6 +192,7 @@
         <file category="header" name="sds/include/sds_rec_play.h"/>
         <file category="source" name="sds/source/sds_rec_play.c"/>
         <file category="header" name="sds/config/sds_rec_play_config.h" attr="config" version="1.0.0"/>
+        <file category="doc"    name="docs/index.html"/>
       </files>
     </component>
   </components>

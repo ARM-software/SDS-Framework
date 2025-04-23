@@ -28,29 +28,29 @@ extern "C"
 
 // ==== Synchronous Data Stream Input/Output (SDS I/O) ====
 
-typedef void *sdsioId_t;        ///< Handle to SDS I/O stream
+typedef void *sdsioId_t;        // Handle to SDS I/O stream
 
-/// Open Mode
+// Open Mode
 typedef enum {
-  sdsioModeRead  = 0,           ///< Open for read (binary)
-  sdsioModeWrite = 1            ///< Open for write (binary)
-} sdsioMode_t;                  ///< Open mode (read/write)
+  sdsioModeRead  = 0,           // Open for read (binary)
+  sdsioModeWrite = 1            // Open for write (binary)
+} sdsioMode_t;                  // Open mode (read/write)
 
-/// Function return codes
-#define SDSIO_OK                (0)         ///< Operation completed successfully
-#define SDSIO_ERROR             (-1)        ///< Operation failed
+// Function return codes
+#define SDSIO_OK                (0)         // Operation completed successfully
+#define SDSIO_ERROR             (-1)        // Operation failed
 
 /**
   \fn          int32_t sdsioInit (void)
   \brief       Initialize SDS I/O.
-  \return      return code
+  \return      return code (see \ref SDS_IO_Error_Codes)
 */
 int32_t sdsioInit (void);
 
 /**
   \fn          int32_t sdsioUninit (void)
   \brief       Un-initialize SDS I/O.
-  \return      return code
+  \return      return code (see \ref SDS_IO_Error_Codes)
 */
 int32_t sdsioUninit (void);
 
@@ -59,7 +59,7 @@ int32_t sdsioUninit (void);
   \brief       Open I/O stream.
   \param[in]   name           stream name (pointer to NULL terminated string)
   \param[in]   mode           \ref sdsioMode_t open mode
-  \return      \ref sdsioId_t
+  \return      \ref sdsioId_t Handle to SDS I/O stream, or NULL if operation failed
 */
 sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode);
 
@@ -67,7 +67,7 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode);
   \fn          int32_t sdsioClose (sdsioId_t id)
   \brief       Close I/O stream.
   \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
-  \return      return code
+  \return      return code (see \ref SDS_IO_Error_Codes)
 */
 int32_t sdsioClose (sdsioId_t id);
 
@@ -77,7 +77,7 @@ int32_t sdsioClose (sdsioId_t id);
   \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
   \param[in]   buf            pointer to buffer with data to write
   \param[in]   buf_size       buffer size in bytes
-  \return      number of bytes written
+  \return      number of bytes written, or 0 if operation failed
 */
 uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size);
 
@@ -87,7 +87,7 @@ uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size);
   \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
   \param[out]  buf            pointer to buffer for data to read
   \param[in]   buf_size       buffer size in bytes
-  \return      number of bytes read
+  \return      number of bytes read, or 0 if operation failed
 */
 uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size);
 
@@ -95,7 +95,7 @@ uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size);
   \fn          int32_t sdsioEndOfStream (sdsioId_t id)
   \brief       Check if end of stream has been reached.
   \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
-  \return      positive nonzero value if end of stream, else 0; negative value on error
+  \return      positive non-zero value if end of stream, else 0; negative value on error
 */
 int32_t sdsioEndOfStream (sdsioId_t id);
 

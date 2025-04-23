@@ -13,8 +13,8 @@ The SDSIO components offer flexible recorder and playback interfaces. You may ch
 
 To simplify usage further, the following pre-configured SDS interface layers in *csolution project format* are available. These connect via various interfaces to the SDSIO Server, which provides read/write access to SDS data files.
 
-- [Ethernet Interface](#layer-networksds_interface) using the MDK-Middleware Network components.
-- [USB Interface](#layer-usbsds_interface) using the MDK-Middleware USB components.
+- [Ethernet Interface](#layer-sds_interfacenetwork) using the MDK-Middleware Network components.
+- [USB Interface](#layer-sds_interfaceusb) using the MDK-Middleware USB components.
 
 ![SDS Interface](images/SDSIO.png)
 
