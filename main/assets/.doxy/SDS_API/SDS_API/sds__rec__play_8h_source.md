@@ -38,13 +38,15 @@ extern "C"
 
 // ==== SDS Recorder and Player ====
 
-typedef void *sdsRecPlayId_t;                   
+typedef void *sdsRecPlayId_t;                   // Handle to SDS Recorder/Player stream
 
-#define SDS_REC_PLAY_OK             (0)         
-#define SDS_REC_PLAY_ERROR          (-1)        
-#define SDS_REC_PLAY_ERROR_TIMEOUT  (-2)        
+// Function return codes
+#define SDS_REC_PLAY_OK             (0)         // Operation completed successfully
+#define SDS_REC_PLAY_ERROR          (-1)        // Operation failed
+#define SDS_REC_PLAY_ERROR_TIMEOUT  (-2)        // Operation failed: Timeout
 
-#define SDS_REC_PLAY_EVENT_IO_ERROR (1UL << 0)  
+// Event codes
+#define SDS_REC_PLAY_EVENT_IO_ERROR (1UL)       // I/O Error
 
 typedef void (*sdsRecPlayEvent_t) (sdsRecPlayId_t id, uint32_t event);
 

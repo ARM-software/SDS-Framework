@@ -21,6 +21,11 @@ sdsio.h _: SDS I/O Interface for data streams_[More...](#detailed-description)
 
 
 
+## Modules
+
+| Type | Name |
+| ---: | :--- |
+| module | [**Error Codes**](group__SDS__IO__Error__Codes.md) <br>_SDS I/O Error Codes._  |
 
 
 
@@ -31,8 +36,8 @@ sdsio.h _: SDS I/O Interface for data streams_[More...](#detailed-description)
 
 | Type | Name |
 | ---: | :--- |
-| typedef void \* | [**sdsioId\_t**](#typedef-sdsioid_t)  <br>_Handle to SDS I/O stream._  |
-| enum  | [**sdsioMode\_t**](#enum-sdsiomode_t)  <br>_Open Mode._  |
+| typedef void \* | [**sdsioId\_t**](#typedef-sdsioid_t)  <br>_Handle to SDS I/O data stream._  |
+| enum  | [**sdsioMode\_t**](#enum-sdsiomode_t)  <br> |
 
 
 
@@ -95,7 +100,7 @@ sdsio.h _: SDS I/O Interface for data streams_[More...](#detailed-description)
 ## Detailed Description
 
 
-The SDS I/O interface reads or writes SDS data from a circular buffer. 
+The **SDS I/O** interface transfers data between the circular buffer and the I/O, handling both read and write operations. 
 
 
     
@@ -106,7 +111,7 @@ The SDS I/O interface reads or writes SDS data from a circular buffer.
 
 ### typedef sdsioId\_t 
 
-_Handle to SDS I/O stream._ 
+_Handle to SDS I/O data stream._ 
 ```
 typedef void* sdsioId_t;
 ```
@@ -124,7 +129,6 @@ This _pointer_ defines the handle to SDS I/O data stream. It is used to identify
 
 ### enum sdsioMode\_t 
 
-_Open Mode._ 
 ```
 enum sdsioMode_t {
     sdsioModeRead = 0,
@@ -134,7 +138,7 @@ enum sdsioMode_t {
 
 
 
-This _enum_ identifies the _read_ or _write_ mode to SDS I/O data streams. 
+This _enum_ identifies the _read_ or _write_ mode to SDS I/O data streams. It is a parameter of the [**sdsioOpen**](group__SDS__IO__Interface.md#function-sdsioopen) function. 
 
 
         
@@ -156,7 +160,7 @@ int32_t sdsioClose (
 
 
 
-todo
+Closes an SDS I/O stream. If the interface is a local file system or semihosting, the file is closed directly. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a close command (SDSIO\_CMD\_CLOSE) to the SDS I/O Server to close the file on the Host system.
 
 
 
@@ -170,7 +174,7 @@ todo
 
 **Returns:**
 
-return code 
+return code (see [**Error Codes**](group__SDS__IO__Error__Codes.md)) 
 
 
 
@@ -193,7 +197,7 @@ int32_t sdsioEndOfStream (
 
 
 
-todo
+Checks whether the end of the stream has been reached and no more data is available in the recorded file. This helps distinguish between the absence of data in the recorded file and a case where the SDS I/O Client failed to prepare data before [**sdsioRead**](group__SDS__IO__Interface.md#function-sdsioread) was invoked. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends an command (SDSIO\_CMD\_EOS) to the SDS I/O Server to check the end of stream status of the file on the Host system.
 
 
 
@@ -207,7 +211,7 @@ todo
 
 **Returns:**
 
-positive nonzero value if end of stream, else 0; negative value on error 
+positive non-zero value if end of stream, else 0; negative value on error 
 
 
 
@@ -230,14 +234,14 @@ int32_t sdsioInit (
 
 
 
-todo
+Initializes the SDS I/O interface. The interface may be a local file system (e.g., an SD card) or semihosting, or a communication channel such as Ethernet, USB or UART. In the case of a communication channel, the SDS I/O Client is used to interact with the SDS I/O Server running on a Host machine. The initialization process includes setting up the communication interface and verifying that the I/O Server is active on the Host.
 
 
 
 
 **Returns:**
 
-return code 
+return code (see [**Error Codes**](group__SDS__IO__Error__Codes.md)) 
 
 
 
@@ -261,7 +265,7 @@ sdsioId_t sdsioOpen (
 
 
 
-todo
+Opens an SDS I/O stream for reading or writing. If the interface is a local file system or semihosting, the file is opened directly. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends an open command (SDSIO\_CMD\_OPEN) to the SDS I/O Server to open the file on the Host system. The function returns the handle to the SDS I/O stream; if the I/O stream could not be opened, it returns NULL.
 
 
 
@@ -276,7 +280,7 @@ todo
 
 **Returns:**
 
-[**sdsioId\_t**](group__SDS__IO__Interface.md#typedef-sdsioid_t) 
+[**sdsioId\_t**](group__SDS__IO__Interface.md#typedef-sdsioid_t) Handle to SDS I/O stream, or NULL if operation failed 
 
 
 
@@ -301,7 +305,7 @@ uint32_t sdsioRead (
 
 
 
-todo
+Reads data from an SDS I/O stream opened for reading. If the interface is a local file system or semihosting, data is read directly from the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO\_CMD\_READ) to the SDS I/O Server, which reads the file on the Host system and returns the data to the Client.
 
 
 
@@ -317,7 +321,7 @@ todo
 
 **Returns:**
 
-number of bytes read 
+number of bytes read, or 0 if operation failed 
 
 
 
@@ -340,14 +344,14 @@ int32_t sdsioUninit (
 
 
 
-todo
+De-initializes the SDS I/O interface. If a communication channel such as Ethernet, USB or USART is used, the corresponding communication interface is also de-initialized.
 
 
 
 
 **Returns:**
 
-return code 
+return code (see [**Error Codes**](group__SDS__IO__Error__Codes.md)) 
 
 
 
@@ -372,7 +376,7 @@ uint32_t sdsioWrite (
 
 
 
-todo
+Writes data to an SDS I/O stream opened for writing. If the interface is a local file system or semihosting, data is written directly to the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a write command (SDSIO\_CMD\_WRITE) along with the data to the SDS I/O Server, which then writes the data to a file on the Host system.
 
 
 
@@ -388,7 +392,7 @@ todo
 
 **Returns:**
 
-number of bytes written 
+number of bytes written, or 0 if operation failed 
 
 
 

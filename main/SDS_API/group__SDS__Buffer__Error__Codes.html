@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Group Define - SDS-Framework</title>
+    <title>Group SDS_Buffer_Error_Codes - SDS-Framework</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Group Define";
-        var mkdocs_page_input_path = "SDS_API/group__Define.md";
+        var mkdocs_page_name = "Group SDS_Buffer_Error_Codes";
+        var mkdocs_page_input_path = "SDS_API/group__SDS__Buffer__Error__Codes.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -82,9 +82,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html" class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Group Define</li>
+      <li class="breadcrumb-item active">Group SDS_Buffer_Error_Codes</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__Define.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__Buffer__Error__Codes.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -92,9 +92,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="group-define">Group Define</h1>
-<p><a href="modules.html"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="group__Define.html"><strong>Define</strong></a></p>
-<h2 id="modules">Modules</h2>
+                <h1 id="group-sds_buffer_error_codes">Group SDS_Buffer_Error_Codes</h1>
+<p><a href="modules.html"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="group__SDS__Buffer__Error__Codes.html"><strong>SDS_Buffer_Error_Codes</strong></a></p>
+<p><em>SDS Buffer Error Codes.</em> <a href="#detailed-description">More...</a></p>
+<h2 id="macros">Macros</h2>
 <table>
 <thead>
 <tr>
@@ -104,15 +105,30 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: right;">module</td>
-<td style="text-align: left;"><a href="group__SDS__Errors.html"><strong>SDS Error Codes</strong></a> <br><em>SDS Player Error Codes.</em></td>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__Buffer__Error__Codes.html#define-sds_buffer_error"><strong>SDS_BUFFER_ERROR</strong></a>  <code>(-1)</code><br><em>Error during sdsBuffer function execution.</em></td>
 </tr>
 <tr>
-<td style="text-align: right;">module</td>
-<td style="text-align: left;"><a href="group__SDS__Event__Codes.html"><strong>SDS Event Codes</strong></a> <br><em>SDS Player Event Codes.</em></td>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__Buffer__Error__Codes.html#define-sds_buffer_ok"><strong>SDS_BUFFER_OK</strong></a>  <code>(0)</code><br><em>sdsBuffer function execution completed successfully.</em></td>
 </tr>
 </tbody>
 </table>
+<h2 id="detailed-description">Detailed Description</h2>
+<p>The following values are returned by most <code>sdsBuffer</code> functions. </p>
+<h2 id="macro-definition-documentation">Macro Definition Documentation</h2>
+<h3 id="define-sds_buffer_error">define SDS_BUFFER_ERROR</h3>
+<p><em>Error during sdsBuffer function execution.</em> </p>
+<pre><code>#define SDS_BUFFER_ERROR `(-1)`
+</code></pre>
+<hr>
+
+<h3 id="define-sds_buffer_ok">define SDS_BUFFER_OK</h3>
+<p><em>sdsBuffer function execution completed successfully.</em> </p>
+<pre><code>#define SDS_BUFFER_OK `(0)`
+</code></pre>
+<hr>
+
 <hr />
               
             </div>

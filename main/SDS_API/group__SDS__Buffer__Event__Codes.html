@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Group SDS_Event_Codes - SDS-Framework</title>
+    <title>Group SDS_Buffer_Event_Codes - SDS-Framework</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Group SDS_Event_Codes";
-        var mkdocs_page_input_path = "SDS_API/group__SDS__Event__Codes.md";
+        var mkdocs_page_name = "Group SDS_Buffer_Event_Codes";
+        var mkdocs_page_input_path = "SDS_API/group__SDS__Buffer__Event__Codes.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -82,9 +82,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html" class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Group SDS_Event_Codes</li>
+      <li class="breadcrumb-item active">Group SDS_Buffer_Event_Codes</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__Event__Codes.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__Buffer__Event__Codes.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -92,11 +92,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="group-sds_event_codes">Group SDS_Event_Codes</h1>
-<p><a href="modules.html"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="group__SDS__Event__Codes.html"><strong>SDS_Event_Codes</strong></a></p>
-<p><em>SDS Player Event Codes.</em> <a href="#detailed-description">More...</a></p>
+                <h1 id="group-sds_buffer_event_codes">Group SDS_Buffer_Event_Codes</h1>
+<p><a href="modules.html"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="group__SDS__Buffer__Event__Codes.html"><strong>SDS_Buffer_Event_Codes</strong></a></p>
+<p><em>SDS Buffer Event Codes.</em> <a href="#detailed-description">More...</a></p>
+<h2 id="macros">Macros</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Type</th>
+<th style="text-align: left;">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__Buffer__Event__Codes.html#define-sds_buffer_event_data_high"><strong>SDS_BUFFER_EVENT_DATA_HIGH</strong></a>  <code>(2UL)</code><br><em>Event signaled when data in circular buffer exceeds high threshold value.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__Buffer__Event__Codes.html#define-sds_buffer_event_data_low"><strong>SDS_BUFFER_EVENT_DATA_LOW</strong></a>  <code>(1UL)</code><br><em>Event signaled when data in circular buffer drops below low threshold value.</em></td>
+</tr>
+</tbody>
+</table>
 <h2 id="detailed-description">Detailed Description</h2>
-<p>The following values are passed as event value to sdsPlayEvent_t. </p>
+<p>The following values are passed as event value to <a href="group__SDS__Buffer.html#typedef-sdsbufferevent_t"><strong>sdsBufferEvent_t</strong></a> callback function. </p>
+<h2 id="macro-definition-documentation">Macro Definition Documentation</h2>
+<h3 id="define-sds_buffer_event_data_high">define SDS_BUFFER_EVENT_DATA_HIGH</h3>
+<p><em>Event signaled when data in circular buffer exceeds high threshold value.</em> </p>
+<pre><code>#define SDS_BUFFER_EVENT_DATA_HIGH `(2UL)`
+</code></pre>
+<hr>
+
+<h3 id="define-sds_buffer_event_data_low">define SDS_BUFFER_EVENT_DATA_LOW</h3>
+<p><em>Event signaled when data in circular buffer drops below low threshold value.</em> </p>
+<pre><code>#define SDS_BUFFER_EVENT_DATA_LOW `(1UL)`
+</code></pre>
+<hr>
+
 <hr />
               
             </div>

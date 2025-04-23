@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Group SDS_Circular_Buffer - SDS-Framework</title>
+    <title>Group SDS_Buffer - SDS-Framework</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Group SDS_Circular_Buffer";
-        var mkdocs_page_input_path = "SDS_API/group__SDS__Circular__Buffer.md";
+        var mkdocs_page_name = "Group SDS_Buffer";
+        var mkdocs_page_input_path = "SDS_API/group__SDS__Buffer.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -82,9 +82,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html" class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Group SDS_Circular_Buffer</li>
+      <li class="breadcrumb-item active">Group SDS_Buffer</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__Circular__Buffer.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__Buffer.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -92,9 +92,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="group-sds_circular_buffer">Group SDS_Circular_Buffer</h1>
-<p><a href="modules.html"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="group__SDS__Circular__Buffer.html"><strong>SDS_Circular_Buffer</strong></a></p>
-<p><em>sds.h: SDS circular buffer handling for data streams</em> <a href="#detailed-description">More...</a></p>
+                <h1 id="group-sds_buffer">Group SDS_Buffer</h1>
+<p><a href="modules.html"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="group__SDS__Buffer.html"><strong>SDS_Buffer</strong></a></p>
+<p>sds_buffer.h <em>: SDS circular buffer handling for data streams</em><a href="#detailed-description">More...</a></p>
+<h2 id="modules">Modules</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Type</th>
+<th style="text-align: left;">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">module</td>
+<td style="text-align: left;"><a href="group__SDS__Buffer__Error__Codes.html"><strong>Error Codes</strong></a> <br><em>SDS Buffer Error Codes.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">module</td>
+<td style="text-align: left;"><a href="group__SDS__Buffer__Event__Codes.html"><strong>Event Codes</strong></a> <br><em>SDS Buffer Event Codes.</em></td>
+</tr>
+</tbody>
+</table>
 <h2 id="public-types">Public Types</h2>
 <table>
 <thead>
@@ -106,11 +125,11 @@
 <tbody>
 <tr>
 <td style="text-align: right;">typedef void(*</td>
-<td style="text-align: left;"><a href="#typedef-sdsbufferevent_t"><strong>sdsBufferEvent_t</strong></a>  <br><em>Callback function for SDS circular buffer handling.</em></td>
+<td style="text-align: left;"><a href="#typedef-sdsbufferevent_t"><strong>sdsBufferEvent_t</strong></a>  <br><em>Callback function for SDS circular buffer event handling.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">typedef void *</td>
-<td style="text-align: left;"><a href="#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a>  <br><em>Handle to SDS buffer stream.</em></td>
+<td style="text-align: left;"><a href="#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a>  <br><em>Handle to SDS circular buffer.</em></td>
 </tr>
 </tbody>
 </table>
@@ -125,55 +144,55 @@
 <tbody>
 <tr>
 <td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdsbufferclear"><strong>sdsBufferClear</strong></a> (<a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> id) <br><em>Clear SDS buffer stream data.</em></td>
+<td style="text-align: left;"><a href="#function-sdsbufferclear"><strong>sdsBufferClear</strong></a> (<a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> id) <br><em>Clear SDS buffer stream data.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdsbufferclose"><strong>sdsBufferClose</strong></a> (<a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> id) <br><em>Close SDS buffer stream.</em></td>
+<td style="text-align: left;"><a href="#function-sdsbufferclose"><strong>sdsBufferClose</strong></a> (<a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> id) <br><em>Close SDS buffer stream.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">uint32_t</td>
-<td style="text-align: left;"><a href="#function-sdsbuffergetcount"><strong>sdsBufferGetCount</strong></a> (<a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> id) <br><em>Get data count in SDS buffer stream.</em></td>
+<td style="text-align: left;"><a href="#function-sdsbuffergetcount"><strong>sdsBufferGetCount</strong></a> (<a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> id) <br><em>Get data count in SDS buffer stream.</em></td>
 </tr>
 <tr>
-<td style="text-align: right;"><a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a></td>
+<td style="text-align: right;"><a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a></td>
 <td style="text-align: left;"><a href="#function-sdsbufferopen"><strong>sdsBufferOpen</strong></a> (void * buf, uint32_t buf_size, uint32_t threshold_low, uint32_t threshold_high) <br><em>Open SDS buffer stream.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">uint32_t</td>
-<td style="text-align: left;"><a href="#function-sdsbufferread"><strong>sdsBufferRead</strong></a> (<a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> id, void * buf, uint32_t buf_size) <br><em>Read data from SDS buffer stream.</em></td>
+<td style="text-align: left;"><a href="#function-sdsbufferread"><strong>sdsBufferRead</strong></a> (<a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> id, void * buf, uint32_t buf_size) <br><em>Read data from SDS buffer stream.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdsbufferregisterevents"><strong>sdsBufferRegisterEvents</strong></a> (<a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> id, <a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferevent_t"><strong>sdsBufferEvent_t</strong></a> event_cb, uint32_t event_mask, void * event_arg) <br><em>Register SDS buffer stream events.</em></td>
+<td style="text-align: left;"><a href="#function-sdsbufferregisterevents"><strong>sdsBufferRegisterEvents</strong></a> (<a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> id, <a href="group__SDS__Buffer.html#typedef-sdsbufferevent_t"><strong>sdsBufferEvent_t</strong></a> event_cb, uint32_t event_mask, void * event_arg) <br><em>Register SDS buffer stream event callback function.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">uint32_t</td>
-<td style="text-align: left;"><a href="#function-sdsbufferwrite"><strong>sdsBufferWrite</strong></a> (<a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> id, const void * buf, uint32_t buf_size) <br><em>Write data to SDS buffer stream.</em></td>
+<td style="text-align: left;"><a href="#function-sdsbufferwrite"><strong>sdsBufferWrite</strong></a> (<a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> id, const void * buf, uint32_t buf_size) <br><em>Write data to SDS buffer stream.</em></td>
 </tr>
 </tbody>
 </table>
 <h2 id="detailed-description">Detailed Description</h2>
-<p>The stream data is written to and read from a circular buffer allocated in RAM. Event callback function which is triggered on data threshold reached can be registered. </p>
+<p>The <strong>SDS</strong> circular <strong>buffer</strong> facilitates efficient reading from and writing to a circular buffer allocated in RAM. A callback function can be registered to respond when data thresholds (high or low) are reached. </p>
 <h2 id="public-types-documentation">Public Types Documentation</h2>
 <h3 id="typedef-sdsbufferevent_t">typedef sdsBufferEvent_t</h3>
-<p><em>Callback function for SDS circular buffer handling.</em> </p>
+<p><em>Callback function for SDS circular buffer event handling.</em> </p>
 <pre><code>typedef void(* sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg);
 </code></pre>
-<p>todo</p>
+<p>This function is registered by passing a pointer to it as a parameter to the <a href="group__SDS__Buffer.html#function-sdsbufferregisterevents"><strong>sdsBufferRegisterEvents</strong></a> function. It is invoked when the circular buffer either exceeds the high data threshold or drops below the low data threshold. The high and low data thresholds are configured using the <a href="group__SDS__Buffer.html#function-sdsbufferopen"><strong>sdsBufferOpen</strong></a> function.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
-<li><code>event</code> event code </li>
-<li><code>arg</code> pointer to argument </li>
+<li><code>id</code> <a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
+<li><code>event</code> event code (see <a href="group__SDS__Buffer__Event__Codes.html"><strong>Event Codes</strong></a>) </li>
+<li><code>arg</code> pointer to argument registered with <a href="group__SDS__Buffer.html#function-sdsbufferregisterevents"><strong>sdsBufferRegisterEvents</strong></a> </li>
 </ul>
 <hr>
 
 <h3 id="typedef-sdsbufferid_t">typedef sdsBufferId_t</h3>
-<p><em>Handle to SDS buffer stream.</em> </p>
+<p><em>Handle to SDS circular buffer.</em> </p>
 <pre><code>typedef void* sdsBufferId_t;
 </code></pre>
-<p>todo test </p>
+<p>This <em>pointer</em> defines the handle to SDS circular buffer. It is used to identify a circular buffer across the different functions. </p>
 <hr>
 <h2 id="public-functions-documentation">Public Functions Documentation</h2>
 <h3 id="function-sdsbufferclear">function sdsBufferClear</h3>
@@ -182,13 +201,13 @@
     sdsBufferId_t id
 ) 
 </code></pre>
-<p>todo</p>
+<p>Clears any data from the SDS circular buffer and resets the circular buffer to empty state.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
+<li><code>id</code> <a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
 </ul>
 <p><strong>Returns:</strong></p>
-<p>return code </p>
+<p>return code (see <a href="group__SDS__Buffer__Error__Codes.html"><strong>Error Codes</strong></a>) </p>
 <hr>
 
 <h3 id="function-sdsbufferclose">function sdsBufferClose</h3>
@@ -197,13 +216,13 @@
     sdsBufferId_t id
 ) 
 </code></pre>
-<p>todo</p>
+<p>Closes the SDS circular buffer when read or write operations are no longer required.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
+<li><code>id</code> <a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
 </ul>
 <p><strong>Returns:</strong></p>
-<p>return code </p>
+<p>return code (see <a href="group__SDS__Buffer__Error__Codes.html"><strong>Error Codes</strong></a>) </p>
 <hr>
 
 <h3 id="function-sdsbuffergetcount">function sdsBufferGetCount</h3>
@@ -212,13 +231,13 @@
     sdsBufferId_t id
 ) 
 </code></pre>
-<p>todo</p>
+<p>Retrieves the number of data bytes currently available in the SDS circular buffer.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
+<li><code>id</code> <a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
 </ul>
 <p><strong>Returns:</strong></p>
-<p>number of bytes in buffer stream </p>
+<p>number of data bytes available in buffer stream </p>
 <hr>
 
 <h3 id="function-sdsbufferopen">function sdsBufferOpen</h3>
@@ -230,7 +249,7 @@
     uint32_t threshold_high
 ) 
 </code></pre>
-<p>todo</p>
+<p>Opens the SDS circular buffer for read or write operations. The function returns the handle to the SDS buffer stream; if the buffer could not be opened, it returns NULL.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>buf</code> pointer to buffer for stream </li>
@@ -239,7 +258,7 @@
 <li><code>threshold_high</code> data high threshold in bytes </li>
 </ul>
 <p><strong>Returns:</strong></p>
-<p><a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> Handle to SDS buffer stream </p>
+<p><a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> Handle to SDS buffer stream, or NULL if operation failed </p>
 <hr>
 
 <h3 id="function-sdsbufferread">function sdsBufferRead</h3>
@@ -250,19 +269,19 @@
     uint32_t buf_size
 ) 
 </code></pre>
-<p>todo</p>
+<p>Reads data from the SDS circular buffer. If there is no data in the circular buffer the function will return 0.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
+<li><code>id</code> <a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
 <li><code>buf</code> pointer to buffer for data to read </li>
 <li><code>buf_size</code> buffer size in bytes </li>
 </ul>
 <p><strong>Returns:</strong></p>
-<p>number of bytes read </p>
+<p>number of data bytes read, or 0 if operation failed </p>
 <hr>
 
 <h3 id="function-sdsbufferregisterevents">function sdsBufferRegisterEvents</h3>
-<p><em>Register SDS buffer stream events.</em> </p>
+<p><em>Register SDS buffer stream event callback function.</em> </p>
 <pre><code>int32_t sdsBufferRegisterEvents (
     sdsBufferId_t id,
     sdsBufferEvent_t event_cb,
@@ -270,16 +289,16 @@
     void * event_arg
 ) 
 </code></pre>
-<p>todo</p>
+<p>Registers a <a href="group__SDS__Buffer.html#typedef-sdsbufferevent_t"><strong>sdsBufferEvent_t</strong></a> callback function for handling buffer threshold events.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
-<li><code>event_cb</code> pointer to sdsEvent_t </li>
+<li><code>id</code> <a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
+<li><code>event_cb</code> pointer to <a href="group__SDS__Buffer.html#typedef-sdsbufferevent_t"><strong>sdsBufferEvent_t</strong></a> callback function </li>
 <li><code>event_mask</code> event mask </li>
-<li><code>event_arg</code> event argument </li>
+<li><code>event_arg</code> pointer to event argument </li>
 </ul>
 <p><strong>Returns:</strong></p>
-<p>return code </p>
+<p>return code (see <a href="group__SDS__Buffer__Error__Codes.html"><strong>Error Codes</strong></a>) </p>
 <hr>
 
 <h3 id="function-sdsbufferwrite">function sdsBufferWrite</h3>
@@ -290,15 +309,15 @@
     uint32_t buf_size
 ) 
 </code></pre>
-<p>todo</p>
+<p>Writes data to the SDS circular buffer. If the buffer is full, no additional data will be written until space is freed by the <a href="group__SDS__Buffer.html#function-sdsbufferread"><strong>sdsBufferRead</strong></a> function. The function returns the number of bytes successfully written; if the buffer is full, it returns 0.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="group__SDS__Circular__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
+<li><code>id</code> <a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
 <li><code>buf</code> pointer to buffer with data to write </li>
 <li><code>buf_size</code> buffer size in bytes </li>
 </ul>
 <p><strong>Returns:</strong></p>
-<p>number of bytes written </p>
+<p>number of data bytes successfully written, or 0 if operation failed </p>
 <hr>
 
 <hr />

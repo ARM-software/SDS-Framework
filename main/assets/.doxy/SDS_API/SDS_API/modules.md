@@ -5,21 +5,22 @@
 Here is a list of all modules:
 
 
-* [**Define Values**](group__Define.md) 
+* [**SDS Circular Buffer**](group__SDS__Buffer.md) sds\_buffer.h _: SDS circular buffer handling for data streams_
     
 
-    * [**SDS Error Codes**](group__SDS__Errors.md) _SDS Player Error Codes._ 
-
-
-
-    * [**SDS Event Codes**](group__SDS__Event__Codes.md) _SDS Player Event Codes._ 
+    * [**Error Codes**](group__SDS__Buffer__Error__Codes.md) _SDS Buffer Error Codes._ 
+        
 
 
 
 
 
-* [**SDS Circular Buffer**](group__SDS__Circular__Buffer.md) _sds.h: SDS circular buffer handling for data streams_ 
-    
+    * [**Event Codes**](group__SDS__Buffer__Event__Codes.md) _SDS Buffer Event Codes._ 
+        
+
+
+
+
 
 
 
@@ -35,6 +36,13 @@ Here is a list of all modules:
 * [**SDS I/O Interface**](group__SDS__IO__Interface.md) sdsio.h _: SDS I/O Interface for data streams_
     
 
+    * [**Error Codes**](group__SDS__IO__Error__Codes.md) _SDS I/O Error Codes._ 
+        
+
+
+
+
+
 
 
 
@@ -48,6 +56,21 @@ Here is a list of all modules:
 
 * [**SDS Recorder and Player**](group__SDS__Recorder__Player.md) sds\_rec\_play.h _: SDS Recorder and Player for writing and reading SDS files via communication or file I/O interface._
     
+
+    * [**Error Codes**](group__SDS__Recorder__Player__Error__Codes.md) _SDS Recorder and Player Error Codes._ 
+        
+
+
+
+
+
+
+    * [**Event Codes**](group__SDS__Recorder__Player__Event__Codes.md) _SDS Recorder and Player Event Codes._ 
+        
+
+
+
+
 
 
 

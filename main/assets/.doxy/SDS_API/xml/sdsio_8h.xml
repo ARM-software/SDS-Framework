@@ -15,31 +15,8 @@
       </node>
     </incdepgraph>
     <sectiondef kind="define">
-      <memberdef kind="define" id="sdsio_8h_1ae2eb088ff47b195c4b98a7f9ef10066b" prot="public" static="no">
-        <name>SDSIO_OK</name>
-        <initializer>(0)</initializer>
-        <briefdescription>
-<para>Function return codes. </para>
-        </briefdescription>
-        <detaileddescription>
-<para>Operation completed successfully </para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sdsio.h" line="40" column="9" bodyfile="sds/include/sdsio.h" bodystart="40" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="sdsio_8h_1a9445f070322b3667176d0022c433dea2" prot="public" static="no">
-        <name>SDSIO_ERROR</name>
-        <initializer>(-1)</initializer>
-        <briefdescription>
-<para>Operation failed. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sdsio.h" line="41" column="9" bodyfile="sds/include/sdsio.h" bodystart="41" bodyend="-1"/>
-      </memberdef>
+      <member refid="group__SDS__IO__Error__Codes_1gae2eb088ff47b195c4b98a7f9ef10066b" kind="define"><name>SDSIO_OK</name></member>
+      <member refid="group__SDS__IO__Error__Codes_1ga9445f070322b3667176d0022c433dea2" kind="define"><name>SDSIO_ERROR</name></member>
     </sectiondef>
     <sectiondef kind="enum">
       <member refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kind="enum"><name>sdsioMode_t</name></member>
@@ -106,15 +83,17 @@
 <codeline lineno="28"><highlight class="normal"></highlight></codeline>
 <codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">//<sp/>====<sp/>Synchronous<sp/>Data<sp/>Stream<sp/>Input/Output<sp/>(SDS<sp/>I/O)<sp/>====</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="30"><highlight class="normal"></highlight></codeline>
-<codeline lineno="31" refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*<ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="31" refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*<ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Handle<sp/>to<sp/>SDS<sp/>I/O<sp/>stream</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Open<sp/>Mode</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="34" refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>{</highlight></codeline>
-<codeline lineno="35"><highlight class="normal"><sp/><sp/>sdsioModeRead<sp/><sp/>=<sp/>0,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
-<codeline lineno="36"><highlight class="normal"><sp/><sp/>sdsioModeWrite<sp/>=<sp/>1<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
-<codeline lineno="37"><highlight class="normal">}<sp/><ref refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kindref="member">sdsioMode_t</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/>sdsioModeRead<sp/><sp/>=<sp/>0,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Open<sp/>for<sp/>read<sp/>(binary)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/>sdsioModeWrite<sp/>=<sp/>1<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Open<sp/>for<sp/>write<sp/>(binary)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal">}<sp/><ref refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kindref="member">sdsioMode_t</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Open<sp/>mode<sp/>(read/write)</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="38"><highlight class="normal"></highlight></codeline>
-<codeline lineno="40"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDSIO_OK<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
-<codeline lineno="41"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDSIO_ERROR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(-1)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Function<sp/>return<sp/>codes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40" refid="group__SDS__IO__Error__Codes_1gae2eb088ff47b195c4b98a7f9ef10066b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDSIO_OK<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Operation<sp/>completed<sp/>successfully</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41" refid="group__SDS__IO__Error__Codes_1ga9445f070322b3667176d0022c433dea2" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDSIO_ERROR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(-1)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Operation<sp/>failed</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="42"><highlight class="normal"></highlight></codeline>
 <codeline lineno="48"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__IO__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" kindref="member">sdsioInit</ref><sp/>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
 <codeline lineno="49"><highlight class="normal"></highlight></codeline>

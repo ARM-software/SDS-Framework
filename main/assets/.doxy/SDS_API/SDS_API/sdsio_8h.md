@@ -80,12 +80,6 @@
 
 
 
-## Macros
-
-| Type | Name |
-| ---: | :--- |
-| define  | [**SDSIO\_ERROR**](sdsio_8h.md#define-sdsio_error)  `(-1)`<br>_Operation failed._  |
-| define  | [**SDSIO\_OK**](sdsio_8h.md#define-sdsio_ok)  `(0)`<br>_Function return codes._  |
 
 ## Public Functions Documentation
 
@@ -102,41 +96,6 @@ int32_t sdsioInit (
 
 
 
-
-<hr>
-## Macro Definition Documentation
-
-
-
-
-
-### define SDSIO\_ERROR 
-
-_Operation failed._ 
-```C++
-#define SDSIO_ERROR `(-1)`
-```
-
-
-
-
-<hr>
-
-
-
-### define SDSIO\_OK 
-
-_Function return codes._ 
-```C++
-#define SDSIO_OK `(0)`
-```
-
-
-
-Operation completed successfully 
-
-
-        
 
 <hr>
 

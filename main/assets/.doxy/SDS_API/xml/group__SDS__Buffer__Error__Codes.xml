@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="group__SDS__Buffer__Error__Codes" kind="group">
+    <compoundname>SDS_Buffer_Error_Codes</compoundname>
+    <title>Error Codes</title>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="group__SDS__Buffer__Error__Codes_1gada5802a42b145a41f23bca98b38b800c" prot="public" static="no">
+        <name>SDS_BUFFER_OK</name>
+        <initializer>(0)</initializer>
+        <briefdescription>
+<para>sdsBuffer function execution completed successfully. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="34" column="9" bodyfile="sds/include/sds_buffer.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Buffer__Error__Codes_1ga677df880ac1830a58f4b5760858b0d5b" prot="public" static="no">
+        <name>SDS_BUFFER_ERROR</name>
+        <initializer>(-1)</initializer>
+        <briefdescription>
+<para>Error during sdsBuffer function execution. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="35" column="9" bodyfile="sds/include/sds_buffer.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>SDS Buffer Error Codes. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The following values are returned by most <computeroutput>sdsBuffer</computeroutput> functions. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

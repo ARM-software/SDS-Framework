@@ -125,15 +125,17 @@ extern &quot;C&quot;
 
 // ==== Synchronous Data Stream Input/Output (SDS I/O) ====
 
-typedef void *sdsioId_t;        
+typedef void *sdsioId_t;        // Handle to SDS I/O stream
 
+// Open Mode
 typedef enum {
-  sdsioModeRead  = 0,           
-  sdsioModeWrite = 1            
-} sdsioMode_t;                  
+  sdsioModeRead  = 0,           // Open for read (binary)
+  sdsioModeWrite = 1            // Open for write (binary)
+} sdsioMode_t;                  // Open mode (read/write)
 
-#define SDSIO_OK                (0)         
-#define SDSIO_ERROR             (-1)        
+// Function return codes
+#define SDSIO_OK                (0)         // Operation completed successfully
+#define SDSIO_ERROR             (-1)        // Operation failed
 
 int32_t sdsioInit (void);
 

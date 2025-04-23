@@ -21,6 +21,12 @@ sds\_rec\_play.h _: SDS Recorder and Player for writing and reading SDS files vi
 
 
 
+## Modules
+
+| Type | Name |
+| ---: | :--- |
+| module | [**Error Codes**](group__SDS__Recorder__Player__Error__Codes.md) <br>_SDS Recorder and Player Error Codes._  |
+| module | [**Event Codes**](group__SDS__Recorder__Player__Event__Codes.md) <br>_SDS Recorder and Player Event Codes._  |
 
 
 
@@ -31,7 +37,8 @@ sds\_rec\_play.h _: SDS Recorder and Player for writing and reading SDS files vi
 
 | Type | Name |
 | ---: | :--- |
-| typedef void \* | [**sdsRecPlayId\_t**](#typedef-sdsrecplayid_t)  <br>_Handle to SDS Recorder/Player stream._  |
+| typedef void(\* | [**sdsRecPlayEvent\_t**](#typedef-sdsrecplayevent_t)  <br>_Callback function for recorder and player events._  |
+| typedef void \* | [**sdsRecPlayId\_t**](#typedef-sdsrecplayid_t)  <br>_Handle to SDS recorder or player stream._  |
 
 
 
@@ -60,10 +67,10 @@ sds\_rec\_play.h _: SDS Recorder and Player for writing and reading SDS files vi
 |  int32\_t | [**sdsPlayEndOfStream**](#function-sdsplayendofstream) ([**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) id) <br>_Check if end of stream has been reached._  |
 |  uint32\_t | [**sdsPlayGetSize**](#function-sdsplaygetsize) ([**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) id) <br>_Get data block size from Player stream._  |
 |  [**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) | [**sdsPlayOpen**](#function-sdsplayopen) (const char \* name, void \* buf, uint32\_t buf\_size) <br>_Open player stream (read mode)._  |
-|  uint32\_t | [**sdsPlayRead**](#function-sdsplayread) ([**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) id, uint32\_t \* timestamp, void \* buf, uint32\_t buf\_size) <br> |
+|  uint32\_t | [**sdsPlayRead**](#function-sdsplayread) ([**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) id, uint32\_t \* timestamp, void \* buf, uint32\_t buf\_size) <br>_Read entire data block along with its timestamp from the player stream._  |
 |  int32\_t | [**sdsRecClose**](#function-sdsrecclose) ([**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) id) <br>_Close recorder stream._  |
 |  [**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) | [**sdsRecOpen**](#function-sdsrecopen) (const char \* name, void \* buf, uint32\_t buf\_size) <br>_Open recorder stream (write mode)._  |
-|  int32\_t | [**sdsRecPlayInit**](#function-sdsrecplayinit) (sdsRecPlayEvent\_t event\_cb) <br>_Initialize recorder and player._  |
+|  int32\_t | [**sdsRecPlayInit**](#function-sdsrecplayinit) ([**sdsRecPlayEvent\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayevent_t) event\_cb) <br>_Initialize recorder and player._  |
 |  int32\_t | [**sdsRecPlayUninit**](#function-sdsrecplayuninit) (void) <br>_Uninitialize recorder and player._  |
 |  uint32\_t | [**sdsRecWrite**](#function-sdsrecwrite) ([**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) id, uint32\_t timestamp, const void \* buf, uint32\_t buf\_size) <br>_Write entire data block along with its timestamp to the recorder stream._  |
 
@@ -97,7 +104,7 @@ sds\_rec\_play.h _: SDS Recorder and Player for writing and reading SDS files vi
 ## Detailed Description
 
 
-via a communication stack, file system, or semihosting interface. Refer to the chapter SDS Interface for an overview. 
+The **SDS Recorder** and **Player** manage writing to and reading from SDS files through communication or file I/O interfaces. They support the recording and playback of real-world data for applications such as machine learning and data analysis. Refer to the chapter _SDS Interface_ for an overview. 
 
 
     
@@ -106,9 +113,38 @@ via a communication stack, file system, or semihosting interface. Refer to the c
 
 
 
+### typedef sdsRecPlayEvent\_t 
+
+_Callback function for recorder and player events._ 
+```
+typedef void(* sdsRecPlayEvent_t) (sdsRecPlayId_t id, uint32_t event);
+```
+
+
+
+This function is registered by passing a pointer to it as a parameter to the [**sdsRecPlayInit**](group__SDS__Recorder__Player.md#function-sdsrecplayinit) function. It is invoked when an error happens during recording or playback.
+
+
+
+
+**Parameters:**
+
+
+* `id` [**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) handle to SDS Recorder/Player stream 
+* `event` event code (see [**Event Codes**](group__SDS__Recorder__Player__Event__Codes.md)) 
+
+
+
+
+        
+
+<hr>
+
+
+
 ### typedef sdsRecPlayId\_t 
 
-_Handle to SDS Recorder/Player stream._ 
+_Handle to SDS recorder or player stream._ 
 ```
 typedef void* sdsRecPlayId_t;
 ```
@@ -137,7 +173,7 @@ int32_t sdsPlayClose (
 
 
 
-Closes a player stream. The function waits until all transfers are completed or a timeout occurs. The stream handle becomes invalid after successful closing.
+Closes a player stream. The function waits for all pending data transfers to complete or until a timeout occurs. Upon successful closure, the stream handle becomes invalid.
 
 
 
@@ -151,7 +187,7 @@ Closes a player stream. The function waits until all transfers are completed or 
 
 **Returns:**
 
-return code 
+return code (see [**Error Codes**](group__SDS__Recorder__Player__Error__Codes.md)) 
 
 
 
@@ -174,7 +210,7 @@ int32_t sdsPlayEndOfStream (
 
 
 
-Checks whether the player stream has reached the end of the SDS file. This condition is met when the SDS file signals end-of-stream and all buffered data has been read.
+Checks whether the player stream has reached the end of the SDS file. This condition is satisfied when the SDS file signals end of stream and all data from the internal buffer has been consumed.
 
 
 
@@ -188,7 +224,7 @@ Checks whether the player stream has reached the end of the SDS file. This condi
 
 **Returns:**
 
-nonzero if end of stream, else 0 
+non-zero if end of stream, or 0 otherwise 
 
 
 
@@ -211,13 +247,10 @@ uint32_t sdsPlayGetSize (
 
 
 
-Returns the size of the next available data block in the player stream.
+Returns the size, in bytes, of the next available data block in the player stream.
 
 
-The function reads the record header to determine the size of the next data block. If no valid record header is available the function returns 0.
-
-
-This function is thread-safe when used with different streams in separate threads. However, accessing the same stream from multiple threads simultaneously is not supported.
+To determine the size of the next data block, the function reads the record header. If a valid header is not found, it returns 0.
 
 
 
@@ -231,7 +264,7 @@ This function is thread-safe when used with different streams in separate thread
 
 **Returns:**
 
-number of bytes in data block 
+number of bytes in next available data block, or 0 if operation failed 
 
 
 
@@ -256,13 +289,13 @@ sdsRecPlayId_t sdsPlayOpen (
 
 
 
-Opens a player stream for reading timestamp and data blocks from the SDS file. The `buf` parameter specifies a user-allocated memory region that serves as an internal circular buffer. The buffer size must be sufficient to accommodate at least the largest data block size plus 8 bytes for the record header.
+Opens a player stream for reading timestamps and data blocks from an SDS file. The `buf` parameter specifies a user-allocated memory region used as an internal circular buffer. The buffer must be large enough to accommodate the largest expected data block plus 8 bytes for the record header.
 
 
-The `name` parameter specifies the base name of the SDS input file. The function attempts to locate and open the file `<name>.<index>.sds`, where `<index>` is an auto-incrementing value. If no matching file is found, the function returns an error.
+The `name` parameter specifies the base name of the SDS input file. The function attempts to locate and open the file `<name>.<index>.sds`, where `<index>` is an auto-incrementing value. If no matching file is found, the function returns an error. For details on the file naming convention, refer to the _SDS Data Files: Filenames_ section in the _Theory of Operation_ chapter.
 
 
-Note that this function can be blocking for some time as it initially fills the internal circular buffer with data from the SDS file.
+This function may block for a period of time while it loads the internal circular buffer with data from the SDS file.
 
 
 This function returns a handle that uniquely identifies the stream. The handle is used as a reference in subsequent function calls to perform operations on the stream.
@@ -281,7 +314,7 @@ This function returns a handle that uniquely identifies the stream. The handle i
 
 **Returns:**
 
-[**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) handle to SDS Recorder/Player stream or NULL if operation failed 
+[**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) handle to SDS Recorder/Player stream, or NULL if operation failed 
 
 
 
@@ -295,6 +328,7 @@ This function returns a handle that uniquely identifies the stream. The handle i
 
 ### function sdsPlayRead 
 
+_Read entire data block along with its timestamp from the player stream._ 
 ```
 uint32_t sdsPlayRead (
     sdsRecPlayId_t id,
@@ -306,19 +340,36 @@ uint32_t sdsPlayRead (
 
 
 
-Reads a data block along with its associated timestamp from the internal circular buffer. The `sdsRecPlayThread` worker thread asynchronously reads the data from the SDS file using the underlying SDS I/O interface and writes it to the internal circular buffer. This approach ensures efficient, non-blocking data handling and optimal performance.
+Reads a data block along with its associated timestamp from the internal circular buffer. The `sdsRecPlayThread` worker thread asynchronously reads the data from the SDS file using the underlying SDS I/O interface and writes it to the internal circular buffer. This asynchronous design enables efficient, non-blocking data handling and ensures optimal performance.
 
 
-Before reading, the function verifies that the user-provided buffer has sufficient space to accommodate the entire data block. If the buffer size is insufficient, the operation is aborted, and the function returns 0. Additionally, if the end-of-stream condition is reached, the function also returns 0. Therefore, it is necessary to call `sdsPlayEndOfStream` to identify whether the end-of-stream condition has been met.
+Before reading, the function checks that the user-provided buffer has enough space to hold the entire data block. If the space in the buffer is insufficient, the operation is aborted and the function returns 0. The function also returns 0 if the end of stream has been reached. To distinguish between these cases, use [**sdsPlayEndOfStream**](group__SDS__Recorder__Player.md#function-sdsplayendofstream) function to check for the end-of-stream condition.
 
 
-On success, the function reads the data block from the stream buffer, stores it in the user-provided buffer, and returns the number of bytes in the data block. Additionally, the timestamp associated with the data block is provided in the output parameter `timestamp`.
+On success, the function reads the data block from the stream buffer, stores it in the user-provided buffer, and returns the the size of the data block in bytes. The associated timestamp is returned via the output parameter `timestamp`.
 
 
-Thread safety is maintained by allowing only one thread to read from an individual stream at a time. However, multiple threads can read from different streams concurrently, enabling parallel operations across multiple streams.
+Thread safety is ensured by allowing only a single thread to read from a given stream at a time. However, multiple threads can concurrently read from different streams, enabling parallel operations across multiple streams.
 
 
-/\*\* 
+
+
+**Parameters:**
+
+
+* `id` [**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) handle to SDS Recorder/Player stream 
+* `timestamp` pointer to buffer for a timestamp in ticks 
+* `buf` pointer to the data block buffer to be read 
+* `buf_size` size of the data block buffer in bytes 
+
+
+
+**Returns:**
+
+number of data bytes read, or 0 if operation failed 
+
+
+
 
 
         
@@ -338,7 +389,7 @@ int32_t sdsRecClose (
 
 
 
-Closes a recorder stream. Before closing, any data remaining in the internal circular buffer is written to the SDS file. The function waits until all transfers are completed or a timeout occurs. The stream handle becomes invalid after successful closing.
+Closes a recorder stream. Prior to closing, any remaining data in the internal circular buffer is flushed to the SDS file. The function blocks until all data transfers are complete or a timeout occurs. Upon successful closure, the stream handle becomes invalid.
 
 
 
@@ -352,7 +403,7 @@ Closes a recorder stream. Before closing, any data remaining in the internal cir
 
 **Returns:**
 
-return code 
+return code (see [**Error Codes**](group__SDS__Recorder__Player__Error__Codes.md)) 
 
 
 
@@ -377,10 +428,10 @@ sdsRecPlayId_t sdsRecOpen (
 
 
 
-Opens a recorder stream for writing timestamps and data blocks to the SDS file. The `buf` parameter specifies a user-allocated memory region that serves as an internal circular buffer. The buffer size must be sufficient to accommodate at least the largest data block size plus 8 bytes for the record header.
+Opens a recorder stream for writing timestamps and data blocks to the SDS file. The `buf` parameter specifies a user-allocated memory region that serves as an internal circular buffer. The buffer must be large enough to hold at least the largest expected data block plus 8 bytes for the record header.
 
 
-The `name` parameter defines the base name for the SDS output file and is used to construct the file name in the format `name.index.sds`. The `index` is an auto-incrementing value that ensures a unique file name is generated. If a file with the specified name already exists, the `index` is incremented until a unique name is found.
+The `name` parameter defines the base name for the SDS output file and is used to construct the full file name in the format `name.index.sds`. The `index` is an auto-incrementing value that ensures a unique file name is generated. If a file with the generated name already exists, the `index` is incremented until an unused name is found. For details on the file naming convention, refer to the _SDS Data Files: Filenames_ section in the _Theory of Operation_ chapter.
 
 
 This function returns a handle that uniquely identifies the stream. The handle is used as a reference in subsequent function calls to perform operations on the stream.
@@ -399,7 +450,7 @@ This function returns a handle that uniquely identifies the stream. The handle i
 
 **Returns:**
 
-[**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) handle to SDS Recorder/Player stream or NULL if operation failed 
+[**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t) handle to SDS Recorder/Player stream, or NULL if operation failed 
 
 
 
@@ -422,7 +473,7 @@ int32_t sdsRecPlayInit (
 
 
 
-Initializes the SDS Recorder and Player system. This function allocates resources, initializes underlying SDS I/O interface and starts the `sdsRecPlayThread` worker thread. An optional callback function can be registered to receive notifications (e.g., I/O errors). This function must be called once before any recorder or player streams are opened.
+Initializes the SDS Recorder and Player system. This function allocates resources, initializes underlying SDS I/O interface and creates the `sdsRecPlayThread` worker thread. An optional callback function can be registered to receive notifications (e.g., I/O errors). This function must be called once before opening any recorder or player streams.
 
 
 
@@ -430,13 +481,13 @@ Initializes the SDS Recorder and Player system. This function allocates resource
 **Parameters:**
 
 
-* `event_cb` pointer to sdsRecPlayEvent\_t callback function 
+* `event_cb` pointer to [**sdsRecPlayEvent\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayevent_t) callback function 
 
 
 
 **Returns:**
 
-return code 
+return code (see [**Error Codes**](group__SDS__Recorder__Player__Error__Codes.md)) 
 
 
 
@@ -459,14 +510,14 @@ int32_t sdsRecPlayUninit (
 
 
 
-De-initializes the SDS Recorder and Player system. The `sdsRecPlayThread` worker thread is stopped, and internal resources are released. All open recorder or player streams must be closed by the user before calling this function. Once uninitialized, the system must be initialized again before use.
+De-initializes the SDS Recorder and Player system. This function terminates the `sdsRecPlayThread` worker thread, and releases the internal resources. All open recorder or player streams must be closed by the user before calling this function. After de-initialization, the system must be re-initialized before further use.
 
 
 
 
 **Returns:**
 
-return code 
+return code (see [**Error Codes**](group__SDS__Recorder__Player__Error__Codes.md)) 
 
 
 
@@ -492,16 +543,16 @@ uint32_t sdsRecWrite (
 
 
 
-Writes a data block with header (timestamp and size of data block) to the internal circular buffer. The `sdsRecPlayThread` worker thread asynchronously reads the data from the internal circular buffer and writes it to the SDS file using the underlying SDS I/O interface. This approach ensures efficient, non-blocking data handling and optimal performance.
+Writes a data block, including a header containing the timestamp and data block size, to the internal circular buffer. The `sdsRecPlayThread` worker thread asynchronously processes the buffer, writing the data to the SDS file via the underlying SDS I/O interface. This asynchronous design enables efficient, non-blocking data handling and optimized performance.
 
 
-Before writing, the function ensures that the data block can fit into the internal buffer. If there is insufficient space, the operation is aborted, and the function returns 0.
+Before writing, the function verifies that the data block fits within the available space in the internal buffer. If insufficient space is available, the operation is aborted and the function returns 0.
 
 
-On success, the function writes the header and data block to the stream buffer and returns the number of data bytes written (excluding the header).
+On success, the function writes the header and data block to the stream buffer and returns the number of data bytes written, excluding the header.
 
 
-Thread safety is maintained by allowing only one thread to write to an individual stream at a time. However, multiple threads can write to different streams concurrently, enabling parallel operations across multiple streams.
+Thread safety is ensured by allowing only a single thread to write to a given stream at a time. However, multiple threads can concurrently write to different streams, enabling parallel operations across multiple streams.
 
 
 
@@ -518,7 +569,7 @@ Thread safety is maintained by allowing only one thread to write to an individua
 
 **Returns:**
 
-size of the entire data block written in bytes if the operation is successful, or 0 if the entire data block could not be written successfully 
+number of data bytes written, or 0 if operation failed 
 
 
 

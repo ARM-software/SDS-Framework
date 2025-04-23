@@ -38,13 +38,15 @@ extern "C"
 
 // ==== Synchronous Data Stream (SDS) Buffer ====
 
-typedef void *sdsBufferId_t;                        
+typedef void *sdsBufferId_t;                        // Handle to SDS buffer stream
 
-#define SDS_BUFFER_OK                   (0)         
-#define SDS_BUFFER_ERROR                (-1)        
+// Function return codes
+#define SDS_BUFFER_OK                   (0)         // Operation completed successfully
+#define SDS_BUFFER_ERROR                (-1)        // Operation failed
 
-#define SDS_BUFFER_EVENT_DATA_LOW       (1UL << 0)  
-#define SDS_BUFFER_EVENT_DATA_HIGH      (1UL << 1)  
+// Events
+#define SDS_BUFFER_EVENT_DATA_LOW       (1UL)       // Data bellow or equal to low threshold
+#define SDS_BUFFER_EVENT_DATA_HIGH      (2UL)       // Data above or equal to high threshold
 
 typedef void (*sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg);
 
