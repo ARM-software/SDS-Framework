@@ -35,7 +35,7 @@
 #define SDSIO_SOCKET_SERVER_PORT        5050U
 
 //   <o>Socket timeout
-//   <i>Socket receive timeout in kernel Ticks
+//   <i>Socket receive timeout in ms
 //   <i>Default: 5000
 #define SDSIO_SOCKET_RECEIVE_TOUT       5000U
 
