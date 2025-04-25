@@ -181,7 +181,7 @@ The Python utility [**SDSIO-Convert**](https://github.com/ARM-software/SDS-Frame
 
 #### Audio WAV
 
-Convert `.sds` file to audio WAV format. It takes one sensor and appends required wave header, derived from the parameters in the metadata file.
+Convert `.sds` file to audio WAV format. It takes recorded data and appends required wave file header, derived from the parameters in the metadata file.
 
 ```txt
 usage: sds-convert.py audio_wav [-h] -i <input_file> [<input_file> ...] -o <output_file> [-y <yaml_file> [<yaml_file> ...]]
@@ -234,12 +234,20 @@ python sds-convert.py audio_wav -i Microphone.0.sds -o microphone.wav -y Microph
 
 #### Simple CSV
 
-Convert `.sds` file to simple CSV format. It takes one sensor and converts data for each record. In case of sensor with multiple channels, each channel will be presented in its own column.
+The `simple_csv` mode converts sensor data from `.sds` files into a human-readable CSV format.
+This mode is designed for exporting data from a single sensor. If the sensor has multiple
+channels, each channel will appear as a separate column in the output CSV.
 
-Timestamps in the output file will be seconds in floating point format type. Start and stop tick arguments are also floating point numbers in seconds.
+Timestamps are represented in floating-point format, in seconds. Using the `--normalize` flag causes
+all timestamps in the input file to be offset so that the first timestamp is `0`.
+
+Users may specify a time range selection of the input data to be processed using the following flags:
+
+- `--start-timestamp <timestamp>`: Starting input data timestamp in floating-point format, in seconds.
+- `--stop-timestamp <timestamp>`: Stopping input data timestamp in floating-point format, in seconds.
 
 ```txt
-usage: sds-convert.py simple_csv [-h] -i <input_file> [<input_file> ...] -o <output_file> [-y <yaml_file> [<yaml_file> ...]] [--normalize] [--start-tick <start-tick>] [--stop-tick <stop-tick>]
+usage: sds-convert.py simple_csv [-h] -i <input_file> [<input_file> ...] -o <output_file> [-y <yaml_file> [<yaml_file> ...]] [--normalize] [--start-timestamp <timestamp>] [--stop-timestamp <timestamp>]
 
 options:
   -h, --help                          show this help message and exit
@@ -251,12 +259,13 @@ required:
 optional:
   -y <yaml_file> [<yaml_file> ...]    YAML sensor description file
   --normalize                         Normalize timestamps so they start with 0
-  --start-tick <start-tick>           Exported data start tick (default: None)
-  --stop-tick <stop-tick>             Exported data stop tick (default: None)
+  --start-timestamp <timestamp>       Starting input data timestamp, in seconds (default: None)
+  --stop-timestamp <timestamp>        Stopping input data timestamp, in seconds (default: None)
 ```
 
 !!! Note
-    The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
+    - The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
+    - Current implementation assumes that the tick frequency is `1ms` and does not use the `tick-frequency` value from the metadata file.
 
 **Example of metadata yml file for gyroscope:**
 
@@ -288,20 +297,25 @@ python sds-convert.py simple_csv  -i Gyroscope.0.sds -o gyroscope_simple.csv -y 
 
 #### Qeexo V2 CSV
 
-By default raw timestamps are used for the output file. User can override this behavior using `--normalize` flag.
-Output timestamps will then start with 0. User can also select start and stop tick for the data to be converter to the
-specified format using `--start-tick <tick>` and `--stop-tick <tick>` respectively. Both parameters are based on 
-timestamp format in the output file.
+Timestamps are represented in integer format, in milliseconds. Using the `--normalize` flag causes
+all timestamps in the input file to be offset so that the first timestamp is `0`.
 
-Timestamps in the output file will be milliseconds in integer format type. Start and stop tick arguments are also integer numbers in milliseconds.
+Users may specify a time range selection of the input data to be processed using the following flags:
 
-By default interval of 50 ms is used for timestamp increments. User can override this setting by passing number of ms after `--interval` flag.
-User can also define text in label column by passing a string after `--label` flag.
+- `--start-timestamp <timestamp>`: Starting input data timestamp in integer format, in milliseconds.
+- `--stop-timestamp <timestamp>`: Stopping input data timestamp in integer format, in milliseconds.
+
+By default, the output file will have raw timestamps in integer format, in milliseconds.
+The default output timestamp interval is set to `50 ms`.
+To override this setting use the `--interval <ms>` flag, where `<ms>` is the desired interval in milliseconds.
+
+An optional label can be added to the output by providing a string argument to the `--label <text>` flag.
+This `<text>` will populate the label column in the output file.
 
 Link to [Qeexo V2 CSV format specification](https://docs.qeexo.com/guides/userguides/data-management#2-1-Data-format-specification).
 
 ```txt
-usage: sds-convert.py qeexo_v2_csv [-h] -i <input_file> [<input_file> ...] -o <output_file> [-y <yaml_file> [<yaml_file> ...]] [--normalize] [--start-tick <start-tick>] [--stop-tick <stop-tick>] [--label 'label'] [--interval <interval>] [--sds_index <sds_index>]
+usage: sds-convert.py qeexo_v2_csv [-h] -i <input_file> [<input_file> ...] -o <output_file> [-y <yaml_file> [<yaml_file> ...]] [--normalize] [--start-timestamp <timestamp>] [--stop-timestamp <timestamp>] [--label 'label'] [--interval <interval>] [--sds_index <sds_index>]
 
 options:
   -h, --help                          show this help message and exit
@@ -313,15 +327,16 @@ required:
 optional:
   -y <yaml_file> [<yaml_file> ...]    YAML sensor description file
   --normalize                         Normalize timestamps so they start with 0
-  --start-tick <start-tick>           Exported data start tick (default: None)
-  --stop-tick <stop-tick>             Exported data stop tick (default: None)
+  --start-timestamp <timestamp>       Starting input data timestamp, in ms (default: None)
+  --stop-timestamp <timestamp>        Stopping input data timestamp, in ms (default: None)
   --label 'label'                     Qeexo class label for sensor data (default: None)
-  --interval <interval>               Qeexo timestamp interval in ms (default: 50)
+  --interval <interval>               Qeexo timestamp interval, in ms (default: 50)
   --sds_index <sds_index>             SDS file index to write (default: <sensor>.0.sds)
 ```
 
 !!! Note
-    The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
+    - The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
+    - Current implementation assumes that the tick frequency is `1ms` and does not use the `tick-frequency` value from the metadata file.
 
 **Example of metadata yml file for accelerometer:**
 

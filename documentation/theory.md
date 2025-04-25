@@ -96,7 +96,7 @@ The content of each data stream may be described in a [YAML](https://en.wikipedi
 &nbsp;&nbsp;&nbsp; `name:`           | Name of the Synchronous Data Stream (SDS)
 &nbsp;&nbsp;&nbsp; `description:`    | Additional descriptive text (optional)
 &nbsp;&nbsp;&nbsp; `frequency:`      | Capture frequency of the SDS
-&nbsp;&nbsp;&nbsp; `tick-frequency:` | Tick frequency of the timestamp value (optional); default: 1000 for 1 milli-second interval
+&nbsp;&nbsp;&nbsp; `tick-frequency:` | Tick frequency of the timestamp value (optional); default: 1000 for 1 millisecond interval
 &nbsp;&nbsp;&nbsp; `content:`        | List of values captured (see below)
 
 `content:`                           | List of values captured (in the order of the data file)
