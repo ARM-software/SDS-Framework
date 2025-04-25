@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arm Limited. All rights reserved.
+# Copyright (c) 2023,2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -210,8 +210,8 @@ def prepareData(meta_data, raw_data, data_manipulation):
 # Only supports one sensor at a time
 def write_SDS_SimpleCSV(args, data, meta_data):
     normalize = args.normalize
-    csv_start_tick = args.start_tick
-    csv_stop_tick = args.stop_tick
+    csv_start_timestamp = args.start_timestamp
+    csv_stop_timestamp = args.stop_timestamp
 
     # Automatically generate new column for each sensor channel
     csv_header = ['timestamp']
@@ -270,19 +270,19 @@ def write_SDS_SimpleCSV(args, data, meta_data):
 
                 # Write generated CSV row to output file
                 for t in range(0, len(tmp_time)):
-                    # If start/stop tick parameters are specified, write to output file
+                    # If start/stop timestamp parameters are specified, write to output file
                     # when timestamps are between selected boundaries
-                    if (csv_start_tick == None) or (tmp_time[t] >= csv_start_tick):
-                        if (csv_stop_tick == None) or (csv_stop_tick > tmp_time[t]):
+                    if (csv_start_timestamp == None) or (tmp_time[t] >= csv_start_timestamp):
+                        if (csv_stop_timestamp == None) or (csv_stop_timestamp > tmp_time[t]):
                             tmp_record_row = [record_row[i][t] for i in range(len(record_row))]
                             writer.writerow([float(tmp_time[t])] + tmp_record_row)
                         else:
                             break
             else:
-                # If start/stop tick parameters are specified, write to output file
+                # If start/stop timestamp parameters are specified, write to output file
                 # when timestamps are between selected boundaries
-                if (csv_start_tick == None) or (csv_timestamp >= csv_start_tick):
-                    if (csv_stop_tick == None) or (csv_stop_tick > csv_timestamp):
+                if (csv_start_timestamp == None) or (csv_timestamp >= csv_start_timestamp):
+                    if (csv_stop_timestamp == None) or (csv_stop_timestamp > csv_timestamp):
                         # Write generated CSV row to output file
                         writer.writerow([float(csv_timestamp)] + record_row[0])
                     else:
@@ -296,8 +296,8 @@ def write_SDS_SimpleCSV(args, data, meta_data):
 def write_SDS_QeexoV2CSV(args, data, meta_data):
     interval = args.interval
     normalize = args.normalize
-    csv_start_tick = args.start_tick
-    csv_stop_tick = args.stop_tick
+    csv_start_timestamp = args.start_timestamp
+    csv_stop_timestamp = args.stop_timestamp
 
     csv_header = ['timestamp']
     for sensor in meta_data:
@@ -377,10 +377,10 @@ def write_SDS_QeexoV2CSV(args, data, meta_data):
             else:
                 tmp_csv_timestamp = csv_timestamp
 
-            # If start/stop tick parameters are specified, write to output file
+            # If start/stop timestamp parameters are specified, write to output file
             # when timestamps are between selected boundaries
-            if (csv_start_tick == None) or (tmp_csv_timestamp >= csv_start_tick):
-                if (csv_stop_tick == None) or (csv_stop_tick > tmp_csv_timestamp):
+            if (csv_start_timestamp == None) or (tmp_csv_timestamp >= csv_start_timestamp):
+                if (csv_stop_timestamp == None) or (csv_stop_timestamp > tmp_csv_timestamp):
                     writer.writerow([tmp_csv_timestamp] + csv_row + [args.label])
                 else:
                     break
@@ -515,10 +515,12 @@ def main():
                                             help="YAML sensor description file", nargs="+", default=None)
     parser_simple_csv_optional.add_argument("--normalize", dest="normalize",
                                             help="Normalize timestamps so they start with 0", action="store_true")
-    parser_simple_csv_optional.add_argument("--start-tick", dest="start_tick", metavar="<start-tick>",
-                                            help="Exported data start tick (default: %(default)s)", type=float, default=None)
-    parser_simple_csv_optional.add_argument("--stop-tick", dest="stop_tick", metavar="<stop-tick>",
-                                            help="Exported data stop tick (default: %(default)s)", type=float, default=None)
+    parser_simple_csv_optional.add_argument("--start-timestamp", dest="start_timestamp", metavar="<timestamp>",
+                                            help="Starting input data timestamp, in seconds (default: %(default)s)",
+                                            type=float, default=None)
+    parser_simple_csv_optional.add_argument("--stop-timestamp", dest="stop_timestamp", metavar="<timestamp>",
+                                            help="Stopping input data timestamp, in seconds (default: %(default)s)",
+                                            type=float, default=None)
 
     # Qeexo V2 CSV
     parser_qeexo_v2_csv = subparsers.add_parser("qeexo_v2_csv", formatter_class=formatter)
@@ -532,16 +534,20 @@ def main():
                                               help="YAML sensor description file", nargs="+", default=None)
     parser_qeexo_v2_csv_optional.add_argument("--normalize", dest="normalize",
                                               help="Normalize timestamps so they start with 0", action="store_true")
-    parser_qeexo_v2_csv_optional.add_argument("--start-tick", dest="start_tick", metavar="<start-tick>",
-                                              help="Exported data start tick (default: %(default)s)", type=float, default=None)
-    parser_qeexo_v2_csv_optional.add_argument("--stop-tick", dest="stop_tick", metavar="<stop-tick>",
-                                              help="Exported data stop tick (default: %(default)s)", type=float, default=None)
+    parser_qeexo_v2_csv_optional.add_argument("--start-timestamp", dest="start_timestamp", metavar="<timestamp>",
+                                              help="Starting input data timestamp, in ms (default: %(default)s)",
+                                              type=float, default=None)
+    parser_qeexo_v2_csv_optional.add_argument("--stop-timestamp", dest="stop_timestamp", metavar="<timestamp>",
+                                              help="Stopping input data timestamp, in ms (default: %(default)s)",
+                                              type=float, default=None)
     parser_qeexo_v2_csv_optional.add_argument("--label", dest="label", metavar="'label'",
                                               help="Qeexo class label for sensor data (default: %(default)s)", default=None)
     parser_qeexo_v2_csv_optional.add_argument("--interval", dest="interval", metavar="<interval>",
-                                              help="Qeexo timestamp interval in ms (default: %(default)s)", type=int, default=50)
+                                              help="Qeexo timestamp interval, in ms (default: %(default)s)",
+                                              type=int, default=50)
     parser_qeexo_v2_csv_optional.add_argument("--sds_index", dest="sds_index", metavar="<sds_index>", 
-                                              help="SDS file index to write (default: <sensor>.%(default)s.sds)", type=int, default=0)
+                                              help="SDS file index to write (default: <sensor>.%(default)s.sds)",
+                                              type=int, default=0)
 
     args = parser.parse_args()
 
