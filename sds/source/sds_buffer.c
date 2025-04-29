@@ -132,7 +132,7 @@ sdsBufferId_t sdsBufferOpen (void *buf, uint32_t buf_size, uint32_t threshold_lo
 // Close SDS Buffer stream
 int32_t sdsBufferClose (sdsBufferId_t id) {
   sdsBuffer_t *sds_buffer = id;
-  int32_t      ret = SDS_BUFFER_ERROR;
+  int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;
 
   if (sds_buffer != NULL) {
     sdsBufferFree(sds_buffer);
@@ -144,9 +144,9 @@ int32_t sdsBufferClose (sdsBufferId_t id) {
 // Register SDS Buffer stream events
 int32_t sdsBufferRegisterEvents (sdsBufferId_t id, sdsBufferEvent_t event_cb, uint32_t event_mask, void *event_arg) {
   sdsBuffer_t *sds_buffer = id;
-  int32_t      ret = SDS_BUFFER_ERROR;
+  int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;
 
-  if ((sds_buffer != NULL) && (event_cb != NULL) && (event_mask != 0U)) {
+  if (sds_buffer != NULL) {
     sds_buffer->event_cb   = event_cb;
     sds_buffer->event_mask = event_mask;
     sds_buffer->event_arg  = event_arg;
@@ -156,10 +156,11 @@ int32_t sdsBufferRegisterEvents (sdsBufferId_t id, sdsBufferEvent_t event_cb, ui
 }
 
 // Write data to SDS Buffer stream
-uint32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size) {
+int32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size) {
   sdsBuffer_t   *sds_buffer = id;
   uint32_t       num = 0U;
   uint32_t       cnt_free, cnt_used, cnt_limit;
+  int32_t        ret = SDS_BUFFER_ERROR_PARAMETER;
 
   if ((sds_buffer != NULL) && (buf != NULL) && (buf_size != 0U)) {
 
@@ -191,15 +192,17 @@ uint32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size) {
         sds_buffer->event_cb(sds_buffer, SDS_BUFFER_EVENT_DATA_HIGH, sds_buffer->event_arg);
       }
     }
+    ret = (int32_t)num;
   }
-  return num;
+  return ret;
 }
 
 // Read data from SDS Buffer stream
-uint32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size) {
+int32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size) {
   sdsBuffer_t *sds_buffer = id;
   uint32_t     num = 0U;
   uint32_t     cnt_used, cnt_limit;
+  int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;
 
   if ((sds_buffer != NULL) && (buf != NULL) && (buf_size != 0U)) {
 
@@ -230,35 +233,41 @@ uint32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size) {
         sds_buffer->event_cb(sds_buffer, SDS_BUFFER_EVENT_DATA_LOW, sds_buffer->event_arg);
       }
     }
+
+    ret = (int32_t)num;
   }
-  return num;
+  return ret;
 }
 
 // Clear SDS Buffer stream data
 int32_t sdsBufferClear (sdsBufferId_t id) {
   sdsBuffer_t *sds_buffer = id;
   uint32_t     cnt_used, cnt_limit;
+  int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;
 
-  cnt_used = sds_buffer->cnt_in - sds_buffer->cnt_out;
-  cnt_limit = sds_buffer->buf_size - sds_buffer->idx_out;
-  if (cnt_used > cnt_limit) {
-    // buffer rollover
-    sds_buffer->idx_out = cnt_used - cnt_limit;
-  } else {
-    sds_buffer->idx_out += cnt_used;
+  if (sds_buffer != NULL) {
+    cnt_used = sds_buffer->cnt_in - sds_buffer->cnt_out;
+    cnt_limit = sds_buffer->buf_size - sds_buffer->idx_out;
+    if (cnt_used > cnt_limit) {
+      // buffer rollover
+      sds_buffer->idx_out = cnt_used - cnt_limit;
+    } else {
+      sds_buffer->idx_out += cnt_used;
+    }
+    sds_buffer->cnt_out += cnt_used;
+
+    ret = SDS_BUFFER_OK;
   }
-  sds_buffer->cnt_out += cnt_used;
-
-  return SDS_BUFFER_OK;
+  return ret;
 }
 
 // Get data count in SDS Buffer stream
-uint32_t sdsBufferGetCount (sdsBufferId_t id) {
+int32_t sdsBufferGetCount (sdsBufferId_t id) {
   sdsBuffer_t *sds_buffer = id;
-  uint32_t     num = 0U;
+  int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;
 
   if (sds_buffer != NULL) {
-    num = sds_buffer->cnt_in - sds_buffer->cnt_out;
+    ret = (int32_t)(sds_buffer->cnt_in - sds_buffer->cnt_out);
   }
-  return num;
+  return ret;
 }
