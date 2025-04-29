@@ -116,7 +116,7 @@ The **SDS I/O** interface transfers data between the circular buffer and the I/O
 */
 
 /**
-\defgroup SDS_IO_Error_Codes Error Codes
+\defgroup SDS_IO_Return_Codes Error Codes
 \brief SDS I/O Error Codes
 \details The following values are returned by most `sdsio` functions.
 @{
@@ -249,7 +249,7 @@ Refer to the chapter *SDS Interface* for an overview.
 \typedef sdsRecPlayId_t
 \brief Handle to SDS recorder or player stream
 \details
-This *pointer* defines the handle to SDS recorder or player stream. It is used to identify a data stream across the different functions for 
+This *pointer* defines the handle to SDS recorder or player stream. It is used to identify a data stream across the different functions for
 the SDS Recorder and Player system.
 */
 
