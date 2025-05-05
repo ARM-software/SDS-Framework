@@ -572,7 +572,7 @@ int32_t sdsRecClose (sdsRecPlayId_t id) {
 
   if (sdsRecPlayInitialized == 0U) {
     // Recorder/Player is not initialized. Exit the function.
-    return SDS_REC_PLAY_ERROR_NO_INIT;
+    return SDS_REC_PLAY_ERROR;
   }
   if (rec_play == NULL) {
     // Invalid stream. Exit the function.
@@ -585,7 +585,7 @@ int32_t sdsRecClose (sdsRecPlayId_t id) {
   if (rec_play->state != SDS_REC_PLAY_STATE_REC) {
     // Stream is not in recording state. Exit the function.
     sdsRecPlayLockRelease(rec_play);
-    return SDS_REC_PLAY_ERROR_INV_STATE;
+    return SDS_REC_PLAY_ERROR;
   }
 
   // Set state to closing.
@@ -644,7 +644,7 @@ int32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uin
 
   if (sdsRecPlayInitialized == 0U) {
     // Recorder/Player is not initialized. Exit the function.
-    return SDS_REC_PLAY_ERROR_NO_INIT;
+    return SDS_REC_PLAY_ERROR;
   }
   if (rec_play == NULL) {
     // Invalid stream. Exit the function.
@@ -657,7 +657,7 @@ int32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uin
   if (rec_play->state != SDS_REC_PLAY_STATE_REC) {
     // Stream is not in recording state. Exit the function.
     sdsRecPlayLockRelease(rec_play);
-    return SDS_REC_PLAY_ERROR_LOCK;
+    return SDS_REC_PLAY_ERROR;
   }
 
   // Verify if parameters are valid.
@@ -801,7 +801,7 @@ int32_t sdsPlayClose (sdsRecPlayId_t id) {
 
   if (sdsRecPlayInitialized == 0U) {
     // Recorder/Player is not initialized. Exit the function.
-    return SDS_REC_PLAY_ERROR_NO_INIT;
+    return SDS_REC_PLAY_ERROR;
   }
   if (rec_play == NULL) {
     // Invalid stream. Exit the function.
@@ -814,7 +814,7 @@ int32_t sdsPlayClose (sdsRecPlayId_t id) {
   if (rec_play->state != SDS_REC_PLAY_STATE_PLAY) {
     // Stream is not in playing state. Exit the function.
     sdsRecPlayLockRelease(rec_play);
-    return SDS_REC_PLAY_ERROR_INV_STATE;
+    return SDS_REC_PLAY_ERROR;
   }
 
   // Set state to closing.
@@ -874,7 +874,7 @@ int32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t
 
   if (sdsRecPlayInitialized == 0U) {
     // Recorder/Player is not initialized. Exit the function.
-    return SDS_REC_PLAY_ERROR_NO_INIT;
+    return SDS_REC_PLAY_ERROR;
   }
   if (rec_play == NULL) {
     // Invalid stream. Exit the function.
@@ -882,12 +882,12 @@ int32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t
   }
   if (sdsRecPlayLockAcquire(rec_play, 0) == 0U) {
     // Lock acquire failed.
-    return SDS_REC_PLAY_ERROR_LOCK;
+    return SDS_REC_PLAY_ERROR;
   }
   if (rec_play->state != SDS_REC_PLAY_STATE_PLAY) {
     // Stream is not in playing state. Exit the function.
     sdsRecPlayLockRelease(rec_play);
-    return SDS_REC_PLAY_ERROR_INV_STATE;
+    return SDS_REC_PLAY_ERROR;
   }
 
   // Verify if parameters are valid.
@@ -966,7 +966,7 @@ int32_t sdsPlayGetSize (sdsRecPlayId_t id) {
 
   if (sdsRecPlayInitialized == 0U) {
     // Recorder/Player is not initialized. Exit the function.
-    return SDS_REC_PLAY_ERROR_NO_INIT;
+    return SDS_REC_PLAY_ERROR;
   }
   if (rec_play == NULL) {
     // Invalid stream. Exit the function.
@@ -974,12 +974,12 @@ int32_t sdsPlayGetSize (sdsRecPlayId_t id) {
   }
   if (sdsRecPlayLockAcquire(rec_play, 0) == 0U) {
     // Lock acquire failed.
-    return SDS_REC_PLAY_ERROR_LOCK;
+    return SDS_REC_PLAY_ERROR;
   }
   if (rec_play->state != SDS_REC_PLAY_STATE_PLAY) {
     // Stream is not in playing state. Exit the function.
     sdsRecPlayLockRelease(rec_play);
-    return SDS_REC_PLAY_ERROR_INV_STATE;
+    return SDS_REC_PLAY_ERROR;
   }
 
   // Save eos flag.

@@ -34,15 +34,11 @@ typedef void *sdsRecPlayId_t;                   // Handle to SDS Recorder/Player
 #define SDS_REC_PLAY_OK                 (0)     // Operation completed successfully
 #define SDS_REC_PLAY_ERROR              (-1)    // Operation failed
 #define SDS_REC_PLAY_ERROR_PARAMETER    (-2)    // Operation failed: parameter error
-#define SDS_REC_PLAY_ERROR_TIMEOUT      (-2)    // Operation failed: timeout error
+#define SDS_REC_PLAY_ERROR_TIMEOUT      (-3)    // Operation failed: timeout error
 #define SDS_REC_PLAY_ERROR_IO           (-4)    // Operation failed: SDS I/O interface error
-#define SDS_REC_PLAY_ERROR_NO_INIT      (-5)    // Operation failed: not initialized
-#define SDS_REC_PLAY_ERROR_INV_STATE    (-6)    // Operation failed: invalid state
-#define SDS_REC_PLAY_ERROR_LOCK         (-7)    // Operation failed: lock not acquired
-#define SDS_REC_ERROR_NO_SPACE          (-8)    // Operation failed: insufficient space in stream buffer
-#define SDS_PLAY_ERROR_NO_SPACE         (-9)    // Operation failed: insufficient space provided buffer
-#define SDS_PLAY_ERROR_NO_DATA          (-10)   // Operation failed: insufficient data in stream buffer
-#define SDS_PLAY_EOS                    (-11)   // End of stream reached
+#define SDS_REC_ERROR_NO_SPACE          (-5)    // Operation failed: insufficient space in stream buffer
+#define SDS_PLAY_ERROR_NO_DATA          (-6)    // Operation failed: insufficient data in stream buffer
+#define SDS_PLAY_EOS                    (-7)    // End of stream reached
 
 // Event codes
 #define SDS_REC_PLAY_EVENT_IO_ERROR (1UL)       // I/O Error
