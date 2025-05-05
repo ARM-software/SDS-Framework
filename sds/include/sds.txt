@@ -93,7 +93,7 @@ Clears any data from the SDS circular buffer and resets the circular buffer to e
 */
 
 /**
-\fn          uint32_t sdsBufferGetCount (sdsBufferId_t id)
+\fn          int32_t sdsBufferGetCount (sdsBufferId_t id)
 \details
 Retrieves the number of data bytes currently available in the SDS circular buffer.
 */
