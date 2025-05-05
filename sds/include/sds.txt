@@ -116,15 +116,30 @@ The **SDS I/O** interface transfers data between the circular buffer and the I/O
 */
 
 /**
-\defgroup SDS_IO_Return_Codes Error Codes
-\brief SDS I/O Error Codes
+\defgroup SDS_IO_Return_Codes Return Codes
+\brief SDS I/O Return Codes
 \details The following values are returned by most `sdsio` functions.
 @{
 \def SDSIO_OK
-\brief sdsio function execution completed successfully.
+\brief SDS I/O function executed successfully.
 
 \def SDSIO_ERROR
-\brief Error during sdsio function execution.
+\brief General error during SDS I/O function execution.
+
+\def SDSIO_ERROR_PARAMETER
+\brief Invalid parameter passed to an SDS I/O function.
+
+\def SDSIO_ERROR_TIMEOUT
+\brief SDS I/O function execution timed out.
+
+\def SDSIO_ERROR_INTERFACE
+\brief Error in the SDS I/O interface.
+
+\def SDSIO_ERROR_NO_SERVER
+\brief No response from the SDS I/O server.
+
+\def SDSIO_EOS
+\brief End of stream reached in SDS I/O read operation.
 @}
 */
 
@@ -177,7 +192,7 @@ to the SDS I/O Server to close the file on the Host system.
 */
 
 /**
-\fn          uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size)
+\fn          int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size)
 \details
 Writes data to an SDS I/O stream opened for writing. If the interface is a local file system or semihosting, data is written directly to the file.
 For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a write command (SDSIO_CMD_WRITE) along with the data to
@@ -185,21 +200,12 @@ the SDS I/O Server, which then writes the data to a file on the Host system.
 */
 
 /**
-\fn          uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size)
+\fn          int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size)
 \details
 Reads data from an SDS I/O stream opened for reading. If the interface is a local file system or semihosting, data is read directly from the file.
 For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO_CMD_READ) to the SDS I/O Server, which reads
-the file on the Host system and returns the data to the Client.
-*/
-
-/**
-\fn          int32_t sdsioEndOfStream (sdsioId_t id)
-\details
-Checks whether the end of the stream has been reached and no more data is available in the recorded file.
-This helps distinguish between the absence of data in the recorded file and a case where the SDS I/O Client
-failed to prepare data before \ref sdsioRead was invoked.
-For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends an command (SDSIO_CMD_EOS) to the SDS I/O Server
-to check the end of stream status of the file on the Host system.
+the file on the Host system and returns the data to the Client. If the end of the stream is reached, the function returns \ref SDSIO_EOS to
+indicate that no more data is available.
 */
 
 /**
