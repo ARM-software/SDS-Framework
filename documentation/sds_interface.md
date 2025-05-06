@@ -13,8 +13,9 @@ The SDSIO components offer flexible recorder and playback interfaces. You may ch
 
 To simplify usage further, the following pre-configured SDS interface layers in *csolution project format* are available. These connect via various interfaces to the SDSIO Server, which provides read/write access to SDS data files.
 
-- [Ethernet Interface](#layer-sds_interfacenetwork) using the MDK-Middleware Network components.
-- [USB Interface](#layer-sds_interfaceusb) using the MDK-Middleware USB components.
+- [Ethernet Interface](#layer-sds_interfacenetwork) using the MDK-Middleware Network component.
+- [USB Virtual COM Port Interface](#layer-sds_interfaceusb) using the MDK-Middleware USB component.
+- [Memory Card Interface](#layer-sds_interfacefilesystem) using the MDK-Middleware File System component.
 
 ![SDS Interface](images/SDSIO.png)
 
@@ -25,3 +26,7 @@ The [`SDS_Interface/Network/SDS_Interface.clayer`](https://github.com/Arm-Exampl
 ## Layer: SDS_Interface/USB
 
 The [`SDS_Interface/USB/SDS_Interface.clayer`](https://github.com/Arm-examples/SDS-Examples/tree/main/SDS_Interface/USB) is configured for recording and playback via USB interface. It is using the MDK-Middleware USB component.
+
+## Layer: SDS_Interface/FileSystem
+
+The [`SDS_Interface/FileSystem/SDS_Interface.clayer`](https://github.com/Arm-Examples/SDS-Examples/tree/main/SDS_Interface/FileSystem) is configured for recording and playback to/from the Memory Card. It is using the MDK-Middleware File System component.
