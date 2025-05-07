@@ -159,7 +159,7 @@ int32_t sdsBufferRegisterEvents (sdsBufferId_t id, sdsBufferEvent_t event_cb, ui
 int32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size) {
   sdsBuffer_t   *sds_buffer = id;
   uint32_t       num = 0U;
-  uint32_t       cnt_free, cnt_used, cnt_limit;
+  uint32_t       cnt_free, cnt_used, cnt_used_new, cnt_limit;
   int32_t        ret = SDS_BUFFER_ERROR_PARAMETER;
 
   if ((sds_buffer != NULL) && (buf != NULL) && (buf_size != 0U)) {
@@ -187,8 +187,8 @@ int32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size) {
     sds_buffer->cnt_in += num;
 
     if ((sds_buffer->event_cb != NULL) && (sds_buffer->event_mask & SDS_BUFFER_EVENT_DATA_HIGH)) {
-      cnt_used = sds_buffer->cnt_in - sds_buffer->cnt_out;
-      if (cnt_used >= sds_buffer->threshold_high) {
+      cnt_used_new = sds_buffer->cnt_in - sds_buffer->cnt_out;
+      if ((cnt_used < sds_buffer->threshold_high) && (cnt_used_new >= sds_buffer->threshold_high)) {
         sds_buffer->event_cb(sds_buffer, SDS_BUFFER_EVENT_DATA_HIGH, sds_buffer->event_arg);
       }
     }
@@ -201,7 +201,7 @@ int32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size) {
 int32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size) {
   sdsBuffer_t *sds_buffer = id;
   uint32_t     num = 0U;
-  uint32_t     cnt_used, cnt_limit;
+  uint32_t     cnt_used, cnt_used_new, cnt_limit;
   int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;
 
   if ((sds_buffer != NULL) && (buf != NULL) && (buf_size != 0U)) {
@@ -228,8 +228,8 @@ int32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size) {
     sds_buffer->cnt_out += num;
 
     if ((sds_buffer->event_cb != NULL) && (sds_buffer->event_mask & SDS_BUFFER_EVENT_DATA_LOW)) {
-      cnt_used = sds_buffer->cnt_in - sds_buffer->cnt_out;
-      if (cnt_used <= sds_buffer->threshold_low) {
+      cnt_used_new = sds_buffer->cnt_in - sds_buffer->cnt_out;
+      if ((cnt_used > sds_buffer->threshold_low) && (cnt_used_new <= sds_buffer->threshold_low)) {
         sds_buffer->event_cb(sds_buffer, SDS_BUFFER_EVENT_DATA_LOW, sds_buffer->event_arg);
       }
     }

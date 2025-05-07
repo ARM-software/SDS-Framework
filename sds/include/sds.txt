@@ -30,10 +30,10 @@ A callback function can be registered to respond when data thresholds (high or l
 \details The following values are passed as event value to \ref sdsBufferEvent_t callback function.
 @{
 \def SDS_BUFFER_EVENT_DATA_LOW
-\brief Event signaled when data in circular buffer drops below low threshold value.
+\brief Event signaled when data in circular buffer falls to or below low threshold value.
 
 \def SDS_BUFFER_EVENT_DATA_HIGH
-\brief Event signaled when data in circular buffer exceeds high threshold value.
+\brief Event signaled when data in circular buffer reaches or exceeds high threshold value.
 @}
 */
 
@@ -47,7 +47,7 @@ This *pointer* defines the handle to SDS circular buffer. It is used to identify
 /**
 \typedef sdsBufferEvent_t
 \details
-This function is registered by passing a pointer to it as a parameter to the \ref sdsBufferRegisterEvents function. It is invoked when the circular buffer either exceeds the high data threshold or drops below the low data threshold.
+This function is registered by passing a pointer to it as a parameter to the \ref sdsBufferRegisterEvents function. It is invoked when the circular buffer either reaches or exceeds the high data threshold or falls to or below the low data threshold.
 The high and low data thresholds are configured using the \ref sdsBufferOpen function.
 */
 
@@ -372,7 +372,7 @@ This asynchronous design enables efficient, non-blocking data handling and ensur
 
 Before attempting to read, this function verifies that both the header and its associated data are present and fully valid within the SDS Stream buffer.
 If either the header or data is missing or incomplete, the function aborts and returns \ref SDS_PLAY_ERROR_NO_DATA. The function confirms that the provided buffer
-can accommodate the entire data block. If the provided buffer is too small, it aborts and returns \ref SDS_REC_PLAY_ERROR_PARAMETER. 
+can accommodate the entire data block. If the provided buffer is too small, it aborts and returns \ref SDS_REC_PLAY_ERROR_PARAMETER.
 If the end of the stream has been reached, the function returns \ref SDS_PLAY_EOS.
 
 On success, the function reads the data block from the stream buffer, stores it in the user-provided buffer, and returns
