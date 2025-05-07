@@ -134,14 +134,14 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
   while (num < buf_size) {
     sock_status = iotSocketSend(socket, buf + num, buf_size - num);
     if (sock_status >= 0) {
-      num += (uint32_t)sock_status;
+      num += sock_status;
     } else {
       if (sock_status == IOT_SOCKET_EAGAIN) {
         // Timeout happened.
         ret = SDSIO_ERROR_TIMEOUT;
       } else {
         // Error happened.
-        ret = ;
+        ret = SDSIO_ERROR_INTERFACE;
       }
       break;
     }
@@ -167,8 +167,8 @@ int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size) {
 
   while (num < buf_size) {
     sock_status = iotSocketRecv(socket, buf + num, buf_size - num);
-    if (status >= 0) {
-      num += (uint32_t)status;
+    if (sock_status >= 0) {
+      num += sock_status;
     } else {
       if (sock_status == IOT_SOCKET_EAGAIN) {
         // Timeout happened.
