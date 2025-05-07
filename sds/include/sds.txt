@@ -262,7 +262,13 @@ Refer to the chapter *SDS Interface* for an overview.
 \details The following values are passed as event value to \ref sdsRecPlayEvent_t callback function.
 @{
 \def SDS_REC_PLAY_EVENT_IO_ERROR
-\brief Event signaled when an I/O error happened.
+\brief Event triggered when an I/O error occurs during recording or playback.
+
+\def SDS_REC_EVENT_NO_SPACE
+\brief Event triggered when sdsRecWrite() fails due to insufficient space in the stream buffer.
+
+\def SDS_PLAY_EVENT_NO_DATA
+\brief Event triggered when sdsPlayRead() fails due to insufficient data in the stream buffer.
 @}
 */
 

@@ -669,6 +669,10 @@ int32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uin
       }
     } else {
       // Insufficient space in the stream buffer.
+      if (sdsRecPlayEvent != NULL) {
+        // Notify the application about the error.
+        sdsRecPlayEvent(rec_play, SDS_REC_EVENT_NO_SPACE);
+      }
       ret = SDS_REC_ERROR_NO_SPACE;
     }
   } else {
@@ -932,6 +936,11 @@ int32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t
     }
   } else {
     ret = SDS_REC_PLAY_ERROR_PARAMETER;
+  }
+
+  if ((ret == SDS_PLAY_ERROR_NO_DATA) && (sdsRecPlayEvent != NULL)) {
+    // Notify the application about the error.
+    sdsRecPlayEvent(rec_play, SDS_PLAY_EVENT_NO_DATA);
   }
 
   // Release Lock.
