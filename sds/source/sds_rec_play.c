@@ -253,7 +253,7 @@ static void sdsRecHandler (sdsRecPlay_t *rec_play) {
     } else {
       if (sdsRecPlayEvent != NULL) {
         // Notify the application about I/O error.
-        sdsRecPlayEvent(rec_play, SDS_REC_PLAY_EVENT_IO_ERROR);
+        sdsRecPlayEvent(rec_play, SDS_REC_PLAY_EVENT_ERROR_IO);
       }
       break;
     }
@@ -319,7 +319,7 @@ static void sdsPlayHandler (sdsRecPlay_t *rec_play) {
       // Error occurred during reading from the SDS I/O interface.
       if (sdsRecPlayEvent != NULL) {
         // Notify the application about I/O error.
-        sdsRecPlayEvent(rec_play, SDS_REC_PLAY_EVENT_IO_ERROR);
+        sdsRecPlayEvent(rec_play, SDS_REC_PLAY_EVENT_ERROR_IO);
       }
       break;
     }
@@ -671,7 +671,7 @@ int32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uin
       // Insufficient space in the stream buffer.
       if (sdsRecPlayEvent != NULL) {
         // Notify the application about the error.
-        sdsRecPlayEvent(rec_play, SDS_REC_EVENT_NO_SPACE);
+        sdsRecPlayEvent(rec_play, SDS_REC_EVENT_ERROR_NO_SPACE);
       }
       ret = SDS_REC_ERROR_NO_SPACE;
     }
@@ -940,7 +940,7 @@ int32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t
 
   if ((ret == SDS_PLAY_ERROR_NO_DATA) && (sdsRecPlayEvent != NULL)) {
     // Notify the application about the error.
-    sdsRecPlayEvent(rec_play, SDS_PLAY_EVENT_NO_DATA);
+    sdsRecPlayEvent(rec_play, SDS_PLAY_EVENT_ERROR_NO_DATA);
   }
 
   // Release Lock.
