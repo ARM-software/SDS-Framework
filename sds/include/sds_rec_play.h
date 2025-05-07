@@ -55,14 +55,16 @@ typedef void (*sdsRecPlayEvent_t) (sdsRecPlayId_t id, uint32_t event);
   \fn          int32_t sdsRecPlayInit (sdsRecPlayEvent_t event_cb)
   \brief       Initialize recorder and player.
   \param[in]   event_cb       pointer to \ref sdsRecPlayEvent_t callback function
-  \return      return code (see \ref SDS_Recorder_Player_Return_Codes)
+  \return      SDS_REC_PLAY_OK on success or
+               a negative value on error (see \ref SDS_Recorder_Player_Return_Codes)
 */
 int32_t sdsRecPlayInit (sdsRecPlayEvent_t event_cb);
 
 /**
   \fn          int32_t sdsRecPlayUninit (void)
   \brief       Uninitialize recorder and player.
-  \return      return code (see \ref SDS_Recorder_Player_Return_Codes)
+  \return      SDS_REC_PLAY_OK on success or
+               a negative value on error (see \ref SDS_Recorder_Player_Return_Codes)
 */
 int32_t sdsRecPlayUninit (void);
 
@@ -80,7 +82,8 @@ sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size);
   \fn          int32_t sdsRecClose (sdsRecPlayId_t id)
   \brief       Close recorder stream.
   \param[in]   id             \ref sdsRecPlayId_t handle to SDS Recorder/Player stream
-  \return      return code (see \ref SDS_Recorder_Player_Return_Codes)
+  \return      SDS_REC_PLAY_OK on success or
+               a negative value on error (see \ref SDS_Recorder_Player_Return_Codes)
 */
 int32_t sdsRecClose (sdsRecPlayId_t id);
 
@@ -110,7 +113,8 @@ sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size);
   \fn          int32_t sdsPlayClose (sdsRecPlayId_t id)
   \brief       Close player stream.
   \param[in]   id             \ref sdsRecPlayId_t handle to SDS Recorder/Player stream
-  \return      return code (see \ref SDS_Recorder_Player_Return_Codes)
+  \return      SDS_REC_PLAY_OK on success or
+               a negative value on error (see \ref SDS_Recorder_Player_Return_Codes)
 */
 int32_t sdsPlayClose (sdsRecPlayId_t id);
 
