@@ -41,7 +41,7 @@ typedef void *sdsRecPlayId_t;                   // Handle to SDS Recorder/Player
 #define SDS_PLAY_EOS                    (-7)    // End of stream reached
 
 // Event codes
-#define SDS_REC_PLAY_EVENT_IO_ERROR (1UL)       // I/O Error
+#define SDS_REC_PLAY_EVENT_IO_ERROR     (1UL)   // I/O Error
 
 /**
   \typedef void (*sdsRecPlayEvent_t) (sdsRecPlayId_t id, uint32_t event)
