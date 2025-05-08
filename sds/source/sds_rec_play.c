@@ -43,8 +43,8 @@ typedef struct {
 typedef struct {
          uint8_t        index;              // Index of the RecPlay stream in pRecPlayStreams array
          uint8_t        mode;               // Stream mode (SDS_REC_PLAY_MODE_REC or SDS_REC_PLAY_MODE_PLAY)
-         uint8_t        event_threshold;    // Threshold event flag
 volatile uint8_t        flags;              // Stream flags: SDS_REC_PLAY_FLAG_ ..
+         uint8_t        reserved;
 volatile uint32_t       state;              // Stream state: SDS_REC_PLAY_STATE_ ..
 volatile uint32_t       lock;               // Lock for atomic operations
          uint32_t       buf_size;           // Size of the buffer used for the stream
@@ -216,19 +216,6 @@ static int32_t sdsRecPlayTranslateErr (int32_t sdsio_err) {
       break;
   }
   return ret;
-}
-
-// Event callback.
-static void sdsRecPlayEventCallback (sdsBufferId_t id, uint32_t event, void *arg) {
-  uint32_t      index = (uint32_t)arg;
-  sdsRecPlay_t *rec_play;
-  (void)id;
-  (void)event;
-
-  rec_play = pRecPlayStreams[index];
-  if (rec_play != NULL) {
-    rec_play->event_threshold = 1U;
-  }
 }
 
 // Recorder Handler.
@@ -517,7 +504,6 @@ sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size) {
         rec_play->state           = SDS_REC_PLAY_STATE_INACTIVE;
         rec_play->index           = index & 0xFFU;
         rec_play->mode            = SDS_REC_PLAY_MODE_REC;
-        rec_play->event_threshold = 0U;
         rec_play->flags           = 0U;
         rec_play->buf_size        = buf_size;
 
@@ -531,13 +517,8 @@ sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size) {
         }
 
         // Open sds stream (buffer) and sdsio stream (sds file).
-        rec_play->sds_buffer = sdsBufferOpen(buf, buf_size, 0U, rec_play->threshold);
+        rec_play->sds_buffer = sdsBufferOpen(buf, buf_size, 0U, 0U);
         rec_play->sdsio = sdsioOpen(name, sdsioModeWrite);
-
-        if (rec_play->sds_buffer != NULL) {
-          // Register event callback - high threshold.
-          sdsBufferRegisterEvents(rec_play->sds_buffer, sdsRecPlayEventCallback, SDS_BUFFER_EVENT_DATA_HIGH, (void *)index);
-        }
 
         // Check if sds stream (buffer) and sdsio stream (sds file) were opened successfully.
         // If not, close streams and free control block.
@@ -680,10 +661,9 @@ int32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uin
       sdsBufferWrite(rec_play->sds_buffer, &head, sizeof(recPlayHead_t));
       ret = sdsBufferWrite(rec_play->sds_buffer, buf, buf_size);
 
-      // If an SDS threshold event occurred during sdsWrite (amount of data in the SDS Stream Buffer is at or above the threshold),
+      // If amount of data in the SDS Stream Buffer is at or above the threshold,
       // notify the sdsRecPlayThread by setting the corresponding thread flag to process the stream.
-      if (rec_play->event_threshold != 0U) {
-        rec_play->event_threshold = 0U;
+      if (sdsBufferGetCount(rec_play->sds_buffer) >= rec_play->threshold) {
         osThreadFlagsSet(sdsRecPlayThreadId, 1U << rec_play->index);
       }
     } else {
@@ -729,7 +709,6 @@ sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size) {
         rec_play->state           = SDS_REC_PLAY_STATE_INACTIVE;
         rec_play->index           = index & 0xFFU;
         rec_play->mode            = SDS_REC_PLAY_MODE_PLAY;
-        rec_play->event_threshold = 0U;
         rec_play->flags           = 0U;
         rec_play->buf_size        = buf_size;
         rec_play->head.timestamp  = 0U;
@@ -738,20 +717,15 @@ sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size) {
         // Set threshold value for the recorder stream.
         if ((buf_size / 3) < SDS_REC_PLAY_IO_TRANSFER_SIZE) {
           // Set threshold to 1/3 of the buffer size.
-          rec_play->threshold = buf_size - (buf_size / 3);
+          rec_play->threshold = buf_size / 3;
         } else {
           // Set threshold to SDS I/O interface efficient transfer size.
-          rec_play->threshold = buf_size - SDS_REC_PLAY_IO_TRANSFER_SIZE;
+          rec_play->threshold = SDS_REC_PLAY_IO_TRANSFER_SIZE;
         }
 
         // Open sds stream (buffer) and sdsio stream (sds file).
-        rec_play->sds_buffer = sdsBufferOpen(buf, buf_size, rec_play->threshold, 0U);
+        rec_play->sds_buffer = sdsBufferOpen(buf, buf_size, 0U, 0U);
         rec_play->sdsio = sdsioOpen(name, sdsioModeRead);
-
-        if (rec_play->sds_buffer != NULL) {
-          // Register event callback - low threshold.
-          sdsBufferRegisterEvents(rec_play->sds_buffer, sdsRecPlayEventCallback, SDS_BUFFER_EVENT_DATA_LOW, (void *)index);
-        }
 
         // Check if sds stream (buffer) and sdsio stream (sds file) were opened successfully.
         if ((rec_play->sds_buffer != NULL) && (rec_play->sdsio != NULL)) {
@@ -942,10 +916,9 @@ int32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t
           // Clear the header information to enable reading of the next data block.
           rec_play->head.data_size = 0U;
 
-          // If an SDS threshold event occurred during sdsRead (amount of data in the SDS Stream Buffer is at or below the threshold),
+          // If free space in the SDS Stream Buffer is at or above the threshold,
           // notify the sdsRecPlayThread by setting the corresponding thread flag to process the stream.
-          if (rec_play->event_threshold != 0U) {
-            rec_play->event_threshold = 0U;
+          if ((rec_play->buf_size - sdsBufferGetCount(rec_play->sds_buffer)) >= rec_play->threshold) {
             osThreadFlagsSet(sdsRecPlayThreadId, 1U << rec_play->index);
           }
         }
