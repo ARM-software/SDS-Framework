@@ -48,14 +48,16 @@ typedef enum {
 /**
   \fn          int32_t sdsioInit (void)
   \brief       Initialize SDS I/O.
-  \return      return code (see \ref SDS_IO_Return_Codes)
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioInit (void);
 
 /**
   \fn          int32_t sdsioUninit (void)
   \brief       Un-initialize SDS I/O.
-  \return      return code (see \ref SDS_IO_Return_Codes)
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioUninit (void);
 
@@ -72,7 +74,8 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode);
   \fn          int32_t sdsioClose (sdsioId_t id)
   \brief       Close I/O stream.
   \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
-  \return      return code (see \ref SDS_IO_Return_Codes)
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioClose (sdsioId_t id);
 

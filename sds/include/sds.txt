@@ -116,8 +116,8 @@ The **SDS I/O** interface transfers data between the circular buffer and the I/O
 */
 
 /**
-\defgroup SDS_IO_Return_Codes Return Codes
-\brief SDS I/O Return Codes
+\defgroup SDS_IO_Return_Codes Function Return Codes
+\brief SDS I/O Function Return Codes
 \details The following values are returned by most `sdsio` functions.
 @{
 \def SDSIO_OK
