@@ -65,93 +65,35 @@ void CREATE_SYMBOL(USBD_CDC, SDSIO_VCOM_USB_CDC_INSTANCE, _ACM_DataReceived) (ui
   osEventFlagsSet(sdsioEventFlagId, SDSIO_CLIENT_EVENT_DATA_RECEIVED);
 }
 
-// Write data to USBD VCOM: return on success or error, or timeout.
-static uint32_t sdsioClientVCOMWrite (const uint8_t * buf, uint32_t buf_size) {
-  uint32_t cnt = 0U;
-  int32_t  vcom_status, event_status;
-
-  while (cnt < buf_size) {
-    vcom_status = USBD_CDC_ACM_WriteData(SDSIO_VCOM_USB_CDC_INSTANCE,
-                                         buf + cnt,
-                                        (int32_t)(buf_size - cnt));
-    if (vcom_status < 0) {
-      // Error happened.
-      break;
-    }
-    cnt += (uint32_t)vcom_status;
-    if (cnt < buf_size) {
-      // Wait for data sent event.
-      event_status = osEventFlagsWait(sdsioEventFlagId,
-                                      SDSIO_CLIENT_EVENT_DATA_SENT,
-                                      osFlagsWaitAll,
-                                      SDSIO_VCOM_TIMEOUT);
-      if ((event_status & osFlagsError) != 0U) {
-        break;
-      }
-    }
-  }
-
-  return cnt;
-}
-
-// Read data from USBD VCOM: return on success or error, or timeout.
-static uint32_t sdsioClientVCOMRead (uint8_t *buf, uint32_t buf_size) {
-  uint32_t cnt = 0U;
-  int32_t  vcom_status, event_status;
-
-  while (cnt < buf_size) {
-    vcom_status = USBD_CDC_ACM_ReadData(SDSIO_VCOM_USB_CDC_INSTANCE,
-                                    buf + cnt,
-                                    (int32_t)(buf_size - cnt));
-    if (vcom_status < 0) {
-        // Error happened.
-        break;
-    }
-    cnt += (uint32_t)vcom_status;
-    if (cnt < buf_size) {
-      // Wait for data received event.
-      event_status = osEventFlagsWait(sdsioEventFlagId,
-                                      SDSIO_CLIENT_EVENT_DATA_RECEIVED,
-                                      osFlagsWaitAll,
-                                      SDSIO_VCOM_TIMEOUT);
-      if ((event_status & osFlagsError) != 0U) {
-        break;
-      }
-    }
-  }
-
-  return cnt;
-}
-
 /**
   \fn          int32_t sdsioClientInit (void)
   \brief       Initialize SDS I/O Client via USB Virtual COM Port
-  \return      SDIOS_OK: initialization success
-               SDSIO_ERROR: initialization failed
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioClientInit (void) {
-  int32_t ret = SDSIO_ERROR;
+  int32_t  ret = SDSIO_ERROR;
   uint32_t expirationTick;
 
   sdsioEventFlagId = osEventFlagsNew(NULL);
-  if (sdsioEventFlagId == NULL) {
-    return SDSIO_ERROR;
-  }
-
-  expirationTick = osKernelGetTickCount() + SDSIO_VCOM_TIMEOUT;
-
-  if (USBD_Initialize(SDSIO_VCOM_USB_DEVICE_INDEX) == usbOK) {
-    if (USBD_Connect(SDSIO_VCOM_USB_DEVICE_INDEX) == usbOK) {
-
-      while (osKernelGetTickCount() < expirationTick) {
-        if (USBD_Configured(SDSIO_VCOM_USB_DEVICE_INDEX) == true) {
-          ret = SDSIO_OK;
-          break;
-        } else {
-          osDelay(1);
+  if (sdsioEventFlagId != NULL) {
+    // Initialize USB Device stack.
+    ret = SDSIO_ERROR_INTERFACE;
+    expirationTick = osKernelGetTickCount() + SDSIO_VCOM_TIMEOUT;
+    if (USBD_Initialize(SDSIO_VCOM_USB_DEVICE_INDEX) == usbOK) {
+      if (USBD_Connect(SDSIO_VCOM_USB_DEVICE_INDEX) == usbOK) {
+        while (osKernelGetTickCount() < expirationTick) {
+          if (USBD_Configured(SDSIO_VCOM_USB_DEVICE_INDEX) == true) {
+            ret = SDSIO_OK;
+            break;
+          } else {
+            osDelay(1);
+          }
         }
       }
     }
+  } else {
+    ret = SDSIO_ERROR;
   }
 
   return ret;
@@ -160,8 +102,8 @@ int32_t sdsioClientInit (void) {
 /**
   \fn          int32_t sdsioClientUninit (void)
   \brief       Un-Initialize SDS I/O Client
-  \return      SDIOS_OK: un-initialization success
-               SDSIO_ERROR: un-initialization failed
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioClientUninit (void) {
   USBD_Disconnect(SDSIO_VCOM_USB_DEVICE_INDEX);
@@ -170,59 +112,108 @@ int32_t sdsioClientUninit (void) {
 }
 
 /**
-  \fn          uint32_t sdsioClientSend (const header_t *header, const void *data, uint32_t data_size)
+  \fn          int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size)
   \brief       Send data to SDSIO-Server
-  \param[in]   header       pointer to header
-  \param[in]   data         pointer to buffer with data to send
-  \param[in]   data_size    data size in bytes
-  \return      number of bytes sent (including header)
+  \param[in]   buf         pointer to buffer with data to send
+  \param[in]   buf_size    buffer size in bytes
+  \return      number of bytes successfully sent or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
-uint32_t sdsioClientSend (const header_t *header, const void *data, uint32_t data_size) {
-  uint32_t num;
+int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
+  int32_t num = 0U;
+  int32_t ret = SDSIO_ERROR;
+  int32_t vcom_status, event_status;
 
-  if (header == NULL) {
-    return 0U;
+  while (num < buf_size) {
+    vcom_status = USBD_CDC_ACM_WriteData(SDSIO_VCOM_USB_CDC_INSTANCE,
+                                         buf + num,
+                                        (int32_t)(buf_size - num));
+    if (vcom_status < 0) {
+      // Error happened.
+      if (vcom_status == usbTimeout) {
+        // Timeout happened.
+        ret = SDSIO_ERROR_TIMEOUT;
+      } else {
+        // Error happened.
+        ret = SDSIO_ERROR_INTERFACE;
+      }
+      break;
+    }
+    num += (uint32_t)vcom_status;
+    if (num < buf_size) {
+      // Wait for data sent event.
+      event_status = osEventFlagsWait(sdsioEventFlagId,
+                                      SDSIO_CLIENT_EVENT_DATA_SENT,
+                                      osFlagsWaitAll,
+                                      SDSIO_VCOM_TIMEOUT);
+      if ((event_status & osFlagsError) != 0U) {
+        if (event_status == osErrorTimeout) {
+          // Timeout happened.
+          ret = SDSIO_ERROR_TIMEOUT;
+        } else {
+          // Error happened.
+          ret = SDSIO_ERROR;
+        }
+        break;
+      }
+    }
   }
-
-  // Send header
-  num = sdsioClientVCOMWrite((const uint8_t *)header, sizeof(header_t));
-
-  // Send data
-  if ((num == sizeof(header_t)) && (data != NULL) && (data_size != 0U)) {
-    num += sdsioClientVCOMWrite((const uint8_t *)data, data_size);
+  if (num != 0U) {
+    ret = num;
   }
-
-  return num;
+  return ret;
 }
 
 /**
-  \fn          uint32_t sdsioClientReceive (header_t *header, void *data, uint32_t data_size)
+  \fn          int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size)
   \brief       Receive data from SDSIO-Server
-  \param[out]  header       pointer to header
-  \param[out]  data         pointer to buffer for data to read
-  \param[in]   data_size    data size in bytes
-  \return      number of bytes received (including header)
+  \param[out]  buf          pointer to buffer for data to read
+  \param[in]   buf_size     buffer size in bytes
+  \return      number of bytes successfully received or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
-uint32_t sdsioClientReceive (header_t *header, void *data, uint32_t data_size) {
-  uint32_t num, size;
+int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size) {
+  int32_t num = 0U;
+  int32_t ret = SDSIO_ERROR;
+  int32_t vcom_status, event_status;
 
-  if (header == NULL) {
-    return 0U;
-  }
-
-  // Receive header
-  num = sdsioClientVCOMRead((uint8_t *)header, sizeof(header_t));
-
-  // Receive data
-  if ((num == sizeof(header_t)) && (header->data_size != 0U) &&
-      (data != NULL) && (data_size != 0U)) {
-    if (header->data_size < data_size) {
-      size = header->data_size;
-    } else {
-      size = data_size;
+  while (num < buf_size) {
+    vcom_status = USBD_CDC_ACM_ReadData(SDSIO_VCOM_USB_CDC_INSTANCE,
+                                    buf + num,
+                                    (int32_t)(buf_size - num));
+    if (vcom_status < 0) {
+      // Error happened.
+      if (vcom_status == usbTimeout) {
+        // Timeout happened.
+        ret = SDSIO_ERROR_TIMEOUT;
+      } else {
+        // Error happened.
+        ret = SDSIO_ERROR_INTERFACE;
+      }
+      break;
     }
-    num += sdsioClientVCOMRead((uint8_t *)data, size);
+    num += (uint32_t)vcom_status;
+    if (num < buf_size) {
+      // Wait for data received event.
+      event_status = osEventFlagsWait(sdsioEventFlagId,
+                                      SDSIO_CLIENT_EVENT_DATA_RECEIVED,
+                                      osFlagsWaitAll,
+                                      SDSIO_VCOM_TIMEOUT);
+      if ((event_status & osFlagsError) != 0U) {
+        if (event_status == osErrorTimeout) {
+          // Timeout happened.
+          ret = SDSIO_ERROR_TIMEOUT;
+        } else {
+          // Error happened.
+          ret = SDSIO_ERROR;
+        }
+        break;
+      }
+    }
   }
 
-  return num;
+  if (num != 0U) {
+    ret = num;
+  }
+  return ret;
 }

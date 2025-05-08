@@ -40,46 +40,45 @@ typedef struct {
 #define SDSIO_CMD_CLOSE         2U
 #define SDSIO_CMD_WRITE         3U
 #define SDSIO_CMD_READ          4U
-#define SDSIO_CMD_EOS           5U
-#define SDSIO_CMD_PING          6U
+#define SDSIO_CMD_PING          5U
 
 // Function prototypes
 
 /**
   \fn          int32_t sdsioClientInit (void)
   \brief       Initialize SDSIO Client and ping SDSIO Server to verify connection
-  \return      SDSIO_OK: initialization success
-               SDSIO_ERROR: initialization or ping server failed
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioClientInit (void);
 
 /**
   \fn          int32_t sdsioClientUninit (void)
   \brief       Un-Initialize SDSIO Client
-  \return      SDIOS_OK: un-initialization success
-               SDSIO_ERROR: un-initialization failed
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioClientUninit (void);
 
 /**
-  \fn          uint32_t sdsioClientSend (const header_t *header, const void *data, uint32_t data_size)
+  \fn          int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size)
   \brief       Send data to SDSIO-Server
-  \param[in]   header       pointer to header
-  \param[in]   data         pointer to buffer with data to send
-  \param[in]   data_size    data size in bytes
-  \return      number of bytes sent (including header)
+  \param[in]   buf         pointer to buffer with data to send
+  \param[in]   buf_size    buffer size in bytes
+  \return      number of bytes successfully sent or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
-uint32_t sdsioClientSend (const header_t *header, const void *data, uint32_t data_size);
+int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size);
 
 /**
-  \fn          uint32_t sdsioClientReceive (header_t *header, void *data, uint32_t data_size)
+  \fn          int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size)
   \brief       Receive data from SDSIO-Server
-  \param[out]  header       pointer to header
-  \param[out]  data         pointer to buffer for data to read
-  \param[in]   data_size    data size in bytes
-  \return      number of bytes received (including header)
+  \param[out]  buf          pointer to buffer for data to read
+  \param[in]   buf_size     buffer size in bytes
+  \return      number of bytes successfully received or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
-uint32_t sdsioClientReceive (header_t *header, void *data, uint32_t data_size);
+int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size);
 
 #ifdef  __cplusplus
 }

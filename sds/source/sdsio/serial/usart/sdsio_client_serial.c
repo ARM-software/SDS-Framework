@@ -40,9 +40,8 @@ static ARM_DRIVER_USART *pDrvUSART = &CMSIS_USART_DRIVER;
 
 static osEventFlagsId_t sdsioEventFlagId;
 
-/**
-  USART Callback
-*/
+
+// USART Callback
 static void USART_Callback (uint32_t event) {
   if ((event & ARM_USART_EVENT_SEND_COMPLETE) != 0U) {
     osEventFlagsSet(sdsioEventFlagId, ARM_USART_EVENT_SEND_COMPLETE);
@@ -55,36 +54,41 @@ static void USART_Callback (uint32_t event) {
 /**
   \fn          int32_t sdsioClientInit (void)
   \brief       Initialize SDS I/O Client via CMSIS Driver:USART
-  \return      SDIOS_OK: initialization success
-               SDSIO_ERROR: initialization failed
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioClientInit (void) {
   int32_t status = ARM_DRIVER_ERROR;
-  int32_t ret = SDSIO_ERROR;
+  int32_t ret    = SDSIO_ERROR;
 
   sdsioEventFlagId = osEventFlagsNew(NULL);
-
   if (sdsioEventFlagId != NULL) {
+    // Initialize and Configure USART driver.
     status = pDrvUSART->Initialize(USART_Callback);
-  }
-  if (status == ARM_DRIVER_OK) {
-    status = pDrvUSART->PowerControl(ARM_POWER_FULL);
-  }
-  if (status == ARM_DRIVER_OK) {
-    pDrvUSART->Control(ARM_USART_MODE_ASYNCHRONOUS |
-                       SDSIO_USART_DATA_BITS       |
-                       SDSIO_USART_PARITY          |
-                       SDSIO_USART_STOP_BITS,
-                       SDSIO_USART_BAUDRATE);
-  }
-  if (status == ARM_DRIVER_OK) {
-    status = pDrvUSART->Control(ARM_USART_CONTROL_RX, 1U);
-  }
-  if (status == ARM_DRIVER_OK) {
-    status = pDrvUSART->Control(ARM_USART_CONTROL_TX, 1U);
-  }
-  if (status == ARM_DRIVER_OK) {
-    ret = SDSIO_OK;
+
+    if (status == ARM_DRIVER_OK) {
+      status = pDrvUSART->PowerControl(ARM_POWER_FULL);
+    }
+    if (status == ARM_DRIVER_OK) {
+      pDrvUSART->Control(ARM_USART_MODE_ASYNCHRONOUS |
+                        SDSIO_USART_DATA_BITS       |
+                        SDSIO_USART_PARITY          |
+                        SDSIO_USART_STOP_BITS,
+                        SDSIO_USART_BAUDRATE);
+    }
+    if (status == ARM_DRIVER_OK) {
+      status = pDrvUSART->Control(ARM_USART_CONTROL_RX, 1U);
+    }
+    if (status == ARM_DRIVER_OK) {
+      status = pDrvUSART->Control(ARM_USART_CONTROL_TX, 1U);
+    }
+    if (status == ARM_DRIVER_OK) {
+      ret = SDSIO_OK;
+    } else {
+      ret = SDSIO_ERROR_INTERFACE;
+    }
+  } else {
+    ret = ;
   }
 
   return ret;
@@ -93,8 +97,8 @@ int32_t sdsioClientInit (void) {
 /**
   \fn          int32_t sdsioClientUninit (void)
   \brief       Un-Initialize SDS I/O Client
-  \return      SDIOS_OK: un-initialization success
-               SDSIO_ERROR: un-initialization failed
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioClientUninit (void) {
   pDrvUSART->Control(ARM_USART_CONTROL_RX, 0U);
@@ -105,94 +109,69 @@ int32_t sdsioClientUninit (void) {
 }
 
 /**
-  \fn          uint32_t sdsioClientSend (const header_t *header, const void *data, uint32_t data_size)
+  \fn          int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size)
   \brief       Send data to SDSIO-Server
-  \param[in]   header       pointer to header
-  \param[in]   data         pointer to buffer with data to send
-  \param[in]   data_size    data size in bytes
-  \return      number of bytes sent (including header)
+  \param[in]   buf         pointer to buffer with data to send
+  \param[in]   buf_size    buffer size in bytes
+  \return      number of bytes successfully sent or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
-uint32_t sdsioClientSend (const header_t *header, const void *data, uint32_t data_size) {
-  uint32_t num, status;
+int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
+  int32_t ret = SDSIO_ERROR;
+  int32_t event_status;
 
-  if (header == NULL) {
-    return 0U;
-  }
-
-  // Send header
-  num = 0U;
-  if (pDrvUSART->Send((const uint8_t *)header, sizeof(header_t)) == ARM_DRIVER_OK) {
-    status = osEventFlagsWait(sdsioEventFlagId,
-                              ARM_USART_EVENT_SEND_COMPLETE,
-                              osFlagsWaitAll,
-                              SDSIO_USART_TIMEOUT);
-    if ((status & osFlagsError) == 0U) {
-      num = sizeof(header_t);
-    }
-  }
-
-  // Send data
-  if ((num != 0U) && (data != NULL) && (data_size != 0U)) {
-    if (pDrvUSART->Send(data, data_size) == ARM_DRIVER_OK) {
-      status = osEventFlagsWait(sdsioEventFlagId,
-                                ARM_USART_EVENT_SEND_COMPLETE,
-                                osFlagsWaitAll,
-                                SDSIO_USART_TIMEOUT);
-      if ((status & osFlagsError) == 0U) {
-        num += data_size;
+  if (pDrvUSART->Send(buf, buf_size) == ARM_DRIVER_OK) {
+    event_status = osEventFlagsWait(sdsioEventFlagId,
+                                    ARM_USART_EVENT_SEND_COMPLETE,
+                                    osFlagsWaitAll,
+                                    SDSIO_USART_TIMEOUT);
+    if ((event_status & osFlagsError) == 0U) {
+      ret = buf_size;
+    } else {
+      if (event_status == osFlagsTimeout) {
+        // Timeout happened.
+        ret = SDSIO_ERROR_TIMEOUT;
+      } else {
+        // Error happened.
+        ret = SDSIO_ERROR;
       }
     }
+  } else {
+    ret = ;
   }
-
-  return num;
+  return ret;
 }
 
 /**
-  \fn          uint32_t sdsioClientReceive (header_t *header, void *data, uint32_t data_size)
+  \fn          int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size)
   \brief       Receive data from SDSIO-Server
-  \param[out]  header       pointer to header
-  \param[out]  data         pointer to buffer for data to read
-  \param[in]   data_size    data size in bytes
-  \return      number of bytes received (including header)
+  \param[out]  buf          pointer to buffer for data to read
+  \param[in]   buf_size     buffer size in bytes
+  \return      number of bytes successfully received or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
-uint32_t sdsioClientReceive (header_t *header, void *data, uint32_t data_size) {
-  uint32_t num, size, status;
+int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size) {
+  int32_t ret = SDSIO_ERROR;
+  int32_t event_status;
 
-  if (header == NULL) {
-    return 0U;
-  }
-
-  // Receive header
-  num = 0U;
-  if (pDrvUSART->Receive(header, sizeof(header_t)) == ARM_DRIVER_OK) {
-    status = osEventFlagsWait(sdsioEventFlagId,
-                              ARM_USART_EVENT_RECEIVE_COMPLETE,
-                              osFlagsWaitAll,
-                              SDSIO_USART_TIMEOUT);
-    if ((status & osFlagsError) == 0U) {
-      num = sizeof(header_t);
-    }
-  }
-
-  // Receive data
-  if ((num != 0U) && (header->data_size != 0U) &&
-      (data != NULL) && (data_size != 0U)) {
-
-    if (header->data_size < data_size) {
-      size = header->data_size;
+  if (pDrvUSART->Receive(buf, buf_size) == ARM_DRIVER_OK) {
+    event_status = osEventFlagsWait(sdsioEventFlagId,
+                                    ARM_USART_EVENT_RECEIVE_COMPLETE,
+                                    osFlagsWaitAll,
+                                    SDSIO_USART_TIMEOUT);
+    if ((event_status & osFlagsError) == 0U) {
+      ret = buf_size;
     } else {
-      size = data_size;
-    }
-    if (pDrvUSART->Receive(data, size) == ARM_DRIVER_OK) {
-      status = osEventFlagsWait(sdsioEventFlagId,
-                                ARM_USART_EVENT_RECEIVE_COMPLETE,
-                                osFlagsWaitAll,
-                                SDSIO_USART_TIMEOUT);
-      if ((status & osFlagsError) == 0U) {
-        num += data_size;
+      if (event_status == osFlagsTimeout) {
+        // Timeout happened.
+        ret = SDSIO_ERROR_TIMEOUT;
+      } else {
+        // Error happened.
+        ret = SDSIO_ERROR;
       }
     }
+  } else {
+    ret = SDSIO_ERROR_INTERFACE;
   }
-
-  return num;
+  return ret;
 }

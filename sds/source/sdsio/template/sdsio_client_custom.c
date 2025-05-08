@@ -24,8 +24,8 @@
 /**
   \fn          int32_t sdsioClientInit (void)
   \brief       Initialize SDS I/O Client
-  \return      SDIOS_OK: initialization success
-               SDSIO_ERROR: initialization failed
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioClientInit (void) {
   int32_t ret = SDSIO_ERROR;
@@ -38,8 +38,8 @@ int32_t sdsioClientInit (void) {
 /**
   \fn          int32_t sdsioClientUninit (void)
   \brief       Un-Initialize SDS I/O Client
-  \return      SDIOS_OK: un-initialization success
-               SDSIO_ERROR: un-initialization failed
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioClientUninit (void) {
 
@@ -49,83 +49,61 @@ int32_t sdsioClientUninit (void) {
 }
 
 /**
-  \fn          uint32_t sdsioClientSend (const header_t *header, const void *data, uint32_t data_size)
+  \fn          int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size)
   \brief       Send data to SDSIO-Server
-  \param[in]   header       pointer to header
-  \param[in]   data         pointer to buffer with data to send
-  \param[in]   data_size    data size in bytes
-  \return      number of bytes sent (including header)
+  \param[in]   buf         pointer to buffer with data to send
+  \param[in]   buf_size    buffer size in bytes
+  \return      number of bytes successfully sent or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
-uint32_t sdsioClientSend (const header_t *header, const void *data, uint32_t data_size) {
-  uint32_t num = 0U;
-  // uint32_t cnt;
+int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
+  int32_t ret = SDSIO_ERROR;
 
-  if (header == NULL) {
-    return 0U;
-  }
+  // int32_t status;
 
-  // Send header
-  // ToDo: Modify code below to send header to SDSIO-Server
-  // cnt = 0U;
-  // while (cnt < sizeof(header_t)) {
-  //   cnt += CustomSend((const uint8_t *)header + cnt, sizeof(header_t) - cnt);
+  // ToDo: Modify code below to send data in buf to SDSIO-Server
+  // status = CustomSend(buf, buf_size);
+  // if (status == TIMEOUT) {
+  //   // Timeout happened.
+  //   ret = SDSIO_ERROR_TIMEOUT;
+  // } else if (status == ERROR) {
+  //   // Error happened.
+  //   ret = SDSIO_ERROR_INTEFACE;
+  // } else {
+  //   // Data sent successfully.
+  //   // Return num of bytes sent.
+  //   ret = status;
   // }
-  // num = cnt;
 
-
-  // Send data
-  // ToDo: Modify code below to send data to SDSIO-Server
-  // cnt = 0U;
-  // if ((data != NULL) && (data_size != 0U)) {
-  //   while (cnt < data_size) {
-  //     cnt += CustomSend((const uint8_t *)data + cnt, data_size - cnt);
-  //   }
-  // }
-  // num += cnt;
-
-  return num;
+  return ret;
 }
 
 /**
-  \fn          uint32_t sdsioClientReceive (header_t *header, void *data, uint32_t data_size)
+  \fn          int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size)
   \brief       Receive data from SDSIO-Server
-  \param[out]  header       pointer to header
-  \param[out]  data         pointer to buffer for data to read
-  \param[in]   data_size    data size in bytes
-  \return      number of bytes received (including header)
+  \param[out]  buf          pointer to buffer for data to read
+  \param[in]   buf_size     buffer size in bytes
+  \return      number of bytes successfully received or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
-uint32_t sdsioClientReceive (header_t *header, void *data, uint32_t data_size) {
-  uint32_t num = 0U;
-  // uint32_t cnt, size;
+int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size) {
+  int32_t ret = SDSIO_ERROR;
 
-  if (header == NULL) {
-    return 0U;
-  }
+  // int32_t status;
 
-  // Receive header
-  // ToDo: Modify code below to receive header from SDSIO-Server
-  // cnt = 0U;
-  // while (cnt < sizeof(header_t)) {
-  //   cnt += CustomReceive((uint8_t *)header + cnt, sizeof(header_t) - cnt);
-  // }
-  // num = cnt;
-
-  // Receive data
   // ToDo: Modify code below to receive data from SDSIO-Server
-  // cnt = 0U;
-  // if ((num != 0U) && (header->data_size != 0U) &&
-  //     (data != NULL) && (data_size != 0U)) {
-
-  //   if (header->data_size < data_size) {
-  //     size = header->data_size;
-  //   } else {
-  //     size = data_size;
-  //   }
-  //   while (cnt < size) {
-  //     cnt += CustomReceive((uint8_t *)data + cnt, size - cnt);
-  //   }
+  // status = CustomReceive(buf, buf_size);
+  // if (status == TIMEOUT) {
+  //   // Timeout happened.
+  //   ret = SDSIO_ERROR_TIMEOUT;
+  // } else if (status == ERROR) {
+  //   // Error happened.
+  //   ret = SDSIO_ERROR_INTEFACE;
+  // } else {
+  //   // Data  received successfully.
+  //   // Return num of bytes received.
+  //   ret = status;
   // }
-  // num += cnt;
 
-  return num;
+  return ret;
 }
