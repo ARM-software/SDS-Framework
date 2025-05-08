@@ -247,7 +247,7 @@ static void sdsRecHandler (sdsRecPlay_t *rec_play) {
 
     // Write data from intermediate buffer to SDS I/O Interface.
     sdsio_ret = sdsioWrite(rec_play->sdsio, sdsRecPlayBuf, bytes_to_transfer);
-    if (sdsio_ret == bytes_to_transfer) {
+    if (sdsio_ret >= 0) {
       // Number of bytes written to the SDS I/O interface
       bytes_transferred = sdsio_ret;
     } else {
@@ -308,7 +308,7 @@ static void sdsPlayHandler (sdsRecPlay_t *rec_play) {
 
     // Read data from the SDS I/O Interface to intermediate buffer.
     sdsio_ret = sdsioRead(rec_play->sdsio, sdsRecPlayBuf, bytes_to_transfer);
-    if (sdsio_ret == bytes_to_transfer) {
+    if (sdsio_ret > 0) {
       // Number of bytes read from the SDS I/O interface
       bytes_transferred = sdsio_ret;
     } else if (sdsio_ret == SDSIO_EOS) {
