@@ -63,7 +63,8 @@ sdsBufferId_t sdsBufferOpen (void *buf, uint32_t buf_size, uint32_t threshold_lo
   \fn          int32_t sdsBufferClose (sdsBufferId_t id)
   \brief       Close SDS buffer stream.
   \param[in]   id             \ref sdsBufferId_t handle to SDS buffer stream
-  \return      return code (see \ref SDS_Buffer_Return_Codes)
+  \return      SDS_BUFFER_OK on success or
+               a negative value on error (see \ref SDS_Buffer_Return_Codes)
 */
 int32_t sdsBufferClose (sdsBufferId_t id);
 
@@ -74,7 +75,8 @@ int32_t sdsBufferClose (sdsBufferId_t id);
   \param[in]   event_cb       pointer to \ref sdsBufferEvent_t callback function, NULL to un-register
   \param[in]   event_mask     event mask
   \param[in]   event_arg      pointer to event argument
-  \return      return code (see \ref SDS_Buffer_Return_Codes)
+  \return      SDS_BUFFER_OK on success or
+               a negative value on error (see \ref SDS_Buffer_Return_Codes)
 */
 int32_t sdsBufferRegisterEvents (sdsBufferId_t id, sdsBufferEvent_t event_cb, uint32_t event_mask, void *event_arg);
 
@@ -104,7 +106,8 @@ int32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size);
   \fn          int32_t sdsBufferClear (sdsBufferId_t id)
   \brief       Clear SDS buffer stream data.
   \param[in]   id             \ref sdsBufferId_t handle to SDS buffer stream
-  \return      return code (see \ref SDS_Buffer_Return_Codes)
+  \return      SDS_BUFFER_OK on success or
+               a negative value on error (see \ref SDS_Buffer_Return_Codes)
 */
 int32_t sdsBufferClear (sdsBufferId_t id);
 

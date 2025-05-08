@@ -9,8 +9,8 @@ A callback function can be registered to respond when data thresholds (high or l
 */
 
 /**
-\defgroup SDS_Buffer_Return_Codes Return Codes
-\brief SDS Buffer Return Codes
+\defgroup SDS_Buffer_Return_Codes Function Return Codes
+\brief SDS Buffer Function Return Codes
 \details The following values are returned by most `sdsBuffer` functions.
 @{
 \def SDS_BUFFER_OK
@@ -226,7 +226,7 @@ Refer to the chapter *SDS Interface* for an overview.
 */
 
 /**
-\defgroup SDS_Recorder_Player_Return_Codes Functions Return Codes
+\defgroup SDS_Recorder_Player_Return_Codes Function Return Codes
 \brief SDS Recorder and Player Function Return Codes
 \details The following values are returned by most `sdsRec` and `sdsPlay` functions.
 @{
