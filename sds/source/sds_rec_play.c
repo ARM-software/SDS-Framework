@@ -152,7 +152,7 @@ static uint32_t sdsRecPlayLockAcquire (sdsRecPlay_t *rec_play, uint32_t timeout)
   expirationTick = osKernelGetTickCount() + timeout;
   do {
     if (atomic_wr32_if_zero(pLock, 1) != 0U) {
-      // Lock acquired
+      // Lock acquired.
       lock = 1U;
       break;
     } else {
@@ -168,16 +168,21 @@ static void sdsRecPlayLockRelease (sdsRecPlay_t *rec_play) {
 }
 
 static sdsRecPlay_t * sdsRecPlayAlloc (uint32_t *index) {
-  sdsRecPlay_t *rec_play = NULL;
-  uint32_t      n;
+  sdsRecPlay_t   *rec_play = NULL;
+  static uint32_t idx = 0U;
+  uint32_t        n;
 
   for (n = 0U; n < SDS_REC_PLAY_MAX_STREAMS; n++) {
-    if (atomic_wr32_if_zero((uint32_t *)&pRecPlayStreams[n], (uint32_t)&RecPlayStreams[n]) != 0U) {
-      rec_play = &RecPlayStreams[n];
+    if (atomic_wr32_if_zero((uint32_t *)&pRecPlayStreams[idx], (uint32_t)&RecPlayStreams[idx]) != 0U) {
+      rec_play = &RecPlayStreams[idx];
       if (index != NULL) {
-        *index = n;
+        *index = idx;
       }
       break;
+    }
+    idx++;
+    if (idx >= SDS_REC_PLAY_MAX_STREAMS) {
+      idx = 0U;
     }
   }
   return rec_play;
@@ -185,6 +190,32 @@ static sdsRecPlay_t * sdsRecPlayAlloc (uint32_t *index) {
 
 static void sdsRecPlayFree (uint32_t index) {
   pRecPlayStreams[index] = NULL;
+}
+
+// Translate SDSIO error codes to SDS Rec Play error codes.
+static int32_t sdsRecPlayTranslateErr (int32_t sdsio_err) {
+  int32_t ret;
+
+  switch (sdsio_err) {
+    case SDSIO_OK:
+      ret = SDS_REC_PLAY_OK;
+      break;
+    case SDSIO_ERROR:
+      ret = SDS_REC_PLAY_ERROR_IO;
+      break;
+    case SDSIO_ERROR_TIMEOUT:
+      ret = SDS_REC_PLAY_ERROR_TIMEOUT;
+      break;
+    case SDSIO_ERROR_PARAMETER:
+      ret = SDS_REC_PLAY_ERROR_PARAMETER;
+      break;
+    case SDSIO_ERROR_INTERFACE:
+    case SDSIO_ERROR_NO_SERVER:
+    default:
+      ret = SDS_REC_PLAY_ERROR_IO;
+      break;
+  }
+  return ret;
 }
 
 // Event callback.
@@ -203,9 +234,10 @@ static void sdsRecPlayEventCallback (sdsBufferId_t id, uint32_t event, void *arg
 // Recorder Handler.
 static void sdsRecHandler (sdsRecPlay_t *rec_play) {
   uint32_t bytes_remaining, bytes_to_transfer, bytes_transferred, state;
+  int32_t  sdsio_ret;
 
   if ((rec_play->flags & SDS_REC_PLAY_FLAG_HALT) != 0U) {
-    // State of the stream is closing or inactive.
+    // The state of the stream is either closing or inactive.
     // Closing state has been processed by sdsRecPlayThread. Exit the function.
     return;
   }
@@ -226,11 +258,14 @@ static void sdsRecHandler (sdsRecPlay_t *rec_play) {
     sdsBufferRead(rec_play->sds_buffer, sdsRecPlayBuf, bytes_to_transfer);
 
     // Write data from intermediate buffer to SDS I/O Interface.
-    bytes_transferred = sdsioWrite(rec_play->sdsio, sdsRecPlayBuf, bytes_to_transfer);
-    if (bytes_transferred != bytes_to_transfer) {
+    sdsio_ret = sdsioWrite(rec_play->sdsio, sdsRecPlayBuf, bytes_to_transfer);
+    if (sdsio_ret >= 0) {
+      // Number of bytes written to the SDS I/O interface
+      bytes_transferred = sdsio_ret;
+    } else {
       if (sdsRecPlayEvent != NULL) {
         // Notify the application about I/O error.
-        sdsRecPlayEvent(rec_play, SDS_REC_PLAY_EVENT_IO_ERROR);
+        sdsRecPlayEvent(rec_play, SDS_REC_PLAY_EVENT_ERROR_IO);
       }
       break;
     }
@@ -258,6 +293,7 @@ static void sdsRecHandler (sdsRecPlay_t *rec_play) {
 // Player Handler.
 static void sdsPlayHandler (sdsRecPlay_t *rec_play) {
   uint32_t bytes_remaining, bytes_to_transfer, bytes_transferred;
+  int32_t  sdsio_ret;
 
   if ((rec_play->flags & SDS_REC_PLAY_FLAG_HALT) != 0U) {
     // State of the stream is closing or inactive.
@@ -283,20 +319,21 @@ static void sdsPlayHandler (sdsRecPlay_t *rec_play) {
     }
 
     // Read data from the SDS I/O Interface to intermediate buffer.
-    bytes_transferred = sdsioRead(rec_play->sdsio, sdsRecPlayBuf, bytes_to_transfer);
-    if (bytes_transferred != bytes_to_transfer) {
-      // Requested number of bytes was not read from the SDS I/O interface.
-      // Check if end of stream has been reached.
-      if (sdsioEndOfStream(rec_play->sdsio) != 0) {
-        rec_play->flags |= SDS_REC_PLAY_FLAG_EOS;
-      } else {
-        // It is not end of stream, but an error occurred during reading from the SDS I/O interface.
-        if (sdsRecPlayEvent != NULL) {
-          // Notify the application about I/O error.
-          sdsRecPlayEvent(rec_play, SDS_REC_PLAY_EVENT_IO_ERROR);
-          break;
-        }
+    sdsio_ret = sdsioRead(rec_play->sdsio, sdsRecPlayBuf, bytes_to_transfer);
+    if (sdsio_ret > 0) {
+      // Number of bytes read from the SDS I/O interface
+      bytes_transferred = sdsio_ret;
+    } else if (sdsio_ret == SDSIO_EOS) {
+      // End of stream reached.
+      bytes_transferred = 0U;
+      rec_play->flags |= SDS_REC_PLAY_FLAG_EOS;
+    } else {
+      // Error occurred during reading from the SDS I/O interface.
+      if (sdsRecPlayEvent != NULL) {
+        // Notify the application about I/O error.
+        sdsRecPlayEvent(rec_play, SDS_REC_PLAY_EVENT_ERROR_IO);
       }
+      break;
     }
 
     if (bytes_transferred != 0U) {
@@ -341,7 +378,7 @@ static __NO_RETURN void sdsRecPlayThread (void *arg) {
       // Process all streams with set flags.
       for (n = 0U; n < SDS_REC_PLAY_MAX_STREAMS; n++) {
         if ((flags & (1U << n)) == 0U) {
-          // Flag is not set for this stream. Move to next stream.
+          // The flag is not set for this stream. Moving to the next stream.
           continue;
         }
         // Get stream control block.
@@ -371,13 +408,17 @@ static __NO_RETURN void sdsRecPlayThread (void *arg) {
 int32_t sdsRecPlayInit (sdsRecPlayEvent_t event_cb) {
   int32_t ret = SDS_REC_PLAY_OK;
 
+  if (sdsRecPlayInitialized != 0U) {
+    // The recorder/player are already initialized.
+    return SDS_REC_PLAY_OK;
+  }
+
   // Reset an array of pointers to stream control blocks.
   memset(pRecPlayStreams, 0, sizeof(pRecPlayStreams));
 
   // Initialize SDS I/O interface.
-  if (sdsioInit() != SDSIO_OK) {
-    ret = SDS_REC_PLAY_ERROR;
-  }
+  ret = sdsioInit();
+  ret = sdsRecPlayTranslateErr(ret);
 
   // Create working thread for recorder and player.
   if (ret == SDS_REC_PLAY_OK) {
@@ -428,6 +469,12 @@ int32_t sdsRecPlayInit (sdsRecPlayEvent_t event_cb) {
 
 // Uninitialize recorder and player.
 int32_t sdsRecPlayUninit (void) {
+
+  if (sdsRecPlayInitialized == 0U) {
+    // Recorder/Player already not initialized.
+    return SDS_REC_PLAY_OK;
+  }
+
   // Clear initialization flag.
   sdsRecPlayInitialized = 0U;
 
@@ -453,7 +500,7 @@ sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size) {
   uint32_t      index;
 
   if (sdsRecPlayInitialized == 0U) {
-    // Recorder/Player is not initialized. Exit the function.
+    // The recorder/player is not initialized. Exiting the function.
     return NULL;
   }
 
@@ -526,15 +573,15 @@ int32_t sdsRecClose (sdsRecPlayId_t id) {
   sdsRecPlay_t *rec_play = id;
   int32_t       ret      = SDS_REC_PLAY_ERROR;
   int32_t       err      = SDS_REC_PLAY_OK;
-  uint32_t      event_mask, flags, expirationTick;
+  uint32_t      event_mask, flags;
 
   if (sdsRecPlayInitialized == 0U) {
-    // Recorder/Player is not initialized. Exit the function.
+    // The recorder/player is not initialized. Exiting the function.
     return SDS_REC_PLAY_ERROR;
   }
   if (rec_play == NULL) {
     // Invalid stream. Exit the function.
-    return SDS_REC_PLAY_ERROR;
+    return SDS_REC_PLAY_ERROR_PARAMETER;
   }
   if (sdsRecPlayLockAcquire(rec_play, SDS_REC_PLAY_CLOSE_TOUT) == 0U) {
     // Timeout occurred while waiting for lock.
@@ -549,7 +596,7 @@ int32_t sdsRecClose (sdsRecPlayId_t id) {
   // Set state to closing.
   rec_play->state = SDS_REC_PLAY_STATE_CLOSING;
 
-  // Before recorder stream is closed sdsRecPlayThread should send all data in SDS Stream Buffer via SDS I/O interface.
+  // Before recorder stream is closed, sdsRecPlayThread should send all data in SDS Stream Buffer via SDS I/O interface.
   // Notify sdsRecPlayThread to process this stream by setting the corresponding thread flag.
   event_mask = 1 << rec_play->index;
   osThreadFlagsSet(sdsRecPlayThreadId, event_mask);
@@ -560,15 +607,15 @@ int32_t sdsRecClose (sdsRecPlayId_t id) {
     if (flags == osFlagsErrorTimeout) {
       // Timeout occurred.
       err = SDS_REC_PLAY_ERROR_TIMEOUT;
+    } else {
+      err = SDS_REC_PLAY_ERROR;
     }
   }
 
   if (err == SDS_REC_PLAY_OK) {
     // Close SDSIO stream.
-    if (sdsioClose(rec_play->sdsio) != SDSIO_OK) {
-      // Error occurred during closing of the SDS I/O interface.
-      err = SDS_REC_PLAY_ERROR;
-    }
+    err = sdsioClose(rec_play->sdsio);
+    err = sdsRecPlayTranslateErr(err);
   }
 
   if (err == SDS_REC_PLAY_OK) {
@@ -597,22 +644,22 @@ int32_t sdsRecClose (sdsRecPlayId_t id) {
 }
 
 // Write data to recorder stream.
-uint32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uint32_t buf_size) {
+int32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uint32_t buf_size) {
   sdsRecPlay_t *rec_play = id;
-  uint32_t      num      = 0U;
+  int32_t       ret      = SDS_REC_PLAY_ERROR;
   recPlayHead_t head;
 
   if (sdsRecPlayInitialized == 0U) {
-    // Recorder/Player is not initialized. Exit the function.
-    return 0U;
+    // The recorder/player is not initialized. Exiting the function.
+    return SDS_REC_PLAY_ERROR;
   }
   if (rec_play == NULL) {
     // Invalid stream. Exit the function.
-    return 0U;
+    return SDS_REC_PLAY_ERROR_PARAMETER;
   }
   if (sdsRecPlayLockAcquire(rec_play, 0) == 0U) {
-    // Lock acquire failed.
-    return 0U;
+    // Failed to acquire lock.
+    return SDS_REC_PLAY_ERROR;
   }
   if (rec_play->state != SDS_REC_PLAY_STATE_REC) {
     // Stream is not in recording state. Exit the function.
@@ -631,7 +678,7 @@ uint32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, ui
 
       // Write header and data block: Buffer size has been validated, so write operations are expected to succeed.
       sdsBufferWrite(rec_play->sds_buffer, &head, sizeof(recPlayHead_t));
-      num = sdsBufferWrite(rec_play->sds_buffer, buf, buf_size);
+      ret = sdsBufferWrite(rec_play->sds_buffer, buf, buf_size);
 
       // If an SDS threshold event occurred during sdsWrite (amount of data in the SDS Stream Buffer is at or above the threshold),
       // notify the sdsRecPlayThread by setting the corresponding thread flag to process the stream.
@@ -639,13 +686,22 @@ uint32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, ui
         rec_play->event_threshold = 0U;
         osThreadFlagsSet(sdsRecPlayThreadId, 1U << rec_play->index);
       }
+    } else {
+      // Insufficient space in the stream buffer.
+      if (sdsRecPlayEvent != NULL) {
+        // Notify the application about the error.
+        sdsRecPlayEvent(rec_play, SDS_REC_EVENT_ERROR_NO_SPACE);
+      }
+      ret = SDS_REC_ERROR_NO_SPACE;
     }
+  } else {
+    ret = SDS_REC_PLAY_ERROR_PARAMETER;
   }
 
-  // Release Lock.
+  // Release lock.
   sdsRecPlayLockRelease(rec_play);
 
-  return num;
+  return ret;
 }
 
 // SDS Player functions:
@@ -657,7 +713,7 @@ sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size) {
   uint32_t      index, flags;
 
   if (sdsRecPlayInitialized == 0U) {
-    // Recorder/Player is not initialized. Exit the function.
+    // The recorder/player is not initialized. Exiting the function.
     return NULL;
   }
 
@@ -752,15 +808,15 @@ int32_t sdsPlayClose (sdsRecPlayId_t id) {
   sdsRecPlay_t *rec_play = id;
   int32_t       ret      = SDS_REC_PLAY_ERROR;
   int32_t       err      = SDS_REC_PLAY_OK;
-  uint32_t      event_mask, flags, expirationTick;
+  uint32_t      event_mask, flags;
 
   if (sdsRecPlayInitialized == 0U) {
-    // Recorder/Player is not initialized. Exit the function.
+    // The recorder/player is not initialized. Exiting the function.
     return SDS_REC_PLAY_ERROR;
   }
   if (rec_play == NULL) {
     // Invalid stream. Exit the function.
-    return SDS_REC_PLAY_ERROR;
+    return SDS_REC_PLAY_ERROR_PARAMETER;
   }
   if (sdsRecPlayLockAcquire(rec_play, SDS_REC_PLAY_CLOSE_TOUT) == 0U) {
     // Timeout occurred while waiting for lock.
@@ -775,7 +831,7 @@ int32_t sdsPlayClose (sdsRecPlayId_t id) {
   // Set state to closing.
   rec_play->state = SDS_REC_PLAY_STATE_CLOSING;
 
-  // Before player stream is closed sdsRecPlayThread should stop reading data from SDS I/O interface.
+  // Before player stream is closed, sdsRecPlayThread should stop reading data from SDS I/O interface.
   // Notify sdsRecPlayThread to process this stream by setting the corresponding thread flag.
   event_mask = 1 << rec_play->index;
   osThreadFlagsSet(sdsRecPlayThreadId, event_mask);
@@ -786,15 +842,15 @@ int32_t sdsPlayClose (sdsRecPlayId_t id) {
     if (flags == osFlagsErrorTimeout) {
       // Timeout occurred.
       err = SDS_REC_PLAY_ERROR_TIMEOUT;
+    } else {
+      err = SDS_REC_PLAY_ERROR;
     }
   }
 
   if (err == SDS_REC_PLAY_OK) {
     // Close SDSIO stream.
-    if (sdsioClose(rec_play->sdsio) != SDSIO_OK) {
-      // Error occurred during closing of the SDS I/O interface.
-      err = SDS_REC_PLAY_ERROR;
-    }
+    err = sdsioClose(rec_play->sdsio);
+    err = sdsRecPlayTranslateErr(err);
   }
 
   if (err == SDS_REC_PLAY_OK) {
@@ -823,22 +879,23 @@ int32_t sdsPlayClose (sdsRecPlayId_t id) {
 }
 
 // Read data from player stream.
-uint32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size) {
+int32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size) {
   sdsRecPlay_t *rec_play = id;
-  uint32_t      num      = 0U;
-  uint32_t      size;
+  int32_t       ret      = SDS_REC_PLAY_ERROR;
+  int32_t       eos      = 0;
+  int32_t       size;
 
   if (sdsRecPlayInitialized == 0U) {
-    // Recorder/Player is not initialized. Exit the function.
-    return 0U;
+    // The recorder/player is not initialized. Exiting the function.
+    return SDS_REC_PLAY_ERROR;
   }
   if (rec_play == NULL) {
     // Invalid stream. Exit the function.
-    return 0U;
+    return SDS_REC_PLAY_ERROR_PARAMETER;
   }
   if (sdsRecPlayLockAcquire(rec_play, 0) == 0U) {
-    // Lock acquire failed.
-    return 0U;
+    // Failed to acquire lock.
+    return SDS_REC_PLAY_ERROR;
   }
   if (rec_play->state != SDS_REC_PLAY_STATE_PLAY) {
     // Stream is not in playing state. Exit the function.
@@ -848,7 +905,8 @@ uint32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_
 
   // Verify if parameters are valid.
   if ((buf != NULL) && (buf_size != 0U)) {
-
+    // Save eos flag.
+    eos = rec_play->flags & SDS_REC_PLAY_FLAG_EOS;
     // Get size of available data block.
     size = sdsBufferGetCount(rec_play->sds_buffer);
 
@@ -859,109 +917,122 @@ uint32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_
       size -= HEAD_SIZE;
     }
 
-    if ((rec_play->head.data_size != 0U)   &&      // Check if Header is valid and data block size in header is valid.
-        (rec_play->head.data_size <= size) &&      // Check if whole record is available in the SDS Stream Buffer.
-        (rec_play->head.data_size <= buf_size)) {  // Check if whole record fits into the provided buffer.
+    // Check if Header is valid and data block size in header is valid.
+    if (rec_play->head.data_size != 0U) {
+      // Check if whole data block fits into the provided buffer.
+      if (rec_play->head.data_size > buf_size) {
+        // Provided buffer is too small to read the data block.
+        ret = SDS_REC_PLAY_ERROR_PARAMETER;
+      } else {
+        // Check if whole data block is available in the SDS Stream Buffer.
+        if (rec_play->head.data_size > size) {
+          // Whole data block is not available in the SDS Stream Buffer.
+          ret = SDS_PLAY_ERROR_NO_DATA;
+        } else {
+          // Read data block from SDS Stream Buffer:
+          // Buffer size has been validated, so read operation is expected to succeed.
+          ret = sdsBufferRead(rec_play->sds_buffer, buf, rec_play->head.data_size);
 
-      // Read data block from SDS Stream Buffer:
-      // Buffer size has been validated, so read operation is expected to succeed.
-      num = sdsBufferRead(rec_play->sds_buffer, buf, rec_play->head.data_size);
+          // Get timestamp from the header.
+          if (timestamp != NULL) {
+            *timestamp = rec_play->head.timestamp;
+          }
 
-      // Get timestamp from the header.
-      if (timestamp != NULL) {
-        *timestamp = rec_play->head.timestamp;
+          // Whole data block has been read from the SDS Stream Buffer.
+          // Clear the header information to enable reading of the next data block.
+          rec_play->head.data_size = 0U;
+
+          // If an SDS threshold event occurred during sdsRead (amount of data in the SDS Stream Buffer is at or below the threshold),
+          // notify the sdsRecPlayThread by setting the corresponding thread flag to process the stream.
+          if (rec_play->event_threshold != 0U) {
+            rec_play->event_threshold = 0U;
+            osThreadFlagsSet(sdsRecPlayThreadId, 1U << rec_play->index);
+          }
+        }
       }
-
-      // Whole record has been read from the SDS Stream Buffer.
-      // Clear the header information to enable reading of the next record.
-      rec_play->head.data_size = 0U;
-
-      // If an SDS threshold event occurred during sdsRead (amount of data in the SDS Stream Buffer is at or below the threshold),
-      // notify the sdsRecPlayThread by setting the corresponding thread flag to process the stream.
-      if (rec_play->event_threshold != 0U) {
-        rec_play->event_threshold = 0U;
-        osThreadFlagsSet(sdsRecPlayThreadId, 1U << rec_play->index);
+    } else {
+      // Header is not valid.
+      // Check for End Of Stream.
+      if ((size == 0) && (eos != 0U)) {
+        ret = SDS_PLAY_EOS;
+      } else {
+        // Whole header is not available in the SDS Stream Buffer.
+        ret = SDS_PLAY_ERROR_NO_DATA;
       }
     }
+  } else {
+    ret = SDS_REC_PLAY_ERROR_PARAMETER;
+  }
+
+  if ((ret == SDS_PLAY_ERROR_NO_DATA) && (sdsRecPlayEvent != NULL)) {
+    // Notify the application about the error.
+    sdsRecPlayEvent(rec_play, SDS_PLAY_EVENT_ERROR_NO_DATA);
   }
 
   // Release Lock.
   sdsRecPlayLockRelease(rec_play);
 
-  return num;
+  return ret;
 }
 
 // Get data block size from Player stream
-uint32_t sdsPlayGetSize (sdsRecPlayId_t id) {
+int32_t sdsPlayGetSize (sdsRecPlayId_t id) {
   sdsRecPlay_t *rec_play = id;
-  uint32_t      size     = 0U;
-  uint32_t      cnt;
+  int32_t       ret      = SDS_REC_PLAY_ERROR;
+  int32_t       eos      = 0;
+  int32_t       size;
 
   if (sdsRecPlayInitialized == 0U) {
-    // Recorder/Player is not initialized. Exit the function.
-    return 0U;
+    // The recorder/player is not initialized. Exiting the function.
+    return SDS_REC_PLAY_ERROR;
   }
   if (rec_play == NULL) {
     // Invalid stream. Exit the function.
-    return 0U;
+    return SDS_REC_PLAY_ERROR_PARAMETER;
   }
   if (sdsRecPlayLockAcquire(rec_play, 0) == 0U) {
-    // Lock acquire failed.
-    return 0U;
+    // Failed to acquire lock.
+    return SDS_REC_PLAY_ERROR;
   }
   if (rec_play->state != SDS_REC_PLAY_STATE_PLAY) {
     // Stream is not in playing state. Exit the function.
     sdsRecPlayLockRelease(rec_play);
     return SDS_REC_PLAY_ERROR;
   }
+
+  // Save eos flag.
+  eos = rec_play->flags & SDS_REC_PLAY_FLAG_EOS;
+  // Get size of available data block.
+  size = sdsBufferGetCount(rec_play->sds_buffer);
 
   // Check if header was already read:
   // If not (head.data_size == 0) and there is enough data available, read new header.
-  if (rec_play->head.data_size == 0U) {
-    cnt = sdsBufferGetCount(rec_play->sds_buffer);
-    if (cnt >= HEAD_SIZE) {
-      sdsBufferRead(rec_play->sds_buffer, &rec_play->head, HEAD_SIZE);
+  if ((rec_play->head.data_size == 0U) && (size >= HEAD_SIZE)) {
+    sdsBufferRead(rec_play->sds_buffer, &rec_play->head, HEAD_SIZE);
+    size -= HEAD_SIZE;
+  }
+
+  // Check if Header is valid and data block size in header is valid.
+  if (rec_play->head.data_size != 0U) {
+    if (rec_play->head.data_size > size) {
+      // Whole data block is not available in the SDS Stream Buffer.
+      ret = SDS_PLAY_ERROR_NO_DATA;
+    } else {
+      // Return size of the data block.
+      ret = rec_play->head.data_size;
+    }
+  } else {
+    // Header is not valid.
+    // Check for End Of Stream.
+    if ((size == 0) && (eos != 0U)) {
+      ret = SDS_PLAY_EOS;
+    } else {
+      // Whole header is not available in the SDS Stream Buffer.
+      ret = SDS_PLAY_ERROR_NO_DATA;
     }
   }
 
-  // Get data block size from the header.
-  size = rec_play->head.data_size;
-
   // Release Lock.
   sdsRecPlayLockRelease(rec_play);
-
-  return size;
-}
-
-// Check if end of stream has been reached
-int32_t sdsPlayEndOfStream (sdsRecPlayId_t id) {
-  sdsRecPlay_t *rec_play = id;
-  int32_t       eos      = 0;
-
-  if (sdsRecPlayInitialized == 0U) {
-    // Recorder/Player is not initialized. Exit the function.
-    return SDS_REC_PLAY_ERROR;
-  }
-  if (rec_play == NULL) {
-    // Invalid stream. Exit the function.
-    return 0U;
-  }
-  if (sdsRecPlayLockAcquire(rec_play, 0) == 0U) {
-    // Lock acquire failed.
-    return 0U;
-  }
-  if (rec_play->state != SDS_REC_PLAY_STATE_PLAY) {
-    // Stream is not in playing state. Exit the function.
-    sdsRecPlayLockRelease(rec_play);
-    return SDS_REC_PLAY_ERROR;
-  }
-
-  if ((sdsBufferGetCount(rec_play->sds_buffer) == 0U) && ((rec_play->flags & SDS_REC_PLAY_FLAG_EOS) != 0U)) {
-    // SDS Stream Buffer is empty and SDS_REC_PLAY_FLAG_EOS flag is set. End of stream has been reached.
-    eos = 1;
-  }
-  // Release Lock.
-  sdsRecPlayLockRelease(rec_play);
-
-  return eos;
+  return ret;
 }
