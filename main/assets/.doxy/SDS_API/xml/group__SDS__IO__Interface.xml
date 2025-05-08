@@ -3,7 +3,7 @@
   <compounddef id="group__SDS__IO__Interface" kind="group">
     <compoundname>SDS_IO_Interface</compoundname>
     <title>SDS I/O Interface</title>
-    <innergroup refid="group__SDS__IO__Error__Codes">Error Codes</innergroup>
+    <innergroup refid="group__SDS__IO__Return__Codes">Function Return Codes</innergroup>
     <sectiondef kind="func">
       <memberdef kind="function" id="group__SDS__IO__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -18,13 +18,13 @@
         </briefdescription>
         <detaileddescription>
 <para>Initializes the SDS I/O interface. The interface may be a local file system (e.g., an SD card) or semihosting, or a communication channel such as Ethernet, USB or UART. In the case of a communication channel, the SDS I/O Client is used to interact with the SDS I/O Server running on a Host machine. The initialization process includes setting up the communication interface and verifying that the I/O Server is active on the Host.</para>
-<para><simplesect kind="return"><para>return code (see <ref refid="group__SDS__IO__Error__Codes" kindref="compound">Error Codes</ref>) </para>
+<para><simplesect kind="return"><para>SDSIO_OK on success or a negative value on error (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.txt" line="149" column="9" declfile="sds/include/sds.txt" declline="149" declcolumn="9"/>
+        <location file="sds/include/sds.txt" line="168" column="9" declfile="sds/include/sds.txt" declline="168" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__IO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -39,13 +39,13 @@
         </briefdescription>
         <detaileddescription>
 <para>De-initializes the SDS I/O interface. If a communication channel such as Ethernet, USB or USART is used, the corresponding communication interface is also de-initialized.</para>
-<para><simplesect kind="return"><para>return code (see <ref refid="group__SDS__IO__Error__Codes" kindref="compound">Error Codes</ref>) </para>
+<para><simplesect kind="return"><para>SDSIO_OK on success or a negative value on error (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sdsio.h" line="55" column="9" declfile="sds/include/sdsio.h" declline="55" declcolumn="9"/>
+        <location file="sds/include/sdsio.h" line="62" column="9" declfile="sds/include/sdsio.h" declline="62" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__IO__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref></type>
@@ -88,7 +88,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sdsio.h" line="64" column="11" declfile="sds/include/sdsio.h" declline="64" declcolumn="11"/>
+        <location file="sds/include/sdsio.h" line="71" column="11" declfile="sds/include/sdsio.h" declline="71" declcolumn="11"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__IO__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -113,17 +113,17 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>return code (see <ref refid="group__SDS__IO__Error__Codes" kindref="compound">Error Codes</ref>) </para>
+<simplesect kind="return"><para>SDSIO_OK on success or a negative value on error (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sdsio.h" line="72" column="9" declfile="sds/include/sdsio.h" declline="72" declcolumn="9"/>
+        <location file="sds/include/sdsio.h" line="80" column="9" declfile="sds/include/sdsio.h" declline="80" declcolumn="9"/>
       </memberdef>
-      <memberdef kind="function" id="group__SDS__IO__Interface_1ga8316585cd4bc3fd49590870e4ad4ba90" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>uint32_t</type>
-        <definition>uint32_t sdsioWrite</definition>
+      <memberdef kind="function" id="group__SDS__IO__Interface_1gafb6b812114b27595ead2d18f2b151e6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioWrite</definition>
         <argsstring>(sdsioId_t id, const void *buf, uint32_t buf_size)</argsstring>
         <name>sdsioWrite</name>
         <param>
@@ -168,17 +168,17 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>number of bytes written, or 0 if operation failed </para>
+<simplesect kind="return"><para>number of bytes successfully written or a negative value on error (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sdsio.h" line="82" column="10" declfile="sds/include/sdsio.h" declline="82" declcolumn="10"/>
+        <location file="sds/include/sdsio.h" line="91" column="9" declfile="sds/include/sdsio.h" declline="91" declcolumn="9"/>
       </memberdef>
-      <memberdef kind="function" id="group__SDS__IO__Interface_1ga9e13c7a64eb4e9cf51f07ffc21c699bc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>uint32_t</type>
-        <definition>uint32_t sdsioRead</definition>
+      <memberdef kind="function" id="group__SDS__IO__Interface_1gaed816e11cb116354d8d95d97693a736c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioRead</definition>
         <argsstring>(sdsioId_t id, void *buf, uint32_t buf_size)</argsstring>
         <name>sdsioRead</name>
         <param>
@@ -197,7 +197,7 @@
 <para>Read data from I/O stream. </para>
         </briefdescription>
         <detaileddescription>
-<para>Reads data from an SDS I/O stream opened for reading. If the interface is a local file system or semihosting, data is read directly from the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO_CMD_READ) to the SDS I/O Server, which reads the file on the Host system and returns the data to the Client.</para>
+<para>Reads data from an SDS I/O stream opened for reading. If the interface is a local file system or semihosting, data is read directly from the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO_CMD_READ) to the SDS I/O Server, which reads the file on the Host system and returns the data to the Client. If the end of the stream is reached, the function returns <ref refid="group__SDS__IO__Return__Codes_1gaf44016f63777a63a3cc5751b7c8c6fe1" kindref="member">SDSIO_EOS</ref> to indicate that no more data is available.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername direction="in">id</parametername>
@@ -223,44 +223,13 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>number of bytes read, or 0 if operation failed </para>
+<simplesect kind="return"><para>number of bytes successfully read, or a negative value on error or EOS (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sdsio.h" line="92" column="10" declfile="sds/include/sdsio.h" declline="92" declcolumn="10"/>
-      </memberdef>
-      <memberdef kind="function" id="group__SDS__IO__Interface_1ga5d7ec0d83a40f56939115f3c09b0d1d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>int32_t</type>
-        <definition>int32_t sdsioEndOfStream</definition>
-        <argsstring>(sdsioId_t id)</argsstring>
-        <name>sdsioEndOfStream</name>
-        <param>
-          <type><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref></type>
-          <declname>id</declname>
-        </param>
-        <briefdescription>
-<para>Check if end of stream has been reached. </para>
-        </briefdescription>
-        <detaileddescription>
-<para>Checks whether the end of the stream has been reached and no more data is available in the recorded file. This helps distinguish between the absence of data in the recorded file and a case where the SDS I/O Client failed to prepare data before <ref refid="group__SDS__IO__Interface_1ga9e13c7a64eb4e9cf51f07ffc21c699bc" kindref="member">sdsioRead</ref> was invoked. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends an command (SDSIO_CMD_EOS) to the SDS I/O Server to check the end of stream status of the file on the Host system.</para>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername direction="in">id</parametername>
-</parameternamelist>
-<parameterdescription>
-<para><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref> handle to SDS I/O stream </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<simplesect kind="return"><para>positive non-zero value if end of stream, else 0; negative value on error </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sdsio.h" line="100" column="9" declfile="sds/include/sdsio.h" declline="100" declcolumn="9"/>
+        <location file="sds/include/sdsio.h" line="102" column="9" declfile="sds/include/sdsio.h" declline="102" declcolumn="9"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="typedef">

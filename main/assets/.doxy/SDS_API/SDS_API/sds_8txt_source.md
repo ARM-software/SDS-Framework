@@ -38,7 +38,6 @@ int32_t sdsioInit (void);
 
 
 
-
 // end group SDS_IO_Interface
 
 

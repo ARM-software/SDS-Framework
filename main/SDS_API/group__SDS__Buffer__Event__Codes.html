@@ -106,11 +106,11 @@
 <tbody>
 <tr>
 <td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="group__SDS__Buffer__Event__Codes.html#define-sds_buffer_event_data_high"><strong>SDS_BUFFER_EVENT_DATA_HIGH</strong></a>  <code>(2UL)</code><br><em>Event signaled when data in circular buffer exceeds high threshold value.</em></td>
+<td style="text-align: left;"><a href="group__SDS__Buffer__Event__Codes.html#define-sds_buffer_event_data_high"><strong>SDS_BUFFER_EVENT_DATA_HIGH</strong></a>  <code>(2UL)</code><br><em>Event signaled when data in circular buffer reaches or exceeds high threshold value.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="group__SDS__Buffer__Event__Codes.html#define-sds_buffer_event_data_low"><strong>SDS_BUFFER_EVENT_DATA_LOW</strong></a>  <code>(1UL)</code><br><em>Event signaled when data in circular buffer drops below low threshold value.</em></td>
+<td style="text-align: left;"><a href="group__SDS__Buffer__Event__Codes.html#define-sds_buffer_event_data_low"><strong>SDS_BUFFER_EVENT_DATA_LOW</strong></a>  <code>(1UL)</code><br><em>Event signaled when data in circular buffer falls to or below low threshold value.</em></td>
 </tr>
 </tbody>
 </table>
@@ -118,13 +118,13 @@
 <p>The following values are passed as event value to <a href="group__SDS__Buffer.html#typedef-sdsbufferevent_t"><strong>sdsBufferEvent_t</strong></a> callback function. </p>
 <h2 id="macro-definition-documentation">Macro Definition Documentation</h2>
 <h3 id="define-sds_buffer_event_data_high">define SDS_BUFFER_EVENT_DATA_HIGH</h3>
-<p><em>Event signaled when data in circular buffer exceeds high threshold value.</em> </p>
+<p><em>Event signaled when data in circular buffer reaches or exceeds high threshold value.</em> </p>
 <pre><code>#define SDS_BUFFER_EVENT_DATA_HIGH `(2UL)`
 </code></pre>
 <hr>
 
 <h3 id="define-sds_buffer_event_data_low">define SDS_BUFFER_EVENT_DATA_LOW</h3>
-<p><em>Event signaled when data in circular buffer drops below low threshold value.</em> </p>
+<p><em>Event signaled when data in circular buffer falls to or below low threshold value.</em> </p>
 <pre><code>#define SDS_BUFFER_EVENT_DATA_LOW `(1UL)`
 </code></pre>
 <hr>

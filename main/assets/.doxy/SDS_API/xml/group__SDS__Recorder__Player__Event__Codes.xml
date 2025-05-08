@@ -4,17 +4,41 @@
     <compoundname>SDS_Recorder_Player_Event_Codes</compoundname>
     <title>Event Codes</title>
     <sectiondef kind="define">
-      <memberdef kind="define" id="group__SDS__Recorder__Player__Event__Codes_1ga21e5026dbbcce40727a72a3aa7e85769" prot="public" static="no">
-        <name>SDS_REC_PLAY_EVENT_IO_ERROR</name>
+      <memberdef kind="define" id="group__SDS__Recorder__Player__Event__Codes_1ga56f39c6ca4e9ad0489e0494003e74ab2" prot="public" static="no">
+        <name>SDS_REC_PLAY_EVENT_ERROR_IO</name>
         <initializer>(1UL)</initializer>
         <briefdescription>
-<para>Event signaled when an I/O error happened. </para>
+<para>Event triggered when an I/O error occurs during recording or playback. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="39" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="39" bodyend="-1"/>
+        <location file="sds/include/sds_rec_play.h" line="44" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Recorder__Player__Event__Codes_1gaf36b00fc03d794ee64a9e3fa2954bf74" prot="public" static="no">
+        <name>SDS_REC_EVENT_ERROR_NO_SPACE</name>
+        <initializer>(2UL)</initializer>
+        <briefdescription>
+<para>Event triggered when <ref refid="group__SDS__Recorder__Player_1gad1f1655942d66149438082b55702d09f" kindref="member">sdsRecWrite()</ref> fails due to insufficient space in the stream buffer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_rec_play.h" line="45" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Recorder__Player__Event__Codes_1gae663dd7b0ee0a0ff7eb012da3f002dc8" prot="public" static="no">
+        <name>SDS_PLAY_EVENT_ERROR_NO_DATA</name>
+        <initializer>(3UL)</initializer>
+        <briefdescription>
+<para>Event triggered when <ref refid="group__SDS__Recorder__Player_1ga219c99e93cedd38573cb0aba5d0fcc75" kindref="member">sdsPlayRead()</ref> fails due to insufficient data in the stream buffer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_rec_play.h" line="46" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="46" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

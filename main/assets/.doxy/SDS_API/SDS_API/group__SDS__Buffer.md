@@ -25,8 +25,8 @@ sds\_buffer.h _: SDS circular buffer handling for data streams_[More...](#detail
 
 | Type | Name |
 | ---: | :--- |
-| module | [**Error Codes**](group__SDS__Buffer__Error__Codes.md) <br>_SDS Buffer Error Codes._  |
 | module | [**Event Codes**](group__SDS__Buffer__Event__Codes.md) <br>_SDS Buffer Event Codes._  |
+| module | [**Function Return Codes**](group__SDS__Buffer__Return__Codes.md) <br>_SDS Buffer Function Return Codes._  |
 
 
 
@@ -65,11 +65,11 @@ sds\_buffer.h _: SDS circular buffer handling for data streams_[More...](#detail
 | ---: | :--- |
 |  int32\_t | [**sdsBufferClear**](#function-sdsbufferclear) ([**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t) id) <br>_Clear SDS buffer stream data._  |
 |  int32\_t | [**sdsBufferClose**](#function-sdsbufferclose) ([**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t) id) <br>_Close SDS buffer stream._  |
-|  uint32\_t | [**sdsBufferGetCount**](#function-sdsbuffergetcount) ([**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t) id) <br>_Get data count in SDS buffer stream._  |
+|  int32\_t | [**sdsBufferGetCount**](#function-sdsbuffergetcount) ([**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t) id) <br>_Get data count in SDS buffer stream._  |
 |  [**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t) | [**sdsBufferOpen**](#function-sdsbufferopen) (void \* buf, uint32\_t buf\_size, uint32\_t threshold\_low, uint32\_t threshold\_high) <br>_Open SDS buffer stream._  |
-|  uint32\_t | [**sdsBufferRead**](#function-sdsbufferread) ([**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t) id, void \* buf, uint32\_t buf\_size) <br>_Read data from SDS buffer stream._  |
+|  int32\_t | [**sdsBufferRead**](#function-sdsbufferread) ([**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t) id, void \* buf, uint32\_t buf\_size) <br>_Read data from SDS buffer stream._  |
 |  int32\_t | [**sdsBufferRegisterEvents**](#function-sdsbufferregisterevents) ([**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t) id, [**sdsBufferEvent\_t**](group__SDS__Buffer.md#typedef-sdsbufferevent_t) event\_cb, uint32\_t event\_mask, void \* event\_arg) <br>_Register SDS buffer stream event callback function._  |
-|  uint32\_t | [**sdsBufferWrite**](#function-sdsbufferwrite) ([**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t) id, const void \* buf, uint32\_t buf\_size) <br>_Write data to SDS buffer stream._  |
+|  int32\_t | [**sdsBufferWrite**](#function-sdsbufferwrite) ([**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t) id, const void \* buf, uint32\_t buf\_size) <br>_Write data to SDS buffer stream._  |
 
 
 
@@ -119,7 +119,7 @@ typedef void(* sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg);
 
 
 
-This function is registered by passing a pointer to it as a parameter to the [**sdsBufferRegisterEvents**](group__SDS__Buffer.md#function-sdsbufferregisterevents) function. It is invoked when the circular buffer either exceeds the high data threshold or drops below the low data threshold. The high and low data thresholds are configured using the [**sdsBufferOpen**](group__SDS__Buffer.md#function-sdsbufferopen) function.
+This function is registered by passing a pointer to it as a parameter to the [**sdsBufferRegisterEvents**](group__SDS__Buffer.md#function-sdsbufferregisterevents) function. It is invoked when the circular buffer either reaches or exceeds the high data threshold or falls to or below the low data threshold. The high and low data thresholds are configured using the [**sdsBufferOpen**](group__SDS__Buffer.md#function-sdsbufferopen) function.
 
 
 
@@ -185,7 +185,7 @@ Clears any data from the SDS circular buffer and resets the circular buffer to e
 
 **Returns:**
 
-return code (see [**Error Codes**](group__SDS__Buffer__Error__Codes.md)) 
+SDS\_BUFFER\_OK on success or a negative value on error (see [**Function Return Codes**](group__SDS__Buffer__Return__Codes.md)) 
 
 
 
@@ -222,7 +222,7 @@ Closes the SDS circular buffer when read or write operations are no longer requi
 
 **Returns:**
 
-return code (see [**Error Codes**](group__SDS__Buffer__Error__Codes.md)) 
+SDS\_BUFFER\_OK on success or a negative value on error (see [**Function Return Codes**](group__SDS__Buffer__Return__Codes.md)) 
 
 
 
@@ -238,7 +238,7 @@ return code (see [**Error Codes**](group__SDS__Buffer__Error__Codes.md))
 
 _Get data count in SDS buffer stream._ 
 ```
-uint32_t sdsBufferGetCount (
+int32_t sdsBufferGetCount (
     sdsBufferId_t id
 ) 
 ```
@@ -259,7 +259,7 @@ Retrieves the number of data bytes currently available in the SDS circular buffe
 
 **Returns:**
 
-number of data bytes available in buffer stream 
+number of data bytes available in buffer stream or a negative value on error (see [**Function Return Codes**](group__SDS__IO__Return__Codes.md)) 
 
 
 
@@ -318,7 +318,7 @@ Opens the SDS circular buffer for read or write operations. The function returns
 
 _Read data from SDS buffer stream._ 
 ```
-uint32_t sdsBufferRead (
+int32_t sdsBufferRead (
     sdsBufferId_t id,
     void * buf,
     uint32_t buf_size
@@ -343,7 +343,7 @@ Reads data from the SDS circular buffer. If there is no data in the circular buf
 
 **Returns:**
 
-number of data bytes read, or 0 if operation failed 
+number of data bytes successfully read or a negative value on error (see [**Function Return Codes**](group__SDS__IO__Return__Codes.md)) 
 
 
 
@@ -369,7 +369,7 @@ int32_t sdsBufferRegisterEvents (
 
 
 
-Registers a [**sdsBufferEvent\_t**](group__SDS__Buffer.md#typedef-sdsbufferevent_t) callback function for handling buffer threshold events.
+Registers a [**sdsBufferEvent\_t**](group__SDS__Buffer.md#typedef-sdsbufferevent_t) callback function for handling buffer threshold events. If `event_cb` is NULL, the previously registered callback function is unregistered. This function should not be called concurrently with [**sdsBufferWrite**](group__SDS__Buffer.md#function-sdsbufferwrite) or [**sdsBufferRead**](group__SDS__Buffer.md#function-sdsbufferread) operations for the same buffer stream.
 
 
 
@@ -378,7 +378,7 @@ Registers a [**sdsBufferEvent\_t**](group__SDS__Buffer.md#typedef-sdsbufferevent
 
 
 * `id` [**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t) handle to SDS buffer stream 
-* `event_cb` pointer to [**sdsBufferEvent\_t**](group__SDS__Buffer.md#typedef-sdsbufferevent_t) callback function 
+* `event_cb` pointer to [**sdsBufferEvent\_t**](group__SDS__Buffer.md#typedef-sdsbufferevent_t) callback function, NULL to un-register 
 * `event_mask` event mask 
 * `event_arg` pointer to event argument 
 
@@ -386,7 +386,7 @@ Registers a [**sdsBufferEvent\_t**](group__SDS__Buffer.md#typedef-sdsbufferevent
 
 **Returns:**
 
-return code (see [**Error Codes**](group__SDS__Buffer__Error__Codes.md)) 
+SDS\_BUFFER\_OK on success or a negative value on error (see [**Function Return Codes**](group__SDS__Buffer__Return__Codes.md)) 
 
 
 
@@ -402,7 +402,7 @@ return code (see [**Error Codes**](group__SDS__Buffer__Error__Codes.md))
 
 _Write data to SDS buffer stream._ 
 ```
-uint32_t sdsBufferWrite (
+int32_t sdsBufferWrite (
     sdsBufferId_t id,
     const void * buf,
     uint32_t buf_size
@@ -411,7 +411,7 @@ uint32_t sdsBufferWrite (
 
 
 
-Writes data to the SDS circular buffer. If the buffer is full, no additional data will be written until space is freed by the [**sdsBufferRead**](group__SDS__Buffer.md#function-sdsbufferread) function. The function returns the number of bytes successfully written; if the buffer is full, it returns 0.
+Writes data to the SDS circular buffer. If the buffer is full, no additional data will be written until space is freed by the sdsBufferRead function.
 
 
 
@@ -427,7 +427,7 @@ Writes data to the SDS circular buffer. If the buffer is full, no additional dat
 
 **Returns:**
 
-number of data bytes successfully written, or 0 if operation failed 
+number of data bytes successfully written or a negative value on error (see [**Function Return Codes**](group__SDS__Buffer__Return__Codes.md)) 
 
 
 

@@ -25,7 +25,7 @@ sdsio.h _: SDS I/O Interface for data streams_[More...](#detailed-description)
 
 | Type | Name |
 | ---: | :--- |
-| module | [**Error Codes**](group__SDS__IO__Error__Codes.md) <br>_SDS I/O Error Codes._  |
+| module | [**Function Return Codes**](group__SDS__IO__Return__Codes.md) <br>_SDS I/O Function Return Codes._  |
 
 
 
@@ -63,12 +63,11 @@ sdsio.h _: SDS I/O Interface for data streams_[More...](#detailed-description)
 | Type | Name |
 | ---: | :--- |
 |  int32\_t | [**sdsioClose**](#function-sdsioclose) ([**sdsioId\_t**](group__SDS__IO__Interface.md#typedef-sdsioid_t) id) <br>_Close I/O stream._  |
-|  int32\_t | [**sdsioEndOfStream**](#function-sdsioendofstream) ([**sdsioId\_t**](group__SDS__IO__Interface.md#typedef-sdsioid_t) id) <br>_Check if end of stream has been reached._  |
 |  int32\_t | [**sdsioInit**](#function-sdsioinit) (void) <br>_Initialize SDS I/O._  |
 |  [**sdsioId\_t**](group__SDS__IO__Interface.md#typedef-sdsioid_t) | [**sdsioOpen**](#function-sdsioopen) (const char \* name, [**sdsioMode\_t**](group__SDS__IO__Interface.md#enum-sdsiomode_t) mode) <br>_Open I/O stream._  |
-|  uint32\_t | [**sdsioRead**](#function-sdsioread) ([**sdsioId\_t**](group__SDS__IO__Interface.md#typedef-sdsioid_t) id, void \* buf, uint32\_t buf\_size) <br>_Read data from I/O stream._  |
+|  int32\_t | [**sdsioRead**](#function-sdsioread) ([**sdsioId\_t**](group__SDS__IO__Interface.md#typedef-sdsioid_t) id, void \* buf, uint32\_t buf\_size) <br>_Read data from I/O stream._  |
 |  int32\_t | [**sdsioUninit**](#function-sdsiouninit) (void) <br>_Un-initialize SDS I/O._  |
-|  uint32\_t | [**sdsioWrite**](#function-sdsiowrite) ([**sdsioId\_t**](group__SDS__IO__Interface.md#typedef-sdsioid_t) id, const void \* buf, uint32\_t buf\_size) <br>_Write data to I/O stream._  |
+|  int32\_t | [**sdsioWrite**](#function-sdsiowrite) ([**sdsioId\_t**](group__SDS__IO__Interface.md#typedef-sdsioid_t) id, const void \* buf, uint32\_t buf\_size) <br>_Write data to I/O stream._  |
 
 
 
@@ -174,44 +173,7 @@ Closes an SDS I/O stream. If the interface is a local file system or semihosting
 
 **Returns:**
 
-return code (see [**Error Codes**](group__SDS__IO__Error__Codes.md)) 
-
-
-
-
-
-        
-
-<hr>
-
-
-
-### function sdsioEndOfStream 
-
-_Check if end of stream has been reached._ 
-```
-int32_t sdsioEndOfStream (
-    sdsioId_t id
-) 
-```
-
-
-
-Checks whether the end of the stream has been reached and no more data is available in the recorded file. This helps distinguish between the absence of data in the recorded file and a case where the SDS I/O Client failed to prepare data before [**sdsioRead**](group__SDS__IO__Interface.md#function-sdsioread) was invoked. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends an command (SDSIO\_CMD\_EOS) to the SDS I/O Server to check the end of stream status of the file on the Host system.
-
-
-
-
-**Parameters:**
-
-
-* `id` [**sdsioId\_t**](group__SDS__IO__Interface.md#typedef-sdsioid_t) handle to SDS I/O stream 
-
-
-
-**Returns:**
-
-positive non-zero value if end of stream, else 0; negative value on error 
+SDSIO\_OK on success or a negative value on error (see [**Function Return Codes**](group__SDS__IO__Return__Codes.md)) 
 
 
 
@@ -241,7 +203,7 @@ Initializes the SDS I/O interface. The interface may be a local file system (e.g
 
 **Returns:**
 
-return code (see [**Error Codes**](group__SDS__IO__Error__Codes.md)) 
+SDSIO\_OK on success or a negative value on error (see [**Function Return Codes**](group__SDS__IO__Return__Codes.md)) 
 
 
 
@@ -296,7 +258,7 @@ Opens an SDS I/O stream for reading or writing. If the interface is a local file
 
 _Read data from I/O stream._ 
 ```
-uint32_t sdsioRead (
+int32_t sdsioRead (
     sdsioId_t id,
     void * buf,
     uint32_t buf_size
@@ -305,7 +267,7 @@ uint32_t sdsioRead (
 
 
 
-Reads data from an SDS I/O stream opened for reading. If the interface is a local file system or semihosting, data is read directly from the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO\_CMD\_READ) to the SDS I/O Server, which reads the file on the Host system and returns the data to the Client.
+Reads data from an SDS I/O stream opened for reading. If the interface is a local file system or semihosting, data is read directly from the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO\_CMD\_READ) to the SDS I/O Server, which reads the file on the Host system and returns the data to the Client. If the end of the stream is reached, the function returns [**SDSIO\_EOS**](group__SDS__IO__Return__Codes.md#define-sdsio_eos) to indicate that no more data is available.
 
 
 
@@ -321,7 +283,7 @@ Reads data from an SDS I/O stream opened for reading. If the interface is a loca
 
 **Returns:**
 
-number of bytes read, or 0 if operation failed 
+number of bytes successfully read, or a negative value on error or EOS (see [**Function Return Codes**](group__SDS__IO__Return__Codes.md)) 
 
 
 
@@ -351,7 +313,7 @@ De-initializes the SDS I/O interface. If a communication channel such as Etherne
 
 **Returns:**
 
-return code (see [**Error Codes**](group__SDS__IO__Error__Codes.md)) 
+SDSIO\_OK on success or a negative value on error (see [**Function Return Codes**](group__SDS__IO__Return__Codes.md)) 
 
 
 
@@ -367,7 +329,7 @@ return code (see [**Error Codes**](group__SDS__IO__Error__Codes.md))
 
 _Write data to I/O stream._ 
 ```
-uint32_t sdsioWrite (
+int32_t sdsioWrite (
     sdsioId_t id,
     const void * buf,
     uint32_t buf_size
@@ -392,7 +354,7 @@ Writes data to an SDS I/O stream opened for writing. If the interface is a local
 
 **Returns:**
 
-number of bytes written, or 0 if operation failed 
+number of bytes successfully written or a negative value on error (see [**Function Return Codes**](group__SDS__IO__Return__Codes.md)) 
 
 
 

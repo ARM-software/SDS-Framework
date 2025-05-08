@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Group SDS_Recorder_Player_Error_Codes - SDS-Framework</title>
+    <title>Group SDS_IO_Return_Codes - SDS-Framework</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Group SDS_Recorder_Player_Error_Codes";
-        var mkdocs_page_input_path = "SDS_API/group__SDS__Recorder__Player__Error__Codes.md";
+        var mkdocs_page_name = "Group SDS_IO_Return_Codes";
+        var mkdocs_page_input_path = "SDS_API/group__SDS__IO__Return__Codes.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -82,9 +82,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html" class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Group SDS_Recorder_Player_Error_Codes</li>
+      <li class="breadcrumb-item active">Group SDS_IO_Return_Codes</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__Recorder__Player__Error__Codes.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__IO__Return__Codes.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -92,9 +92,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="group-sds_recorder_player_error_codes">Group SDS_Recorder_Player_Error_Codes</h1>
-<p><a href="modules.html"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="group__SDS__Recorder__Player__Error__Codes.html"><strong>SDS_Recorder_Player_Error_Codes</strong></a></p>
-<p><em>SDS Recorder and Player Error Codes.</em> <a href="#detailed-description">More...</a></p>
+                <h1 id="group-sds_io_return_codes">Group SDS_IO_Return_Codes</h1>
+<p><a href="modules.html"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="group__SDS__IO__Return__Codes.html"><strong>SDS_IO_Return_Codes</strong></a></p>
+<p><em>SDS I/O Function Return Codes.</em> <a href="#detailed-description">More...</a></p>
 <h2 id="macros">Macros</h2>
 <table>
 <thead>
@@ -106,36 +106,76 @@
 <tbody>
 <tr>
 <td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Error__Codes.html#define-sds_rec_play_error"><strong>SDS_REC_PLAY_ERROR</strong></a>  <code>(-1)</code><br><em>Error during sdsRec or sdsPlay function execution.</em></td>
+<td style="text-align: left;"><a href="group__SDS__IO__Return__Codes.html#define-sdsio_eos"><strong>SDSIO_EOS</strong></a>  <code>(-6)</code><br><em>End of stream reached in SDS I/O read operation.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Error__Codes.html#define-sds_rec_play_error_timeout"><strong>SDS_REC_PLAY_ERROR_TIMEOUT</strong></a>  <code>(-2)</code><br><em>sdsRec or sdsPlay function did not finish in expected time.</em></td>
+<td style="text-align: left;"><a href="group__SDS__IO__Return__Codes.html#define-sdsio_error"><strong>SDSIO_ERROR</strong></a>  <code>(-1)</code><br><em>General error during SDS I/O function execution.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Error__Codes.html#define-sds_rec_play_ok"><strong>SDS_REC_PLAY_OK</strong></a>  <code>(0)</code><br><em>sdsRec or sdsPlay function execution completed successfully.</em></td>
+<td style="text-align: left;"><a href="group__SDS__IO__Return__Codes.html#define-sdsio_error_interface"><strong>SDSIO_ERROR_INTERFACE</strong></a>  <code>(-4)</code><br><em>Error in the SDS I/O interface.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__IO__Return__Codes.html#define-sdsio_error_no_server"><strong>SDSIO_ERROR_NO_SERVER</strong></a>  <code>(-5)</code><br><em>No response from the SDS I/O server.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__IO__Return__Codes.html#define-sdsio_error_parameter"><strong>SDSIO_ERROR_PARAMETER</strong></a>  <code>(-2)</code><br><em>Invalid parameter passed to an SDS I/O function.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__IO__Return__Codes.html#define-sdsio_error_timeout"><strong>SDSIO_ERROR_TIMEOUT</strong></a>  <code>(-3)</code><br><em>SDS I/O function execution timed out.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__IO__Return__Codes.html#define-sdsio_ok"><strong>SDSIO_OK</strong></a>  <code>(0)</code><br><em>SDS I/O function executed successfully.</em></td>
 </tr>
 </tbody>
 </table>
 <h2 id="detailed-description">Detailed Description</h2>
-<p>The following values are returned by most <code>sdsRec</code> and <code>sdsPlay</code> functions. </p>
+<p>The following values are returned by most <code>sdsio</code> functions. </p>
 <h2 id="macro-definition-documentation">Macro Definition Documentation</h2>
-<h3 id="define-sds_rec_play_error">define SDS_REC_PLAY_ERROR</h3>
-<p><em>Error during sdsRec or sdsPlay function execution.</em> </p>
-<pre><code>#define SDS_REC_PLAY_ERROR `(-1)`
+<h3 id="define-sdsio_eos">define SDSIO_EOS</h3>
+<p><em>End of stream reached in SDS I/O read operation.</em> </p>
+<pre><code>#define SDSIO_EOS `(-6)`
 </code></pre>
 <hr>
 
-<h3 id="define-sds_rec_play_error_timeout">define SDS_REC_PLAY_ERROR_TIMEOUT</h3>
-<p><em>sdsRec or sdsPlay function did not finish in expected time.</em> </p>
-<pre><code>#define SDS_REC_PLAY_ERROR_TIMEOUT `(-2)`
+<h3 id="define-sdsio_error">define SDSIO_ERROR</h3>
+<p><em>General error during SDS I/O function execution.</em> </p>
+<pre><code>#define SDSIO_ERROR `(-1)`
 </code></pre>
 <hr>
 
-<h3 id="define-sds_rec_play_ok">define SDS_REC_PLAY_OK</h3>
-<p><em>sdsRec or sdsPlay function execution completed successfully.</em> </p>
-<pre><code>#define SDS_REC_PLAY_OK `(0)`
+<h3 id="define-sdsio_error_interface">define SDSIO_ERROR_INTERFACE</h3>
+<p><em>Error in the SDS I/O interface.</em> </p>
+<pre><code>#define SDSIO_ERROR_INTERFACE `(-4)`
+</code></pre>
+<hr>
+
+<h3 id="define-sdsio_error_no_server">define SDSIO_ERROR_NO_SERVER</h3>
+<p><em>No response from the SDS I/O server.</em> </p>
+<pre><code>#define SDSIO_ERROR_NO_SERVER `(-5)`
+</code></pre>
+<hr>
+
+<h3 id="define-sdsio_error_parameter">define SDSIO_ERROR_PARAMETER</h3>
+<p><em>Invalid parameter passed to an SDS I/O function.</em> </p>
+<pre><code>#define SDSIO_ERROR_PARAMETER `(-2)`
+</code></pre>
+<hr>
+
+<h3 id="define-sdsio_error_timeout">define SDSIO_ERROR_TIMEOUT</h3>
+<p><em>SDS I/O function execution timed out.</em> </p>
+<pre><code>#define SDSIO_ERROR_TIMEOUT `(-3)`
+</code></pre>
+<hr>
+
+<h3 id="define-sdsio_ok">define SDSIO_OK</h3>
+<p><em>SDS I/O function executed successfully.</em> </p>
+<pre><code>#define SDSIO_OK `(0)`
 </code></pre>
 <hr>
 

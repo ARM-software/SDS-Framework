@@ -8,25 +8,25 @@
         <name>SDS_BUFFER_EVENT_DATA_LOW</name>
         <initializer>(1UL)</initializer>
         <briefdescription>
-<para>Event signaled when data in circular buffer drops below low threshold value. </para>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_buffer.h" line="38" column="9" bodyfile="sds/include/sds_buffer.h" bodystart="38" bodyend="-1"/>
-      </memberdef>
-      <memberdef kind="define" id="group__SDS__Buffer__Event__Codes_1gace7390e82ed34e762f013bdbd1fe6bbb" prot="public" static="no">
-        <name>SDS_BUFFER_EVENT_DATA_HIGH</name>
-        <initializer>(2UL)</initializer>
-        <briefdescription>
-<para>Event signaled when data in circular buffer exceeds high threshold value. </para>
+<para>Event signaled when data in circular buffer falls to or below low threshold value. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
         <location file="sds/include/sds_buffer.h" line="39" column="9" bodyfile="sds/include/sds_buffer.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Buffer__Event__Codes_1gace7390e82ed34e762f013bdbd1fe6bbb" prot="public" static="no">
+        <name>SDS_BUFFER_EVENT_DATA_HIGH</name>
+        <initializer>(2UL)</initializer>
+        <briefdescription>
+<para>Event signaled when data in circular buffer reaches or exceeds high threshold value. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_buffer.h" line="40" column="9" bodyfile="sds/include/sds_buffer.h" bodystart="40" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

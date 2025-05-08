@@ -124,12 +124,12 @@
 <td style="text-align: left;"><a href="#function-sdsioclientinit"><strong>sdsioClientInit</strong></a> (void) <br><em>Initialize SDSIO Client and ping SDSIO Server to verify connection.</em></td>
 </tr>
 <tr>
-<td style="text-align: right;">uint32_t</td>
-<td style="text-align: left;"><a href="#function-sdsioclientreceive"><strong>sdsioClientReceive</strong></a> (<a href="structheader__t.html"><strong>header_t</strong></a> * header, void * data, uint32_t data_size) <br><em>Receive data from SDSIO-Server.</em></td>
+<td style="text-align: right;">int32_t</td>
+<td style="text-align: left;"><a href="#function-sdsioclientreceive"><strong>sdsioClientReceive</strong></a> (uint8_t * buf, uint32_t buf_size) <br><em>Receive data from SDSIO-Server.</em></td>
 </tr>
 <tr>
-<td style="text-align: right;">uint32_t</td>
-<td style="text-align: left;"><a href="#function-sdsioclientsend"><strong>sdsioClientSend</strong></a> (const <a href="structheader__t.html"><strong>header_t</strong></a> * header, const void * data, uint32_t data_size) <br><em>Send data to SDSIO-Server.</em></td>
+<td style="text-align: right;">int32_t</td>
+<td style="text-align: left;"><a href="#function-sdsioclientsend"><strong>sdsioClientSend</strong></a> (const uint8_t * buf, uint32_t buf_size) <br><em>Send data to SDSIO-Server.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">int32_t</td>
@@ -152,15 +152,11 @@
 </tr>
 <tr>
 <td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="sdsio__client_8h.html#define-sdsio_cmd_eos"><strong>SDSIO_CMD_EOS</strong></a>  <code>5U</code><br></td>
-</tr>
-<tr>
-<td style="text-align: right;">define</td>
 <td style="text-align: left;"><a href="sdsio__client_8h.html#define-sdsio_cmd_open"><strong>SDSIO_CMD_OPEN</strong></a>  <code>1U</code><br></td>
 </tr>
 <tr>
 <td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="sdsio__client_8h.html#define-sdsio_cmd_ping"><strong>SDSIO_CMD_PING</strong></a>  <code>6U</code><br></td>
+<td style="text-align: left;"><a href="sdsio__client_8h.html#define-sdsio_cmd_ping"><strong>SDSIO_CMD_PING</strong></a>  <code>5U</code><br></td>
 </tr>
 <tr>
 <td style="text-align: right;">define</td>
@@ -180,43 +176,39 @@
 ) 
 </code></pre>
 <p><strong>Returns:</strong></p>
-<p>SDSIO_OK: initialization success SDSIO_ERROR: initialization or ping server failed </p>
+<p>SDSIO_OK on success or a negative value on error (see <a href="group__SDS__IO__Return__Codes.html"><strong>Function Return Codes</strong></a>) </p>
 <hr>
 
 <h3 id="function-sdsioclientreceive">function sdsioClientReceive</h3>
 <p><em>Receive data from SDSIO-Server.</em> </p>
-<pre><code class="language-C++">uint32_t sdsioClientReceive (
-    header_t * header,
-    void * data,
-    uint32_t data_size
+<pre><code class="language-C++">int32_t sdsioClientReceive (
+    uint8_t * buf,
+    uint32_t buf_size
 ) 
 </code></pre>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>header</code> pointer to header </li>
-<li><code>data</code> pointer to buffer for data to read </li>
-<li><code>data_size</code> data size in bytes </li>
+<li><code>buf</code> pointer to buffer for data to read </li>
+<li><code>buf_size</code> buffer size in bytes </li>
 </ul>
 <p><strong>Returns:</strong></p>
-<p>number of bytes received (including header) </p>
+<p>number of bytes successfully received or a negative value on error (see <a href="group__SDS__IO__Return__Codes.html"><strong>Function Return Codes</strong></a>) </p>
 <hr>
 
 <h3 id="function-sdsioclientsend">function sdsioClientSend</h3>
 <p><em>Send data to SDSIO-Server.</em> </p>
-<pre><code class="language-C++">uint32_t sdsioClientSend (
-    const header_t * header,
-    const void * data,
-    uint32_t data_size
+<pre><code class="language-C++">int32_t sdsioClientSend (
+    const uint8_t * buf,
+    uint32_t buf_size
 ) 
 </code></pre>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>header</code> pointer to header </li>
-<li><code>data</code> pointer to buffer with data to send </li>
-<li><code>data_size</code> data size in bytes </li>
+<li><code>buf</code> pointer to buffer with data to send </li>
+<li><code>buf_size</code> buffer size in bytes </li>
 </ul>
 <p><strong>Returns:</strong></p>
-<p>number of bytes sent (including header) </p>
+<p>number of bytes successfully sent or a negative value on error (see <a href="group__SDS__IO__Return__Codes.html"><strong>Function Return Codes</strong></a>) </p>
 <hr>
 
 <h3 id="function-sdsioclientuninit">function sdsioClientUninit</h3>
@@ -226,16 +218,11 @@
 ) 
 </code></pre>
 <p><strong>Returns:</strong></p>
-<p>SDIOS_OK: un-initialization success SDSIO_ERROR: un-initialization failed </p>
+<p>SDSIO_OK on success or a negative value on error (see <a href="group__SDS__IO__Return__Codes.html"><strong>Function Return Codes</strong></a>) </p>
 <hr>
 <h2 id="macro-definition-documentation">Macro Definition Documentation</h2>
 <h3 id="define-sdsio_cmd_close">define SDSIO_CMD_CLOSE</h3>
 <pre><code class="language-C++">#define SDSIO_CMD_CLOSE `2U`
-</code></pre>
-<hr>
-
-<h3 id="define-sdsio_cmd_eos">define SDSIO_CMD_EOS</h3>
-<pre><code class="language-C++">#define SDSIO_CMD_EOS `5U`
 </code></pre>
 <hr>
 
@@ -245,7 +232,7 @@
 <hr>
 
 <h3 id="define-sdsio_cmd_ping">define SDSIO_CMD_PING</h3>
-<pre><code class="language-C++">#define SDSIO_CMD_PING `6U`
+<pre><code class="language-C++">#define SDSIO_CMD_PING `5U`
 </code></pre>
 <hr>
 

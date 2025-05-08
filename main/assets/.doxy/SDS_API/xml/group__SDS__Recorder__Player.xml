@@ -3,7 +3,7 @@
   <compounddef id="group__SDS__Recorder__Player" kind="group">
     <compoundname>SDS_Recorder_Player</compoundname>
     <title>SDS Recorder and Player</title>
-    <innergroup refid="group__SDS__Recorder__Player__Error__Codes">Error Codes</innergroup>
+    <innergroup refid="group__SDS__Recorder__Player__Return__Codes">Function Return Codes</innergroup>
     <innergroup refid="group__SDS__Recorder__Player__Event__Codes">Event Codes</innergroup>
     <sectiondef kind="typedef">
       <memberdef kind="typedef" id="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" prot="public" static="no">
@@ -52,7 +52,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="47" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="47" bodyend="-1"/>
+        <location file="sds/include/sds_rec_play.h" line="54" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="54" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -79,13 +79,13 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>return code (see <ref refid="group__SDS__Recorder__Player__Error__Codes" kindref="compound">Error Codes</ref>) </para>
+<simplesect kind="return"><para>SDS_REC_PLAY_OK on success or a negative value on error (see <ref refid="group__SDS__Recorder__Player__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="55" column="9" declfile="sds/include/sds_rec_play.h" declline="55" declcolumn="9"/>
+        <location file="sds/include/sds_rec_play.h" line="63" column="9" declfile="sds/include/sds_rec_play.h" declline="63" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Recorder__Player_1ga7e78ce16473390833db5ed3e6efb8cf1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -100,13 +100,13 @@
         </briefdescription>
         <detaileddescription>
 <para>De-initializes the SDS Recorder and Player system. This function terminates the <computeroutput>sdsRecPlayThread</computeroutput> worker thread, and releases the internal resources. All open recorder or player streams must be closed by the user before calling this function. After de-initialization, the system must be re-initialized before further use.</para>
-<para><simplesect kind="return"><para>return code (see <ref refid="group__SDS__Recorder__Player__Error__Codes" kindref="compound">Error Codes</ref>) </para>
+<para><simplesect kind="return"><para>SDS_REC_PLAY_OK on success or a negative value on error (see <ref refid="group__SDS__Recorder__Player__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="62" column="9" declfile="sds/include/sds_rec_play.h" declline="62" declcolumn="9"/>
+        <location file="sds/include/sds_rec_play.h" line="71" column="9" declfile="sds/include/sds_rec_play.h" declline="71" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Recorder__Player_1ga23cdde344f40bcc5d06931473bb8b719" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref></type>
@@ -163,7 +163,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="72" column="16" declfile="sds/include/sds_rec_play.h" declline="72" declcolumn="16"/>
+        <location file="sds/include/sds_rec_play.h" line="81" column="16" declfile="sds/include/sds_rec_play.h" declline="81" declcolumn="16"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Recorder__Player_1ga7b010ae467e0ad6cdfb97569da2597a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -188,17 +188,17 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>return code (see <ref refid="group__SDS__Recorder__Player__Error__Codes" kindref="compound">Error Codes</ref>) </para>
+<simplesect kind="return"><para>SDS_REC_PLAY_OK on success or a negative value on error (see <ref refid="group__SDS__Recorder__Player__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="80" column="9" declfile="sds/include/sds_rec_play.h" declline="80" declcolumn="9"/>
+        <location file="sds/include/sds_rec_play.h" line="90" column="9" declfile="sds/include/sds_rec_play.h" declline="90" declcolumn="9"/>
       </memberdef>
-      <memberdef kind="function" id="group__SDS__Recorder__Player_1gaf471bc66f840a8afb9a42a815ebf3d08" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>uint32_t</type>
-        <definition>uint32_t sdsRecWrite</definition>
+      <memberdef kind="function" id="group__SDS__Recorder__Player_1gad1f1655942d66149438082b55702d09f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsRecWrite</definition>
         <argsstring>(sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uint32_t buf_size)</argsstring>
         <name>sdsRecWrite</name>
         <param>
@@ -222,7 +222,7 @@
         </briefdescription>
         <detaileddescription>
 <para>Writes a data block, including a header containing the timestamp and data block size, to the internal circular buffer. The <computeroutput>sdsRecPlayThread</computeroutput> worker thread asynchronously processes the buffer, writing the data to the SDS file via the underlying SDS I/O interface. This asynchronous design enables efficient, non-blocking data handling and optimized performance.</para>
-<para>Before writing, the function verifies that the data block fits within the available space in the internal buffer. If insufficient space is available, the operation is aborted and the function returns 0.</para>
+<para>Before writing, the function verifies that the data block fits within the available space in the internal buffer. If insufficient space is available, the operation is aborted and the function returns <ref refid="group__SDS__Recorder__Player__Return__Codes_1gaec236d96148d04e6f243266ed233685d" kindref="member">SDS_REC_ERROR_NO_SPACE</ref>.</para>
 <para>On success, the function writes the header and data block to the stream buffer and returns the number of data bytes written, excluding the header.</para>
 <para>Thread safety is ensured by allowing only a single thread to write to a given stream at a time. However, multiple threads can concurrently write to different streams, enabling parallel operations across multiple streams.</para>
 <para><parameterlist kind="param"><parameteritem>
@@ -258,13 +258,13 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>number of data bytes written, or 0 if operation failed </para>
+<simplesect kind="return"><para>number of bytes successfully written or a negative value on error (see <ref refid="group__SDS__Recorder__Player__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="91" column="10" declfile="sds/include/sds_rec_play.h" declline="91" declcolumn="10"/>
+        <location file="sds/include/sds_rec_play.h" line="102" column="9" declfile="sds/include/sds_rec_play.h" declline="102" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Recorder__Player_1ga22965fa58400c58e13376134bf1eafa8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref></type>
@@ -322,7 +322,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="101" column="16" declfile="sds/include/sds_rec_play.h" declline="101" declcolumn="16"/>
+        <location file="sds/include/sds_rec_play.h" line="112" column="16" declfile="sds/include/sds_rec_play.h" declline="112" declcolumn="16"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Recorder__Player_1gabaef35fad3049663a108750c2561e8ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -347,17 +347,17 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>return code (see <ref refid="group__SDS__Recorder__Player__Error__Codes" kindref="compound">Error Codes</ref>) </para>
+<simplesect kind="return"><para>SDS_REC_PLAY_OK on success or a negative value on error (see <ref refid="group__SDS__Recorder__Player__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="109" column="9" declfile="sds/include/sds_rec_play.h" declline="109" declcolumn="9"/>
+        <location file="sds/include/sds_rec_play.h" line="121" column="9" declfile="sds/include/sds_rec_play.h" declline="121" declcolumn="9"/>
       </memberdef>
-      <memberdef kind="function" id="group__SDS__Recorder__Player_1ga54e9e5bcf496baff9618148dd2873196" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>uint32_t</type>
-        <definition>uint32_t sdsPlayRead</definition>
+      <memberdef kind="function" id="group__SDS__Recorder__Player_1ga219c99e93cedd38573cb0aba5d0fcc75" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsPlayRead</definition>
         <argsstring>(sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size)</argsstring>
         <name>sdsPlayRead</name>
         <param>
@@ -381,7 +381,7 @@
         </briefdescription>
         <detaileddescription>
 <para>Reads a data block along with its associated timestamp from the internal circular buffer. The <computeroutput>sdsRecPlayThread</computeroutput> worker thread asynchronously reads the data from the SDS file using the underlying SDS I/O interface and writes it to the internal circular buffer. This asynchronous design enables efficient, non-blocking data handling and ensures optimal performance.</para>
-<para>Before reading, the function checks that the user-provided buffer has enough space to hold the entire data block. If the space in the buffer is insufficient, the operation is aborted and the function returns 0. The function also returns 0 if the end of stream has been reached. To distinguish between these cases, use <ref refid="group__SDS__Recorder__Player_1ga36439d56d9e3fa250b1fc41504fb87fb" kindref="member">sdsPlayEndOfStream</ref> function to check for the end-of-stream condition.</para>
+<para>Before attempting to read, this function verifies that both the header and its associated data are present and fully valid within the SDS Stream buffer. If either the header or data is missing or incomplete, the function aborts and returns <ref refid="group__SDS__Recorder__Player__Return__Codes_1ga7627fcc15ffcbb250b53c789b6472716" kindref="member">SDS_PLAY_ERROR_NO_DATA</ref>. The function confirms that the provided buffer can accommodate the entire data block. If the provided buffer is too small, it aborts and returns <ref refid="group__SDS__Recorder__Player__Return__Codes_1gaa504ea1fbf3f41f7eb9bda4b26bae8cd" kindref="member">SDS_REC_PLAY_ERROR_PARAMETER</ref>. If the end of the stream has been reached, the function returns <ref refid="group__SDS__Recorder__Player__Return__Codes_1gae3df9b49d72ae4584cbb3db45948dc3b" kindref="member">SDS_PLAY_EOS</ref>.</para>
 <para>On success, the function reads the data block from the stream buffer, stores it in the user-provided buffer, and returns the the size of the data block in bytes. The associated timestamp is returned via the output parameter <computeroutput>timestamp</computeroutput>.</para>
 <para>Thread safety is ensured by allowing only a single thread to read from a given stream at a time. However, multiple threads can concurrently read from different streams, enabling parallel operations across multiple streams.</para>
 <para><parameterlist kind="param"><parameteritem>
@@ -417,17 +417,17 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>number of data bytes read, or 0 if operation failed </para>
+<simplesect kind="return"><para>number of bytes successfully read, or a negative value on error or EOS (see <ref refid="group__SDS__Recorder__Player__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="120" column="10" declfile="sds/include/sds_rec_play.h" declline="120" declcolumn="10"/>
+        <location file="sds/include/sds_rec_play.h" line="133" column="9" declfile="sds/include/sds_rec_play.h" declline="133" declcolumn="9"/>
       </memberdef>
-      <memberdef kind="function" id="group__SDS__Recorder__Player_1ga9cb0e3535a39c152c08c77de9aae4a91" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>uint32_t</type>
-        <definition>uint32_t sdsPlayGetSize</definition>
+      <memberdef kind="function" id="group__SDS__Recorder__Player_1ga8195b2eb0f3a3988928eb3a577441ebd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsPlayGetSize</definition>
         <argsstring>(sdsRecPlayId_t id)</argsstring>
         <name>sdsPlayGetSize</name>
         <param>
@@ -438,8 +438,7 @@
 <para>Get data block size from Player stream. </para>
         </briefdescription>
         <detaileddescription>
-<para>Returns the size, in bytes, of the next available data block in the player stream.</para>
-<para>To determine the size of the next data block, the function reads the record header. If a valid header is not found, it returns 0.</para>
+<para>Function verifies that both the header and its associated data are present and fully valid within the SDS Stream buffer and returns the size, in bytes, of the next available data block in the player stream. If either the header or data is missing or incomplete, the function returns <ref refid="group__SDS__Recorder__Player__Return__Codes_1ga7627fcc15ffcbb250b53c789b6472716" kindref="member">SDS_PLAY_ERROR_NO_DATA</ref>. If the end of the stream has been reached, the function returns <ref refid="group__SDS__Recorder__Player__Return__Codes_1gae3df9b49d72ae4584cbb3db45948dc3b" kindref="member">SDS_PLAY_EOS</ref>.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername direction="in">id</parametername>
@@ -449,44 +448,13 @@
 </parameterdescription>
 </parameteritem>
 </parameterlist>
-<simplesect kind="return"><para>number of bytes in next available data block, or 0 if operation failed </para>
+<simplesect kind="return"><para>number of bytes in next available data block, or a negative value on error or EOS (see <ref refid="group__SDS__Recorder__Player__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
 </simplesect>
 </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="128" column="10" declfile="sds/include/sds_rec_play.h" declline="128" declcolumn="10"/>
-      </memberdef>
-      <memberdef kind="function" id="group__SDS__Recorder__Player_1ga36439d56d9e3fa250b1fc41504fb87fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type>int32_t</type>
-        <definition>int32_t sdsPlayEndOfStream</definition>
-        <argsstring>(sdsRecPlayId_t id)</argsstring>
-        <name>sdsPlayEndOfStream</name>
-        <param>
-          <type><ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref></type>
-          <declname>id</declname>
-        </param>
-        <briefdescription>
-<para>Check if end of stream has been reached. </para>
-        </briefdescription>
-        <detaileddescription>
-<para>Checks whether the player stream has reached the end of the SDS file. This condition is satisfied when the SDS file signals end of stream and all data from the internal buffer has been consumed.</para>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername direction="in">id</parametername>
-</parameternamelist>
-<parameterdescription>
-<para><ref refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kindref="member">sdsRecPlayId_t</ref> handle to SDS Recorder/Player stream </para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-<simplesect kind="return"><para>non-zero if end of stream, or 0 otherwise </para>
-</simplesect>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="sds/include/sds_rec_play.h" line="136" column="9" declfile="sds/include/sds_rec_play.h" declline="136" declcolumn="9"/>
+        <location file="sds/include/sds_rec_play.h" line="142" column="9" declfile="sds/include/sds_rec_play.h" declline="142" declcolumn="9"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

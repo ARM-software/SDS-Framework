@@ -130,10 +130,11 @@ typedef void *sdsBufferId_t;                        // Handle to SDS buffer stre
 // Function return codes
 #define SDS_BUFFER_OK                   (0)         // Operation completed successfully
 #define SDS_BUFFER_ERROR                (-1)        // Operation failed
+#define SDS_BUFFER_ERROR_PARAMETER      (-2)        // Operation failed: parameter error
 
 // Events
-#define SDS_BUFFER_EVENT_DATA_LOW       (1UL)       // Data bellow or equal to low threshold
-#define SDS_BUFFER_EVENT_DATA_HIGH      (2UL)       // Data above or equal to high threshold
+#define SDS_BUFFER_EVENT_DATA_LOW       (1UL)       // Data size falls to or below low threshold
+#define SDS_BUFFER_EVENT_DATA_HIGH      (2UL)       // Data size reaches or exceeds high threshold
 
 typedef void (*sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg);
 
@@ -143,13 +144,13 @@ int32_t sdsBufferClose (sdsBufferId_t id);
 
 int32_t sdsBufferRegisterEvents (sdsBufferId_t id, sdsBufferEvent_t event_cb, uint32_t event_mask, void *event_arg);
 
-uint32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size);
+int32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size);
 
-uint32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size);
+int32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size);
 
 int32_t sdsBufferClear (sdsBufferId_t id);
 
-uint32_t sdsBufferGetCount (sdsBufferId_t id);
+int32_t sdsBufferGetCount (sdsBufferId_t id);
 
 #ifdef  __cplusplus
 }

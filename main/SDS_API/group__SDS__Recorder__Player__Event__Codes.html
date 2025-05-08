@@ -106,16 +106,36 @@
 <tbody>
 <tr>
 <td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Event__Codes.html#define-sds_rec_play_event_io_error"><strong>SDS_REC_PLAY_EVENT_IO_ERROR</strong></a>  <code>(1UL)</code><br><em>Event signaled when an I/O error happened.</em></td>
+<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Event__Codes.html#define-sds_play_event_error_no_data"><strong>SDS_PLAY_EVENT_ERROR_NO_DATA</strong></a>  <code>(3UL)</code><br><em>Event triggered when</em> <a href="group__SDS__Recorder__Player.html#function-sdsplayread"><em><strong>sdsPlayRead()</strong></em></a> <em>fails due to insufficient data in the stream buffer.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Event__Codes.html#define-sds_rec_event_error_no_space"><strong>SDS_REC_EVENT_ERROR_NO_SPACE</strong></a>  <code>(2UL)</code><br><em>Event triggered when</em> <a href="group__SDS__Recorder__Player.html#function-sdsrecwrite"><em><strong>sdsRecWrite()</strong></em></a> <em>fails due to insufficient space in the stream buffer.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Event__Codes.html#define-sds_rec_play_event_error_io"><strong>SDS_REC_PLAY_EVENT_ERROR_IO</strong></a>  <code>(1UL)</code><br><em>Event triggered when an I/O error occurs during recording or playback.</em></td>
 </tr>
 </tbody>
 </table>
 <h2 id="detailed-description">Detailed Description</h2>
 <p>The following values are passed as event value to <a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayevent_t"><strong>sdsRecPlayEvent_t</strong></a> callback function. </p>
 <h2 id="macro-definition-documentation">Macro Definition Documentation</h2>
-<h3 id="define-sds_rec_play_event_io_error">define SDS_REC_PLAY_EVENT_IO_ERROR</h3>
-<p><em>Event signaled when an I/O error happened.</em> </p>
-<pre><code>#define SDS_REC_PLAY_EVENT_IO_ERROR `(1UL)`
+<h3 id="define-sds_play_event_error_no_data">define SDS_PLAY_EVENT_ERROR_NO_DATA</h3>
+<p><em>Event triggered when</em> <a href="group__SDS__Recorder__Player.html#function-sdsplayread"><em><strong>sdsPlayRead()</strong></em></a> <em>fails due to insufficient data in the stream buffer.</em></p>
+<pre><code>#define SDS_PLAY_EVENT_ERROR_NO_DATA `(3UL)`
+</code></pre>
+<hr>
+
+<h3 id="define-sds_rec_event_error_no_space">define SDS_REC_EVENT_ERROR_NO_SPACE</h3>
+<p><em>Event triggered when</em> <a href="group__SDS__Recorder__Player.html#function-sdsrecwrite"><em><strong>sdsRecWrite()</strong></em></a> <em>fails due to insufficient space in the stream buffer.</em></p>
+<pre><code>#define SDS_REC_EVENT_ERROR_NO_SPACE `(2UL)`
+</code></pre>
+<hr>
+
+<h3 id="define-sds_rec_play_event_error_io">define SDS_REC_PLAY_EVENT_ERROR_IO</h3>
+<p><em>Event triggered when an I/O error occurs during recording or playback.</em> </p>
+<pre><code>#define SDS_REC_PLAY_EVENT_ERROR_IO `(1UL)`
 </code></pre>
 <hr>
 

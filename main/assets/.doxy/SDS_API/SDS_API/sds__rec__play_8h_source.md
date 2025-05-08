@@ -41,12 +41,19 @@ extern "C"
 typedef void *sdsRecPlayId_t;                   // Handle to SDS Recorder/Player stream
 
 // Function return codes
-#define SDS_REC_PLAY_OK             (0)         // Operation completed successfully
-#define SDS_REC_PLAY_ERROR          (-1)        // Operation failed
-#define SDS_REC_PLAY_ERROR_TIMEOUT  (-2)        // Operation failed: Timeout
+#define SDS_REC_PLAY_OK                 (0)     // Operation completed successfully
+#define SDS_REC_PLAY_ERROR              (-1)    // Operation failed
+#define SDS_REC_PLAY_ERROR_PARAMETER    (-2)    // Operation failed: parameter error
+#define SDS_REC_PLAY_ERROR_TIMEOUT      (-3)    // Operation failed: timeout error
+#define SDS_REC_PLAY_ERROR_IO           (-4)    // Operation failed: SDS I/O interface error
+#define SDS_REC_ERROR_NO_SPACE          (-5)    // Operation failed: insufficient space in stream buffer
+#define SDS_PLAY_ERROR_NO_DATA          (-6)    // Operation failed: insufficient data in stream buffer
+#define SDS_PLAY_EOS                    (-7)    // End of stream reached
 
 // Event codes
-#define SDS_REC_PLAY_EVENT_IO_ERROR (1UL)       // I/O Error
+#define SDS_REC_PLAY_EVENT_ERROR_IO     (1UL)   // SDS I/O interface error
+#define SDS_REC_EVENT_ERROR_NO_SPACE    (2UL)   // sdsRecWrite() failed: insufficient space in stream buffer
+#define SDS_PLAY_EVENT_ERROR_NO_DATA    (3UL)   // sdsPlayRead() failed: insufficient data in stream buffer
 
 typedef void (*sdsRecPlayEvent_t) (sdsRecPlayId_t id, uint32_t event);
 
@@ -58,17 +65,15 @@ sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size);
 
 int32_t sdsRecClose (sdsRecPlayId_t id);
 
-uint32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uint32_t buf_size);
+int32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uint32_t buf_size);
 
 sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size);
 
 int32_t sdsPlayClose (sdsRecPlayId_t id);
 
-uint32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size);
+int32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size);
 
-uint32_t sdsPlayGetSize (sdsRecPlayId_t id);
-
-int32_t sdsPlayEndOfStream (sdsRecPlayId_t id);
+int32_t sdsPlayGetSize (sdsRecPlayId_t id);
 
 #ifdef  __cplusplus
 }

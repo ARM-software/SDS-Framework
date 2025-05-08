@@ -9,7 +9,7 @@
 
 ```C++
 /*
- * Copyright (c) 2022-2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2025 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -49,6 +49,11 @@ typedef enum {
 // Function return codes
 #define SDSIO_OK                (0)         // Operation completed successfully
 #define SDSIO_ERROR             (-1)        // Operation failed
+#define SDSIO_ERROR_PARAMETER   (-2)        // Operation failed: parameter error
+#define SDSIO_ERROR_TIMEOUT     (-3)        // Operation failed: timeout error
+#define SDSIO_ERROR_INTERFACE   (-4)        // Operation failed: SDS I/O interface error
+#define SDSIO_ERROR_NO_SERVER   (-5)        // Operation failed: no response from server
+#define SDSIO_EOS               (-6)        // End of stream reached
 
 int32_t sdsioInit (void);
 
@@ -58,11 +63,9 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode);
 
 int32_t sdsioClose (sdsioId_t id);
 
-uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size);
+int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size);
 
-uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size);
-
-int32_t sdsioEndOfStream (sdsioId_t id);
+int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size);
 
 #ifdef  __cplusplus
 }

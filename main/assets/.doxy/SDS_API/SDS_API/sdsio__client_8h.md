@@ -57,8 +57,8 @@
 | Type | Name |
 | ---: | :--- |
 |  int32\_t | [**sdsioClientInit**](#function-sdsioclientinit) (void) <br>_Initialize SDSIO Client and ping SDSIO Server to verify connection._  |
-|  uint32\_t | [**sdsioClientReceive**](#function-sdsioclientreceive) ([**header\_t**](structheader__t.md) \* header, void \* data, uint32\_t data\_size) <br>_Receive data from SDSIO-Server._  |
-|  uint32\_t | [**sdsioClientSend**](#function-sdsioclientsend) (const [**header\_t**](structheader__t.md) \* header, const void \* data, uint32\_t data\_size) <br>_Send data to SDSIO-Server._  |
+|  int32\_t | [**sdsioClientReceive**](#function-sdsioclientreceive) (uint8\_t \* buf, uint32\_t buf\_size) <br>_Receive data from SDSIO-Server._  |
+|  int32\_t | [**sdsioClientSend**](#function-sdsioclientsend) (const uint8\_t \* buf, uint32\_t buf\_size) <br>_Send data to SDSIO-Server._  |
 |  int32\_t | [**sdsioClientUninit**](#function-sdsioclientuninit) (void) <br>_Un-Initialize SDSIO Client._  |
 
 
@@ -92,9 +92,8 @@
 | Type | Name |
 | ---: | :--- |
 | define  | [**SDSIO\_CMD\_CLOSE**](sdsio__client_8h.md#define-sdsio_cmd_close)  `2U`<br> |
-| define  | [**SDSIO\_CMD\_EOS**](sdsio__client_8h.md#define-sdsio_cmd_eos)  `5U`<br> |
 | define  | [**SDSIO\_CMD\_OPEN**](sdsio__client_8h.md#define-sdsio_cmd_open)  `1U`<br> |
-| define  | [**SDSIO\_CMD\_PING**](sdsio__client_8h.md#define-sdsio_cmd_ping)  `6U`<br> |
+| define  | [**SDSIO\_CMD\_PING**](sdsio__client_8h.md#define-sdsio_cmd_ping)  `5U`<br> |
 | define  | [**SDSIO\_CMD\_READ**](sdsio__client_8h.md#define-sdsio_cmd_read)  `4U`<br> |
 | define  | [**SDSIO\_CMD\_WRITE**](sdsio__client_8h.md#define-sdsio_cmd_write)  `3U`<br> |
 
@@ -118,7 +117,7 @@ int32_t sdsioClientInit (
 
 **Returns:**
 
-SDSIO\_OK: initialization success SDSIO\_ERROR: initialization or ping server failed 
+SDSIO\_OK on success or a negative value on error (see [**Function Return Codes**](group__SDS__IO__Return__Codes.md)) 
 
 
 
@@ -134,10 +133,9 @@ SDSIO\_OK: initialization success SDSIO\_ERROR: initialization or ping server fa
 
 _Receive data from SDSIO-Server._ 
 ```C++
-uint32_t sdsioClientReceive (
-    header_t * header,
-    void * data,
-    uint32_t data_size
+int32_t sdsioClientReceive (
+    uint8_t * buf,
+    uint32_t buf_size
 ) 
 ```
 
@@ -148,15 +146,14 @@ uint32_t sdsioClientReceive (
 **Parameters:**
 
 
-* `header` pointer to header 
-* `data` pointer to buffer for data to read 
-* `data_size` data size in bytes 
+* `buf` pointer to buffer for data to read 
+* `buf_size` buffer size in bytes 
 
 
 
 **Returns:**
 
-number of bytes received (including header) 
+number of bytes successfully received or a negative value on error (see [**Function Return Codes**](group__SDS__IO__Return__Codes.md)) 
 
 
 
@@ -172,10 +169,9 @@ number of bytes received (including header)
 
 _Send data to SDSIO-Server._ 
 ```C++
-uint32_t sdsioClientSend (
-    const header_t * header,
-    const void * data,
-    uint32_t data_size
+int32_t sdsioClientSend (
+    const uint8_t * buf,
+    uint32_t buf_size
 ) 
 ```
 
@@ -186,15 +182,14 @@ uint32_t sdsioClientSend (
 **Parameters:**
 
 
-* `header` pointer to header 
-* `data` pointer to buffer with data to send 
-* `data_size` data size in bytes 
+* `buf` pointer to buffer with data to send 
+* `buf_size` buffer size in bytes 
 
 
 
 **Returns:**
 
-number of bytes sent (including header) 
+number of bytes successfully sent or a negative value on error (see [**Function Return Codes**](group__SDS__IO__Return__Codes.md)) 
 
 
 
@@ -221,7 +216,7 @@ int32_t sdsioClientUninit (
 
 **Returns:**
 
-SDIOS\_OK: un-initialization success SDSIO\_ERROR: un-initialization failed 
+SDSIO\_OK on success or a negative value on error (see [**Function Return Codes**](group__SDS__IO__Return__Codes.md)) 
 
 
 
@@ -249,19 +244,6 @@ SDIOS\_OK: un-initialization success SDSIO\_ERROR: un-initialization failed
 
 
 
-### define SDSIO\_CMD\_EOS 
-
-```C++
-#define SDSIO_CMD_EOS `5U`
-```
-
-
-
-
-<hr>
-
-
-
 ### define SDSIO\_CMD\_OPEN 
 
 ```C++
@@ -278,7 +260,7 @@ SDIOS\_OK: un-initialization success SDSIO\_ERROR: un-initialization failed
 ### define SDSIO\_CMD\_PING 
 
 ```C++
-#define SDSIO_CMD_PING `6U`
+#define SDSIO_CMD_PING `5U`
 ```
 
 

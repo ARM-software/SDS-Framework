@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Group SDS_Buffer_Error_Codes - SDS-Framework</title>
+    <title>Group SDS_Recorder_Player_Return_Codes - SDS-Framework</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Group SDS_Buffer_Error_Codes";
-        var mkdocs_page_input_path = "SDS_API/group__SDS__Buffer__Error__Codes.md";
+        var mkdocs_page_name = "Group SDS_Recorder_Player_Return_Codes";
+        var mkdocs_page_input_path = "SDS_API/group__SDS__Recorder__Player__Return__Codes.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -82,9 +82,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html" class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Group SDS_Buffer_Error_Codes</li>
+      <li class="breadcrumb-item active">Group SDS_Recorder_Player_Return_Codes</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__Buffer__Error__Codes.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__Recorder__Player__Return__Codes.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -92,9 +92,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="group-sds_buffer_error_codes">Group SDS_Buffer_Error_Codes</h1>
-<p><a href="modules.html"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="group__SDS__Buffer__Error__Codes.html"><strong>SDS_Buffer_Error_Codes</strong></a></p>
-<p><em>SDS Buffer Error Codes.</em> <a href="#detailed-description">More...</a></p>
+                <h1 id="group-sds_recorder_player_return_codes">Group SDS_Recorder_Player_Return_Codes</h1>
+<p><a href="modules.html"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="group__SDS__Recorder__Player__Return__Codes.html"><strong>SDS_Recorder_Player_Return_Codes</strong></a></p>
+<p><em>SDS Recorder and Player Function Return Codes.</em> <a href="#detailed-description">More...</a></p>
 <h2 id="macros">Macros</h2>
 <table>
 <thead>
@@ -106,26 +106,86 @@
 <tbody>
 <tr>
 <td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="group__SDS__Buffer__Error__Codes.html#define-sds_buffer_error"><strong>SDS_BUFFER_ERROR</strong></a>  <code>(-1)</code><br><em>Error during sdsBuffer function execution.</em></td>
+<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_play_eos"><strong>SDS_PLAY_EOS</strong></a>  <code>(-7)</code><br><em>End of stream reached in SDS Player operation.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="group__SDS__Buffer__Error__Codes.html#define-sds_buffer_ok"><strong>SDS_BUFFER_OK</strong></a>  <code>(0)</code><br><em>sdsBuffer function execution completed successfully.</em></td>
+<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_play_error_no_data"><strong>SDS_PLAY_ERROR_NO_DATA</strong></a>  <code>(-6)</code><br><em>Not whole data block is available in the SDS Stream buffer.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_rec_error_no_space"><strong>SDS_REC_ERROR_NO_SPACE</strong></a>  <code>(-5)</code><br><em>Insufficient space in SDS Stream buffer to write the entire data block.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_rec_play_error"><strong>SDS_REC_PLAY_ERROR</strong></a>  <code>(-1)</code><br><em>General error during SDS Recorder or Player function execution.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_rec_play_error_io"><strong>SDS_REC_PLAY_ERROR_IO</strong></a>  <code>(-4)</code><br><em>I/O error during SDS Recorder or Player function execution.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_rec_play_error_parameter"><strong>SDS_REC_PLAY_ERROR_PARAMETER</strong></a>  <code>(-2)</code><br><em>Invalid parameter passed to an SDS Recorder or Player function.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_rec_play_error_timeout"><strong>SDS_REC_PLAY_ERROR_TIMEOUT</strong></a>  <code>(-3)</code><br><em>SDS Recorder or Player function execution timed out.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">define</td>
+<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_rec_play_ok"><strong>SDS_REC_PLAY_OK</strong></a>  <code>(0)</code><br><em>SDS Recorder or Player function executed successfully.</em></td>
 </tr>
 </tbody>
 </table>
 <h2 id="detailed-description">Detailed Description</h2>
-<p>The following values are returned by most <code>sdsBuffer</code> functions. </p>
+<p>The following values are returned by most <code>sdsRec</code> and <code>sdsPlay</code> functions. </p>
 <h2 id="macro-definition-documentation">Macro Definition Documentation</h2>
-<h3 id="define-sds_buffer_error">define SDS_BUFFER_ERROR</h3>
-<p><em>Error during sdsBuffer function execution.</em> </p>
-<pre><code>#define SDS_BUFFER_ERROR `(-1)`
+<h3 id="define-sds_play_eos">define SDS_PLAY_EOS</h3>
+<p><em>End of stream reached in SDS Player operation.</em> </p>
+<pre><code>#define SDS_PLAY_EOS `(-7)`
 </code></pre>
 <hr>
 
-<h3 id="define-sds_buffer_ok">define SDS_BUFFER_OK</h3>
-<p><em>sdsBuffer function execution completed successfully.</em> </p>
-<pre><code>#define SDS_BUFFER_OK `(0)`
+<h3 id="define-sds_play_error_no_data">define SDS_PLAY_ERROR_NO_DATA</h3>
+<p><em>Not whole data block is available in the SDS Stream buffer.</em> </p>
+<pre><code>#define SDS_PLAY_ERROR_NO_DATA `(-6)`
+</code></pre>
+<hr>
+
+<h3 id="define-sds_rec_error_no_space">define SDS_REC_ERROR_NO_SPACE</h3>
+<p><em>Insufficient space in SDS Stream buffer to write the entire data block.</em> </p>
+<pre><code>#define SDS_REC_ERROR_NO_SPACE `(-5)`
+</code></pre>
+<hr>
+
+<h3 id="define-sds_rec_play_error">define SDS_REC_PLAY_ERROR</h3>
+<p><em>General error during SDS Recorder or Player function execution.</em> </p>
+<pre><code>#define SDS_REC_PLAY_ERROR `(-1)`
+</code></pre>
+<hr>
+
+<h3 id="define-sds_rec_play_error_io">define SDS_REC_PLAY_ERROR_IO</h3>
+<p><em>I/O error during SDS Recorder or Player function execution.</em> </p>
+<pre><code>#define SDS_REC_PLAY_ERROR_IO `(-4)`
+</code></pre>
+<hr>
+
+<h3 id="define-sds_rec_play_error_parameter">define SDS_REC_PLAY_ERROR_PARAMETER</h3>
+<p><em>Invalid parameter passed to an SDS Recorder or Player function.</em> </p>
+<pre><code>#define SDS_REC_PLAY_ERROR_PARAMETER `(-2)`
+</code></pre>
+<hr>
+
+<h3 id="define-sds_rec_play_error_timeout">define SDS_REC_PLAY_ERROR_TIMEOUT</h3>
+<p><em>SDS Recorder or Player function execution timed out.</em> </p>
+<pre><code>#define SDS_REC_PLAY_ERROR_TIMEOUT `(-3)`
+</code></pre>
+<hr>
+
+<h3 id="define-sds_rec_play_ok">define SDS_REC_PLAY_OK</h3>
+<p><em>SDS Recorder or Player function executed successfully.</em> </p>
+<pre><code>#define SDS_REC_PLAY_OK `(0)`
 </code></pre>
 <hr>
 
