@@ -107,7 +107,7 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
 
 /** Close I/O stream. */
 int32_t sdsioClose (sdsioId_t id) {
-  int32_t ret  = SDSIO_ERROR;
+  int32_t ret  = SDSIO_ERROR_INTERFACE;
   FILE   *file = (FILE *)id;
 
   if (fclose(file) == 0) {
@@ -117,19 +117,41 @@ int32_t sdsioClose (sdsioId_t id) {
 }
 
 /** Write data to I/O stream. */
-uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
-  FILE *file = (FILE *)id;
-  return fwrite(buf, 1, buf_size, file);
+int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
+  FILE    *file  = (FILE *)id;
+  int32_t  ret   = SDSIO_ERROR;
+  uint32_t num;
+
+  num = fwrite(buf, 1, buf_size, file);
+  if (num < buf_size) {
+    ret = SDSIO_ERROR_INTERFACE;
+  } else {
+    ret = (int32_t)num;
+  }
+
+  return num;
 }
 
 /** Read data from I/O stream. */
-uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
-  FILE *file = (FILE *)id;
-  return fread(buf, 1, buf_size, file);
-}
+int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
+  FILE *file  = (FILE *)id;
+  int32_t ret = SDSIO_ERROR;
+  uint32_t num;
 
-/** Check if end of stream has been reached. */
-int32_t sdsioEndOfStream (sdsioId_t id) {
-  FILE *file = (FILE *)id;
-  return feof(file);
+  num = fread(buf, 1, buf_size, file);
+  if (num == 0U) {
+    if (feof(file) != 0) {
+      // End of stream reached
+      ret = SDSIO_EOS;
+    }
+  } else if (num < buf_size) {
+    if (ferror(file) != 0) {
+      // Error happened
+      ret = SDSIO_ERROR_INTERFACE;
+    }
+  } else {
+    ret = (int32_t)num;
+  }
+
+  return num;
 }
