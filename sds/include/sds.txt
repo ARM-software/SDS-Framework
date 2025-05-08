@@ -30,10 +30,10 @@ A callback function can be registered to respond when data thresholds (high or l
 \details The following values are passed as event value to \ref sdsBufferEvent_t callback function.
 @{
 \def SDS_BUFFER_EVENT_DATA_LOW
-\brief Event signaled when data in circular buffer drops below low threshold value.
+\brief Event signaled when data in circular buffer falls to or below low threshold value.
 
 \def SDS_BUFFER_EVENT_DATA_HIGH
-\brief Event signaled when data in circular buffer exceeds high threshold value.
+\brief Event signaled when data in circular buffer reaches or exceeds high threshold value.
 @}
 */
 
@@ -47,7 +47,7 @@ This *pointer* defines the handle to SDS circular buffer. It is used to identify
 /**
 \typedef sdsBufferEvent_t
 \details
-This function is registered by passing a pointer to it as a parameter to the \ref sdsBufferRegisterEvents function. It is invoked when the circular buffer either exceeds the high data threshold or drops below the low data threshold.
+This function is registered by passing a pointer to it as a parameter to the \ref sdsBufferRegisterEvents function. It is invoked when the circular buffer either reaches or exceeds the high data threshold or falls to or below the low data threshold.
 The high and low data thresholds are configured using the \ref sdsBufferOpen function.
 */
 

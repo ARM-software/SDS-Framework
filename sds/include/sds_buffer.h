@@ -36,8 +36,8 @@ typedef void *sdsBufferId_t;                        // Handle to SDS buffer stre
 #define SDS_BUFFER_ERROR_PARAMETER      (-2)        // Operation failed: parameter error
 
 // Events
-#define SDS_BUFFER_EVENT_DATA_LOW       (1UL)       // Data bellow or equal to low threshold
-#define SDS_BUFFER_EVENT_DATA_HIGH      (2UL)       // Data above or equal to high threshold
+#define SDS_BUFFER_EVENT_DATA_LOW       (1UL)       // Data size falls to or below low threshold
+#define SDS_BUFFER_EVENT_DATA_HIGH      (2UL)       // Data size reaches or exceeds high threshold
 
 /**
   \typedef void (*sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg)
