@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2025 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -39,18 +39,25 @@ typedef enum {
 // Function return codes
 #define SDSIO_OK                (0)         // Operation completed successfully
 #define SDSIO_ERROR             (-1)        // Operation failed
+#define SDSIO_ERROR_PARAMETER   (-2)        // Operation failed: parameter error
+#define SDSIO_ERROR_TIMEOUT     (-3)        // Operation failed: timeout error
+#define SDSIO_ERROR_INTERFACE   (-4)        // Operation failed: SDS I/O interface error
+#define SDSIO_ERROR_NO_SERVER   (-5)        // Operation failed: no response from server
+#define SDSIO_EOS               (-6)        // End of stream reached
 
 /**
   \fn          int32_t sdsioInit (void)
   \brief       Initialize SDS I/O.
-  \return      return code (see \ref SDS_IO_Error_Codes)
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioInit (void);
 
 /**
   \fn          int32_t sdsioUninit (void)
   \brief       Un-initialize SDS I/O.
-  \return      return code (see \ref SDS_IO_Error_Codes)
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioUninit (void);
 
@@ -67,37 +74,32 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode);
   \fn          int32_t sdsioClose (sdsioId_t id)
   \brief       Close I/O stream.
   \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
-  \return      return code (see \ref SDS_IO_Error_Codes)
+  \return      SDSIO_OK on success or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioClose (sdsioId_t id);
 
 /**
-  \fn          uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size)
+  \fn          int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size)
   \brief       Write data to I/O stream.
   \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
   \param[in]   buf            pointer to buffer with data to write
   \param[in]   buf_size       buffer size in bytes
-  \return      number of bytes written, or 0 if operation failed
+  \return      number of bytes successfully written or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
 */
-uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size);
+int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size);
 
 /**
-  \fn          uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size)
+  \fn          int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size)
   \brief       Read data from I/O stream.
   \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
   \param[out]  buf            pointer to buffer for data to read
   \param[in]   buf_size       buffer size in bytes
-  \return      number of bytes read, or 0 if operation failed
+  \return      number of bytes successfully read, or
+               a negative value on error or EOS (see \ref SDS_IO_Return_Codes)
 */
-uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size);
-
-/**
-  \fn          int32_t sdsioEndOfStream (sdsioId_t id)
-  \brief       Check if end of stream has been reached.
-  \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
-  \return      positive non-zero value if end of stream, else 0; negative value on error
-*/
-int32_t sdsioEndOfStream (sdsioId_t id);
+int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size);
 
 #ifdef  __cplusplus
 }

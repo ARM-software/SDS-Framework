@@ -9,8 +9,8 @@ A callback function can be registered to respond when data thresholds (high or l
 */
 
 /**
-\defgroup SDS_Buffer_Error_Codes Error Codes
-\brief SDS Buffer Error Codes
+\defgroup SDS_Buffer_Return_Codes Function Return Codes
+\brief SDS Buffer Function Return Codes
 \details The following values are returned by most `sdsBuffer` functions.
 @{
 \def SDS_BUFFER_OK
@@ -18,6 +18,9 @@ A callback function can be registered to respond when data thresholds (high or l
 
 \def SDS_BUFFER_ERROR
 \brief Error during sdsBuffer function execution.
+
+\def SDS_BUFFER_ERROR_PARAMETER
+\brief Error due to invalid parameter passed to an sdsBuffer function.
 @}
 */
 
@@ -65,18 +68,19 @@ Closes the SDS circular buffer when read or write operations are no longer requi
 \fn          int32_t sdsBufferRegisterEvents (sdsBufferId_t id, sdsBufferEvent_t event_cb, uint32_t event_mask, void *event_arg)
 \details
 Registers a \ref sdsBufferEvent_t callback function for handling buffer threshold events.
+If `event_cb` is NULL, the previously registered callback function is unregistered.
+This function should not be called concurrently with \ref sdsBufferWrite or \ref sdsBufferRead operations for the same buffer stream.
 */
 
 /**
-\fn          uint32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size)
+\fn          int32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size)
 \details
 Writes data to the SDS circular buffer. If the buffer is full, no additional data will be written until
-space is freed by the \ref sdsBufferRead function.
-The function returns the number of bytes successfully written; if the buffer is full, it returns 0.
+space is freed by the sdsBufferRead function.
 */
 
 /**
-\fn          uint32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size)
+\fn          int32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size)
 \details
 Reads data from the SDS circular buffer. If there is no data in the circular buffer the function will return 0.
 */
@@ -88,7 +92,7 @@ Clears any data from the SDS circular buffer and resets the circular buffer to e
 */
 
 /**
-\fn          uint32_t sdsBufferGetCount (sdsBufferId_t id)
+\fn          int32_t sdsBufferGetCount (sdsBufferId_t id)
 \details
 Retrieves the number of data bytes currently available in the SDS circular buffer.
 */
@@ -111,15 +115,30 @@ The **SDS I/O** interface transfers data between the circular buffer and the I/O
 */
 
 /**
-\defgroup SDS_IO_Error_Codes Error Codes
-\brief SDS I/O Error Codes
+\defgroup SDS_IO_Return_Codes Function Return Codes
+\brief SDS I/O Function Return Codes
 \details The following values are returned by most `sdsio` functions.
 @{
 \def SDSIO_OK
-\brief sdsio function execution completed successfully.
+\brief SDS I/O function executed successfully.
 
 \def SDSIO_ERROR
-\brief Error during sdsio function execution.
+\brief General error during SDS I/O function execution.
+
+\def SDSIO_ERROR_PARAMETER
+\brief Invalid parameter passed to an SDS I/O function.
+
+\def SDSIO_ERROR_TIMEOUT
+\brief SDS I/O function execution timed out.
+
+\def SDSIO_ERROR_INTERFACE
+\brief Error in the SDS I/O interface.
+
+\def SDSIO_ERROR_NO_SERVER
+\brief No response from the SDS I/O server.
+
+\def SDSIO_EOS
+\brief End of stream reached in SDS I/O read operation.
 @}
 */
 
@@ -172,7 +191,7 @@ to the SDS I/O Server to close the file on the Host system.
 */
 
 /**
-\fn          uint32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size)
+\fn          int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size)
 \details
 Writes data to an SDS I/O stream opened for writing. If the interface is a local file system or semihosting, data is written directly to the file.
 For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a write command (SDSIO_CMD_WRITE) along with the data to
@@ -180,21 +199,12 @@ the SDS I/O Server, which then writes the data to a file on the Host system.
 */
 
 /**
-\fn          uint32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size)
+\fn          int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size)
 \details
 Reads data from an SDS I/O stream opened for reading. If the interface is a local file system or semihosting, data is read directly from the file.
 For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO_CMD_READ) to the SDS I/O Server, which reads
-the file on the Host system and returns the data to the Client.
-*/
-
-/**
-\fn          int32_t sdsioEndOfStream (sdsioId_t id)
-\details
-Checks whether the end of the stream has been reached and no more data is available in the recorded file.
-This helps distinguish between the absence of data in the recorded file and a case where the SDS I/O Client
-failed to prepare data before \ref sdsioRead was invoked.
-For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends an command (SDSIO_CMD_EOS) to the SDS I/O Server
-to check the end of stream status of the file on the Host system.
+the file on the Host system and returns the data to the Client. If the end of the stream is reached, the function returns \ref SDSIO_EOS to
+indicate that no more data is available.
 */
 
 /**
