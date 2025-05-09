@@ -43,7 +43,7 @@ typedef void *sdsRecPlayId_t;                   // Handle to SDS Recorder/Player
 // Event codes
 #define SDS_REC_PLAY_EVENT_ERROR_IO     (1UL)   // SDS I/O interface error
 #define SDS_REC_EVENT_ERROR_NO_SPACE    (2UL)   // sdsRecWrite() failed: insufficient space in stream buffer
-#define SDS_PLAY_EVENT_ERROR_NO_DATA    (3UL)   // sdsPlayRead() failed: insufficient data in stream buffer
+#define SDS_PLAY_EVENT_ERROR_NO_DATA    (4UL)   // sdsPlayRead() failed: insufficient data in stream buffer
 
 /**
   \typedef void (*sdsRecPlayEvent_t) (sdsRecPlayId_t id, uint32_t event)
