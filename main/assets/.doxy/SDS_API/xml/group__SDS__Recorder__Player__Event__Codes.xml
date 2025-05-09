@@ -30,7 +30,7 @@
       </memberdef>
       <memberdef kind="define" id="group__SDS__Recorder__Player__Event__Codes_1gae663dd7b0ee0a0ff7eb012da3f002dc8" prot="public" static="no">
         <name>SDS_PLAY_EVENT_ERROR_NO_DATA</name>
-        <initializer>(3UL)</initializer>
+        <initializer>(4UL)</initializer>
         <briefdescription>
 <para>Event triggered when <ref refid="group__SDS__Recorder__Player_1ga219c99e93cedd38573cb0aba5d0fcc75" kindref="member">sdsPlayRead()</ref> fails due to insufficient data in the stream buffer. </para>
         </briefdescription>

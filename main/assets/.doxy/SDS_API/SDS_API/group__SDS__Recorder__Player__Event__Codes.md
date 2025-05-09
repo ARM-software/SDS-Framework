@@ -78,7 +78,7 @@ _SDS Recorder and Player Event Codes._ [More...](#detailed-description)
 
 | Type | Name |
 | ---: | :--- |
-| define  | [**SDS\_PLAY\_EVENT\_ERROR\_NO\_DATA**](group__SDS__Recorder__Player__Event__Codes.md#define-sds_play_event_error_no_data)  `(3UL)`<br>_Event triggered when_ [_**sdsPlayRead()**_](group__SDS__Recorder__Player.md#function-sdsplayread) _fails due to insufficient data in the stream buffer._ |
+| define  | [**SDS\_PLAY\_EVENT\_ERROR\_NO\_DATA**](group__SDS__Recorder__Player__Event__Codes.md#define-sds_play_event_error_no_data)  `(4UL)`<br>_Event triggered when_ [_**sdsPlayRead()**_](group__SDS__Recorder__Player.md#function-sdsplayread) _fails due to insufficient data in the stream buffer._ |
 | define  | [**SDS\_REC\_EVENT\_ERROR\_NO\_SPACE**](group__SDS__Recorder__Player__Event__Codes.md#define-sds_rec_event_error_no_space)  `(2UL)`<br>_Event triggered when_ [_**sdsRecWrite()**_](group__SDS__Recorder__Player.md#function-sdsrecwrite) _fails due to insufficient space in the stream buffer._ |
 | define  | [**SDS\_REC\_PLAY\_EVENT\_ERROR\_IO**](group__SDS__Recorder__Player__Event__Codes.md#define-sds_rec_play_event_error_io)  `(1UL)`<br>_Event triggered when an I/O error occurs during recording or playback._  |
 
@@ -99,7 +99,7 @@ The following values are passed as event value to [**sdsRecPlayEvent\_t**](group
 
 _Event triggered when_ [_**sdsPlayRead()**_](group__SDS__Recorder__Player.md#function-sdsplayread) _fails due to insufficient data in the stream buffer._
 ```
-#define SDS_PLAY_EVENT_ERROR_NO_DATA `(3UL)`
+#define SDS_PLAY_EVENT_ERROR_NO_DATA `(4UL)`
 ```
 
 
