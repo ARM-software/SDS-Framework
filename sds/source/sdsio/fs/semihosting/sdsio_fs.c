@@ -129,7 +129,7 @@ int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
     ret = (int32_t)num;
   }
 
-  return num;
+  return ret;
 }
 
 /** Read data from I/O stream. */
@@ -139,19 +139,21 @@ int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
   uint32_t num;
 
   num = fread(buf, 1, buf_size, file);
-  if (num == 0U) {
+  if (num > 0U) {
+    if ((num < buf_size) && (ferror(file) != 0)) {
+      // Error happened
+      ret = SDSIO_ERROR_INTERFACE;
+    } else {
+      ret = (int32_t)num;
+    }
+  } else {
     if (feof(file) != 0) {
       // End of stream reached
       ret = SDSIO_EOS;
+    } else {
+      ret = 0;
     }
-  } else if (num < buf_size) {
-    if (ferror(file) != 0) {
-      // Error happened
-      ret = SDSIO_ERROR_INTERFACE;
-    }
-  } else {
-    ret = (int32_t)num;
   }
 
-  return num;
+  return ret;
 }
