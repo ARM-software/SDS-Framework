@@ -15,13 +15,9 @@
   <releases>
     <release version="2.0.0-dev">
       Active Development ...
-      VSI Sensor:
-      - Add try/except to the import section
       SDS-Convert:
       - Add QeexoV2CSV to SDS conversion
       - Revamp argparse interface with multiple subparsers
-      Examples:
-      - Environment name attribute updated from "cmsis" to "csolution" for compliance
       SDS Buffer:
       - Renamed sds.h/c to sds_buffer.h/c and updated all related function and macro namespaces (e.g., sdsOpen to sdsBufferOpen)
       SDSIO:
@@ -196,66 +192,4 @@
       </files>
     </component>
   </components>
-
-  <!-- Examples -->
-  <examples>
-    <example name="SDS Buffer" folder="examples/sds_buffer" doc="README.md">
-      <description>Example shows usage of SDS Buffer</description>
-      <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
-      <board name="V2M-MPS3-SSE-300-FVP" vendor="ARM"/>
-      <project>
-        <environment name="csolution" load="SDS_Buffer.csolution.yml"/>
-      </project>
-      <attributes/>
-    </example>
-    <example name="SDS Recorder" folder="examples/sds_recorder/fs/mdk" doc="README.md">
-      <description>Example shows usage of SDS Recorder via File System (Keil::File System)</description>
-      <board name="EVKB-IMXRT1050_MDK" vendor="NXP"/>
-      <project>
-        <environment name="csolution" load="SDS_Recorder.csolution.yml"/>
-      </project>
-      <attributes/>
-    </example>
-      <example name="SDS Recorder" folder="examples/sds_recorder/fs/semihosting" doc="README.md">
-      <description>Example shows usage of SDS Recorder via File System (Semihosting)</description>
-      <board name="V2M-MPS3-SSE-300-FVP" vendor="ARM"/>
-      <project>
-        <environment name="csolution" load="SDS_Recorder.csolution.yml"/>
-      </project>
-      <attributes/>
-    </example>
-      <example name="SDS Recorder" folder="examples/sds_recorder/serial/usart" doc="README.md">
-      <description>Example shows usage of SDS Recorder via Serial Port (CMSIS Driver:USART)</description>
-      <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
-      <project>
-        <environment name="csolution" load="SDS_Recorder.csolution.yml"/>
-      </project>
-      <attributes/>
-    </example>
-      <example name="SDS Recorder" folder="examples/sds_recorder/socket" doc="README.md">
-      <description>Example shows usage of SDS Recorder via Socket (IoT Utility:Socket)</description>
-      <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
-      <board name="V2M-MPS3-SSE-300-FVP" vendor="ARM"/>
-      <project>
-        <environment name="csolution" load="SDS_Recorder.csolution.yml"/>
-      </project>
-      <attributes/>
-    </example>
-      <example name="SDS Recorder" folder="examples/sds_recorder/vcom/mdk" doc="README.md">
-      <description>Example shows usage of SDS Recorder via USB Virtual COM Port (Keil::USB:Device:CDC)</description>
-      <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
-      <project>
-        <environment name="csolution" load="SDS_Recorder.csolution.yml"/>
-      </project>
-      <attributes/>
-    </example>
-    <example name="SDS Player" folder="examples/sds_player" doc="README.md">
-      <description>Example shows usage of SDS Player via File System (Semihosting)</description>
-      <board name="V2M-MPS3-SSE-300-FVP" vendor="ARM"/>
-      <project>
-        <environment name="csolution" load="SDS_Player.csolution.yml"/>
-      </project>
-      <attributes/>
-    </example>
-  </examples>
 </package>

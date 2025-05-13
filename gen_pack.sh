@@ -29,9 +29,7 @@ PACK_BUILD=./build
 # Default: empty (all folders)
 #
 PACK_DIRS="
-audio
 docs
-examples
 overview
 schema
 sds
@@ -72,10 +70,6 @@ ARM.CMSIS-RTX.pdsc
 Keil.MDK-Middleware.pdsc
 MDK-Packs.IoT_Socket.pdsc
 ARM.CMSIS-View.pdsc
-Keil.B-U585I-IOT02A_BSP.pdsc
-ARM.V2M_MPS3_SSE_300_BSP.pdsc
-Keil.IMXRT1050-EVKB_BSP.pdsc
-
 "
 
 # Optional: restrict fallback modes for changelog generation
