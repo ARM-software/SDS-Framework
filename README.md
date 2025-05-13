@@ -8,10 +8,10 @@ Refer to [Overview](./overview/README.md) for more details.
 
 Directory                         | Description
 ----------------------------------|-------------------------------
-[examples](./examples)            | Example implementations for various evaluation boards
 [documentation](./documentation/) | [User documentation](https://arm-software.github.io/SDS-Framework/main/index.html) of the SDS Framework
+[overview](./overview)            | Top-level overview of SDS Framework
 [schema](./schema)                | Schema for SDS File Format
-[sds](./sds)                      | Interfaces of the SDS Framework for Cortex-M devices
+[sds](./sds)                      | SDS Framework source files and implementation of various SDSIO Interfaces
 [utilities](./utilities)          | Python scripts for processing of SDS binary data files
 
 ## Related
