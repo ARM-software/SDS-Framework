@@ -1,0 +1,44 @@
+# A solution is a collection of related projects that share same base configuration.
+solution:
+  created-for: CMSIS-Toolbox@2.8.0
+  cdefault:
+
+  # List of tested compilers that can be selected
+  select-compiler:
+    - compiler: AC6
+    - compiler: GCC
+    - compiler: IAR
+
+  # List the packs that define the device and/or board.
+  packs:
+    - pack: ARM::CMSIS
+    - pack: ARM::SDS
+
+  # List different hardware targets that are used to deploy the solution.
+  target-types:
+    # - type: <target_name>
+    #   board: <board_name>
+    #   variables:
+    #     - Board-Layer: <board_layer>.clayer.yml
+    #     - sds_interface-Layer: $SolutionDir()$/interface/filesystem/sds_interface.clayer.yml
+
+  # List of different build configurations.
+  build-types:
+    - type: Debug
+      debug: on
+      optimize: debug
+
+    - type: Release
+      debug: off
+      optimize: balanced
+
+  # List output directories
+  output-dirs:
+    tmpdir:  tmp-fs
+
+  # List related projects.
+  projects:
+    - project: algorithm/record/sds_algorithm_record.cproject.yml
+    - project: algorithm/play/sds_algorithm_play.cproject.yml
+
+  compiler: AC6

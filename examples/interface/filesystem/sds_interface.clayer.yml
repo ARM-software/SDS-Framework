@@ -1,0 +1,25 @@
+layer:
+  type: SDS_Interface
+  description: SDS recording/playback via File System (MDK FS)
+
+  connections:
+    - connect: SDS RecPlay
+      consumes:
+        - CMSIS_MCI
+        - CMSIS-RTOS2
+      provides:
+        - SDS_BUFFER
+        - SDS_REC_PLAY
+        - SDS_IO
+
+  packs:
+    - pack: ARM::SDS@^2.0.0-0
+    - pack: Keil::MDK-Middleware@^8.0.0
+
+  components:
+    - component: SDS:Buffer
+    - component: SDS:IO:File System&MDK FS
+    - component: SDS:RecPlay&CMSIS-RTOS2
+    - component: CMSIS-Compiler:File Interface:MDK-MW File System
+    - component: File System&MDK:CORE
+    - component: File System&MDK:Drive:Memory Card
