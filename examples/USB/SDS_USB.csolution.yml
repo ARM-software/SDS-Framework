@@ -18,8 +18,8 @@ solution:
   target-types:
     # - type: <target_name>
     #   board: <board_name>
-    #   variables:
-    #     - Board-Layer: <board_layer>.clayer.yml
+      variables:
+    #   - Board-Layer: <board_layer>.clayer.yml
         - SDSIO-Layer: $SolutionDir()$/sdsio/usb/sdsio_usb.clayer.yml
 
     # - type: AVH-SSE-300                 # simulator target
