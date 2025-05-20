@@ -1,0 +1,9 @@
+sds:
+  name: Data Output
+  description: Results of algorithm processing
+  frequency: 1000
+  content:
+  - value: x
+    type:  uint16_t
+  - value: y
+    type:  uint16_t
