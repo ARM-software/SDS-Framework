@@ -43,7 +43,7 @@ sequenceDiagram
     Deactivate AlgorithmThread
     sdsControlThread->>sdsRecPlayThread: sdsPlayClose `SCinput`
     sdsControlThread->>sdsRecPlayThread: sdsRecClose `SCoutput`
-    sdsControlThread->>sdsRecPlayThread: sdsRecClose `MCoutput`
+    sdsControlThread->>sdsRecPlayThread: sdsRecClose `MLoutput`
     sdsControlThread->>sdsRecPlayThread: sdsRecPlayUninit
 ```
 
