@@ -26,7 +26,7 @@ solution:
       define:
         - SIMULATOR
       variables:
-        - Board-Layer: $SolutionDir()$/boards/Corstone-300/Board.clayer.yml
+        - Board-Layer: $SolutionDir()$/Board/Corstone-300/Board.clayer.yml
         - SDSIO-Layer: $SolutionDir()$/sdsio/fvp/sdsio_fvp.clayer.yml
 
   # List of different build configurations.
