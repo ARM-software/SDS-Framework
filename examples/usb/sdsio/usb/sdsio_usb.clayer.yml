@@ -1,6 +1,6 @@
 layer:
-  type: SDSIO_Interface
-  description: SDS recording/playback via USB Device VCOM (MDK USBD) interface
+  type: SDSIO
+  description: SDS recording/playback using USB Device connection to Host
 
   packs:
     - pack: ARM::SDS@^2.0.0-0
@@ -9,7 +9,7 @@ layer:
   connections:
     - connect: SDS RecPlay
       consumes:
-        - CMSIS_USBD
+        - CMSIS_USB_Device
         - CMSIS-RTOS2
       provides:
         - SDS_BUFFER
