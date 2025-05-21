@@ -17,6 +17,10 @@ project:
         - STDERR
         - Heap: 65536
 
+  define:
+    - OS_IDLE_THREAD_NAME: \"Idle\"
+    - OS_TIMER_THREAD_NAME: \"Timer\"
+
   groups:
     - group: Documentation
       files:

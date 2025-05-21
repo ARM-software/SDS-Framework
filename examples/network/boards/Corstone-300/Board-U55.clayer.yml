@@ -1,0 +1,60 @@
+layer:
+  type: Board
+  description: Board setup for AI/ML with Ethos U55
+  for-board: ARM::V2M-MPS3-SSE-300-FVP
+  for-device: ARM::SSE-300-MPS3
+
+  connections:
+    - connect: Corstone-300-U55
+      provides:
+        - CMSIS_VIO
+        - AVH_VIDEO
+        - STDIN
+        - STDOUT
+        - STDERR
+        - Heap: 786432
+
+  define:
+    - ETHOSU55
+    - CORSTONE300_FVP
+    - ARM_MODEL_USE_PMU_COUNTERS
+
+  packs:
+    - pack: ARM::CMSIS
+    - pack: ARM::V2M_MPS3_SSE_300_BSP@1.5.0
+
+  components:
+    - component: ARM::CMSIS:CORE
+
+    - component: ARM::Device:Definition
+    - component: ARM::Device:Startup&C Startup
+
+    - component: ARM::Device:Native Driver:Timeout
+    - component: ARM::Device:Native Driver:SysCounter
+    - component: ARM::Device:Native Driver:SysTimer
+
+    - component: CMSIS Driver:VIO:Custom
+
+    - component: Arm::Machine Learning:NPU Support:Ethos-U Driver&Generic U55
+
+  groups:
+    - group: Board
+      files:
+        - file: ./main.c
+        - file: ./main.h
+        - file: ./vio_memory.c
+        - file: ./uart_cmsdk_apb.c
+        - file: ./uart_stdout.h
+        - file: ./uart_config.h
+        - file: ./retarget.c
+
+    - group: Streaming Interface
+      files:
+        - file: ./vsi/include/arm_vsi.h
+        - file: ./vsi/audio/driver/audio_drv.c
+        - file: ./vsi/audio/include/audio_drv.h
+        - file: ./vsi/video/source/video_drv.c
+        - file: ./vsi/video/include/video_drv.h
+
+  linker:
+    - script: ./mps3-sse-300.sct

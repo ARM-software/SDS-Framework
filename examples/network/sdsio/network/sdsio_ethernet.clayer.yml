@@ -1,5 +1,5 @@
 layer:
-  type: SDS_Interface
+  type: SDSIO_Interface
   description: SDS recording/playback via Ethernet interface (MDK ETH) interface
 
   packs:

@@ -27,7 +27,7 @@
       - Added SDS-Check
       - Added support in SDS-Convert for conversion from QeexoV2CSV to SDS format
       Examples:
-      - Removed
+      - Added reference application examples
     </release>
   </releases>
 
@@ -195,4 +195,25 @@
       </files>
     </component>
   </components>
+
+  <examples>
+    <example name="SDS_FileSystem" doc="README.md" folder="examples/filesystem">
+      <description>Data streaming for DSP/ML algorithm testing using File System in target</description>
+      <project>
+        <environment name="csolution" load="SDS_FileSystem.csolution.yml"/>
+      </project>
+    </example>
+    <example name="SDS_Network" doc="README.md" folder="examples/network">
+      <description>Data streaming for DSP/ML algorithm testing using Ethernet connection to Host</description>
+      <project>
+        <environment name="csolution" load="SDS_Network.csolution.yml"/>
+      </project>
+    </example>
+    <example name="SDS_USB" doc="README.md" folder="examples/usb">
+      <description>Data streaming for DSP/ML algorithm testing using USB Device connection to Host</description>
+      <project>
+        <environment name="csolution" load="SDS_USB.csolution.yml"/>
+      </project>
+    </example>
+  </examples>
 </package>
