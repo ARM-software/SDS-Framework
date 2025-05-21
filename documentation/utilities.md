@@ -181,7 +181,11 @@ The Python utility [**SDSIO-Convert**](https://github.com/ARM-software/SDS-Frame
 
 #### Audio WAV
 
-Convert `.sds` file to audio WAV format. It takes recorded data and appends required wave file header, derived from the parameters in the metadata file.
+The `audio_wav` mode converts raw microphone data from `.sds` files into a standard RIFF/WAV file using linear
+PCM encoding. The conversion process involves appending a WAV header, generated from parameters specified in the
+associated metadata `.yml` file, to the raw audio data extracted from the `.sds` stream. The metadata defines
+essential audio parameters such as channel configuration (mono or stereo), sample rate (frame rate), and sample
+width (bit depth).
 
 ```txt
 usage: sds-convert.py audio_wav [-h] -i <input_file> [<input_file> ...] -o <output_file> [-y <yaml_file> [<yaml_file> ...]]
@@ -198,7 +202,8 @@ optional:
 ```
 
 !!! Note
-    The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
+    - The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
+    - The tool expects the SDS stream to be strictly audio — no header markers or custom formatting.
 
 **Example of metadata yml file for mono microphone:**
 
