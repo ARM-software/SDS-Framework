@@ -303,7 +303,11 @@ optional:
 <li>Depending on the required format use the tool as shown below.</li>
 </ul>
 <h4 id="audio-wav">Audio WAV</h4>
-<p>Convert <code>.sds</code> file to audio WAV format. It takes recorded data and appends required wave file header, derived from the parameters in the metadata file.</p>
+<p>The <code>audio_wav</code> mode converts raw microphone data from <code>.sds</code> files into a standard RIFF/WAV file using linear
+PCM encoding. The conversion process involves appending a WAV header, generated from parameters specified in the
+associated metadata <code>.yml</code> file, to the raw audio data extracted from the <code>.sds</code> stream. The metadata defines
+essential audio parameters such as channel configuration (mono or stereo), sample rate (frame rate), and sample
+width (bit depth).</p>
 <pre><code class="language-txt">usage: sds-convert.py audio_wav [-h] -i &lt;input_file&gt; [&lt;input_file&gt; ...] -o &lt;output_file&gt; [-y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]]
 
 options:
@@ -318,7 +322,10 @@ optional:
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.</p>
+<ul>
+<li>The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.</li>
+<li>The tool expects the SDS stream to be strictly audio — no header markers or custom formatting.</li>
+</ul>
 </div>
 <p><strong>Example of metadata yml file for mono microphone:</strong></p>
 <pre><code class="language-yml">sds:
