@@ -21,6 +21,7 @@
       SDSIO:
       - Moved common SDSIO Client code into sdsio_client.c/.h; low-level I/O dependent code left in individual drivers
       - Added SDS:IO:Custom component and driver
+      - Added SDS:IO:VSI component
       SDS Recorder and Player:
       - Replaced SDS:Recorder and SDS:Player components and drivers with combined SDS:RecPlay component and driver
       Utilities:
@@ -32,6 +33,10 @@
   </releases>
 
   <conditions>
+    <condition id="SDS IO via VSI">
+      <description>SDS IO via VSI</description>
+      <require Cclass="CMSIS" Cgroup="RTOS2"/>
+    </condition>
     <condition id="SDS IO via Socket">
       <description>SDS IO via Socket (IoT Socket)</description>
       <require Cclass="CMSIS"        Cgroup="RTOS2"/>
@@ -87,6 +92,19 @@
         <file category="header" name="sds/include/sds_buffer.h"/>
         <file category="source" name="sds/source/sds_buffer.c"/>
         <file category="header" name="sds/config/sds_buffer_config.h" attr="config" version="1.0.0"/>
+        <file category="doc"    name="docs/index.html"/>
+      </files>
+    </component>
+
+    <!-- SDS I/O (VSI) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="VSI" Capiversion="1.0.0" Cversion="1.0.0" condition="SDS IO via VSI">
+      <description>I/O via VSI</description>
+      <RTE_Components_h>
+        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
+        #define RTE_SDS_IO_VSI                          /* Synchronous Data Stream Input/Output (VSI) */
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="sds/source/sdsio/vsi/sdsio_vsi.c"/>
         <file category="doc"    name="docs/index.html"/>
       </files>
     </component>

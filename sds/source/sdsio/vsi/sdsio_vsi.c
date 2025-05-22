@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// Dummy SDS I/O interface via VSI
+// SDS I/O interface via VSI
 
 #include <stddef.h>
 
