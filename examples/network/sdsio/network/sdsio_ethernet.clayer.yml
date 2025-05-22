@@ -1,6 +1,6 @@
 layer:
-  type: SDSIO_Interface
-  description: SDS recording/playback via Ethernet interface (MDK ETH) interface
+  type: SDSIO
+  description: SDS recording/playback using Ethernet connection to Host
 
   packs:
     - pack: ARM::SDS@^2.0.0-0

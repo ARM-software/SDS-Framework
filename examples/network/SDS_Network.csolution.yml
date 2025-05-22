@@ -11,26 +11,22 @@ solution:
 
   compiler: AC6
 
-  # List the packs that define the device and/or board.
-  # packs:
-  #  - pack: <DFP>
-  #  - pack: <BSP>
+  # This is a CMSIS-Toolbox Reference Application that requires a compatible board layer
+  # Refer to https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/ for more information
 
   # List different hardware targets that are used to deploy the solution.
   target-types:
-    - type:                             # add name and specify board in next line
-    #   board: <board_name>
+    - type:
       variables:
-    #   - Board-Layer: <board_layer>.clayer.yml
         - SDSIO-Layer: $SolutionDir()$/sdsio/network/sdsio_ethernet.clayer.yml
 
-    - type: AVH-SSE-300                 # simulator target
+    - type: AVH-SSE-300 # simulator target
       board: ARM::V2M-MPS3-SSE-300-FVP
       device: ARM::SSE-300-MPS3
       define:
         - SIMULATOR
       variables:
-        - Board-Layer: $SolutionDir()$/boards/Corstone-300/Board.clayer.yml
+        - Board-Layer: $SolutionDir()$/Board/Corstone-300/Board.clayer.yml
         - SDSIO-Layer: $SolutionDir()$/sdsio/fvp/sdsio_fvp.clayer.yml
 
   # List of different build configurations.
