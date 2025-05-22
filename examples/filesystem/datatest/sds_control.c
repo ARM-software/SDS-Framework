@@ -18,18 +18,11 @@
 
 #include <stdio.h>
 #include <stdbool.h>
-
 #include "cmsis_os2.h"
 #include "cmsis_vio.h"
-
+#include "sds_main.h"
 #include "sds_control.h"
 #include "sds_rec_play.h"
-
-
-// External functions
-extern int32_t OpenStreams (void);
-extern int32_t CloseStreams (void);
-extern __NO_RETURN void AlgorithmThread (void *argument);
 
 
 // AlgorithmThread thread attributes

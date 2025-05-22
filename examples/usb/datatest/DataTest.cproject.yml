@@ -26,14 +26,12 @@ project:
       files:
         - file: README.md
     - group: Application
-      add-path:
-        - ../control
       files:
         - file: app_main.c
-        - file: ../control/sds_control.c
+        - file: sds_control.c
         - file: sds_main.c
-        - file: sds_algorithm_user.c
-        - file: sds_data_in_user.c
+        - file: sds_algorithm_test.c
+        - file: sds_data_in_test.c
           not-for-context:
             - .DebugPlay
             - .ReleasePlay

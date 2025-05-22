@@ -16,9 +16,8 @@
  * limitations under the License.
  */
 
-#include "sds_algorithm.h"
-
 #include "sds_algorithm_config.h"
+#include "sds_algorithm.h"
 
 
 /**

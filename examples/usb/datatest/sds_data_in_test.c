@@ -18,12 +18,9 @@
 
 #include <stddef.h>
 #include <string.h>
-
-#include "sds_data_in.h"
-
-#include "sds_algorithm_config.h"
-
 #include "cmsis_os2.h"
+#include "sds_algorithm_config.h"
+#include "sds_data_in.h"
 
 
 // Raw sensor data sample structure

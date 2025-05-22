@@ -20,7 +20,6 @@
 #define SDS_CONTROL_H_
 
 #include <stdint.h>
-
 #include "cmsis_compiler.h"
 
 #ifdef  __cplusplus

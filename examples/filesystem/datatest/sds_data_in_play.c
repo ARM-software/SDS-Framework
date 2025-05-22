@@ -16,15 +16,12 @@
  * limitations under the License.
  */
 
-#include "sds_data_in.h"
-
-#include "sds_algorithm_config.h"
-
 #include "cmsis_os2.h"
-
 #include "sds_main.h"
 #include "sds_control.h"
 #include "sds_rec_play.h"
+#include "sds_algorithm_config.h"
+#include "sds_data_in.h"
 
 
 // Recorded data timestamp

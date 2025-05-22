@@ -20,9 +20,7 @@
 #define SDS_MAIN_H_
 
 #include <stdint.h>
-
 #include "cmsis_compiler.h"
-
 #include "sds_rec_play.h"
 
 #ifdef  __cplusplus

@@ -17,16 +17,12 @@
  */
 
 #include <stdio.h>
-
+#include "cmsis_os2.h"
 #include "sds_main.h"
-
+#include "sds_control.h"
 #include "sds_algorithm_config.h"
 #include "sds_algorithm.h"
-
 #include "sds_data_in.h"
-
-#include "cmsis_os2.h"
-#include "sds_control.h"
 
 
 #ifdef SDS_PLAY

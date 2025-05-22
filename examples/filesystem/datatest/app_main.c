@@ -17,7 +17,6 @@
  */
 
 #include "cmsis_os2.h"
-
 #include "sds_control.h"
 
 
