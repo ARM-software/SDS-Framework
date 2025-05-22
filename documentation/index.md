@@ -11,7 +11,7 @@ This user's guide assumes basic knowledge about Cortex-M software development. I
 - [**Overview**](overview.md) explains the of features of the SDS-Framework and outlines the possibilities.
 - [**Theory of Operation**](theory.md) explains data stream recording and playback.
 - [**SDS Interface**](sds_interface.md) describes the various interfaces (USB, Socket, File System) for connecting to the target.
-- [**Examples**](examples.md) lists the examples that are available.
+- [**SDS Template Examples**](examples.md) explains the usage of the SDS-Framework for algorithm testing.
 - [**Utilities**](utilities.md) explains Python based utilities that operate with SDS data files for converting, viewing, recording, and playback.
 - [**API Modules**](SDS_API/modules.md) describes the C interface of the SDS functions that may be used in the target system.
 
@@ -19,4 +19,4 @@ This user's guide assumes basic knowledge about Cortex-M software development. I
 
 Version            | Description
 :------------------|:-------------------------
-1.1.0              | Initial release for SDS-Framework [1.1.0](https://github.com/ARM-software/SDS-Framework/releases/tag/v1.1.0)
+2.0.0              | Initial release for SDS-Framework [2.0.0](https://github.com/ARM-software/SDS-Framework/releases/tag/v2.0.0)
