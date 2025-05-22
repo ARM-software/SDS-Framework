@@ -30,6 +30,7 @@ PACK_BUILD=./build
 #
 PACK_DIRS="
 docs
+examples
 overview
 schema
 sds
