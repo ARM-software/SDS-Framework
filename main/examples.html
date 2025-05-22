@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="img/favicon.ico" />
-    <title>Examples - SDS-Framework</title>
+    <title>SDS Template Examples - SDS-Framework</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Examples";
+        var mkdocs_page_name = "SDS Template Examples";
         var mkdocs_page_input_path = "examples.md";
         var mkdocs_page_url = null;
       </script>
@@ -57,8 +57,28 @@
                 </li>
               </ul>
               <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="#">Examples</a>
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">SDS Template Examples</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#sds-template-structure">SDS Template Structure</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#working-with-sds-templates">Working with SDS Templates</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#available-sds-templates">Available SDS Templates</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-vs-code">Using VS Code</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#api-interfaces">API Interfaces</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#compile-for-board">Compile for Board</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#compile-for-custom-hardware">Compile for Custom Hardware</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#integrate-user-algorithm">Integrate User Algorithm</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#example-projects">Example Projects</a>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -84,7 +104,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="index.html" class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Examples</li>
+      <li class="breadcrumb-item active">SDS Template Examples</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/examples.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -94,39 +114,161 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="examples">Examples</h1>
+                <h1 id="sds-template-examples">SDS Template Examples</h1>
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-<p>SDS examples applications are provided in a separate <a href="https://github.com/Arm-Examples/sds-examples">GitHub repository</a> and shows the usage of the SDS-Framework.</p>
-<p><img alt="SDS Examples" src="images/Example_Structure.png" /></p>
-<p>The examples use <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#software-layers"><em>csolution project layers</em></a> to simplify targeting to different hardware boards.</p>
-<p>The <strong>Sensor Layer</strong> implements a data streaming interface to is described in the section <a href="overview.html"><strong>Overview</strong></a>. It is user code that is application specific.</p>
-<p>The <strong>Layer Type: SDS_Recorder</strong> connects the data streams to the SDS files. There are various ready to use implementations available as outlined in the table below. Several layer implementations use the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil/overview/">MDK-Middleware</a> for communication.</p>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/examples">SDS template examples</a> are a test framework for DSP and ML algorithms. It allows recording and playback of  real-world data streams using physical hardware or on simulation models using <a href="https://github.com/ARM-software/AVH">(Arm Virtual Hardware - FVP)</a> to an user algorithm under test. The real-world data streams are captured in SDS data files. This enables multiple uses cases:</p>
+<ul>
+<li>Validate and Optimize Algorithms using playback. This allows to repeat test cases with the same data streams.</li>
+<li>The captured data streams can be labeled and used as training data set for AI Models in MLOps systems.</li>
+</ul>
+<p>The templates are implemented as <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/">CMSIS-Toolbox Reference Applications</a> that are hardware agnostic and require a board layer with drivers for the specific target hardware.</p>
+<p>The templates differ in the SDSIO interface that is used for SDS data file access:</p>
+<ul>
+<li><a href="https://github.com/ARM-software/SDS-Framework/blob/main/examples/filesystem/SDS_FileSystem.csolution.yml">SDS_FileSystem</a> uses the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> FileSystem component for SDS file I/O.</li>
+<li><a href="https://github.com/ARM-software/SDS-Framework/blob/main/examples/network/SDS_Network.csolution.yml">SDS_Network</a> uses the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> Network component to connect to the <a href="utilities.html#sdsio-server">SDSIO Server</a>.</li>
+<li><a href="https://github.com/ARM-software/SDS-Framework/blob/main/examples/usb/SDS_USB.csolution.yml">SDS_USB</a> uses the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> USB Device component to connect to the <a href="utilities.html#sdsio-server">SDSIO Server</a>.</li>
+</ul>
+<p>With a custom SDSIO interface alternative file I/O configurations are possible.</p>
+<h2 id="sds-template-structure">SDS Template Structure</h2>
+<p>The structure of an SDS template is shown below. Two projects select between data communication test and user algorithm test. Two target-types allow to deploy the test application on hardware (evaluation board) or AVH FVP (simulation model).</p>
+<p>A standard board layer that is provided in several BSP provides the hardware interface. The SDSIO layer uses for communication the MDK-Middleware or on AVH FVP target a virtual simulation interface (VSI).</p>
+<p><img alt="SDS Template Structure" src="images/Example_Structure.png" /></p>
+<p>The build-types <code>DebugRec</code> or <code>ReleaseRec</code> configure the template to record SDS data files. This allows recording of the input data stream and the algorithm data stream using physical input peripherals on hardware.</p>
+<p><img alt="Build-Type: Rec" src="images/Example_Record.png" /></p>
+<p>The build-types <code>DebugPlay</code> or <code>ReleasePlay</code> configure the template to playback SDS data files. This allows playback of the input data stream while also recording the algorithm data stream. The test application can run on hardware (evaluation board) or AVH FVP (simulation model). As the input data stream can be repeated it allows to verify and optimize the algorithm while capturing the output data stream.</p>
+<p><img alt="Build-Type: Play" src="images/Example_Playback.png" /></p>
+<h2 id="working-with-sds-templates">Working with SDS Templates</h2>
+<p>The SDS templates are implemented as <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/">CMSIS-Toolbox Reference Applications</a> 
+that use the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> with <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/index.html">CMSIS-Driver</a> interfaces. These Reference Applications are hardware agnostic and need to be extended with a compatible <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#board-layer">board layer</a> to run on a specific hardware target.</p>
+<p>Several <a href="https://www.keil.arm.com/packs/">Board Support Packs (BSP)</a> contain board layers that support the required interfaces. Refer to the <em>Overview</em> page of the pack to check the <em>Provided connection API Interface</em> of the layers. When such a board layer is not available, it is possible to <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#structure">create a compatible board layer</a>.</p>
+<h3 id="available-sds-templates">Available SDS Templates</h3>
+<p>The SDS templates are provided as part of the <a href="https://www.keil.arm.com/packs/sds-arm">SDS pack</a> and maintained as part of its GitHub repository.</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Layer Type: SDS_Recorder</th>
+<th style="text-align: left;">SDS Template</th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>SDS_Rec_Network.clayer.yml</code></td>
-<td style="text-align: left;">Connects via TCP/IP Network Ethernet to SDSIO Server.</td>
+<td style="text-align: left;"><a href="https://github.com/ARM-software/SDS-Framework/blob/main/examples/filesystem/SDS_FileSystem.csolution.yml">SDS_FileSystem</a></td>
+<td style="text-align: left;">Data streaming for DSP/ML algorithm testing using File System in target</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>SDS_Rec_USB.clayer.yml</code></td>
-<td style="text-align: left;">Connects via USB Device VCom to SDSIO Server.</td>
+<td style="text-align: left;"><a href="https://github.com/ARM-software/SDS-Framework/blob/main/examples/network/SDS_Network.csolution.yml">SDS_Network</a></td>
+<td style="text-align: left;">Data streaming for DSP/ML algorithm testing using Ethernet connection to Host</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>SDS_Rec_FileSystem.clayer.yml</code></td>
-<td style="text-align: left;">Connects via FileSystem to a memory card.</td>
+<td style="text-align: left;"><a href="https://github.com/ARM-software/SDS-Framework/blob/main/examples/usb/SDS_USB.csolution.yml">SDS_USB</a></td>
+<td style="text-align: left;">Data streaming for DSP/ML algorithm testing using USB Device connection to Host</td>
 </tr>
 </tbody>
 </table>
-<p>The <strong>Layer Type: Board</strong> is a standard board layer that provides a communication interface (<code>CMSIS_ETH</code>, <code>CMSIS_USB_Device</code>), a sensor interface (<code>I2C</code>, <code>SPI</code>), and a <code>CMSIS_VIO</code> interface for SDS recorder control. Other variants may have Audio or Video interfaces. <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#connections">Connections</a> help to identify the compatible software layers.</p>
-<p>The <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications">CMSIS-Toolbox section Reference Applications</a> for more information about the project structure.</p>
+<p>This section gives a generic overview on how to access, configure and build an SDS template for your target hardware.</p>
+<h3 id="using-vs-code">Using VS Code</h3>
+<p>This section explains how to use MDK-Middleware with the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution</a> for VS Code. This extension is for example part of <a href="https://www.keil.arm.com/">Keil Studio</a>.</p>
+<p>An SDS Template example can be selected in the <a href="https://developer.arm.com/documentation/108029/latest/Arm-CMSIS-Solution-extension/Create-a-solution">Create a new solution</a> dialog for boards with layers in the BSP.</p>
+<p><img alt="Select Reference Application" src="SelectReferenceApplication.png" /></p>
+<p>Once the <em>csolution project</em> is loaded the VS Code IDE presents you with a dialog that lets you select a compatible software layer and a compiler toolchain that is available on your computer.</p>
+<p><img alt="Configure Solution" src="ConfigureSolution.png" /></p>
+<blockquote>
+<p><strong>Notes:</strong></p>
+<ul>
+<li>The <strong>Add Software Layer</strong> dialog only appears when the BSP contains a board layer with compatible API Interfaces (see next section).</li>
+<li>ST board layers are configured for the Arm Compiler (AC6) using STM32CubeMX.  However, it is easy to reconfigure for different compilers. The steps are provided in the BSP overview.</li>
+</ul>
+</blockquote>
+<h3 id="api-interfaces">API Interfaces</h3>
+<p>The SDS template examples are hardware agnostic but require API Interfaces that are expressed using the <em>csolution project</em> <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/YML-Input-Format#connections">connections:</a> node. The various reference applications consume the following API Interfaces. These <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#connections">interfaces should be provided by the board layer</a> that is part of the Board Support Pack (BSP).</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Consumed API Interface</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>File System</strong></td>
+<td style="text-align: left;">.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CMSIS_MCI</td>
+<td style="text-align: left;"><a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__mci__interface__gr.html">CMSIS-Driver MCI</a> Interface to memory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">STDIN, STDOUT</td>
+<td style="text-align: left;">Standard I/O for user input/output via UART.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Network</strong></td>
+<td style="text-align: left;">.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CMSIS_ETH</td>
+<td style="text-align: left;"><a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__eth__interface__gr.html">CMSIS-Driver Ethernet</a> MAC/PHY Interface.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CMSIS_VIO</td>
+<td style="text-align: left;"><a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__vio__interface__gr.html">CMSIS-Driver VIO</a> connected to LEDs and button</td>
+</tr>
+<tr>
+<td style="text-align: left;">STDOUT</td>
+<td style="text-align: left;">Standard I/O connected for printf messages.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>USB Device</strong></td>
+<td style="text-align: left;">.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CMSIS_USB_Device</td>
+<td style="text-align: left;"><a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__usbd__interface__gr.html">CMSIS-Driver USB Device</a> Interface.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CMSIS_VIO</td>
+<td style="text-align: left;"><a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__vio__interface__gr.html">CMSIS-Driver VIO</a> connected to LEDs and button</td>
+</tr>
+<tr>
+<td style="text-align: left;">CMSIS_USART</td>
+<td style="text-align: left;"><a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__usart__interface__gr.html">CMSIS-Driver USART</a> for VirtualCOM project.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="compile-for-board">Compile for Board</h3>
+<p>The MDK-Middleware Reference Applications are typically bundles of several similar projects. Use the command <code>CMSIS:Manage Solution Settings</code> to choose a one project that you want to explore.</p>
+<p><img alt="Select Project" src="SelectProject.png" /></p>
+<h3 id="compile-for-custom-hardware">Compile for Custom Hardware</h3>
+<p>The steps to add a custom hardware configuration are:</p>
+<ul>
+<li>
+<p>Open the <code>*.csolution.yml</code> file and add a new <code>target-type</code>.</p>
+<p><code>yml
+target-types:
+- type: MyHardware
+  device: STM32U535CBTx
+  variables:
+    - Board-Layer: $SolutionDir()$\MyHardware\Board.clayer.yml</code></p>
+</li>
+<li>
+<p>Add a board layer that implements the API interfaces described above.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You may copy an existing board layer as starting point. But typically these board layers support a range of reference applications and contain driver API interfaces that may be removed.</p>
+</div>
+<h3 id="integrate-user-algorithm">Integrate User Algorithm</h3>
+<p>In each SDS templates these files require changes to interface with the DSP and ML algorithm that is tested:</p>
+<ul>
+<li><code>algorithm/sds_algorithm_config.h</code> configures the block size of data streams.</li>
+<li><code>algorithm/sds_algorithm_user.c</code> is the interface to the DSP/ML algorithm under test.</li>
+<li><code>algorithm/sds_data_in_user.c</code> is the interface to the physical data source.</li>
+</ul>
+<h2 id="example-projects">Example Projects</h2>
+<p>Configured SDS template examples are provided in a separate <a href="https://github.com/Arm-Examples/sds-examples">GitHub repository</a> and show the usage of the SDS-Framework.</p>
               
             </div>
           </div><footer>
