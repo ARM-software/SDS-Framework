@@ -54,12 +54,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#filenames">Filenames</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#timestamp">Timestamp</a>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#file-format">File Format</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#yaml-metadata-format">YAML Metadata Format</a>
+<li class="toctree-l3"><a class="reference internal" href="#file-format">File Format</a>
 </li>
-</ul>
+<li class="toctree-l3"><a class="reference internal" href="#yaml-metadata-format">YAML Metadata Format</a>
 </li>
 </ul>
 </li>
@@ -178,7 +176,7 @@
 <p>The same timestamp connects different SDS file records. It is therefore useful to
 use the same timestamp for the recording of one iteration of a DSP or ML algorithm.
 In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timestamp value.</p>
-<h4 id="file-format">File Format</h4>
+<h3 id="file-format">File Format</h3>
 <p>The <strong>SDS Framework</strong> uses a binary data file format to store the individual data streams. It supports the recording and playback of multiple data streams that may have jitters.  Therefore each stream contains timestamp information that allows to correlate the data streams as it is for example required in a sensor fusion application.</p>
 <p>The binary data format (stored in <code>*.&lt;n&gt;.sds</code> data files) has a record structure with a variable size. Each record has the following format:</p>
 <ol>
@@ -186,7 +184,7 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <li><strong>data size</strong>: number of data bytes in the record (32-bit unsigned integer, little endian)</li>
 <li><strong>binary data</strong>: SDS stream (little endian, no padding) as described with the <code>*.sds.yml</code> file.</li>
 </ol>
-<h4 id="yaml-metadata-format">YAML Metadata Format</h4>
+<h3 id="yaml-metadata-format">YAML Metadata Format</h3>
 <p>The content of each data stream may be described in a <a href="https://en.wikipedia.org/wiki/YAML">YAML</a> metadata file that is created by the user. The following section defines the YAML format of this metadata file. The file <code>sds.schema.json</code> is a schema description of the SDS Format Description.</p>
 <table>
 <thead>
