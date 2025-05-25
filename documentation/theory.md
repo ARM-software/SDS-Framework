@@ -77,7 +77,7 @@ The same timestamp connects different SDS file records. It is therefore useful t
 use the same timestamp for the recording of one iteration of a DSP or ML algorithm.
 In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timestamp value.
 
-#### File Format
+### File Format
 
 The **SDS Framework** uses a binary data file format to store the individual data streams. It supports the recording and playback of multiple data streams that may have jitters.  Therefore each stream contains timestamp information that allows to correlate the data streams as it is for example required in a sensor fusion application.
 
@@ -87,7 +87,7 @@ The binary data format (stored in `*.<n>.sds` data files) has a record structure
 2. **data size**: number of data bytes in the record (32-bit unsigned integer, little endian)
 3. **binary data**: SDS stream (little endian, no padding) as described with the `*.sds.yml` file.
 
-#### YAML Metadata Format
+### YAML Metadata Format
 
 The content of each data stream may be described in a [YAML](https://en.wikipedia.org/wiki/YAML) metadata file that is created by the user. The following section defines the YAML format of this metadata file. The file `sds.schema.json` is a schema description of the SDS Format Description.
 

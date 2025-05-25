@@ -1,35 +1,37 @@
 # Overview
 
-The Synchronous Data Stream (SDS) Framework manages data streams and provides tools for developing and optimizing embedded applications using DSP, ML, or Edge AI algorithms. It enables real-time capture of multiple data streams—such as sensor, audio, and video inputs—alongside algorithm outputs directly on target hardware. Using the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil), these streams may be stored in files on a host computer or on memory cards in the embedded system.
+The **Synchronous Data Stream (SDS) Framework** streamlines the development of DSP algorithms, ML models, and Edge AI applications that process periodic data streams, typically fixed-size blocks captured at regular intervals. SDS also supports variable-sized blocks and irregular timing. These data streams are stored in [SDS data files](https://arm-software.github.io/SDS-Framework/main/theory.html#sds-data-files).
+
+By deploying the [SDS template](https://arm-software.github.io/SDS-Framework/main/examples.html) to hardware (e.g., evaluation boards or production systems), you can record and play back multiple data streams during application development. This enables real-time capture of sensor, audio, and video inputs, alongside algorithm outputs, directly on target hardware. Ready-to-use SDSIO implementations use the MDK-Middleware for SDS data file storage on a development host computer or on a memory card in the embedded target.
+
+The [SDS template](https://arm-software.github.io/SDS-Framework/main/examples.html) supports two deployment targets: physical hardware or simulation via [Arm Virtual Hardware - FVP](https://github.com/ARM-software/AVH). Simulation enables cost-effective, automated regression testing on desktops or in cloud-based CI/MLOps pipelines.
 
 ![Data capturing and playback in Target System](./SDSIO.png)
 
-The captured data streams are useful in various steps of the development cycle, for example to:
+Captured data streams simplify many stages of development:
 
-- Validate physical input signals from sensors or output of algorithms.
-- Provide input data to Digital Signal Processing (DSP) development tools (such as filter designers) or MLOps systems (for AI model training).
-- Provide input data for simulation using [Arm Virtual Hardware (AVH-FVP)](https://github.com/Arm-software/AVH) models for testing and validation, for example in CI systems.
+- Validate sensor inputs or algorithm outputs.
+- Feed DSP tools (e.g., filter design) or MLOps systems (for training).
+- Provide reproducible inputs for simulations via [Arm Virtual Hardware](https://github.com/Arm-software/AVH) , including CI environments.
 
-![CI Workflow with Simulation](./Simulation.png)
-
-With integration into MLOps systems, the SDS Framework can be used to provide input data to ML/AI development systems for model classification, training, and performance optimization.
+With MLOps integration, SDS enables efficient dataset handling for classification, training, and performance tuning of ML/AI models.
 
 ![MLOps Integration](./MLOps.png)
 
 ## Features
 
-- Implements a flexible data stream management for sensor, audio, and video interfaces that process data streams.
-- Supports data streams from multiple interfaces (i.e. for sensor fusion) including provisions for time drifts.
-- **Record real-world data** with original data sources of the target hardware for analysis and development.
-- **Playback real-world data** for algorithm validation using target hardware or [Arm Virtual Hardware - FVP](https://github.com/arm-software/avh).
+- Flexible data stream handling for sensor, audio, and video interfaces.
+- Multi-interface stream support with time drift compensation (e.g., for sensor fusion).
+- Record real-world target data for analysis and development.
+- Replay data on hardware or [AVH-FVP simulation](https://github.com/arm-software/avh) for algorithm validation.
 
-The captured data streams are stored in SDS data files. A [YAML metadata file](./schema/README.md) can be used to describe the content. The SDS data files have several use cases such as:
+The content of SDS data files may be described with a [YAML metadata file](https://arm-software.github.io/SDS-Framework/main/theory.html#yaml-metadata-format) for use cases such as:
 
-- Input to Digital Signal Processing (DSP) development tools such as filter designers
-- Input to Machine Learning (ML) model classification, training, and performance optimization 
-- Verify execution of DSP algorithm on Cortex-M targets with off-line tools
+- Input for DSP tools (e.g., filter designers).
+- Input for ML training, testing, and optimization.
+- Offline validation of DSP/ML models.
 
-[Python-based utilities](./utilities/README.md) are provided for recording, playback, visualization, and data conversion
+[Python-based utilities](https://arm-software.github.io/SDS-Framework/main/utilities.html) are provided for recording, playback, visualization, data conversion, and verification of the SDSIO communication.
 
 ## Links
 
