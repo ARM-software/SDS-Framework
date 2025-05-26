@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="img/favicon.ico" />
-    <title>SDS Interface - SDS-Framework</title>
+    <title>SDSIO Interface - SDS-Framework</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "SDS Interface";
-        var mkdocs_page_input_path = "sds_interface.md";
+        var mkdocs_page_name = "SDSIO Interface";
+        var mkdocs_page_input_path = "sdsio.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -53,13 +53,13 @@
                 </li>
               </ul>
               <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="#">SDS Interface</a>
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">SDSIO Interface</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#layer-sds_interfacenetwork">Layer: SDS_Interface/Network</a>
+    <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_network">Layer: sdsio_network</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#layer-sds_interfaceusb">Layer: SDS_Interface/USB</a>
+    <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_usb">Layer: sdsio_usb</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#layer-sds_interfacefilesystem">Layer: SDS_Interface/FileSystem</a>
+    <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_fs">Layer: sdsio_fs</a>
     </li>
     </ul>
                 </li>
@@ -90,9 +90,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="index.html" class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">SDS Interface</li>
+      <li class="breadcrumb-item active">SDSIO Interface</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/sds_interface.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/sdsio.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -100,7 +100,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="sds-interface">SDS Interface</h1>
+                <h1 id="sdsio-interface">SDSIO Interface</h1>
 <p>The SDSIO components offer flexible recorder and playback interfaces. You may choose between these interface components that are stored in the folder <code>./sds/source/sdsio</code>. These interfaces can be accessed as CMSIS software components for integration into the target system:</p>
 <pre><code class="language-yml">  - component: SDS:IO:Socket                     # Socket Interface (Ethernet or WiFi)
   - component: SDS:IO:VCOM&amp;MDK USB               # USB Interface
@@ -111,17 +111,16 @@
 </code></pre>
 <p>To simplify usage further, the following pre-configured SDS interface layers in <em>csolution project format</em> are available. These connect via various interfaces to the SDSIO Server, which provides read/write access to SDS data files.</p>
 <ul>
-<li><a href="#layer-sds_interfacenetwork">Ethernet Interface</a> using the MDK-Middleware Network component.</li>
-<li><a href="#layer-sds_interfaceusb">USB Virtual COM Port Interface</a> using the MDK-Middleware USB component.</li>
-<li><a href="#layer-sds_interfacefilesystem">Memory Card Interface</a> using the MDK-Middleware File System component.</li>
+<li><a href="#layer-sdsio_network">Ethernet Interface</a> using the MDK-Middleware Network component.</li>
+<li><a href="#layer-sdsio_usb">USB Virtual COM Port Interface</a> using the MDK-Middleware USB component.</li>
+<li><a href="#layer-sdsio_fs">Memory Card Interface</a> using the MDK-Middleware File System component.</li>
 </ul>
-<p><img alt="SDS Interface" src="images/SDSIO.png" /></p>
-<h2 id="layer-sds_interfacenetwork">Layer: SDS_Interface/Network</h2>
-<p>The <a href="https://github.com/Arm-Examples/SDS-Examples/tree/main/SDS_Interface/Network"><code>SDS_Interface/Network/SDS_Interface.clayer</code></a> is configured for recording and playback via Ethernet interface. It is using the MDK-Middleware Network component.</p>
-<h2 id="layer-sds_interfaceusb">Layer: SDS_Interface/USB</h2>
-<p>The <a href="https://github.com/Arm-examples/SDS-Examples/tree/main/SDS_Interface/USB"><code>SDS_Interface/USB/SDS_Interface.clayer</code></a> is configured for recording and playback via USB interface. It is using the MDK-Middleware USB component.</p>
-<h2 id="layer-sds_interfacefilesystem">Layer: SDS_Interface/FileSystem</h2>
-<p>The <a href="https://github.com/Arm-Examples/SDS-Examples/tree/main/SDS_Interface/FileSystem"><code>SDS_Interface/FileSystem/SDS_Interface.clayer</code></a> is configured for recording and playback to/from the Memory Card. It is using the MDK-Middleware File System component.</p>
+<h2 id="layer-sdsio_network">Layer: sdsio_network</h2>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/network"><code>layer/network/sdsio_network.clayer.yml</code></a> is configured for recording and playback via Ethernet interface. It uses the MDK-Middleware Network component.</p>
+<h2 id="layer-sdsio_usb">Layer: sdsio_usb</h2>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/usb"><code>layer/usb/sdsio_usb.clayer.yml</code></a> is configured for recording and playback via USB Device interface. It uses the MDK-Middleware USB Device component.</p>
+<h2 id="layer-sdsio_fs">Layer: sdsio_fs</h2>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem"><code>layer/filesystem/SDS_Interface.clayer</code></a> is configured for recording and playback to/from the Memory Card. It uses the MDK-Middleware File System component.</p>
               
             </div>
           </div><footer>

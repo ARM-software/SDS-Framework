@@ -73,7 +73,7 @@
 </li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="sds_interface.html">SDS Interface</a>
+<li class="toctree-l1"><a class="reference internal" href="sdsio.html">SDSIO Interface</a>
 </li>
 </ul>
 <ul>
@@ -314,7 +314,7 @@ uint8_t accel_buf[(sizeof(accel_buf)*2)+0x800];      // data stream buffer for c
 <p>As a guideline, the buffer size should be at least <strong>(2 × block size) + 2 KB</strong>.<br/>
 The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
 <h2 id="sdsio-server-protocol">SDSIO Server Protocol</h2>
-<p>The SDSIO Server uses a simple protocol for data exchange between a Host computer and the embedded target that integrates an <a href="sds_interface.html">SDSIO Interface</a>.  The protocol assumes that the correct communication to the server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.</p>
+<p>The SDSIO Server uses a simple protocol for data exchange between a Host computer and the embedded target that integrates an <a href="sdsio.html">SDSIO Interface</a>.  The protocol assumes that the correct communication to the server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.</p>
 <p>The following conventions describe the <strong>command semantic</strong> used in the following documentation:</p>
 <table>
 <thead>
@@ -570,7 +570,7 @@ but sds_rec.c does not really use this information</p>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
 <a class="btn btn-neutral float-left" href="overview.html" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-<a class="btn btn-neutral float-right" href="sds_interface.html" title="SDS Interface">Next <span class="icon icon-circle-arrow-right"></span></a>
+<a class="btn btn-neutral float-right" href="sdsio.html" title="SDSIO Interface">Next <span class="icon icon-circle-arrow-right"></span></a>
 </div>
 <hr/>
 <div role="contentinfo">
@@ -589,7 +589,7 @@ but sds_rec.c does not really use this information</p>
 <a class="fa fa-github" href="https://github.com/ARM-software/SDS-Framework" style="color: #fcfcfc"> GitHub</a>
 </span>
 <span><a href="overview.html" style="color: #fcfcfc">« Previous</a></span>
-<span><a href="sds_interface.html" style="color: #fcfcfc">Next »</a></span>
+<span><a href="sdsio.html" style="color: #fcfcfc">Next »</a></span>
 </span>
 </div>
 <script src="js/jquery-3.6.0.min.js"></script>
