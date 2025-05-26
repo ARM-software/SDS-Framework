@@ -214,6 +214,12 @@
     </component>
   </components>
 
+  <csolution>
+    <clayer type="SDSIO" path="layer/sdsio/usb"        file="sdsio_usb.clayer.yml"     copy-to="sdsio/usb"/>
+    <clayer type="SDSIO" path="layer/sdsio/network"    file="sdsio_network.clayer.yml" copy-to="sdsio/network"/>
+    <clayer type="SDSIO" path="layer/sdsio/filesystem" file="sdsio_fs.clayer.yml"      copy-to="sdsio/filesystem"/>
+  </csolution>
+
   <examples>
     <example name="SDS_FileSystem" doc="README.md" folder="examples/filesystem">
       <description>Data streaming for DSP/ML algorithm testing using File System in target</description>
@@ -231,6 +237,12 @@
       <description>Data streaming for DSP/ML algorithm testing using USB Device connection to Host</description>
       <project>
         <environment name="csolution" load="SDS_USB.csolution.yml"/>
+      </project>
+    </example>
+    <example name="SDS" doc="README.md" folder="template">
+      <description>Data streaming template for DSP/ML algorithm testing</description>
+      <project>
+        <environment name="csolution" load="SDS.csolution.yml"/>
       </project>
     </example>
   </examples>

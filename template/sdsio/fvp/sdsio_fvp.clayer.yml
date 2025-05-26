@@ -1,0 +1,18 @@
+layer:
+  type: SDSIO
+  description: SDSIO layer for VSI
+
+  packs:
+    - pack: ARM::SDS@^2.0.0-0
+
+  connections:
+    - connect: SDS RecPlay
+      provides:
+        - SDS_BUFFER
+        - SDS_REC_PLAY
+        - SDS_IO
+
+  components:
+    - component: SDS:Buffer
+    - component: SDS:IO:VSI
+    - component: SDS:RecPlay&CMSIS-RTOS2
