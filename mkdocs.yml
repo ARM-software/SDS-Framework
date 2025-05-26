@@ -6,7 +6,7 @@ nav:
     - Overview: overview.md
     - Theory of Operation: theory.md
     - SDS Interface: sds_interface.md
-    - SDS Template Examples: examples.md
+    - SDS Template Application: template.md
     - Utilities: utilities.md
     - API Modules: SDS_API/modules.md
 

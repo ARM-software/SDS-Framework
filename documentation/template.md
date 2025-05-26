@@ -1,9 +1,9 @@
-# SDS Template Examples
+# SDS Template Application
 
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-The [SDS template examples](https://github.com/ARM-software/SDS-Framework/tree/main/examples) are a test framework for DSP and ML algorithms. It allows recording and playback of  real-world data streams using physical hardware or on simulation models using [(Arm Virtual Hardware - FVP)](https://github.com/ARM-software/AVH) to an user algorithm under test. The real-world data streams are captured in SDS data files. This enables multiple uses cases:
+The [SDS template application](https://github.com/ARM-software/SDS-Framework/tree/main/examples) is a test framework for DSP and ML algorithms. It allows recording and playback of real-world data streams using physical hardware or on simulation models using [(Arm Virtual Hardware - FVP)](https://github.com/ARM-software/AVH) to an user algorithm under test. The real-world data streams are captured in SDS data files. This enables multiple uses cases:
 
 - Validate and Optimize Algorithms using playback. This allows to repeat test cases with the same data streams.
 - The captured data streams can be labeled and used as training data set for AI Models in MLOps systems.
@@ -34,10 +34,10 @@ The build-types `DebugPlay` or `ReleasePlay` configure the template to playback 
 
 ![Build-Type: Play](images/Example_Playback.png)
 
-## Working with SDS Templates
+## Working with the SDS Template
 
-The SDS templates are implemented as [CMSIS-Toolbox Reference Applications](https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/) 
-that use the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) with [CMSIS-Driver](https://arm-software.github.io/CMSIS_6/latest/Driver/index.html) interfaces. These Reference Applications are hardware agnostic and need to be extended with a compatible [board layer](https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#board-layer) to run on a specific hardware target.
+The SDS template is a [CMSIS-Toolbox Reference Applications](https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/) 
+that use the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) with [CMSIS-Driver](https://arm-software.github.io/CMSIS_6/latest/Driver/index.html) interfaces. Reference Applications are hardware agnostic and need to be extended with a compatible [board layer](https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#board-layer) to run on a specific hardware target.
 
 Several [Board Support Packs (BSP)](https://www.keil.arm.com/packs/) contain board layers that support the required interfaces. Refer to the *Overview* page of the pack to check the *Provided connection API Interface* of the layers. When such a board layer is not available, it is possible to [create a compatible board layer](https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#structure).
 
@@ -59,11 +59,11 @@ This section explains how to use MDK-Middleware with the [Arm CMSIS Solution](ht
 
 An SDS Template example can be selected in the [Create a new solution](https://developer.arm.com/documentation/108029/latest/Arm-CMSIS-Solution-extension/Create-a-solution) dialog for boards with layers in the BSP.
 
-![Select Reference Application](SelectReferenceApplication.png)
+<!--- ![Select Reference Application](SelectReferenceApplication.png) -->
 
 Once the *csolution project* is loaded the VS Code IDE presents you with a dialog that lets you select a compatible software layer and a compiler toolchain that is available on your computer.
 
-![Configure Solution](ConfigureSolution.png)
+<!--- ![Configure Solution](ConfigureSolution.png) -->
 
 > **Notes:**
 >
@@ -92,7 +92,7 @@ CMSIS_USART                 | [CMSIS-Driver USART](https://arm-software.github.i
 
 The MDK-Middleware Reference Applications are typically bundles of several similar projects. Use the command `CMSIS:Manage Solution Settings` to choose a one project that you want to explore.
 
-![Select Project](SelectProject.png)
+<!--- ![Select Project](SelectProject.png) -->
 
 ### Compile for Custom Hardware
 

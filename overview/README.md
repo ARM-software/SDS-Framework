@@ -1,8 +1,8 @@
 # Overview
 
-The **Synchronous Data Stream (SDS) Framework** streamlines the development of DSP algorithms, ML models, and Edge AI applications that process periodic data streams, typically fixed-size blocks captured at regular intervals. SDS also supports variable-sized blocks and irregular timing. These data streams are stored in [SDS data files](https://arm-software.github.io/SDS-Framework/main/theory.html#sds-data-files).
+The **Synchronous Data Stream (SDS) Framework** streamlines the development of DSP algorithms, ML models, and Edge AI applications that process periodic data streams, typically fixed-size data blocks captured at regular time intervals. SDS also supports variable-sized data blocks and irregular timing required for applications with sensor fusion. These data streams are stored in [SDS data files](https://arm-software.github.io/SDS-Framework/main/theory.html#sds-data-files).
 
-By deploying the [SDS template](https://arm-software.github.io/SDS-Framework/main/examples.html) to hardware (e.g., evaluation boards or production systems), you can record and play back multiple data streams during application development. This enables real-time capture of sensor, audio, and video inputs, alongside algorithm outputs, directly on target hardware. Ready-to-use SDSIO implementations use the MDK-Middleware for SDS data file storage on a development host computer or on a memory card in the embedded target.
+By deploying the [SDS template](https://arm-software.github.io/SDS-Framework/main/examples.html) to hardware (e.g., evaluation boards or custom products), you can record and play back multiple data streams during application development. This enables real-time capture of sensor, audio, and video inputs, alongside algorithm outputs, directly on target hardware. Ready-to-use SDSIO implementations use the MDK-Middleware for SDS data file storage on a development host computer or on a memory card in the embedded target.
 
 The [SDS template](https://arm-software.github.io/SDS-Framework/main/examples.html) supports two deployment targets: physical hardware or simulation via [Arm Virtual Hardware - FVP](https://github.com/ARM-software/AVH). Simulation enables cost-effective, automated regression testing on desktops or in cloud-based CI/MLOps pipelines.
 
@@ -10,8 +10,8 @@ The [SDS template](https://arm-software.github.io/SDS-Framework/main/examples.ht
 
 Captured data streams simplify many stages of development:
 
-- Validate sensor inputs or algorithm outputs.
-- Feed DSP tools (e.g., filter design) or MLOps systems (for training).
+- Validate input data streams or algorithm output data streams.
+- Feed data streams to DSP tools (e.g., filter design) or MLOps systems (for training).
 - Provide reproducible inputs for simulations via [Arm Virtual Hardware](https://github.com/Arm-software/AVH) , including CI environments.
 
 With MLOps integration, SDS enables efficient dataset handling for classification, training, and performance tuning of ML/AI models.
