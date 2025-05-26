@@ -57,7 +57,7 @@ This section gives a generic overview on how to access, configure and build an S
 
 This section explains how to use MDK-Middleware with the [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) for VS Code. This extension is for example part of [Keil Studio](https://www.keil.arm.com/).
 
-An SDS Template example can be selected in the [Create a new solution](https://developer.arm.com/documentation/108029/latest/Arm-CMSIS-Solution-extension/Create-a-solution) dialog for boards with layers in the BSP.
+An SDS Template example can be selected in the **Create a new solution** <!--- [Create a new solution](https://developer.arm.com/documentation/108029/latest/Arm-CMSIS-Solution-extension/Create-a-solution) --> dialog for boards with layers in the BSP.
 
 <!--- ![Select Reference Application](SelectReferenceApplication.png) -->
 
@@ -123,5 +123,5 @@ In each SDS templates these files require changes to interface with the DSP and 
 
 ## Example Projects
 
-Configured SDS template examples are provided in a separate [GitHub repository](https://github.com/Arm-Examples/sds-examples) and show the usage of the SDS-Framework.
+Configured variants of the SDS template application are provided in a separate [GitHub repository github.com/Arm-Examples/sds-examples](https://github.com/Arm-Examples/sds-examples). These examples show the usage of the SDS-Framework with real-world devices and use cases.
 

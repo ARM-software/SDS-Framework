@@ -19,4 +19,4 @@ This user's guide assumes basic knowledge about Cortex-M software development. I
 
 Version            | Description
 :------------------|:-------------------------
-2.0.0              | Initial release for SDS-Framework [2.0.0](https://github.com/ARM-software/SDS-Framework/releases/tag/v2.0.0)
+2.0.0              | Initial release for SDS-Framework <!---  [2.0.0](https://github.com/ARM-software/SDS-Framework/releases/tag/v2.0.0) -->
