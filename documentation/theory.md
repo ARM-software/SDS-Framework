@@ -191,7 +191,7 @@ The minimum recommended buffer size is **0x1000 (4 KB)**.
 
 ## SDSIO Server Protocol
 
-The SDSIO Server uses a simple protocol for data exchange between a Host computer and the embedded target that integrates an [SDSIO Interface](sds_interface.md).  The protocol assumes that the correct communication to the server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.
+The SDSIO Server uses a simple protocol for data exchange between a Host computer and the embedded target that integrates an [SDSIO Interface](sdsio.md).  The protocol assumes that the correct communication to the server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.
 
 The following conventions describe the **command semantic** used in the following documentation:
 

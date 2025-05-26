@@ -20,7 +20,7 @@ The following diagram shows the data capturing in a microcontroller system using
 
 ![Workflow for simulation](images/Workflow.png)
 
-The [**SDS Recorder or Playback Interface**](sds_interface.md) is integrated into the target application and runs on the microcontroller. It enables data streaming into SDS data files via various interfaces such as Ethernet, UART, USB, or File System. The I/O implementation included in SDS utilizes the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil/overview/), however custom interfaces to other middleware or different communication channels can also be used.
+The [**SDS Recorder or Playback Interface**](sdsio.md) is integrated into the target application and runs on the microcontroller. It enables data streaming into SDS data files via various interfaces such as Ethernet, UART, USB, or File System. The I/O implementation included in SDS utilizes the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil/overview/), however custom interfaces to other middleware or different communication channels can also be used.
 
 The [**SDSIO Server**](utilities.md#sdsio-server) running on a host computer captures the recorded data stream and stores it in SDS data files. Each recording creates one set of SDS data files that are indicated by a sequential number. The SDS data files are in binary format and may be described using a [YAML metadata file](https://github.com/ARM-software/SDS-Framework/tree/main/schema). With this information, other tools can utilize the content of the SDS data files as shown in the picture below.
 

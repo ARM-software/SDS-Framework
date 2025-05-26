@@ -8,17 +8,20 @@ Refer to [Overview](./overview/README.md) for more details.
 
 Directory                         | Description
 ----------------------------------|-------------------------------
-[documentation](./documentation/) | [User documentation](https://arm-software.github.io/SDS-Framework/main/index.html) of the SDS Framework
-[overview](./overview)            | Top-level overview of SDS Framework
-[schema](./schema)                | Schema for SDS File Format
-[sds](./sds)                      | SDS Framework source files and implementation of various SDSIO Interfaces
-[utilities](./utilities)          | Python scripts for processing of SDS binary data files
+[documentation](./documentation/) | [User documentation](https://arm-software.github.io/SDS-Framework/main/index.html) of the SDS Framework.
+[overview](./overview)            | Top-level overview of SDS Framework.
+[schema](./schema)                | Schema for [SDS YAML metadata format](https://arm-software.github.io/SDS-Framework/main/theory.html#yaml-metadata-format) that describes the content of SDS files.
+[sds](./sds)                      | SDS-Framework source files and implementation of various SDSIO interfaces.
+[template](./template)            | [SDS template application](https://arm-software.github.io/SDS-Framework/main/template.html) - a test framework for DSP and ML algorithms.
+[layer/sdsio](./layer/sdsio)      | Configured [SDS interface layers](https://arm-software.github.io/SDS-Framework/main/sdsio.html) for SDS file I/O via Network, USB, or File System interface.
+[utilities](./utilities)          | Python scripts for processing of SDS binary data files.
 
 ## Related
 
-- [SDS Examples](https://github.com/Arm-Examples/sds-examples)
-- [ML Developers Guide for Cortex-M Processors and Ethos-U NPU](https://developer.arm.com/documentation/109267)
-- [Arm Virtual Hardware - FVP](https://github.com/arm-software/avh)
+- [SDS Pack](https://www.keil.arm.com/packs/sds-arm) available on [keil.arm.com/packs](https://www.keil.arm.com/packs).
+- [SDS Examples](https://github.com/Arm-Examples/sds-examples) a repository with SDS template applications that are configured for evaluation boards and use cases.
+- [ML Developers Guide for Cortex-M Processors and Ethos-U NPU](https://developer.arm.com/documentation/109267).
+- [Arm Virtual Hardware - FVP](https://github.com/arm-software/avh) repository with documentation.
 
 ## License
 
