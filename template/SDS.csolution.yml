@@ -17,7 +17,7 @@ solution:
 
   # List different hardware targets that are used to deploy the solution.
   target-types:
-    - type:
+    - type: ${Name}
 
     - type: AVH-SSE-300 # simulator target
       board: ARM::V2M-MPS3-SSE-300-FVP
