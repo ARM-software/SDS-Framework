@@ -38,20 +38,17 @@ layer:
     - group: Board
       files:
         - file: ./main.c
-        - file: ./main.h
         - file: ./vio_memory.c
         - file: ./uart_cmsdk_apb.c
-        - file: ./uart_stdout.h
         - file: ./uart_config.h
         - file: ./retarget.c
 
     - group: Streaming Interface
+      add-path: 
+        - ./vsi/include
       files:
-        - file: ./vsi/include/arm_vsi.h
-        - file: ./vsi/audio/driver/audio_drv.c
-        - file: ./vsi/audio/include/audio_drv.h
-        - file: ./vsi/video/source/video_drv.c
-        - file: ./vsi/video/include/video_drv.h
+        - file: ./vsi/source/audio_drv.c
+        - file: ./vsi/source/video_drv.c
 
   linker:
     - script: ./mps3-sse-300.sct
