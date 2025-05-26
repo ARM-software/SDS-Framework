@@ -116,7 +116,7 @@
 <p>The DSP or ML algorithms that are tested operate on blocks and are executed periodically. This documentation uses these terms:</p>
 <ul>
 <li><strong>Data Block</strong>: is a set of input or output data which is processed in one step by a DSP or ML compute note.</li>
-<li><strong>Block size</strong>: is the number of bytes of a data block. </li>
+<li><strong>Block size</strong>: is the number of bytes of a data block.</li>
 <li><strong>Interval</strong>: is the periodic time interval that the compute node executes.</li>
 </ul>
 <p><img alt="SDSIO Interface for Player and Recorder" src="images/SDS-InOut.png"/></p>
@@ -552,20 +552,6 @@ It contains the following threads that execute on the target.</p>
     deactivate Server
     deactivate sdsControlThread
 </div>
-<p>ToDo:</p>
-<ul>
-<li>document control blocks in sds.c, sds_rec.c, and sds_play.c (comments might be sufficient)</li>
-</ul>
-<p>How does Threshold work?</p>
-<ul>
-<li>when Threshold is reach, the write operation writes the whole buffer.  The transport layer (TCP/IP) may need to split this into multiple packs. Should size be optimized for transport layer?</li>
-<li>This writes all buffers https://github.com/ARM-software/SDS-Framework/blob/main/sds/source/sds_rec.c#L157 until empty. When Recorder is same priority as Algorithm, Algorithm might not be executed for quite a while.</li>
-</ul>
-<p>sds.c generates detailed events (are they documented?)
-but sds_rec.c does not really use this information</p>
-<ul>
-<li>Threshold event is only set when complete write was possible, is this correct? https://github.com/ARM-software/SDS-Framework/blob/main/sds/source/sds_rec.c#L298 </li>
-</ul>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
