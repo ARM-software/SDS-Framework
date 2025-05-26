@@ -8,7 +8,7 @@ The SDS Framework enables to record and playback one or more data streams to an 
 The DSP or ML algorithms that are tested operate on blocks and are executed periodically. This documentation uses these terms:
 
 - **Data Block**: is a set of input or output data which is processed in one step by a DSP or ML compute note.
-- **Block size**: is the number of bytes of a data block. 
+- **Block size**: is the number of bytes of a data block.
 - **Interval**: is the periodic time interval that the compute node executes.
 
 ![SDSIO Interface for Player and Recorder](images/SDS-InOut.png)
@@ -326,7 +326,6 @@ It contains the following threads that execute on the target.
 
 The Server is the SDSIO Server executing on the target system.
 
-
 **Recording flowchart**
 
 ```mermaid
@@ -375,7 +374,6 @@ sequenceDiagram
     deactivate Server
     deactivate sdsControlThread
 ```
-
 
 **Playback flowchart**
 
@@ -427,19 +425,3 @@ sequenceDiagram
     deactivate Server
     deactivate sdsControlThread
 ```
-
-
-
-ToDo:
-
-- document control blocks in sds.c, sds_rec.c, and sds_play.c (comments might be sufficient)
-
-How does Threshold work?
-
-- when Threshold is reach, the write operation writes the whole buffer.  The transport layer (TCP/IP) may need to split this into multiple packs. Should size be optimized for transport layer?
-- This writes all buffers https://github.com/ARM-software/SDS-Framework/blob/main/sds/source/sds_rec.c#L157 until empty. When Recorder is same priority as Algorithm, Algorithm might not be executed for quite a while.
-
-sds.c generates detailed events (are they documented?)
-but sds_rec.c does not really use this information
-
-- Threshold event is only set when complete write was possible, is this correct? https://github.com/ARM-software/SDS-Framework/blob/main/sds/source/sds_rec.c#L298 
