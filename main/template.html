@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="img/favicon.ico" />
-    <title>SDS Template Examples - SDS-Framework</title>
+    <title>SDS Template Application - SDS-Framework</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "SDS Template Examples";
-        var mkdocs_page_input_path = "examples.md";
+        var mkdocs_page_name = "SDS Template Application";
+        var mkdocs_page_input_path = "template.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -57,11 +57,11 @@
                 </li>
               </ul>
               <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="#">SDS Template Examples</a>
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">SDS Template Application</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#sds-template-structure">SDS Template Structure</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#working-with-sds-templates">Working with SDS Templates</a>
+    <li class="toctree-l2"><a class="reference internal" href="#working-with-the-sds-template">Working with the SDS Template</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#available-sds-templates">Available SDS Templates</a>
     </li>
@@ -104,9 +104,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="index.html" class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">SDS Template Examples</li>
+      <li class="breadcrumb-item active">SDS Template Application</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/examples.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/template.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -114,11 +114,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="sds-template-examples">SDS Template Examples</h1>
+                <h1 id="sds-template-application">SDS Template Application</h1>
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/examples">SDS template examples</a> are a test framework for DSP and ML algorithms. It allows recording and playback of  real-world data streams using physical hardware or on simulation models using <a href="https://github.com/ARM-software/AVH">(Arm Virtual Hardware - FVP)</a> to an user algorithm under test. The real-world data streams are captured in SDS data files. This enables multiple uses cases:</p>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/examples">SDS template application</a> is a test framework for DSP and ML algorithms. It allows recording and playback of real-world data streams using physical hardware or on simulation models using <a href="https://github.com/ARM-software/AVH">(Arm Virtual Hardware - FVP)</a> to an user algorithm under test. The real-world data streams are captured in SDS data files. This enables multiple uses cases:</p>
 <ul>
 <li>Validate and Optimize Algorithms using playback. This allows to repeat test cases with the same data streams.</li>
 <li>The captured data streams can be labeled and used as training data set for AI Models in MLOps systems.</li>
@@ -139,9 +139,9 @@
 <p><img alt="Build-Type: Rec" src="images/Example_Record.png" /></p>
 <p>The build-types <code>DebugPlay</code> or <code>ReleasePlay</code> configure the template to playback SDS data files. This allows playback of the input data stream while also recording the algorithm data stream. The test application can run on hardware (evaluation board) or AVH FVP (simulation model). As the input data stream can be repeated it allows to verify and optimize the algorithm while capturing the output data stream.</p>
 <p><img alt="Build-Type: Play" src="images/Example_Playback.png" /></p>
-<h2 id="working-with-sds-templates">Working with SDS Templates</h2>
-<p>The SDS templates are implemented as <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/">CMSIS-Toolbox Reference Applications</a> 
-that use the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> with <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/index.html">CMSIS-Driver</a> interfaces. These Reference Applications are hardware agnostic and need to be extended with a compatible <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#board-layer">board layer</a> to run on a specific hardware target.</p>
+<h2 id="working-with-the-sds-template">Working with the SDS Template</h2>
+<p>The SDS template is a <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/">CMSIS-Toolbox Reference Applications</a> 
+that use the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> with <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/index.html">CMSIS-Driver</a> interfaces. Reference Applications are hardware agnostic and need to be extended with a compatible <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#board-layer">board layer</a> to run on a specific hardware target.</p>
 <p>Several <a href="https://www.keil.arm.com/packs/">Board Support Packs (BSP)</a> contain board layers that support the required interfaces. Refer to the <em>Overview</em> page of the pack to check the <em>Provided connection API Interface</em> of the layers. When such a board layer is not available, it is possible to <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#structure">create a compatible board layer</a>.</p>
 <h3 id="available-sds-templates">Available SDS Templates</h3>
 <p>The SDS templates are provided as part of the <a href="https://www.keil.arm.com/packs/sds-arm">SDS pack</a> and maintained as part of its GitHub repository.</p>
@@ -170,10 +170,12 @@ that use the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Mi
 <p>This section gives a generic overview on how to access, configure and build an SDS template for your target hardware.</p>
 <h3 id="using-vs-code">Using VS Code</h3>
 <p>This section explains how to use MDK-Middleware with the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution</a> for VS Code. This extension is for example part of <a href="https://www.keil.arm.com/">Keil Studio</a>.</p>
-<p>An SDS Template example can be selected in the <a href="https://developer.arm.com/documentation/108029/latest/Arm-CMSIS-Solution-extension/Create-a-solution">Create a new solution</a> dialog for boards with layers in the BSP.</p>
-<p><img alt="Select Reference Application" src="SelectReferenceApplication.png" /></p>
+<p>An SDS Template example can be selected in the <strong>Create a new solution</strong> <!--- <a href="https://developer.arm.com/documentation/108029/latest/Arm-CMSIS-Solution-extension/Create-a-solution">Create a new solution</a> --> dialog for boards with layers in the BSP.</p>
+<!--- ![Select Reference Application](SelectReferenceApplication.png) -->
+
 <p>Once the <em>csolution project</em> is loaded the VS Code IDE presents you with a dialog that lets you select a compatible software layer and a compiler toolchain that is available on your computer.</p>
-<p><img alt="Configure Solution" src="ConfigureSolution.png" /></p>
+<!--- ![Configure Solution](ConfigureSolution.png) -->
+
 <blockquote>
 <p><strong>Notes:</strong></p>
 <ul>
@@ -239,7 +241,8 @@ that use the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Mi
 </table>
 <h3 id="compile-for-board">Compile for Board</h3>
 <p>The MDK-Middleware Reference Applications are typically bundles of several similar projects. Use the command <code>CMSIS:Manage Solution Settings</code> to choose a one project that you want to explore.</p>
-<p><img alt="Select Project" src="SelectProject.png" /></p>
+<!--- ![Select Project](SelectProject.png) -->
+
 <h3 id="compile-for-custom-hardware">Compile for Custom Hardware</h3>
 <p>The steps to add a custom hardware configuration are:</p>
 <ul>
@@ -268,7 +271,7 @@ target-types:
 <li><code>algorithm/sds_data_in_user.c</code> is the interface to the physical data source.</li>
 </ul>
 <h2 id="example-projects">Example Projects</h2>
-<p>Configured SDS template examples are provided in a separate <a href="https://github.com/Arm-Examples/sds-examples">GitHub repository</a> and show the usage of the SDS-Framework.</p>
+<p>Configured variants of the SDS template application are provided in a separate <a href="https://github.com/Arm-Examples/sds-examples">GitHub repository github.com/Arm-Examples/sds-examples</a>. These examples show the usage of the SDS-Framework with real-world devices and use cases.</p>
               
             </div>
           </div><footer>
