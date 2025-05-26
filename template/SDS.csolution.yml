@@ -12,6 +12,9 @@ solution:
   # This is a CMSIS-Toolbox Reference Application that requires a compatible board layer
   # Refer to https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/ for more information
 
+  packs:
+    - pack: ARM::SDS          # search SDS pack for layers
+
   # List different hardware targets that are used to deploy the solution.
   target-types:
     - type:

@@ -221,26 +221,8 @@
   </csolution>
 
   <examples>
-    <example name="SDS_FileSystem" doc="README.md" folder="examples/filesystem">
-      <description>Data streaming for DSP/ML algorithm testing using File System in target</description>
-      <project>
-        <environment name="csolution" load="SDS_FileSystem.csolution.yml"/>
-      </project>
-    </example>
-    <example name="SDS_Network" doc="README.md" folder="examples/network">
-      <description>Data streaming for DSP/ML algorithm testing using Ethernet connection to Host</description>
-      <project>
-        <environment name="csolution" load="SDS_Network.csolution.yml"/>
-      </project>
-    </example>
-    <example name="SDS_USB" doc="README.md" folder="examples/usb">
-      <description>Data streaming for DSP/ML algorithm testing using USB Device connection to Host</description>
-      <project>
-        <environment name="csolution" load="SDS_USB.csolution.yml"/>
-      </project>
-    </example>
     <example name="SDS" doc="README.md" folder="template">
-      <description>Data streaming template for DSP/ML algorithm testing</description>
+      <description>Data streaming test framework for DSP/ML algorithm development</description>
       <project>
         <environment name="csolution" load="SDS.csolution.yml"/>
       </project>
