@@ -22,7 +22,7 @@
 
 // sdsControlThread thread attributes
 osThreadAttr_t attr_sdsControlThread = {
-  .name = "sdsControlThread"
+  .name = "sdsControl"
 };
 
 

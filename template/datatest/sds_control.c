@@ -27,7 +27,7 @@
 
 // AlgorithmThread thread attributes
 osThreadAttr_t attrAlgorithmThread = {
-  .name = "AlgorithmThread"
+  .name = "Algorithm"
 };
 
 // SDS error information
