@@ -20,7 +20,8 @@ plugins:
             full-doc: true
             doxy-cfg:
               FILE_PATTERNS: "*.h *.txt"
-
+              CASE_SENSE_NAMES: YES     # Ensure case is preserved in output names
+              FILE_NAME_CASE: PRESERVE  # Newer option; PRESERVE keeps case, LOWER changes all to lowercase
 
 theme:
   name: readthedocs
