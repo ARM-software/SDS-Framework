@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+
+<html class="writer-html5" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="img/favicon.ico" rel="shortcut icon"/>
+<title>Theory of Operation - SDS-Framework</title>
+<link href="css/theme.css" rel="stylesheet"/>
+<link href="css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
+<link href="css/extra.css" rel="stylesheet"/>
+<script>
+        // Current page data
+        var mkdocs_page_name = "Theory of Operation";
+        var mkdocs_page_input_path = "theory.md";
+        var mkdocs_page_url = null;
+      </script>
+<!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
+</head>
+<body class="wy-body-for-nav" role="document">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href="index.html"> SDS-Framework
+        </a><div role="search">
+<form action="./search.html" class="wy-form" id="rtd-search-form" method="get">
+<input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
+</form>
+</div>
+</div>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a>
+</li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal current" href="#">Theory of Operation</a>
+<ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sds-data-files">SDS Data Files</a>
+<ul>
+<li class="toctree-l3"><a class="reference internal" href="#filenames">Filenames</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#timestamp">Timestamp</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#file-format">File Format</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#yaml-metadata-format">YAML Metadata Format</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#code-example">Code Example</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#buffer-size">Buffer Size</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sdsio-server-protocol">SDSIO Server Protocol</a>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sdsio-message-sequence">SDSIO Message Sequence</a>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="sdsio.html">SDSIO Interface</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="template.html">SDS Template Application</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="SDS_API/modules.html">API Modules</a>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="index.html">SDS-Framework</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a aria-label="Docs" class="icon icon-home" href="index.html"></a></li>
+<li class="breadcrumb-item active">Theory of Operation</li>
+<li class="wy-breadcrumbs-aside">
+<a class="icon icon-github" href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/theory.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<h1 id="theory-of-operation">Theory of Operation</h1>
+<!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD036 -->
+<p>The SDS Framework enables to record and playback one or more data streams to an application that is under development as shown in the diagram below. With the SDSIO Interface the data streams are connected to SDS data files. The file storage can be either embedded within the system and access by a file system or external on a host computer and accessed by a communication interface such as Ethernet or USB.</p>
+<p>The DSP or ML algorithms that are tested operate on blocks and are executed periodically. This documentation uses these terms:</p>
+<ul>
+<li><strong>Data Block</strong>: is a set of input or output data which is processed in one step by a DSP or ML compute note.</li>
+<li><strong>Block size</strong>: is the number of bytes of a data block.</li>
+<li><strong>Interval</strong>: is the periodic time interval that the compute node executes.</li>
+</ul>
+<p><img alt="SDSIO Interface for Player and Recorder" src="images/SDS-InOut.png"/></p>
+<p>The core of the SDS-Framework is a circular buffer handling (<code>sds_buffer.c/h</code>) that is controlled by the Recorder/Player interface functions (<code>sds_rec_play.c/h</code>). This circular buffer is the queue for the file I/O communication (<code>sdsio_x.c / sdsio.h</code>). Using the Recorder/Player functions, the data stream under development may read and write data streams as shown in the diagram above.</p>
+<p><img alt="Implementation Files of SDS" src="images/Theory_of_Operation.png"/></p>
+<h2 id="usage">Usage</h2>
+<p>The following diagram shows the usage of the SDS Recorder and Player functions (executed in <code>sdsRecPlayThread</code>).  The <code>sdsControlThread</code> controls the overall execution. <code>AlgorithmThread</code> is the thread that executes Signal Conditioning (SC) and ML Model.</p>
+<div class="mermaid">sequenceDiagram
+    participant sdsControlThread
+    participant sdsRecPlayThread
+    participant AlgorithmThread
+    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecPlayInit
+    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsPlayOpen `SCinput`
+    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecOpen `SCoutput`
+    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecOpen `MLoutput`
+    sdsControlThread-&gt;&gt;AlgorithmThread: Activate Algorithm
+    Activate AlgorithmThread
+    loop periodic
+        sdsRecPlayThread-&gt;&gt;AlgorithmThread: sdsPlayRead `SCinput` (with Timestamp)
+        Note over AlgorithmThread: Execute Signal Conditioning
+        AlgorithmThread-&gt;&gt;sdsRecPlayThread: sdsRecWrite `SCoutput`
+        Note over AlgorithmThread: Execute ML Model
+        AlgorithmThread-&gt;&gt;sdsRecPlayThread: sdsRecWrite `MLoutput`
+    end
+    sdsControlThread-&gt;&gt;AlgorithmThread: Deactivate Algorithm
+    Deactivate AlgorithmThread
+    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsPlayClose `SCinput`
+    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecClose `SCoutput`
+    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecClose `MLoutput`
+    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecPlayUninit
+</div>
+<h2 id="sds-data-files">SDS Data Files</h2>
+<p>Each data stream is stored in a separate SDS data file. In the diagram below <code>SCinput.0.sds</code> is the input to Signal Conditioning, <code>SCoutput.0.sds</code> is the output of Signal Conditioning, and <code>MLoutput.0.sds</code> is the output of the ML Model. Each execution of the algorithm is represented in a data block with a <code>timestamp</code>. The <code>timestamp</code> allows to correlate the blocks of different streams. In the above example, all blocks of one algorithm execution have the same timestamp value.</p>
+<p><img alt="SDS Files" src="images/SDS-Files.png"/></p>
+<ul>
+<li>Each call to the function <code>sdsRecWrite</code> writes one data block.</li>
+<li>Each call to the function <code>sdsPlayRead</code> reads one data block.</li>
+</ul>
+<h3 id="filenames">Filenames</h3>
+<p>SDS data filenames use the following file format: <code>&lt;name&gt;.&lt;file-index&gt;.sds</code>. <code>&lt;name&gt;</code> is the base file name of the SDS data file. The <code>&lt;file-index&gt;</code> is a sequential number starting from <code>0</code>.</p>
+<ul>
+<li>
+<p>The function <code>sdsRecOpen</code> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example the <a href="utilities.html#sdsio-server">SDSIO-Server</a>), existing files starting with <code>&lt;file-index&gt;="0"</code> are iterated. The first available <code>&lt;file-index&gt;</code> that does not exist will be used as filename to record data. For example, if the file <code>SensorX.10.sds</code> already exists, the filename <code>SensorX.11.sds</code> will be used.</p>
+</li>
+<li>
+<p>The function <code>sdsPlayOpen</code> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example using the <a href="utilities.html#sdsio-server">SDSIO-Server</a>), the first call uses the <code>&lt;file-index&gt;="0"</code>. Each call to <code>sdsPlayOpen</code> increments the <code>&lt;file-index&gt;</code>.<br/>
+  An alternative way to control the <code>&lt;file-index&gt;</code> is by using an additional file named <code>&lt;name&gt;.index.txt</code> . If this file exists, the numerical value it contains is used as the <code>&lt;file-index&gt;</code> for the next <code>sdsPlayOpen</code> operation. After the file is opened (for example by the <a href="utilities.html#sdsio-server">SDSIO-Server</a>), the value in <code>&lt;name&gt;.index.txt</code> is incremented by 1 in preparation for the next <code>sdsPlayOpen</code> call.</p>
+</li>
+</ul>
+<h3 id="timestamp">Timestamp</h3>
+<p>The timestamp is a 32-bit unsigned value and is used for:</p>
+<ul>
+<li>Alignment of different data streams that have the same timestamp value.</li>
+<li>Order of the SDS data files captured during execution.</li>
+<li>Combining multiple SDS file records with the same timestamp value.</li>
+</ul>
+<p>The same timestamp connects different SDS file records. It is therefore useful to
+use the same timestamp for the recording of one iteration of a DSP or ML algorithm.
+In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timestamp value.</p>
+<h3 id="file-format">File Format</h3>
+<p>The <strong>SDS Framework</strong> uses a binary data file format to store the individual data streams. It supports the recording and playback of multiple data streams that may have jitters.  Therefore each stream contains timestamp information that allows to correlate the data streams as it is for example required in a sensor fusion application.</p>
+<p>The binary data format (stored in <code>*.&lt;n&gt;.sds</code> data files) has a record structure with a variable size. Each record has the following format:</p>
+<ol>
+<li><strong>timestamp</strong>: record timestamp in tick-frequency (32-bit unsigned integer, little endian)</li>
+<li><strong>data size</strong>: number of data bytes in the record (32-bit unsigned integer, little endian)</li>
+<li><strong>binary data</strong>: SDS stream (little endian, no padding) as described with the <code>*.sds.yml</code> file.</li>
+</ol>
+<h3 id="yaml-metadata-format">YAML Metadata Format</h3>
+<p>The content of each data stream may be described in a <a href="https://en.wikipedia.org/wiki/YAML">YAML</a> metadata file that is created by the user. The following section defines the YAML format of this metadata file. The file <code>sds.schema.json</code> is a schema description of the SDS Format Description.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>sds:</code></th>
+<th>Start of the SDS Format Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">    <code>name:</code></td>
+<td>Name of the Synchronous Data Stream (SDS)</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>description:</code></td>
+<td>Additional descriptive text (optional)</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>frequency:</code></td>
+<td>Capture frequency of the SDS</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>tick-frequency:</code></td>
+<td>Tick frequency of the timestamp value (optional); default: 1000 for 1 millisecond interval</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>content:</code></td>
+<td>List of values captured (see below)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>content:</code></th>
+<th>List of values captured (in the order of the data file)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- value:</code></td>
+<td>Name of the value</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>type:</code></td>
+<td>Data type of the value</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>offset:</code></td>
+<td>Offset of the value (optional); default: 0</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>scale:</code></td>
+<td>Scale factor of the value (optional); default: 1.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>unit:</code></td>
+<td>Physical unit of the value (optional); default: no units</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<p>This example defines a data stream with the name "sensorX" that contains the values of a gyroscope, temperature sensor, and additional raw data (that are not further described).</p>
+<p><img alt="image" src="images/SDS-Metainfo.png"/></p>
+<p>The binary data that are coming form this sensors are stored in data files with the following file format: <code>&lt;sensor-name&gt;.&lt;file-index&gt;.sds</code>. In this example the files names could be:</p>
+<pre><code class="language-yml">   sensorX.0.sds   # capture 0
+   sensorX.1.sds   # capture 1
+</code></pre>
+<p>The following <code>sensorX.sds.yml</code> provides the format description of the SDS <code>sensorX</code> binary data files and may be used by data conversion utilities and data viewers.</p>
+<pre><code class="language-yml">sds:                   # describes a synchronous data stream
+  name: sensorX        # user defined name
+  description: Gyroscope stream with 1KHz, plus additional user data
+  frequency: 1000
+  content:
+  - value: x           # Value name is 'x'
+    type:  uint16_t    # stored using a 16-bit unsigned int
+    scale: 0.2         # value is scaled by 0.2
+    unit: dps          # base unit of the value
+  - value: y
+    type: uint16_t
+    scale: 0.2
+    unit: dps
+  - value: z
+    type: uint16_t
+    unit: dps          # scale 1.0 is default
+  - value: temp
+    type: float
+    unit: degree Celsius
+  - value: raw
+    type: uint16_t     # raw data, no scale or unit given
+  - value: flag
+    type: uint32_t:1   # a single bit stored in a 32-bit int
+</code></pre>
+<h2 id="code-example">Code Example</h2>
+<p>The following code snippets show the usage of the <strong>Recorder Interface</strong>. In this case an accelerometer data stream is recorded.</p>
+<pre><code class="language-c">// *** variable definitions ***
+struct {                          // sensor data stream format
+  uint16_t x;
+  uint16_t y;
+  uint16_t z;
+} accelerometer [30];             // number of samples in one data stream record
+
+sdsRecId_t *accel_id,             // data stream id
+uint8_t accel_buf[(sizeof(accel_buf)*2)+0x800];      // data stream buffer for circular buffer handling
+     :
+// *** function calls ***
+   sdsRecPlayInit(NULL);          // init SDS Recorder/Player  
+     :
+   // open data stream for recording
+   accel_id = sdsRecOpen("Accel", accel_buf, sizeof(accel_buf), 2*(sizeof(accelerometer));
+     :
+   // write data in accelerometer buffer with timestamp from RTOS kernel.
+   timestamp = osKernelGetTickCount();
+   n = sdsRecWrite(accel_id, timestamp, accelerometer, sizeof(accelerometer));
+   if (n != sizeof(accelerometer)) {
+     ... // unexpected size returned, error handling
+   }
+     :
+  sdsRecClose (accel_id);         // close data stream 
+</code></pre>
+<h2 id="buffer-size">Buffer Size</h2>
+<p>The size of the data stream buffer depends on several factors such as:</p>
+<ul>
+<li>the communication interface technology that may impose specific buffer size requirements to maximize data transfer rates.</li>
+<li>the frequency of the algorithm execution. Fast execution speeds may require a larger buffer.</li>
+</ul>
+<p>As a guideline, the buffer size should be at least <strong>(2 × block size) + 2 KB</strong>.<br/>
+The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
+<h2 id="sdsio-server-protocol">SDSIO Server Protocol</h2>
+<p>The SDSIO Server uses a simple protocol for data exchange between a Host computer and the embedded target that integrates an <a href="sdsio.html">SDSIO Interface</a>.  The protocol assumes that the correct communication to the server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.</p>
+<p>The following conventions describe the <strong>command semantic</strong> used in the following documentation:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Symbol</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&gt;</td>
+<td style="text-align: left;">Prefix indicating the direction: Command from target to Host.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&lt;</td>
+<td style="text-align: left;">Prefix indicating the direction: Response from Host to target.</td>
+</tr>
+<tr>
+<td style="text-align: left;">WORD</td>
+<td style="text-align: left;">32-bit value (low byte first).</td>
+</tr>
+<tr>
+<td style="text-align: left;">****</td>
+<td style="text-align: left;">The field above has exactly one occurrence.</td>
+</tr>
+<tr>
+<td style="text-align: left;">++++</td>
+<td style="text-align: left;">The field above has a variable length.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Commands:</strong></p>
+<p>Commands are sent from the embedded target to the Host computer running the SDSIO Server.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">ID</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">1</td>
+<td style="text-align: left;">SDSIO_CMD_OPEN</td>
+<td style="text-align: left;">Open an SDS data file</td>
+</tr>
+<tr>
+<td style="text-align: center;">2</td>
+<td style="text-align: left;">SDSIO_CMD_CLOSE</td>
+<td style="text-align: left;">Close an SDS data file</td>
+</tr>
+<tr>
+<td style="text-align: center;">3</td>
+<td style="text-align: left;">SDSIO_CMD_WRITE</td>
+<td style="text-align: left;">Write to an SDS data file</td>
+</tr>
+<tr>
+<td style="text-align: center;">4</td>
+<td style="text-align: left;">SDSIO_CMD_READ</td>
+<td style="text-align: left;">Read from an SDS data file</td>
+</tr>
+<tr>
+<td style="text-align: center;">5</td>
+<td style="text-align: left;">SDSIO_CMD_EOS</td>
+<td style="text-align: left;">End of Stream</td>
+</tr>
+<tr>
+<td style="text-align: center;">6</td>
+<td style="text-align: left;">SDSIO_CMD_PING</td>
+<td style="text-align: left;">Ping Server</td>
+</tr>
+</tbody>
+</table>
+<p>Each Command starts with a Header (4 Words) and optional data with variable length. Depending on the Command, the SDSIO Server replies with a Response that repeats the Header and delivers additional data.</p>
+<p><strong>SDSIO_CMD_OPEN</strong></p>
+<p>The Command ID=1 <strong>SDSIO_CMD_OPEN</strong> opens an SDS data file on the Host computer.</p>
+<p>SDS data filenames use the following file format: <code>&lt;name&gt;.&lt;file-index&gt;.sds</code>. <code>Name</code> is the base file name of the SDS data file. <code>Len of Name</code> is the size of the string in bytes. <code>&lt;file-index&gt;</code> is a sequential number starting from <code>0</code>.</p>
+<p><code>Mode</code> defines <code>read</code> (value=0) or <code>write</code> (value=1) operation. For <code>write</code>, the SDSIO Server inserts the next available <code>&lt;file-index&gt;</code> number that does not exist yet (if <code>Name.3.sds</code> exists, the server creates <code>Name.4.sds</code>). For <code>read</code> the server maintains a list of <code>Names</code> that where previously used. When a Name was not used before it opens <code>&lt;file-index&gt;=0</code>, i.e. <code>Name.0.sds</code>.</p>
+<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD *******|++++++|
+&gt;  1   |   0    | Mode | Len of Name | Name |
+|******|********|******|*************|++++++|
+</code></pre>
+<p>The Response ID=1 <strong>SDSIO_CMD_OPEN</strong> provides a <code>Handle</code> that is used to identify the file in subsequent commands.</p>
+<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD *******|
+&lt;  1   | Handle | Mode | 0           |
+|******|********|******|*************|
+</code></pre>
+<p><strong>SDSIO_CMD_CLOSE</strong></p>
+<p>The Command ID=2 <strong>SDSIO_CMD_CLOSE</strong> closes an SDS data file on the Host computer. The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</strong>. There is no Response from the SDSIO Server on this command.</p>
+<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |
+&gt;  2   | Handle |  0   |  0   |
+|******|********|******|******|
+</code></pre>
+<p><strong>SDSIO_CMD_WRITE</strong></p>
+<p>The Command ID=3 <strong>SDSIO_CMD_WRITE</strong> writes data to an SDS data file on the Host computer. The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</strong>. <code>Size</code> is the <code>Data</code> size in bytes.  There is no Response from the SDSIO Server on this command.</p>
+<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |++++++|
+&gt;  3   | Handle |  0   | Size | Data |
+|******|********|******|******|++++++|
+</code></pre>
+<p><strong>SDSIO_CMD_READ</strong></p>
+<p>The Command ID=4 <strong>SDSIO_CMD_READ</strong> reads data from an SDS data file on the Host computer. The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</strong>. <code>Size</code> are the number of bytes that should be read.</p>
+<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |
+&gt;  4   | Handle | Size |  0   |
+|******|********|******|******|
+</code></pre>
+<p>The Response ID=4 <strong>SDSIO_CMD_READ</strong> provides the data read from an SDS data file on the HOST computer.
+<code>Size</code> is the <code>Data</code> size in bytes that was read and <code>Status</code> with nonzero = end of stream, else 0.</p>
+<pre><code class="language-txt">| WORD |  WORD  |  WORD  | WORD |++++++|
+&lt;  4   | Handle | Status | Size | Data |
+|******|********|********|******|++++++|
+</code></pre>
+<p><strong>SDSIO_CMD_EOS</strong></p>
+<p>The Command ID=5 <strong>SDSIO_CMD_EOS</strong> checks if the end of file is reached. The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</strong>.</p>
+<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |
+&gt;  5   | Handle |  0   |  0   |
+|******|********|******|******|
+</code></pre>
+<p>The Response ID=5 <strong>SDSIO_CMD_EOS</strong> returns the <code>Status</code> with nonzero = end of stream, else 0</p>
+<pre><code class="language-txt">| WORD |  WORD  |  WORD  | WORD |
+&lt;  5   | Handle | Status |  0   |
+|******|********|********|******|
+</code></pre>
+<p><strong>SDSIO_CMD_PING</strong></p>
+<p>The Command ID=6 <strong>SDSIO_CMD_PING</strong> verifies if the Server is active and reachable on the Host.</p>
+<pre><code class="language-txt">| WORD | WORD | WORD | WORD |
+&gt;  6   |  0   |  0   |  0   |
+|******|******|******|******|
+</code></pre>
+<p>The Response ID=6 <strong>SDSIO_CMD_PING</strong> returns the <code>Status</code> with nonzero = server active, else 0</p>
+<pre><code class="language-txt">| WORD | WORD |  WORD  | WORD |
+&lt;  6   |  0   | Status |  0   |
+|******|******|********|******|
+</code></pre>
+<h2 id="sdsio-message-sequence">SDSIO Message Sequence</h2>
+<p>This is the message sequence of the SDS DataTest example when connected to MDK-Middleware Ethernet.
+It contains the following threads that execute on the target.</p>
+<ul>
+<li>Control: Overall execution Control thread (sdsControlThread)</li>
+<li>Algorithm: Algorithm under test thread (AlgorithmThread)</li>
+<li>Recorder/Playback: SDS Recorder/Playback thread (sdsRecPlayThread)</li>
+</ul>
+<p>The Server is the SDSIO Server executing on the target system.</p>
+<p><strong>Recording flowchart</strong></p>
+<div class="mermaid">sequenceDiagram
+    participant sdsControlThread
+    activate sdsControlThread
+
+    participant AlgorithmThread
+    participant Recorder as sdsRecPlayThread
+    participant Server as SDSIO Server
+
+    activate Server
+    Note over sdsControlThread: sdsRecPlayInit
+    sdsControlThread-&gt;&gt;Server: SDSIO_CMD_PING
+    Server--&gt;&gt;sdsControlThread: Response
+
+    sdsControlThread-&gt;&gt;Recorder: Create thread
+    activate Recorder
+
+    Note over sdsControlThread: sdsRecOpen
+    sdsControlThread-&gt;&gt;Server: SDSIO_CMD_OPEN
+    Server--&gt;&gt;sdsControlThread: Response
+
+    activate AlgorithmThread
+    loop periodic
+        Note over AlgorithmThread: sdsRecWrite
+        AlgorithmThread-&gt;&gt;Recorder: Buffer data reached or crossed threshold
+        loop send all data from buffer
+            Recorder-&gt;&gt;Server: SDSIO_CMD_WRITE
+        end
+    end
+    deactivate AlgorithmThread
+
+    Note over sdsControlThread: sdsRecClose
+    sdsControlThread-&gt;&gt;Recorder: Close request
+    loop send all data from buffer
+        Recorder-&gt;&gt;Server: SDSIO_CMD_WRITE
+    end
+    Recorder-&gt;&gt;sdsControlThread: Close confirm
+    sdsControlThread-&gt;&gt;Server: SDSIO_CMD_CLOSE
+
+    Note over sdsControlThread: sdsRecPlayUninit
+    sdsControlThread-&gt;&gt;Recorder: Terminate thread
+    deactivate Recorder
+
+    deactivate Server
+    deactivate sdsControlThread
+</div>
+<p><strong>Playback flowchart</strong></p>
+<div class="mermaid">sequenceDiagram
+    participant sdsControlThread
+    activate sdsControlThread
+
+    participant AlgorithmThread
+    participant Playback as sdsRecPlayThread
+    participant Server as SDSIO Server
+
+    activate Server
+    Note over sdsControlThread: sdsRecPlayInit
+    sdsControlThread-&gt;&gt;Server: SDSIO_CMD_PING
+    Server--&gt;&gt;sdsControlThread: Response
+
+    sdsControlThread-&gt;&gt;Playback: Create thread
+    activate Playback
+
+    Note over sdsControlThread: sdsPlayOpen
+    sdsControlThread-&gt;&gt;Server: SDSIO_CMD_OPEN
+    Server--&gt;&gt;sdsControlThread: Response
+    sdsControlThread-&gt;&gt;Playback: Open request
+    loop read data until threshold
+        Playback-&gt;&gt;Server: SDSIO_CMD_READ
+        Server--&gt;&gt;Playback: Data
+    end
+    Playback-&gt;&gt;sdsControlThread: Open confirm
+
+    activate AlgorithmThread
+    loop periodic
+        Note over AlgorithmThread: sdsPlayRead
+        AlgorithmThread-&gt;&gt;Playback: Buffer data falls below threshold
+        loop read data to fill the buffer
+            Playback-&gt;&gt;Server: SDSIO_CMD_READ
+            Server--&gt;&gt;Playback: Data
+        end
+    end
+    deactivate AlgorithmThread
+
+    Note over sdsControlThread: sdsPlayClose
+    sdsControlThread-&gt;&gt;Server: SDSIO_CMD_CLOSE
+
+    Note over sdsControlThread: sdsRecPlayUninit
+    sdsControlThread-&gt;&gt;Playback: Terminate thread
+    deactivate Playback
+
+    deactivate Server
+    deactivate sdsControlThread
+</div>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="overview.html" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="sdsio.html" title="SDSIO Interface">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+</div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+</div>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-github" href="https://github.com/ARM-software/SDS-Framework" style="color: #fcfcfc"> GitHub</a>
+</span>
+<span><a href="overview.html" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="sdsio.html" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script src="js/jquery-3.6.0.min.js"></script>
+<script>var base_url = ".";</script>
+<script src="js/theme_extra.js"></script>
+<script src="js/theme.js"></script>
+<script src="search/main.js"></script>
+<script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+<script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
+mermaid.initialize({});</script></body>
+</html>

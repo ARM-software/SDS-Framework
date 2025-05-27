@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Group SDS_Recorder_Player - SDS-Framework</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Group SDS_Recorder_Player";
+        var mkdocs_page_input_path = "SDS_API/group__SDS__Recorder__Player.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../index.html" class="icon icon-home"> SDS-Framework
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../theory.html">Theory of Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../sdsio.html">SDSIO Interface</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../template.html">SDS Template Application</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../utilities.html">Utilities</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="modules.html">API Modules</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">SDS-Framework</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html" class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Group SDS_Recorder_Player</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__Recorder__Player.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="group-sds_recorder_player">Group SDS_Recorder_Player</h1>
+<p><a href="modules.html"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="group__SDS__Recorder__Player.html"><strong>SDS_Recorder_Player</strong></a></p>
+<p>sds_rec_play.h <em>: SDS Recorder and Player for writing and reading SDS files via communication or file I/O interface.</em><a href="#detailed-description">More...</a></p>
+<h2 id="modules">Modules</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Type</th>
+<th style="text-align: left;">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">module</td>
+<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Event__Codes.html"><strong>Event Codes</strong></a> <br><em>SDS Recorder and Player Event Codes.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">module</td>
+<td style="text-align: left;"><a href="group__SDS__Recorder__Player__Return__Codes.html"><strong>Function Return Codes</strong></a> <br><em>SDS Recorder and Player Function Return Codes.</em></td>
+</tr>
+</tbody>
+</table>
+<h2 id="public-types">Public Types</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Type</th>
+<th style="text-align: left;">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">typedef void(*</td>
+<td style="text-align: left;"><a href="#typedef-sdsrecplayevent_t"><strong>sdsRecPlayEvent_t</strong></a>  <br><em>Callback function for recorder and player events.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">typedef void *</td>
+<td style="text-align: left;"><a href="#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a>  <br><em>Handle to SDS recorder or player stream.</em></td>
+</tr>
+</tbody>
+</table>
+<h2 id="public-functions">Public Functions</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Type</th>
+<th style="text-align: left;">Name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">int32_t</td>
+<td style="text-align: left;"><a href="#function-sdsplayclose"><strong>sdsPlayClose</strong></a> (<a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a> id) <br><em>Close player stream.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">int32_t</td>
+<td style="text-align: left;"><a href="#function-sdsplaygetsize"><strong>sdsPlayGetSize</strong></a> (<a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a> id) <br><em>Get data block size from Player stream.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;"><a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a></td>
+<td style="text-align: left;"><a href="#function-sdsplayopen"><strong>sdsPlayOpen</strong></a> (const char * name, void * buf, uint32_t buf_size) <br><em>Open player stream (read mode).</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">int32_t</td>
+<td style="text-align: left;"><a href="#function-sdsplayread"><strong>sdsPlayRead</strong></a> (<a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a> id, uint32_t * timestamp, void * buf, uint32_t buf_size) <br><em>Read entire data block along with its timestamp from the player stream.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">int32_t</td>
+<td style="text-align: left;"><a href="#function-sdsrecclose"><strong>sdsRecClose</strong></a> (<a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a> id) <br><em>Close recorder stream.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;"><a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a></td>
+<td style="text-align: left;"><a href="#function-sdsrecopen"><strong>sdsRecOpen</strong></a> (const char * name, void * buf, uint32_t buf_size) <br><em>Open recorder stream (write mode).</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">int32_t</td>
+<td style="text-align: left;"><a href="#function-sdsrecplayinit"><strong>sdsRecPlayInit</strong></a> (<a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayevent_t"><strong>sdsRecPlayEvent_t</strong></a> event_cb) <br><em>Initialize recorder and player.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">int32_t</td>
+<td style="text-align: left;"><a href="#function-sdsrecplayuninit"><strong>sdsRecPlayUninit</strong></a> (void) <br><em>Uninitialize recorder and player.</em></td>
+</tr>
+<tr>
+<td style="text-align: right;">int32_t</td>
+<td style="text-align: left;"><a href="#function-sdsrecwrite"><strong>sdsRecWrite</strong></a> (<a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a> id, uint32_t timestamp, const void * buf, uint32_t buf_size) <br><em>Write entire data block along with its timestamp to the recorder stream.</em></td>
+</tr>
+</tbody>
+</table>
+<h2 id="detailed-description">Detailed Description</h2>
+<p>The <strong>SDS Recorder</strong> and <strong>Player</strong> manage writing to and reading from SDS files through communication or file I/O interfaces. They support the recording and playback of real-world data for applications such as machine learning and data analysis. Refer to the chapter <em>SDS Interface</em> for an overview. </p>
+<h2 id="public-types-documentation">Public Types Documentation</h2>
+<h3 id="typedef-sdsrecplayevent_t">typedef sdsRecPlayEvent_t</h3>
+<p><em>Callback function for recorder and player events.</em> </p>
+<pre><code>typedef void(* sdsRecPlayEvent_t) (sdsRecPlayId_t id, uint32_t event);
+</code></pre>
+<p>This function is registered by passing a pointer to it as a parameter to the <a href="group__SDS__Recorder__Player.html#function-sdsrecplayinit"><strong>sdsRecPlayInit</strong></a> function. It is invoked when an error happens during recording or playback.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id</code> <a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a> handle to SDS Recorder/Player stream </li>
+<li><code>event</code> event code (see <a href="group__SDS__Recorder__Player__Event__Codes.html"><strong>Event Codes</strong></a>) </li>
+</ul>
+<hr>
+
+<h3 id="typedef-sdsrecplayid_t">typedef sdsRecPlayId_t</h3>
+<p><em>Handle to SDS recorder or player stream.</em> </p>
+<pre><code>typedef void* sdsRecPlayId_t;
+</code></pre>
+<p>This <em>pointer</em> defines the handle to SDS recorder or player stream. It is used to identify a data stream across the different functions for the SDS Recorder and Player system. </p>
+<hr>
+<h2 id="public-functions-documentation">Public Functions Documentation</h2>
+<h3 id="function-sdsplayclose">function sdsPlayClose</h3>
+<p><em>Close player stream.</em> </p>
+<pre><code>int32_t sdsPlayClose (
+    sdsRecPlayId_t id
+) 
+</code></pre>
+<p>Closes a player stream. The function waits for all pending data transfers to complete or until a timeout occurs. Upon successful closure, the stream handle becomes invalid.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id</code> <a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a> handle to SDS Recorder/Player stream </li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>SDS_REC_PLAY_OK on success or a negative value on error (see <a href="group__SDS__Recorder__Player__Return__Codes.html"><strong>Function Return Codes</strong></a>) </p>
+<hr>
+
+<h3 id="function-sdsplaygetsize">function sdsPlayGetSize</h3>
+<p><em>Get data block size from Player stream.</em> </p>
+<pre><code>int32_t sdsPlayGetSize (
+    sdsRecPlayId_t id
+) 
+</code></pre>
+<p>Function verifies that both the header and its associated data are present and fully valid within the SDS Stream buffer and returns the size, in bytes, of the next available data block in the player stream. If either the header or data is missing or incomplete, the function returns <a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_play_error_no_data"><strong>SDS_PLAY_ERROR_NO_DATA</strong></a>. If the end of the stream has been reached, the function returns <a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_play_eos"><strong>SDS_PLAY_EOS</strong></a>.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id</code> <a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a> handle to SDS Recorder/Player stream </li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>number of bytes in next available data block, or a negative value on error or EOS (see <a href="group__SDS__Recorder__Player__Return__Codes.html"><strong>Function Return Codes</strong></a>) </p>
+<hr>
+
+<h3 id="function-sdsplayopen">function sdsPlayOpen</h3>
+<p><em>Open player stream (read mode).</em> </p>
+<pre><code>sdsRecPlayId_t sdsPlayOpen (
+    const char * name,
+    void * buf,
+    uint32_t buf_size
+) 
+</code></pre>
+<p>Opens a player stream for reading timestamps and data blocks from an SDS file. The <code>buf</code> parameter specifies a user-allocated memory region used as an internal circular buffer. The buffer must be large enough to accommodate the largest expected data block plus 8 bytes for the record header.</p>
+<p>The <code>name</code> parameter specifies the base name of the SDS input file. The function attempts to locate and open the file <code>&lt;name&gt;.&lt;index&gt;.sds</code>, where <code>&lt;index&gt;</code> is an auto-incrementing value. If no matching file is found, the function returns an error. For details on the file naming convention, refer to the <em>SDS Data Files: Filenames</em> section in the <em>Theory of Operation</em> chapter.</p>
+<p>This function may block for a period of time while it loads the internal circular buffer with data from the SDS file.</p>
+<p>This function returns a handle that uniquely identifies the stream. The handle is used as a reference in subsequent function calls to perform operations on the stream.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>name</code> stream name (pointer to NULL terminated string) </li>
+<li><code>buf</code> pointer to buffer for player stream </li>
+<li><code>buf_size</code> buffer size in bytes </li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p><a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a> handle to SDS Recorder/Player stream, or NULL if operation failed </p>
+<hr>
+
+<h3 id="function-sdsplayread">function sdsPlayRead</h3>
+<p><em>Read entire data block along with its timestamp from the player stream.</em> </p>
+<pre><code>int32_t sdsPlayRead (
+    sdsRecPlayId_t id,
+    uint32_t * timestamp,
+    void * buf,
+    uint32_t buf_size
+) 
+</code></pre>
+<p>Reads a data block along with its associated timestamp from the internal circular buffer. The <code>sdsRecPlayThread</code> worker thread asynchronously reads the data from the SDS file using the underlying SDS I/O interface and writes it to the internal circular buffer. This asynchronous design enables efficient, non-blocking data handling and ensures optimal performance.</p>
+<p>Before attempting to read, this function verifies that both the header and its associated data are present and fully valid within the SDS Stream buffer. If either the header or data is missing or incomplete, the function aborts and returns <a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_play_error_no_data"><strong>SDS_PLAY_ERROR_NO_DATA</strong></a>. The function confirms that the provided buffer can accommodate the entire data block. If the provided buffer is too small, it aborts and returns <a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_rec_play_error_parameter"><strong>SDS_REC_PLAY_ERROR_PARAMETER</strong></a>. If the end of the stream has been reached, the function returns <a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_play_eos"><strong>SDS_PLAY_EOS</strong></a>.</p>
+<p>On success, the function reads the data block from the stream buffer, stores it in the user-provided buffer, and returns the the size of the data block in bytes. The associated timestamp is returned via the output parameter <code>timestamp</code>.</p>
+<p>Thread safety is ensured by allowing only a single thread to read from a given stream at a time. However, multiple threads can concurrently read from different streams, enabling parallel operations across multiple streams.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id</code> <a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a> handle to SDS Recorder/Player stream </li>
+<li><code>timestamp</code> pointer to buffer for a timestamp in ticks </li>
+<li><code>buf</code> pointer to the data block buffer to be read </li>
+<li><code>buf_size</code> size of the data block buffer in bytes </li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>number of bytes successfully read, or a negative value on error or EOS (see <a href="group__SDS__Recorder__Player__Return__Codes.html"><strong>Function Return Codes</strong></a>) </p>
+<hr>
+
+<h3 id="function-sdsrecclose">function sdsRecClose</h3>
+<p><em>Close recorder stream.</em> </p>
+<pre><code>int32_t sdsRecClose (
+    sdsRecPlayId_t id
+) 
+</code></pre>
+<p>Closes a recorder stream. Prior to closing, any remaining data in the internal circular buffer is flushed to the SDS file. The function blocks until all data transfers are complete or a timeout occurs. Upon successful closure, the stream handle becomes invalid.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id</code> <a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a> handle to SDS Recorder/Player stream </li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>SDS_REC_PLAY_OK on success or a negative value on error (see <a href="group__SDS__Recorder__Player__Return__Codes.html"><strong>Function Return Codes</strong></a>) </p>
+<hr>
+
+<h3 id="function-sdsrecopen">function sdsRecOpen</h3>
+<p><em>Open recorder stream (write mode).</em> </p>
+<pre><code>sdsRecPlayId_t sdsRecOpen (
+    const char * name,
+    void * buf,
+    uint32_t buf_size
+) 
+</code></pre>
+<p>Opens a recorder stream for writing timestamps and data blocks to the SDS file. The <code>buf</code> parameter specifies a user-allocated memory region that serves as an internal circular buffer. The buffer must be large enough to hold at least the largest expected data block plus 8 bytes for the record header.</p>
+<p>The <code>name</code> parameter defines the base name for the SDS output file and is used to construct the full file name in the format <code>name.index.sds</code>. The <code>index</code> is an auto-incrementing value that ensures a unique file name is generated. If a file with the generated name already exists, the <code>index</code> is incremented until an unused name is found. For details on the file naming convention, refer to the <em>SDS Data Files: Filenames</em> section in the <em>Theory of Operation</em> chapter.</p>
+<p>This function returns a handle that uniquely identifies the stream. The handle is used as a reference in subsequent function calls to perform operations on the stream.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>name</code> stream name (pointer to NULL terminated string) </li>
+<li><code>buf</code> pointer to buffer for recorder stream </li>
+<li><code>buf_size</code> buffer size in bytes </li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p><a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a> handle to SDS Recorder/Player stream, or NULL if operation failed </p>
+<hr>
+
+<h3 id="function-sdsrecplayinit">function sdsRecPlayInit</h3>
+<p><em>Initialize recorder and player.</em> </p>
+<pre><code>int32_t sdsRecPlayInit (
+    sdsRecPlayEvent_t event_cb
+) 
+</code></pre>
+<p>Initializes the SDS Recorder and Player system. This function allocates resources, initializes underlying SDS I/O interface and creates the <code>sdsRecPlayThread</code> worker thread. An optional callback function can be registered to receive notifications (e.g., I/O errors). This function must be called once before opening any recorder or player streams.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>event_cb</code> pointer to <a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayevent_t"><strong>sdsRecPlayEvent_t</strong></a> callback function </li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>SDS_REC_PLAY_OK on success or a negative value on error (see <a href="group__SDS__Recorder__Player__Return__Codes.html"><strong>Function Return Codes</strong></a>) </p>
+<hr>
+
+<h3 id="function-sdsrecplayuninit">function sdsRecPlayUninit</h3>
+<p><em>Uninitialize recorder and player.</em> </p>
+<pre><code>int32_t sdsRecPlayUninit (
+    void
+) 
+</code></pre>
+<p>De-initializes the SDS Recorder and Player system. This function terminates the <code>sdsRecPlayThread</code> worker thread, and releases the internal resources. All open recorder or player streams must be closed by the user before calling this function. After de-initialization, the system must be re-initialized before further use.</p>
+<p><strong>Returns:</strong></p>
+<p>SDS_REC_PLAY_OK on success or a negative value on error (see <a href="group__SDS__Recorder__Player__Return__Codes.html"><strong>Function Return Codes</strong></a>) </p>
+<hr>
+
+<h3 id="function-sdsrecwrite">function sdsRecWrite</h3>
+<p><em>Write entire data block along with its timestamp to the recorder stream.</em> </p>
+<pre><code>int32_t sdsRecWrite (
+    sdsRecPlayId_t id,
+    uint32_t timestamp,
+    const void * buf,
+    uint32_t buf_size
+) 
+</code></pre>
+<p>Writes a data block, including a header containing the timestamp and data block size, to the internal circular buffer. The <code>sdsRecPlayThread</code> worker thread asynchronously processes the buffer, writing the data to the SDS file via the underlying SDS I/O interface. This asynchronous design enables efficient, non-blocking data handling and optimized performance.</p>
+<p>Before writing, the function verifies that the data block fits within the available space in the internal buffer. If insufficient space is available, the operation is aborted and the function returns <a href="group__SDS__Recorder__Player__Return__Codes.html#define-sds_rec_error_no_space"><strong>SDS_REC_ERROR_NO_SPACE</strong></a>.</p>
+<p>On success, the function writes the header and data block to the stream buffer and returns the number of data bytes written, excluding the header.</p>
+<p>Thread safety is ensured by allowing only a single thread to write to a given stream at a time. However, multiple threads can concurrently write to different streams, enabling parallel operations across multiple streams.</p>
+<p><strong>Parameters:</strong></p>
+<ul>
+<li><code>id</code> <a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a> handle to SDS Recorder/Player stream </li>
+<li><code>timestamp</code> timestamp in ticks </li>
+<li><code>buf</code> pointer to the data block buffer to be written </li>
+<li><code>buf_size</code> size of the data block buffer in bytes </li>
+</ul>
+<p><strong>Returns:</strong></p>
+<p>number of bytes successfully written or a negative value on error (see <a href="group__SDS__Recorder__Player__Return__Codes.html"><strong>Function Return Codes</strong></a>) </p>
+<hr>
+
+<hr />
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/ARM-software/SDS-Framework" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="structheader__t" kind="struct" language="C++" prot="public">
+    <compoundname>header_t</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structheader__t_1a7d0080b156d735fbd3b03697ac73002e" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t header_t::command</definition>
+        <argsstring></argsstring>
+        <name>command</name>
+        <qualifiedname>header_t::command</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio_client.h" line="32" column="12" bodyfile="sds/include/sdsio_client.h" bodystart="32" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structheader__t_1ab8f25c3dec558f4b14e796ee921f4692" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t header_t::sdsio_id</definition>
+        <argsstring></argsstring>
+        <name>sdsio_id</name>
+        <qualifiedname>header_t::sdsio_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio_client.h" line="33" column="12" bodyfile="sds/include/sdsio_client.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structheader__t_1ac9a68c9fae67196a4a3076afd296d4bb" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t header_t::argument</definition>
+        <argsstring></argsstring>
+        <name>argument</name>
+        <qualifiedname>header_t::argument</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio_client.h" line="34" column="12" bodyfile="sds/include/sdsio_client.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structheader__t_1a9eb3c34361611380f8ce14d386cd8476" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t header_t::data_size</definition>
+        <argsstring></argsstring>
+        <name>data_size</name>
+        <qualifiedname>header_t::data_size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio_client.h" line="35" column="12" bodyfile="sds/include/sdsio_client.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="sds/include/sdsio_client.h" line="31" column="1" bodyfile="sds/include/sdsio_client.h" bodystart="31" bodyend="36"/>
+    <listofallmembers>
+      <member refid="structheader__t_1ac9a68c9fae67196a4a3076afd296d4bb" prot="public" virt="non-virtual"><scope>header_t</scope><name>argument</name></member>
+      <member refid="structheader__t_1a7d0080b156d735fbd3b03697ac73002e" prot="public" virt="non-virtual"><scope>header_t</scope><name>command</name></member>
+      <member refid="structheader__t_1a9eb3c34361611380f8ce14d386cd8476" prot="public" virt="non-virtual"><scope>header_t</scope><name>data_size</name></member>
+      <member refid="structheader__t_1ab8f25c3dec558f4b14e796ee921f4692" prot="public" virt="non-virtual"><scope>header_t</scope><name>sdsio_id</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
