@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Version: 3.1
 # Date: 2024-04-17
-# This bash script generates a CMSIS Software Pack:
+# This bash script generates the documentation
 #
 
 set -o pipefail
