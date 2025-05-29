@@ -1,0 +1,98 @@
+name: Build examples
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/build_examples.yml
+      - 'template/**'
+      - 'layer/**'
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:                                    # Board selection
+  TARGET_TYPE:  STM32H735G-DK
+  TARGET_BOARD: STM32H735G-DK
+  TARGET_BSP:   Keil.STM32H735G-DK_BSP
+  TARGET_DFP:   Keil.STM32H7xx_DFP
+
+jobs:
+  Build:                                # Install tools, build
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:                           # Build all solutions in parallel
+        solution: [
+          {name: FileSystem, dir: SDS_FileSystem, sdsio_layer_file: $SolutionDir()\$/sdsio/filesystem/sdsio_fs.clayer.yml   },
+          {name: Network,    dir: SDS_Network   , sdsio_layer_file: $SolutionDir()\$/sdsio/network/sdsio_network.clayer.yml },
+          {name: USB,        dir: SDS_USB       , sdsio_layer_file: $SolutionDir()\$/sdsio/usb/sdsio_usb.clayer.yml         }
+        ]
+
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        uses: ARM-software/cmsis-actions/vcpkg@v1
+        with:
+          config: "./.ci/vcpkg-configuration.json"
+
+      - name: Activate Arm tool license
+        uses: ARM-software/cmsis-actions/armlm@v1
+
+      - name: Cache CMSIS packs
+        uses: actions/cache@v4
+        with:
+          key: cmsis-packs-${{ hashFiles('**/*.csolution.yml', '**/*.cproject.yml', '**/*.clayer.yml') }}
+          restore-keys: |
+            cmsis-packs-
+          path: /home/runner/.cache/arm/packs
+
+      - name: Initialize CMSIS pack root folder
+        run: |
+          cpackget init https://www.keil.com/pack/index.pidx
+          cpackget update-index
+
+      - name: Install required publicly released CMSIS packs
+        run: |
+          cpackget add Keil.MDK-Middleware -a
+          cpackget add MDK-Packs.IoT_Socket -a
+          cpackget add ARM.CMSIS-Driver_STM32 -a
+          cpackget add ${TARGET_DFP} -a
+          cpackget add ${TARGET_BSP} -a
+
+      - name: Install this pack
+        run: |
+          cpackget add ./ARM.SDS.pdsc -a
+
+      - name: Copy example template to ./${{ matrix.solution.dir }} folder
+        run: |
+          mkdir -p ./${{ matrix.solution.dir }}
+          cp -r ./template/. ./${{ matrix.solution.dir }}/
+
+      - name: Copy first found ${{ env.TARGET_BOARD }} board layer to ./${{ matrix.solution.dir }}/Board/${{ env.TARGET_BOARD }}
+        run: |
+          mkdir -p ./${{ matrix.solution.dir }}/Board/$TARGET_BOARD
+          cp -r "$(find /home/runner/.cache/arm/packs/Keil/${TARGET_BSP#*.} -type f -name "Board.clayer.yml" -exec dirname {} \; | head -n 1)"/* ./${{ matrix.solution.dir }}/Board/$TARGET_BOARD/
+          # ls -a -R ./${{ matrix.solution.dir }}/Board/$TARGET_BOARD/
+
+      - name: Copy all layers from ./layer/sdsio to ./${{ matrix.solution.dir }}/sdsio
+        run: |
+          mkdir -p ./${{ matrix.solution.dir }}/sdsio
+          cp -r ./layer/sdsio/* ./${{ matrix.solution.dir }}/sdsio/
+          # ls -a -R ./${{ matrix.solution.dir }}/sdsio/
+
+      - name: Insert target type for ${{ env.TARGET_BOARD }} board into SDS.csolution.yml file
+        working-directory: ./${{ matrix.solution.dir }}
+        run: |
+          sed -i "/- type: \\\${Name}/c\    - type: ${TARGET_TYPE}\\n      board: ${TARGET_BOARD}\\n      variables:\\n        - Board-Layer: \$SolutionDir()\$/Board/${TARGET_BOARD}/Board.clayer.yml\\n        - SDSIO-Layer: \\\${{ matrix.solution.sdsio_layer_file }}" SDS.csolution.yml
+          # cat ./SDS.csolution.yml
+
+      - name: Build all project/targets/build combinations from ./${{ matrix.solution.dir }}/SDS.csolution.yml
+        working-directory: ./${{ matrix.solution.dir }}
+        run: |
+          cbuild ./SDS.csolution.yml --packs --update-rte --toolchain AC6
