@@ -30,7 +30,6 @@ PACK_BUILD=./build
 #
 PACK_DIRS="
 docs
-examples
 layer
 overview
 schema
