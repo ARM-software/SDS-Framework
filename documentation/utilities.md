@@ -46,11 +46,11 @@ pip install ifaddr matplotlib numpy pandas pyyaml pyserial
 ## SDSIO-Server
 
 The Python utility [**SDSIO-Server**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) enables recording and playback of SDS data files via socket (TCP/IP), USB Virtual COM Port (VCOM) or serial (UART) connection.
-It communicates with the target using these [SDSIO interfaces](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio):
+It communicates with the target using these [SDSIO Client interfaces](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client):
 
-- [serial/usart](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/serial/usart) for serial communication via CMSIS-Driver USART.
-- [socket](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/socket) for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.
-- [vcom/mdk](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/vcom/mdk) for serial communication via USB Virtual COM Port (VCOM) using MDK-Middleware.
+- [serial/usart](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/serial/usart) for serial communication via CMSIS-Driver USART.
+- [socket](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/socket) for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.
+- [vcom/mdk](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/vcom/mdk) for serial communication via USB Virtual COM Port (VCOM) using MDK-Middleware.
 
 The SDS data stream is recorded to files with the following naming convention:
 
