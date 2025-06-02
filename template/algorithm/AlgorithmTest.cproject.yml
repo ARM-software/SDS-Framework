@@ -24,13 +24,14 @@ project:
   groups:
     - group: Documentation
       files:
-        - file: README.md
+        - file: ../README.md
     - group: Application
       files:
         - file: app_main.c
         - file: sds_control.c
         - file: sds_main.c
         - file: sds_algorithm_user.c
+        - file: sds_algorithm_config.h
         - file: sds_data_in_user.c
           not-for-context:
             - .DebugPlay
