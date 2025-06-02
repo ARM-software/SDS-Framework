@@ -112,7 +112,7 @@
       </RTE_Components_h>
       <files>
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
-        <file category="source" name="sds/source/sdsio/socket/sdsio_client_socket.c"/>
+        <file category="source" name="sds/source/sdsio/client/socket/sdsio_client_socket.c"/>
         <file category="header" name="sds/config/sdsio_config_socket.h" attr="config" version="2.0.0"/>
         <file category="doc"    name="docs/sdsio.html"/>
       </files>
@@ -128,7 +128,7 @@
       </RTE_Components_h>
       <files>
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
-        <file category="source" name="sds/source/sdsio/vcom/mdk/sdsio_client_vcom.c"/>
+        <file category="source" name="sds/source/sdsio/client/vcom/mdk/sdsio_client_vcom.c"/>
         <file category="header" name="sds/config/sdsio_config_vcom_mdk.h" attr="config" version="2.0.0"/>
         <file category="doc"    name="docs/sdsio.html"/>
       </files>
@@ -144,7 +144,7 @@
       </RTE_Components_h>
       <files>
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
-        <file category="source" name="sds/source/sdsio/serial/usart/sdsio_client_serial.c"/>
+        <file category="source" name="sds/source/sdsio/client/serial/usart/sdsio_client_serial.c"/>
         <file category="header" name="sds/config/sdsio_config_serial_usart.h" attr="config" version="2.0.0"/>
         <file category="doc"    name="docs/sdsio.html"/>
       </files>
@@ -159,7 +159,7 @@
       </RTE_Components_h>
       <files>
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
-        <file category="source" name="sds/source/sdsio/template/sdsio_client_custom.c" attr="template" select="Custom SDS I/O Client Driver"/>
+        <file category="source" name="sds/source/sdsio/client/template/sdsio_client_custom.c" attr="template" select="Custom SDS I/O Client Driver"/>
         <file category="doc"    name="docs/sdsio.html"/>
       </files>
     </component>
