@@ -128,25 +128,21 @@
     participant sdsControlThread
     participant sdsRecPlayThread
     participant AlgorithmThread
-    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecPlayInit
-    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsPlayOpen `SCinput`
-    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecOpen `SCoutput`
-    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecOpen `MLoutput`
-    sdsControlThread-&gt;&gt;AlgorithmThread: Activate Algorithm
-    Activate AlgorithmThread
+    Note over sdsControlThread: sdsRecPlayInit
+    activate sdsRecPlayThread
+    Note over sdsControlThread: Open data streams
+    Note over sdsRecPlayThread: Read content for&lt;br/&gt;'play' data streams
+    activate AlgorithmThread
     loop periodic
-        sdsRecPlayThread-&gt;&gt;AlgorithmThread: sdsPlayRead `SCinput` (with Timestamp)
-        Note over AlgorithmThread: Execute Signal Conditioning
-        AlgorithmThread-&gt;&gt;sdsRecPlayThread: sdsRecWrite `SCoutput`
-        Note over AlgorithmThread: Execute ML Model
-        AlgorithmThread-&gt;&gt;sdsRecPlayThread: sdsRecWrite `MLoutput`
+        Note over AlgorithmThread: GetInputData&lt;br/&gt;(physical input or sdsPlayRead)
+        Note over AlgorithmThread: Execute algorithm
+        Note over AlgorithmThread: sdsRecWrite data streams 
+        Note over sdsRecPlayThread: Read/write data streams.
     end
-    sdsControlThread-&gt;&gt;AlgorithmThread: Deactivate Algorithm
-    Deactivate AlgorithmThread
-    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsPlayClose `SCinput`
-    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecClose `SCoutput`
-    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecClose `MLoutput`
-    sdsControlThread-&gt;&gt;sdsRecPlayThread: sdsRecPlayUninit
+    sdsControlThread--&gt;&gt;AlgorithmThread: Stop Algorithm
+    AlgorithmThread--&gt;&gt;sdsControlThread: Stopped
+    Note over sdsControlThread: Close data streams
+    Note over sdsRecPlayThread: Flush and close&lt;br/&gt; data streams
 </div>
 <h2 id="sds-data-files">SDS Data Files</h2>
 <p>Each data stream is stored in a separate SDS data file. In the diagram below <code>SCinput.0.sds</code> is the input to Signal Conditioning, <code>SCoutput.0.sds</code> is the output of Signal Conditioning, and <code>MLoutput.0.sds</code> is the output of the ML Model. Each execution of the algorithm is represented in a data block with a <code>timestamp</code>. The <code>timestamp</code> allows to correlate the blocks of different streams. In the above example, all blocks of one algorithm execution have the same timestamp value.</p>
@@ -288,7 +284,7 @@ struct {                          // sensor data stream format
 } accelerometer [30];             // number of samples in one data stream record
 
 sdsRecId_t *accel_id,             // data stream id
-uint8_t accel_buf[(sizeof(accel_buf)*2)+0x800];      // data stream buffer for circular buffer handling
+uint8_t accel_buf[(sizeof(accelerometer)*2)+0x800];      // data stream buffer for circular buffer handling
      :
 // *** function calls ***
    sdsRecPlayInit(NULL);          // init SDS Recorder/Player  
