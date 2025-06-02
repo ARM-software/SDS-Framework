@@ -15,20 +15,13 @@
   <releases>
     <release version="2.0.0-dev">
       Active Development ...
+      Major rework of the SDS-Framework
       Added documentation
-      SDS Buffer:
-      - Renamed sds.h/c to sds_buffer.h/c and updated all related function and macro namespaces (e.g., sdsOpen to sdsBufferOpen)
-      SDSIO:
-      - Moved common SDSIO Client code into sdsio_client.c/.h; low-level I/O dependent code left in individual drivers
-      - Added SDS:IO:Custom component and driver
-      - Added SDS:IO:VSI component
-      SDS Recorder and Player:
-      - Replaced SDS:Recorder and SDS:Player components and drivers with combined SDS:RecPlay component and driver
+      Examples:
+      - Added reference application examples
       Utilities:
       - Added SDS-Check
       - Added support in SDS-Convert for conversion from QeexoV2CSV to SDS format
-      Examples:
-      - Added reference application examples
     </release>
   </releases>
 
