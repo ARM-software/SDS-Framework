@@ -26,25 +26,21 @@ sequenceDiagram
     participant sdsControlThread
     participant sdsRecPlayThread
     participant AlgorithmThread
-    sdsControlThread->>sdsRecPlayThread: sdsRecPlayInit
-    sdsControlThread->>sdsRecPlayThread: sdsPlayOpen `SCinput`
-    sdsControlThread->>sdsRecPlayThread: sdsRecOpen `SCoutput`
-    sdsControlThread->>sdsRecPlayThread: sdsRecOpen `MLoutput`
-    sdsControlThread->>AlgorithmThread: Activate Algorithm
-    Activate AlgorithmThread
+    Note over sdsControlThread: sdsRecPlayInit
+    activate sdsRecPlayThread
+    Note over sdsControlThread: Open data streams
+    Note over sdsRecPlayThread: Read content for<br/>'play' data streams
+    activate AlgorithmThread
     loop periodic
-        sdsRecPlayThread->>AlgorithmThread: sdsPlayRead `SCinput` (with Timestamp)
-        Note over AlgorithmThread: Execute Signal Conditioning
-        AlgorithmThread->>sdsRecPlayThread: sdsRecWrite `SCoutput`
-        Note over AlgorithmThread: Execute ML Model
-        AlgorithmThread->>sdsRecPlayThread: sdsRecWrite `MLoutput`
+        Note over AlgorithmThread: GetInputData<br/>(physical input or sdsPlayRead)
+        Note over AlgorithmThread: Execute algorithm
+        Note over AlgorithmThread: sdsRecWrite data streams 
+        Note over sdsRecPlayThread: Read/write data streams.
     end
-    sdsControlThread->>AlgorithmThread: Deactivate Algorithm
-    Deactivate AlgorithmThread
-    sdsControlThread->>sdsRecPlayThread: sdsPlayClose `SCinput`
-    sdsControlThread->>sdsRecPlayThread: sdsRecClose `SCoutput`
-    sdsControlThread->>sdsRecPlayThread: sdsRecClose `MLoutput`
-    sdsControlThread->>sdsRecPlayThread: sdsRecPlayUninit
+    sdsControlThread-->>AlgorithmThread: Stop Algorithm
+    AlgorithmThread-->>sdsControlThread: Stopped
+    Note over sdsControlThread: Close data streams
+    Note over sdsRecPlayThread: Flush and close<br/> data streams
 ```
 
 ## SDS Data Files
@@ -161,7 +157,7 @@ struct {                          // sensor data stream format
 } accelerometer [30];             // number of samples in one data stream record
 
 sdsRecId_t *accel_id,             // data stream id
-uint8_t accel_buf[(sizeof(accel_buf)*2)+0x800];      // data stream buffer for circular buffer handling
+uint8_t accel_buf[(sizeof(accelerometer)*2)+0x800];      // data stream buffer for circular buffer handling
      :
 // *** function calls ***
    sdsRecPlayInit(NULL);          // init SDS Recorder/Player  

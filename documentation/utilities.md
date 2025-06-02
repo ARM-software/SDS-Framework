@@ -381,7 +381,7 @@ python sds-convert qeexo_v2_csv -i accelerometer_data.csv -o accelerometer.sds
 
 ## SDS-Check
 
-The Python utility [**SDSIO-Check**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) checks SDS data files for correctness and consistency.  
+The Python utility [**SDS-Check**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) checks SDS data files for correctness and consistency.  
 
 The following checks are performed:
 
