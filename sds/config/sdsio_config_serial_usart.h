@@ -17,7 +17,7 @@
  *
  * Name:    sdsio_config_serial_usart.h
  * Purpose: SDS IO via Serial Port (CMSIS Driver:USART) configuration options
- * Rev.:    V1.0.0
+ * Rev.:    V2.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------

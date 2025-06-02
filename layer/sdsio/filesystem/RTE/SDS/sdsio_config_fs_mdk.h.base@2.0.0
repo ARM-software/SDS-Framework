@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2023 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,18 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Name:    sds_buffer_config.h
- * Purpose: SDS Buffer configuration options
- * Rev.:    V1.0.0
+ * Name:    sdsio_config_fs_mdk.h
+ * Purpose: SDS IO via File System (Keil::File System) configuration options
+ * Rev.:    V2.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>Synchronous Data Stream (SDS) Buffer
+// <h>SDS IO via File System (Keil::File System)
 
-//   <o>Maximum number of SDS Buffer streams
-//   <i>Default: 16
-#define SDS_BUFFER_MAX_STREAMS  16U
+//   <s.32>Drive
+//   <i>File System drive
+//   <i>Default: "M0:"
+#define SDSIO_DRIVE                 "M0:"
+
+//   <s.128>Working directory
+//   <i>- If the drive prefix is omitted, the current drive is used.
+//   <i>- Path string must end with delimiter character '\\' or '/'.
+//   <i>Default: ""
+#define SDSIO_WORK_DIR              ""
+
+//   <o.0>Formatting allowed
+//   <i>Allow formatting, when there is no file system on the drive.
+//   <i>Default: 1
+#define SDSIO_FORMATTING_ALLOWED    1U
 
 // </h>
 

@@ -73,7 +73,7 @@
   </taxonomy>
 
   <apis>
-    <api Cclass="SDS" Cgroup="IO" Capiversion="1.0.0">
+    <api Cclass="SDS" Cgroup="IO" Capiversion="2.0.0">
       <description>Blocking I/O interface to read/write SDS files</description>
       <files>
         <file category="header" name="sds/include/sdsio.h" />
@@ -92,13 +92,13 @@
       <files>
         <file category="header" name="sds/include/sds_buffer.h"/>
         <file category="source" name="sds/source/sds_buffer.c"/>
-        <file category="header" name="sds/config/sds_buffer_config.h" attr="config" version="1.0.0"/>
+        <file category="header" name="sds/config/sds_buffer_config.h" attr="config" version="2.0.0"/>
         <file category="doc"    name="docs/SDS_API/group__SDS__Buffer.html"/>
       </files>
     </component>
 
     <!-- SDS I/O (VSI) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="VSI" Capiversion="1.0.0" Cversion="1.0.0" condition="SDS IO via VSI">
+    <component Cclass="SDS" Cgroup="IO" Csub="VSI" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via VSI">
       <description>I/O via VSI</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -111,7 +111,7 @@
     </component>
 
     <!-- SDS I/O (Socket) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="Socket" Capiversion="1.0.0" Cversion="2.0.0" condition="SDS IO via Socket">
+    <component Cclass="SDS" Cgroup="IO" Csub="Socket" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via Socket">
       <description>I/O via Socket to SDSIO Server (using component MDK-Packs::IoT Utility:Socket)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -126,7 +126,7 @@
     </component>
 
     <!-- SDS I/O (VCOM - MDK_USB) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="VCOM" Cvariant="MDK USB" Capiversion="1.0.0" Cversion="2.0.0" condition="SDS IO via VCOM - MDK USB">
+    <component Cclass="SDS" Cgroup="IO" Csub="VCOM" Cvariant="MDK USB" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via VCOM - MDK USB">
       <description>I/O via USB Virtual COM Port to SDSIO Server (using component Keil::USB:Device:CDC)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -142,7 +142,7 @@
     </component>
 
     <!-- SDS I/O (Serial - CMSIS USART) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="Serial" Cvariant="CMSIS USART" Capiversion="1.0.0" Cversion="1.0.1" condition="SDS IO via Serial Port - CMSIS USART">
+    <component Cclass="SDS" Cgroup="IO" Csub="Serial" Cvariant="CMSIS USART" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via Serial Port - CMSIS USART">
       <description>I/O via Serial Port to SDSIO Server (using component CMSIS Driver:USART)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -152,13 +152,13 @@
       <files>
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
         <file category="source" name="sds/source/sdsio/serial/usart/sdsio_client_serial.c"/>
-        <file category="header" name="sds/config/sdsio_config_serial_usart.h" attr="config" version="1.0.0"/>
+        <file category="header" name="sds/config/sdsio_config_serial_usart.h" attr="config" version="2.0.0"/>
         <file category="doc"    name="docs/sdsio.html"/>
       </files>
     </component>
 
     <!-- SDS I/O (Custom client) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="Custom" Capiversion="1.0.0" Cversion="1.0.0">
+    <component Cclass="SDS" Cgroup="IO" Csub="Custom" Capiversion="2.0.0" Cversion="2.0.0">
       <description>I/O via Custom I/O to SDSIO Server</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -172,7 +172,7 @@
     </component>
 
     <!-- SDS I/O (File System - MDK FS) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="MDK FS" Capiversion="1.0.0" Cversion="1.2.0" condition="SDS IO via File System - MDK FS">
+    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="MDK FS" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via File System - MDK FS">
       <description>I/O via File System (using component Keil::File System)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -181,13 +181,13 @@
       </RTE_Components_h>
       <files>
         <file category="source" name="sds/source/sdsio/fs/mdk/sdsio_fs.c"/>
-        <file category="header" name="sds/config/sdsio_config_fs_mdk.h" attr="config" version="1.0.0"/>
+        <file category="header" name="sds/config/sdsio_config_fs_mdk.h" attr="config" version="2.0.0"/>
         <file category="doc"    name="docs/sdsio.html"/>
       </files>
     </component>
 
     <!-- SDS I/O (File System - Semihosting) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="1.0.0" Cversion="1.2.0" condition="SDS IO via File System - Semihosting">
+    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via File System - Semihosting">
       <description>I/O via File System (using Semihosting)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -201,7 +201,7 @@
     </component>
 
     <!-- SDS Recorder and Player -->
-    <component Cclass="SDS" Cgroup="RecPlay" Cvariant="CMSIS-RTOS2" Cversion="1.0.0" condition="SDS Recorder and Player with CMSIS-RTOS2">
+    <component Cclass="SDS" Cgroup="RecPlay" Cvariant="CMSIS-RTOS2" Cversion="2.0.0" condition="SDS Recorder and Player with CMSIS-RTOS2">
       <description>Recorder/Player interface for data stream</description>
       <RTE_Components_h>
         #define RTE_SDS_REC_PLAY                        /* Synchronous Data Stream Recorder and Player */
@@ -209,7 +209,7 @@
       <files>
         <file category="header" name="sds/include/sds_rec_play.h"/>
         <file category="source" name="sds/source/sds_rec_play.c"/>
-        <file category="header" name="sds/config/sds_rec_play_config.h" attr="config" version="1.0.0"/>
+        <file category="header" name="sds/config/sds_rec_play_config.h" attr="config" version="2.0.0"/>
         <file category="doc"    name="docs/SDS_API/group__SDS__Recorder__Player.html"/>
       </files>
     </component>

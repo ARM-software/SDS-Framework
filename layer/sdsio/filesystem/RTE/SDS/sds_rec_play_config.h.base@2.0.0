@@ -17,7 +17,7 @@
  *
  * Name:    sds_rec_play_config.h
  * Purpose: SDS Recorder and Player configuration options
- * Rev.:    V1.0.0
+ * Rev.:    V2.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------

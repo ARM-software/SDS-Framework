@@ -17,7 +17,7 @@
  *
  * Name:    sdsio_config_fs_mdk.h
  * Purpose: SDS IO via File System (Keil::File System) configuration options
- * Rev.:    V1.0.0
+ * Rev.:    V2.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
