@@ -1,6 +1,6 @@
-# SDS Interface - USB (VCOM)
+# SDS Interface - USB
 
-This SDS Interface uses the USB Device (Virtual COM Port) communication implemented with the MDK-Middleware USB component.
+This SDS Interface uses the USB Device (Custom Class) communication implemented with the MDK-Middleware USB component.
 It is based on the following components:
 
 - [SDS Recorder and Player](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__Recorder__Player.html) data streaming,
@@ -13,7 +13,7 @@ The following SDS software components are required:
 
 ```yml
   - component: SDS:Buffer
-  - component: SDS:IO:VCOM&MDK USB
+  - component: SDS:IO:USB&MDK USB
   - component: SDS:RecPlay&CMSIS-RTOS2
 ```
 
@@ -24,7 +24,7 @@ The following MDK-Middleware USB software components are required:
 ```yml
   - component: USB&MDK:CORE
   - component: USB&MDK:Device
-  - component: USB&MDK:Device:CDC
+  - component: USB&MDK:Device:Custom Class
 ```
 
 ## Starting SDSIO Server
@@ -35,10 +35,8 @@ The **SDSIO Server** is a Python-based utility for PC, which is included in the
 To start the SDSIO Server, run it from the `./utilities` directory with:
 
 ```txt
-python sdsio-server.py serial -p COM0 --baudrate 115200
+python sdsio-server.py usb
 ```
-
-where `COM0` should be replaced by the actual COM Port of your USB Device Virtual COM Port as enumerated by your PC.
 
 Further information about the SDSIO Server application can be found in the
 [SDS-Framework documentation](https://github.com/ARM-software/SDS-Framework/tree/main/documentation/utilities.md#sdsio-server).

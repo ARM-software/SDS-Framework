@@ -50,7 +50,7 @@
 
 //     <o.0..15>Product ID <0x0000-0xFFFF>
 //     <i>Product ID assigned by manufacturer (idProduct).
-#define USBD0_DEV_DESC_IDPRODUCT        0x5905
+#define USBD0_DEV_DESC_IDPRODUCT        0x8007
 
 //     <o.0..15>Device Release Number <0x0000-0xFFFF>
 //     <i>Device Release Number in binary-coded decimal (bcdDevice).
@@ -87,7 +87,7 @@
 
 //     <s.126>Product String
 //     <i>String Descriptor describing Product.
-#define USBD0_STR_DESC_PROD_RAW         "SDS Recorder"
+#define USBD0_STR_DESC_PROD_RAW         "SDSIO Client"
 
 //     <e.0>Serial Number String
 //     <i>Enable Serial Number String.
