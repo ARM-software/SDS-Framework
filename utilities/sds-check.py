@@ -159,12 +159,10 @@ def dot(value):
 def main():
     # Process arguments
     formatter = lambda prog: argparse.HelpFormatter(prog,max_help_position=60)
-    parser = argparse.ArgumentParser(description="SDS data validation",
-                                     formatter_class=formatter)
+    parser = argparse.ArgumentParser(description="SDS data validation", formatter_class=formatter)
 
     required = parser.add_argument_group("required")
-    required.add_argument("-s", dest="sds", metavar="<sds_file>",
-                            help="SDS data recording file", nargs="?", required=True)
+    required.add_argument("-s", dest="sds", metavar="<sds_file>", help="SDS data recording file", required=True)
 
     args = parser.parse_args()
     filename = args.sds
