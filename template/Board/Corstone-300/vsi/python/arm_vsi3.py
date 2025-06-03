@@ -65,10 +65,9 @@ DMA_Control_Direction_P2M = 0<<1
 DMA_Control_Direction_M2P = 1<<1
 
 # User registers
-STATUS      = 0     # index=0, user read only
-COMMAND     = 0     # index=1, user read/write
-STREAM_ID   = 0     # index=2, user read/write
-ARGUMENT    = 0     # index=3, user read/write
+COMMAND     = 0     # index=0, user read/write
+STREAM_ID   = 0     # index=1, user read/write
+ARGUMENT    = 0     # index=2, user read/write
 
 # Data buffer
 Data = bytearray()
@@ -87,10 +86,11 @@ class StreamManager:
         logger.debug(f"Open name={name}, mode={mode}")
         try:
             if not name or any(ch in name for ch in '"*/:<>?\\|'):
-                raise ValueError(f"Invalid stream name: {name}")
-
-            self.stream_id += 1
-            sid = self.stream_id
+                logger.warning(f"Invalid stream name: {name}")
+                return 0
+            if name in (n for (_, n, _) in self.opened_streams.values()):
+                logger.warning(f"Stream already open: {name}")
+                return 0
 
             if mode == 1:
                 # write mode: pick next available index
@@ -101,6 +101,8 @@ class StreamManager:
                     idx += 1
                     fname = path.join(self.work_dir, f"{name}.{idx}.sds")
                 f = open(fname, 'wb')
+                self.stream_id += 1
+                sid = self.stream_id
                 logger.debug(f"Opened new stream for writing: {fname}")
 
             else:
@@ -116,21 +118,22 @@ class StreamManager:
                     except Exception:
                         logger.warning(f"Could not read index file for {name}")
                 fname = path.join(self.work_dir, f"{name}.{idx}.sds")
-                if not path.exists(fname) and idx != 0:
-                    idx = 0
-                    fname = path.join(self.work_dir, f"{name}.{idx}.sds")
-                if not path.exists(fname):
-                    raise FileNotFoundError(f"Stream file not found: {fname}")
+                if path.exists(fname):
+                    f = open(fname, 'rb')
+                    logger.debug(f"Opened stream for reading: {fname}")
+                    self.stream_id += 1
+                    sid = self.stream_id
+                else:
+                    sid = 0
                 # update index for next read
                 try:
                     with open(index_file, 'w') as ix:
-                        ix.write(str(idx + 1 if path.exists(fname) else idx))
+                        ix.write(str(idx + 1 if path.exists(fname) else 0))
                 except Exception:
                     logger.warning(f"Could not update index file for {name}")
-                f = open(fname, 'rb')
-                logger.debug(f"Opened stream for reading: {fname}")
 
-            self.opened_streams[sid] = (f, name, mode)
+            if sid != 0:
+                self.opened_streams[sid] = (f, name, mode)
             return sid
 
         except Exception:
@@ -330,16 +333,13 @@ def rdRegs(index):
     global Timer_Control, COMMAND, STREAM_ID, ARGUMENT
     logger.info("Python function rdRegs() called")
 
-    if index == 0:
-        value = Timer_Control
-        logger.debug(f"Read Timer_Status: {value}")
-    elif index == 1:
+    if   index == 0:
         value = COMMAND
         logger.debug(f"Read COMMAND: {value}")
-    elif index == 2:
+    elif index == 1:
         value = STREAM_ID
         logger.debug(f"Read STREAM_ID: {value}")
-    elif index == 3:
+    elif index == 2:
         value = ARGUMENT
         logger.debug(f"Read ARGUMENT: {value}")
     else:
@@ -357,14 +357,12 @@ def wrRegs(index, value):
     global COMMAND, STREAM_ID, ARGUMENT
     logger.info("Python function wrRegs() called")
 
-    if index == 0:
-        logger.debug("Write Timer_Status ignored")
-    if index == 1:
+    if   index == 0:
         COMMAND = processCOMMAND(value)
-    elif index == 2:
+    elif index == 1:
         STREAM_ID = value
         logger.debug(f"Write STREAM_ID: {value}")
-    elif index == 3:
+    elif index == 2:
         ARGUMENT = value
         logger.debug(f"Write ARGUMENT: {value}")
     else:

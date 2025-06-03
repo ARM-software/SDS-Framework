@@ -28,10 +28,9 @@
 // SDSIO Peripheral definitions
 #define SDSIO           ARM_VSI3
 
-#define STATUS          Regs[0]         // Timer status
-#define COMMAND         Regs[1]         // IO Command
-#define STREAM_ID       Regs[2]         // Stream handle
-#define ARGUMENT        Regs[3]         // IO parameter
+#define COMMAND         Regs[0]         // IO Command
+#define STREAM_ID       Regs[1]         // Stream handle
+#define ARGUMENT        Regs[2]         // IO parameter
 
 // SDSIO Commands
 #define CMD_OPEN        1U
@@ -61,8 +60,8 @@ int32_t sdsioInit (void) {
 /* Un-initialize I/O interface */
 int32_t sdsioUninit (void) {
 
-  SDSIO->DMA.Control   = 0U;
   SDSIO->Timer.Control = 0U;
+  SDSIO->DMA.Control   = 0U;
 
   osSemaphoreDelete (lock_id);
   lock_id = NULL;
@@ -83,18 +82,19 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
   }
 
   /* Copy filename to SDSIO peripheral */
-  SDSIO->DMA.Address   = (uint32_t)name;
-  SDSIO->DMA.BlockSize = strlen(name) + 1U;
-  SDSIO->DMA.BlockNum  = 1;
-  SDSIO->DMA.Control   = ARM_VSI_DMA_Direction_M2P  | ARM_VSI_DMA_Enable_Msk;
-  SDSIO->Timer.Control = ARM_VSI_Timer_Trig_DMA_Msk | ARM_VSI_Timer_Run_Msk;
+  SDSIO->DMA.Address    = (uint32_t)name;
+  SDSIO->DMA.BlockSize  = strlen(name) + 1U;
+  SDSIO->DMA.BlockNum   = 1;
+  SDSIO->DMA.Control    = ARM_VSI_DMA_Direction_M2P  | ARM_VSI_DMA_Enable_Msk;
+  SDSIO->Timer.Interval = 0U;
+  SDSIO->Timer.Control  = ARM_VSI_Timer_Trig_DMA_Msk | ARM_VSI_Timer_Run_Msk;
 
   /* Wait for DMA to complete, then stop it */
-  while (SDSIO->STATUS & ARM_VSI_Timer_Run_Msk);
-  SDSIO->DMA.Control   = 0U;
+  while (SDSIO->Timer.Control & ARM_VSI_Timer_Run_Msk);
+  SDSIO->DMA.Control = 0U;
 
-  SDSIO->ARGUMENT      = mode;
-  SDSIO->COMMAND       = CMD_OPEN;
+  SDSIO->ARGUMENT    = mode;
+  SDSIO->COMMAND     = CMD_OPEN;
 
   id = (sdsioId_t)SDSIO->STREAM_ID;
 
@@ -135,20 +135,21 @@ int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
   }
 
   /* Copy data to an SDSIO peripheral */
-  SDSIO->DMA.Address   = (uint32_t)buf;
-  SDSIO->DMA.BlockSize = buf_size;
-  SDSIO->DMA.BlockNum  = 1;
-  SDSIO->DMA.Control   = ARM_VSI_DMA_Direction_M2P  | ARM_VSI_DMA_Enable_Msk;
-  SDSIO->Timer.Control = ARM_VSI_Timer_Trig_DMA_Msk | ARM_VSI_Timer_Run_Msk;
+  SDSIO->DMA.Address    = (uint32_t)buf;
+  SDSIO->DMA.BlockSize  = buf_size;
+  SDSIO->DMA.BlockNum   = 1;
+  SDSIO->DMA.Control    = ARM_VSI_DMA_Direction_M2P  | ARM_VSI_DMA_Enable_Msk;
+  SDSIO->Timer.Interval = 0U;
+  SDSIO->Timer.Control  = ARM_VSI_Timer_Trig_DMA_Msk | ARM_VSI_Timer_Run_Msk;
 
-  SDSIO->STREAM_ID     = (uint32_t)id;
+  SDSIO->STREAM_ID   = (uint32_t)id;
 
   /* Wait for DMA to complete, then stop it */
-  while (SDSIO->STATUS & ARM_VSI_Timer_Run_Msk);
-  SDSIO->DMA.Control   = 0U;
+  while (SDSIO->Timer.Control & ARM_VSI_Timer_Run_Msk);
+  SDSIO->DMA.Control = 0U;
 
   /* Write data transferred via DMA to a file */
-  SDSIO->COMMAND       = CMD_WRITE;
+  SDSIO->COMMAND     = CMD_WRITE;
 
   /* Return number of bytes written or an error status */
   retv = (int32_t)SDSIO->ARGUMENT;
@@ -171,23 +172,24 @@ int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
   }
 
   /* Read data from a file to an SDSIO peripheral */
-  SDSIO->STREAM_ID     = (uint32_t)id;
-  SDSIO->ARGUMENT      = buf_size;
-  SDSIO->COMMAND       = CMD_READ;
+  SDSIO->STREAM_ID = (uint32_t)id;
+  SDSIO->ARGUMENT  = buf_size;
+  SDSIO->COMMAND   = CMD_READ;
 
   /* Check return code from fread */
   retv = (int32_t)SDSIO->ARGUMENT;
   if (retv > 0) {
     /* Copy data from an SDSIO peripheral to an application */
-    SDSIO->DMA.Address   = (uint32_t)buf;
-    SDSIO->DMA.BlockSize = (uint32_t)retv;
-    SDSIO->DMA.BlockNum  = 1;
-    SDSIO->DMA.Control   = ARM_VSI_DMA_Direction_P2M  | ARM_VSI_DMA_Enable_Msk;
-    SDSIO->Timer.Control = ARM_VSI_Timer_Trig_DMA_Msk | ARM_VSI_Timer_Run_Msk;
+    SDSIO->DMA.Address    = (uint32_t)buf;
+    SDSIO->DMA.BlockSize  = (uint32_t)retv;
+    SDSIO->DMA.BlockNum   = 1;
+    SDSIO->DMA.Control    = ARM_VSI_DMA_Direction_P2M  | ARM_VSI_DMA_Enable_Msk;
+    SDSIO->Timer.Interval = 0U;
+    SDSIO->Timer.Control  = ARM_VSI_Timer_Trig_DMA_Msk | ARM_VSI_Timer_Run_Msk;
 
     /* Wait for DMA to complete, then stop it */
-    while (SDSIO->STATUS & ARM_VSI_Timer_Run_Msk);
-    SDSIO->DMA.Control   = 0U;
+    while (SDSIO->Timer.Control & ARM_VSI_Timer_Run_Msk);
+    SDSIO->DMA.Control = 0U;
   }
 
   osSemaphoreRelease (lock_id);
