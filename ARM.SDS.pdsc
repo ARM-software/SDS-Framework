@@ -40,11 +40,6 @@
       <require Cclass="CMSIS" Cgroup="RTOS2"/>
       <require Cvendor="Keil" Cclass="USB" Cgroup="Device" Csub="Custom Class"/>
     </condition>
-    <condition id="SDS IO via VCOM - MDK USB">
-      <description>SDS IO via USB Virtual COM Port (MDK USB)</description>
-      <require Cclass="CMSIS" Cgroup="RTOS2"/>
-      <require Cvendor="Keil" Cclass="USB" Cgroup="Device" Csub="CDC"/>
-    </condition>
     <condition id="SDS IO via Serial Port - CMSIS USART">
       <description>SDS IO via Serial Port (CMSIS Driver USART)</description>
       <require Cclass="CMSIS"        Cgroup="RTOS2"/>
@@ -119,22 +114,6 @@
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
         <file category="source" name="sds/source/sdsio/client/socket/sdsio_client_socket.c"/>
         <file category="header" name="sds/config/sdsio_config_socket.h" attr="config" version="2.0.0"/>
-        <file category="doc"    name="docs/sdsio.html"/>
-      </files>
-    </component>
-
-    <!-- SDS I/O (VCOM - MDK_USB) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="VCOM" Cvariant="MDK USB" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via VCOM - MDK USB">
-      <description>I/O via USB Virtual COM Port to SDSIO Server (using component Keil::USB:Device:CDC)</description>
-      <RTE_Components_h>
-        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
-        #define RTE_SDS_IO_VCOM                         /* Synchronous Data Stream Input/Output (VCOM) */
-        #define RTE_SDS_IO_VCOM_MDK_USB                 /* Synchronous Data Stream Input/Output (VCOM - MDK USB) */
-      </RTE_Components_h>
-      <files>
-        <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
-        <file category="source" name="sds/source/sdsio/client/vcom/mdk/sdsio_client_vcom.c"/>
-        <file category="header" name="sds/config/sdsio_config_vcom_mdk.h" attr="config" version="2.0.0"/>
         <file category="doc"    name="docs/sdsio.html"/>
       </files>
     </component>
