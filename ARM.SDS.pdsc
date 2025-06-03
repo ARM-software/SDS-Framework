@@ -35,6 +35,11 @@
       <require Cclass="CMSIS"        Cgroup="RTOS2"/>
       <require Cclass="IoT Utility"  Cgroup="Socket"/>
     </condition>
+    <condition id="SDS IO via USB - MDK USB">
+      <description>SDS IO via USB (MDK USB)</description>
+      <require Cclass="CMSIS" Cgroup="RTOS2"/>
+      <require Cvendor="Keil" Cclass="USB" Cgroup="Device" Csub="Custom Class"/>
+    </condition>
     <condition id="SDS IO via VCOM - MDK USB">
       <description>SDS IO via USB Virtual COM Port (MDK USB)</description>
       <require Cclass="CMSIS" Cgroup="RTOS2"/>
@@ -131,6 +136,22 @@
         <file category="source" name="sds/source/sdsio/client/vcom/mdk/sdsio_client_vcom.c"/>
         <file category="header" name="sds/config/sdsio_config_vcom_mdk.h" attr="config" version="2.0.0"/>
         <file category="doc"    name="docs/sdsio.html"/>
+      </files>
+    </component>
+
+    <!-- SDS I/O (USB - MDK_USB) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="USB" Cvariant="MDK USB" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via USB - MDK USB">
+      <description>I/O via USB Virtual COM Port to SDSIO Server (using component Keil::USB:Device:Custom)</description>
+      <RTE_Components_h>
+        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
+        #define RTE_SDS_IO_USB                          /* Synchronous Data Stream Input/Output (USB) */
+        #define RTE_SDS_IO_USB_MDK_USB                  /* Synchronous Data Stream Input/Output (USB - MDK USB) */
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
+        <file category="source" name="sds/source/sdsio/client/usb/mdk/sdsio_client_usb.c"/>
+        <file category="header" name="sds/config/sdsio_config_usb_mdk.h" attr="config" version="2.0.0"/>
+        <file category="doc"    name="docs/index.html"/>
       </files>
     </component>
 
