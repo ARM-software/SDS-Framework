@@ -4,7 +4,7 @@ The SDSIO components offer flexible recorder and playback interfaces. You may ch
 
 ```yml
   - component: SDS:IO:Socket                     # Socket Interface (Ethernet or WiFi)
-  - component: SDS:IO:VCOM&MDK USB               # USB Interface
+  - component: SDS:IO:USB&MDK USB                # USB Interface
   - component: SDS:IO:Serial&CMSIS USART         # USART Interface
   - component: SDS:IO:File System&MDK FS         # Memory card
   - component: SDS:IO:File System&Semihosting    # Simulation or Debugger via Semihosting interface
@@ -14,7 +14,7 @@ The SDSIO components offer flexible recorder and playback interfaces. You may ch
 To simplify usage further, the following pre-configured SDS interface layers in *csolution project format* are available. These connect via various interfaces to the SDSIO Server, which provides read/write access to SDS data files.
 
 - [Ethernet Interface](#layer-sdsio_network) using the MDK-Middleware Network component.
-- [USB Virtual COM Port Interface](#layer-sdsio_usb) using the MDK-Middleware USB component.
+- [USB Bulk Interface](#layer-sdsio_usb) using the MDK-Middleware USB component.
 - [Memory Card Interface](#layer-sdsio_fs) using the MDK-Middleware File System component.
 
 ## Layer: sdsio_network

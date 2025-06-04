@@ -53,13 +53,32 @@ Each data stream is stored in a separate SDS data file. In the diagram below `SC
 - Each call to the function `sdsPlayRead` reads one data block.
 
 ### Filenames
+SDS data files use the naming format `<name>.<file-index>.sds`. `<name>` is the base name specified by the user, and `<file-index>` is a sequential number that starts at 0.
 
-SDS data filenames use the following file format: `<name>.<file-index>.sds`. `<name>` is the base file name of the SDS data file. The `<file-index>` is a sequential number starting from `0`.
+**Recording (sdsRecOpen):**
 
-- The function `sdsRecOpen` gets the `<name>` as a parameter. When connected to a file system (for example the [SDSIO-Server](utilities.md#sdsio-server)), existing files starting with `<file-index>="0"` are iterated. The first available `<file-index>` that does not exist will be used as filename to record data. For example, if the file `SensorX.10.sds` already exists, the filename `SensorX.11.sds` will be used.
+The `sdsRecOpen` function takes `<name>` as input. When connected to a file system (e.g., the [SDSIO-Server](utilities.md#sdsio-server)), it scans for existing files with names matching the pattern `<name>.<file-index>.sds`, starting at index 0. It uses the first available index that does not **yet** exist to create a new file for recording.
 
-- The function `sdsPlayOpen` gets the `<name>` as a parameter. When connected to a file system (for example using the [SDSIO-Server](utilities.md#sdsio-server)), the first call uses the `<file-index>="0"`. Each call to `sdsPlayOpen` increments the `<file-index>`.  
-  An alternative way to control the `<file-index>` is by using an additional file named `<name>.index.txt` . If this file exists, the numerical value it contains is used as the `<file-index>` for the next `sdsPlayOpen` operation. After the file is opened (for example by the [SDSIO-Server](utilities.md#sdsio-server)), the value in `<name>.index.txt` is incremented by 1 in preparation for the next `sdsPlayOpen` call.
+Example:
+
+If files `SensorX.0.sds` through `SensorX.10.sds` exist, the next file created will be `SensorX.11.sds`.
+
+**Playback (sdsPlayOpen):**
+
+The `sdsPlayOpen` function also takes `<name>` as input and determines which file to play based on the contents of a corresponding index file, `<name>.index.txt`. The following procedure outlines how sdsPlayOpen determines the playback file:
+
+1. The function checks if `<name>.index.txt` exists and contains a valid number.
+     - If it exists and contains a valid index (e.g., 3), that number is used as the `<file-index>`.
+     - If the file does not exist or contains an invalid value, the index defaults to `0`.
+2. The file `<name>.<file-index>.sds` is then opened for playback.
+    - If the file exists, it is opened for playback. The index file `<name>.index.txt` is updated to` <file-index> + 1` for the next call to sdsPlayOpen.
+    - If the file does not exist, playback fails and the index file is created or reset to 0.
+
+This mechanism enables automatic sequential playback, while still allowing the user to select the initial playback index by editing the index file.
+
+Example:
+
+If `SensorX.index.txt` contains the value 2, the `sdsPlayOpen` function will attempt to open the file `SensorX.2.sds`. If this file exists, it is played and the index file is updated to 3 for the next playback. If the file does not exist, playback fails and the index file is reset to 0.
 
 ### Timestamp
 
@@ -209,18 +228,15 @@ ID  | Name               | Description
 2   | SDSIO_CMD_CLOSE    | Close an SDS data file
 3   | SDSIO_CMD_WRITE    | Write to an SDS data file
 4   | SDSIO_CMD_READ     | Read from an SDS data file
-5   | SDSIO_CMD_EOS      | End of Stream
-6   | SDSIO_CMD_PING     | Ping Server
+5   | SDSIO_CMD_PING     | Ping Server
 
 Each Command starts with a Header (4 Words) and optional data with variable length. Depending on the Command, the SDSIO Server replies with a Response that repeats the Header and delivers additional data.
 
 **SDSIO_CMD_OPEN**
 
-The Command ID=1 **SDSIO_CMD_OPEN** opens an SDS data file on the Host computer.
+The Command ID=1 **SDSIO_CMD_OPEN** opens an SDS data file on the Host computer. `Mode` defines `read` (value=0) or `write` (value=1) operation. `Len of Name` is the size of the string in bytes.
 
-SDS data filenames use the following file format: `<name>.<file-index>.sds`. `Name` is the base file name of the SDS data file. `Len of Name` is the size of the string in bytes. `<file-index>` is a sequential number starting from `0`.
-
-`Mode` defines `read` (value=0) or `write` (value=1) operation. For `write`, the SDSIO Server inserts the next available `<file-index>` number that does not exist yet (if `Name.3.sds` exists, the server creates `Name.4.sds`). For `read` the server maintains a list of `Names` that where previously used. When a Name was not used before it opens `<file-index>=0`, i.e. `Name.0.sds`.
+SDS data filenames use the following file format: `<name>.<file-index>.sds`, where `Name` is the base file name of the SDS data file and `<file-index>` is a sequential number maintained by SDSIO Server (for details see section [Filenames](#filenames)).
 
 ```txt
 | WORD |  WORD  | WORD | WORD *******|++++++|
@@ -275,39 +291,21 @@ The Response ID=4 **SDSIO_CMD_READ** provides the data read from an SDS data fil
 |******|********|********|******|++++++|
 ```
 
-**SDSIO_CMD_EOS**
-
-The Command ID=5 **SDSIO_CMD_EOS** checks if the end of file is reached. The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**.
-
-```txt
-| WORD |  WORD  | WORD | WORD |
->  5   | Handle |  0   |  0   |
-|******|********|******|******|
-```
-
-The Response ID=5 **SDSIO_CMD_EOS** returns the `Status` with nonzero = end of stream, else 0
-
-```txt
-| WORD |  WORD  |  WORD  | WORD |
-<  5   | Handle | Status |  0   |
-|******|********|********|******|
-```
-
 **SDSIO_CMD_PING**
 
-The Command ID=6 **SDSIO_CMD_PING** verifies if the Server is active and reachable on the Host.
+The Command ID=5 **SDSIO_CMD_PING** verifies if the Server is active and reachable on the Host.
 
 ```txt
 | WORD | WORD | WORD | WORD |
->  6   |  0   |  0   |  0   |
+>  5   |  0   |  0   |  0   |
 |******|******|******|******|
 ```
 
-The Response ID=6 **SDSIO_CMD_PING** returns the `Status` with nonzero = server active, else 0
+The Response ID=5 **SDSIO_CMD_PING** returns the `Status` with nonzero = server active, else 0
 
 ```txt
 | WORD | WORD |  WORD  | WORD |
-<  6   |  0   | Status |  0   |
+<  5   |  0   | Status |  0   |
 |******|******|********|******|
 ```
 
