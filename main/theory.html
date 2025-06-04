@@ -152,16 +152,28 @@
 <li>Each call to the function <code>sdsPlayRead</code> reads one data block.</li>
 </ul>
 <h3 id="filenames">Filenames</h3>
-<p>SDS data filenames use the following file format: <code>&lt;name&gt;.&lt;file-index&gt;.sds</code>. <code>&lt;name&gt;</code> is the base file name of the SDS data file. The <code>&lt;file-index&gt;</code> is a sequential number starting from <code>0</code>.</p>
-<ul>
-<li>
-<p>The function <code>sdsRecOpen</code> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example the <a href="utilities.html#sdsio-server">SDSIO-Server</a>), existing files starting with <code>&lt;file-index&gt;="0"</code> are iterated. The first available <code>&lt;file-index&gt;</code> that does not exist will be used as filename to record data. For example, if the file <code>SensorX.10.sds</code> already exists, the filename <code>SensorX.11.sds</code> will be used.</p>
-</li>
-<li>
-<p>The function <code>sdsPlayOpen</code> gets the <code>&lt;name&gt;</code> as a parameter. When connected to a file system (for example using the <a href="utilities.html#sdsio-server">SDSIO-Server</a>), the first call uses the <code>&lt;file-index&gt;="0"</code>. Each call to <code>sdsPlayOpen</code> increments the <code>&lt;file-index&gt;</code>.<br/>
-  An alternative way to control the <code>&lt;file-index&gt;</code> is by using an additional file named <code>&lt;name&gt;.index.txt</code> . If this file exists, the numerical value it contains is used as the <code>&lt;file-index&gt;</code> for the next <code>sdsPlayOpen</code> operation. After the file is opened (for example by the <a href="utilities.html#sdsio-server">SDSIO-Server</a>), the value in <code>&lt;name&gt;.index.txt</code> is incremented by 1 in preparation for the next <code>sdsPlayOpen</code> call.</p>
-</li>
+<p>SDS data files use the naming format <code>&lt;name&gt;.&lt;file-index&gt;.sds</code>. <code>&lt;name&gt;</code> is the base name specified by the user, and <code>&lt;file-index&gt;</code> is a sequential number that starts at 0.</p>
+<p><strong>Recording (sdsRecOpen):</strong></p>
+<p>The <code>sdsRecOpen</code> function takes <code>&lt;name&gt;</code> as input. When connected to a file system (e.g., the <a href="utilities.html#sdsio-server">SDSIO-Server</a>), it scans for existing files with names matching the pattern <code>&lt;name&gt;.&lt;file-index&gt;.sds</code>, starting at index 0. It uses the first available index that does not <strong>yet</strong> exist to create a new file for recording.</p>
+<p>Example:</p>
+<p>If files <code>SensorX.0.sds</code> through <code>SensorX.10.sds</code> exist, the next file created will be <code>SensorX.11.sds</code>.</p>
+<p><strong>Playback (sdsPlayOpen):</strong></p>
+<p>The <code>sdsPlayOpen</code> function also takes <code>&lt;name&gt;</code> as input and determines which file to play based on the contents of a corresponding index file, <code>&lt;name&gt;.index.txt</code>. The following procedure outlines how sdsPlayOpen determines the playback file:</p>
+<ol>
+<li>The function checks if <code>&lt;name&gt;.index.txt</code> exists and contains a valid number.<ul>
+<li>If it exists and contains a valid index (e.g., 3), that number is used as the <code>&lt;file-index&gt;</code>.</li>
+<li>If the file does not exist or contains an invalid value, the index defaults to <code>0</code>.</li>
 </ul>
+</li>
+<li>The file <code>&lt;name&gt;.&lt;file-index&gt;.sds</code> is then opened for playback.<ul>
+<li>If the file exists, it is opened for playback. The index file <code>&lt;name&gt;.index.txt</code> is updated to<code>&lt;file-index&gt; + 1</code> for the next call to sdsPlayOpen.</li>
+<li>If the file does not exist, playback fails and the index file is created or reset to 0.</li>
+</ul>
+</li>
+</ol>
+<p>This mechanism enables automatic sequential playback, while still allowing the user to select the initial playback index by editing the index file.</p>
+<p>Example:</p>
+<p>If <code>SensorX.index.txt</code> contains the value 2, the <code>sdsPlayOpen</code> function will attempt to open the file <code>SensorX.2.sds</code>. If this file exists, it is played and the index file is updated to 3 for the next playback. If the file does not exist, playback fails and the index file is reset to 0.</p>
 <h3 id="timestamp">Timestamp</h3>
 <p>The timestamp is a 32-bit unsigned value and is used for:</p>
 <ul>
@@ -375,11 +387,6 @@ The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
 </tr>
 <tr>
 <td style="text-align: center;">5</td>
-<td style="text-align: left;">SDSIO_CMD_EOS</td>
-<td style="text-align: left;">End of Stream</td>
-</tr>
-<tr>
-<td style="text-align: center;">6</td>
 <td style="text-align: left;">SDSIO_CMD_PING</td>
 <td style="text-align: left;">Ping Server</td>
 </tr>
@@ -387,9 +394,8 @@ The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
 </table>
 <p>Each Command starts with a Header (4 Words) and optional data with variable length. Depending on the Command, the SDSIO Server replies with a Response that repeats the Header and delivers additional data.</p>
 <p><strong>SDSIO_CMD_OPEN</strong></p>
-<p>The Command ID=1 <strong>SDSIO_CMD_OPEN</strong> opens an SDS data file on the Host computer.</p>
-<p>SDS data filenames use the following file format: <code>&lt;name&gt;.&lt;file-index&gt;.sds</code>. <code>Name</code> is the base file name of the SDS data file. <code>Len of Name</code> is the size of the string in bytes. <code>&lt;file-index&gt;</code> is a sequential number starting from <code>0</code>.</p>
-<p><code>Mode</code> defines <code>read</code> (value=0) or <code>write</code> (value=1) operation. For <code>write</code>, the SDSIO Server inserts the next available <code>&lt;file-index&gt;</code> number that does not exist yet (if <code>Name.3.sds</code> exists, the server creates <code>Name.4.sds</code>). For <code>read</code> the server maintains a list of <code>Names</code> that where previously used. When a Name was not used before it opens <code>&lt;file-index&gt;=0</code>, i.e. <code>Name.0.sds</code>.</p>
+<p>The Command ID=1 <strong>SDSIO_CMD_OPEN</strong> opens an SDS data file on the Host computer. <code>Mode</code> defines <code>read</code> (value=0) or <code>write</code> (value=1) operation. <code>Len of Name</code> is the size of the string in bytes.</p>
+<p>SDS data filenames use the following file format: <code>&lt;name&gt;.&lt;file-index&gt;.sds</code>, where <code>Name</code> is the base file name of the SDS data file and <code>&lt;file-index&gt;</code> is a sequential number maintained by SDSIO Server (for details see section <a href="#filenames">Filenames</a>).</p>
 <pre><code class="language-txt">| WORD |  WORD  | WORD | WORD *******|++++++|
 &gt;  1   |   0    | Mode | Len of Name | Name |
 |******|********|******|*************|++++++|
@@ -423,26 +429,15 @@ The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
 &lt;  4   | Handle | Status | Size | Data |
 |******|********|********|******|++++++|
 </code></pre>
-<p><strong>SDSIO_CMD_EOS</strong></p>
-<p>The Command ID=5 <strong>SDSIO_CMD_EOS</strong> checks if the end of file is reached. The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</strong>.</p>
-<pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |
-&gt;  5   | Handle |  0   |  0   |
-|******|********|******|******|
-</code></pre>
-<p>The Response ID=5 <strong>SDSIO_CMD_EOS</strong> returns the <code>Status</code> with nonzero = end of stream, else 0</p>
-<pre><code class="language-txt">| WORD |  WORD  |  WORD  | WORD |
-&lt;  5   | Handle | Status |  0   |
-|******|********|********|******|
-</code></pre>
 <p><strong>SDSIO_CMD_PING</strong></p>
-<p>The Command ID=6 <strong>SDSIO_CMD_PING</strong> verifies if the Server is active and reachable on the Host.</p>
+<p>The Command ID=5 <strong>SDSIO_CMD_PING</strong> verifies if the Server is active and reachable on the Host.</p>
 <pre><code class="language-txt">| WORD | WORD | WORD | WORD |
-&gt;  6   |  0   |  0   |  0   |
+&gt;  5   |  0   |  0   |  0   |
 |******|******|******|******|
 </code></pre>
-<p>The Response ID=6 <strong>SDSIO_CMD_PING</strong> returns the <code>Status</code> with nonzero = server active, else 0</p>
+<p>The Response ID=5 <strong>SDSIO_CMD_PING</strong> returns the <code>Status</code> with nonzero = server active, else 0</p>
 <pre><code class="language-txt">| WORD | WORD |  WORD  | WORD |
-&lt;  6   |  0   | Status |  0   |
+&lt;  5   |  0   | Status |  0   |
 |******|******|********|******|
 </code></pre>
 <h2 id="sdsio-message-sequence">SDSIO Message Sequence</h2>

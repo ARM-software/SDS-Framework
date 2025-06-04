@@ -71,9 +71,11 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a>
         <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#serial-mode">Serial Mode</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#socket-mode">Socket Mode</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#serial-mode">Serial Mode</a>
+    <li class="toctree-l4"><a class="reference internal" href="#usb-mode">USB Mode</a>
     </li>
         </ul>
     </li>
@@ -171,6 +173,7 @@
 <li>pandas</li>
 <li>pyyaml</li>
 <li>pyserial</li>
+<li>libusb1</li>
 </ul>
 </li>
 </ul>
@@ -184,84 +187,104 @@
 <li>Option 1: Use a Python environment:</li>
 </ul>
 <pre><code class="language-txt">python -m venv sds                 // create environment with name sds
-sds\Scripts\activate               
+sds\Scripts\activate
 pip install -r requirements.txt
 </code></pre>
 <ul>
 <li>Option 2: Install the required Python packages with <code>pip</code>:</li>
 </ul>
-<pre><code class="language-txt">pip install ifaddr matplotlib numpy pandas pyyaml pyserial
+<pre><code class="language-txt">pip install ifaddr matplotlib numpy pandas pyyaml pyserial libusb1
 </code></pre>
 <h2 id="sdsio-server">SDSIO-Server</h2>
-<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDSIO-Server</strong></a> enables recording and playback of SDS data files via socket (TCP/IP), USB Virtual COM Port (VCOM) or serial (UART) connection.
+<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDSIO-Server</strong></a> enables recording and playback of SDS data files via socket (TCP/IP), USB (using USB Bulk transfers, or serial (UART) connection.
 It communicates with the target using these <a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client">SDSIO Client interfaces</a>:</p>
 <ul>
 <li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/serial/usart">serial/usart</a> for serial communication via CMSIS-Driver USART.</li>
 <li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/socket">socket</a> for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.</li>
-<li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/vcom/mdk">vcom/mdk</a> for serial communication via USB Virtual COM Port (VCOM) using MDK-Middleware.</li>
+<li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/usb/bulk">usb/bulk</a> for communication via USB Bulk transfer using MDK-Middleware.</li>
 </ul>
 <p>The SDS data stream is recorded to files with the following naming convention:</p>
 <p><code>&lt;name&gt;.&lt;index&gt;.sds</code></p>
 <ul>
 <li><code>&lt;name&gt;</code> is the name of the I/O stream specified with the function <code>sdsRecOpen</code> or <code>sdsPlayOpen</code> on the target.</li>
 <li><code>&lt;index&gt;</code> is the zero-based index which is incremented for each subsequent recording.</li>
+<li>For more details see <a href="theory.html#filenames">Filenames section</a></li>
 </ul>
 <p>The data content of the <code>&lt;name&gt;.&lt;index&gt;.sds</code> is described with metadata file <code>&lt;name&gt;.sds.yml</code> in <a href="https://github.com/ARM-software/SDS-Framework/tree/main/schema">YAML format</a>.</p>
 <h3 id="usage">Usage</h3>
 <ul>
 <li><a href="#setup">Setup</a> the Python environment.</li>
-<li>Depending on the SDS interface used on the target use either <a href="#socket-mode">Socket Mode</a> or <a href="#serial-mode">Serial Mode</a> as described below.</li>
+<li>Depending on the SDS interface used on the target use either <a href="#serial-mode">Serial Mode</a>, <a href="#socket-mode">Socket Mode</a> or <a href="#usb-mode">USB Mode</a> as described below.</li>
 <li>The SDSIO_Server terminates with <code>Ctrl+C</code>.</li>
 </ul>
-<h4 id="socket-mode">Socket Mode</h4>
-<pre><code class="language-txt">usage: sdsio-server.py socket [-h] [--ipaddr &lt;IP&gt; | --interface &lt;Interface&gt;] [--port &lt;TCP Port&gt;]
-                              [--outdir &lt;Output dir&gt;]
+<h4 id="serial-mode">Serial Mode</h4>
+<pre><code class="language-txt">usage: sdsio-server.py serial [-h] -p &lt;Serial Port&gt; [--baudrate &lt;Baudrate&gt;] [--parity &lt;Parity&gt;] [--stopbits &lt;Stop bits&gt;] [--connect-timeout &lt;Timeout&gt;] [--workdir &lt;Work dir&gt;]
 
-options:
+optional arguments:
+  -h, --help                   show this help message and exit
+
+required:
+  -p &lt;Serial Port&gt;             Serial port
+
+optional:
+  --baudrate &lt;Baudrate&gt;        Baudrate (default: 115200)
+  --parity &lt;Parity&gt;            Parity: N=None, E=Even, O=Odd, M=Mark, S=Space (default: N)
+  --stopbits &lt;Stop bits&gt;       Stop bits: 1, 1.5, 2 (default: 1)
+  --connect-timeout &lt;Timeout&gt;  Serial port connection timeout in seconds (default: no timeout)
+  --workdir &lt;Work dir&gt;         Directory for SDS files (default: current directory)
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">python sdsio-server.py serial -p COM0 --baudrate 115200 --workdir ./work_dir
+</code></pre>
+<h4 id="socket-mode">Socket Mode</h4>
+<pre><code class="language-txt">usage: sdsio-server.py socket [-h] [--ipaddr &lt;IP&gt; | --interface &lt;Interface&gt;] [--port &lt;TCP Port&gt;] [--workdir &lt;Work dir&gt;]
+
+optional arguments:
   -h, --help               show this help message and exit
 
 optional:
-  --ipaddr &lt;IP&gt;            Server IP address (used on Win, default: computer IP)
-  --interface &lt;Interface&gt;  Network interface (used on MacOS or Linux)
+  --ipaddr &lt;IP&gt;            Server IP address (cannot be used with --interface)
+  --interface &lt;Interface&gt;  Network interface (cannot be used with --ipaddr)
   --port &lt;TCP Port&gt;        TCP port (default: 5050)
-  --outdir &lt;Output dir&gt;    Output directory
+  --workdir &lt;Work dir&gt;     Directory for SDS files (default: current directory)
 </code></pre>
 <div class="admonition notes">
 <p class="admonition-title">Notes</p>
+</div>
 <ul>
-<li><code>--ipaddr</code> and <code>--interface</code> options are mutually exclusive.  </li>
+<li>The <code>--ipaddr</code> and <code>--interface</code> options are mutually exclusive.</li>
 <li>SDSIO Server only supports IPv4 addresses.</li>
 </ul>
-</div>
 <p><strong>Example:</strong></p>
 <p>For Microsoft Windows (using default computer IP):</p>
-<pre><code class="language-bash">python sdsio-server.py socket --outdir ./out_dir
+<pre><code class="language-bash">python sdsio-server.py socket --workdir ./work_dir
 </code></pre>
 <p>For Linux:</p>
-<pre><code class="language-bash">python sdsio-server.py socket --interface eth0 --outdir ./out_dir
+<pre><code class="language-bash">python sdsio-server.py socket --interface eth0 --workdir ./work_dir
 </code></pre>
-<h4 id="serial-mode">Serial Mode</h4>
-<pre><code class="language-txt">usage: sdsio-server.py serial [-h] -p &lt;Serial Port&gt; [--baudrate &lt;Baudrate&gt;] [--parity &lt;Parity&gt;] 
-                              [--stopbits &lt;Stop bits&gt;] [--outdir &lt;Output dir&gt;]
+<h4 id="usb-mode">USB Mode</h4>
+<pre><code class="language-txt">usage: sdsio-server.py usb [-h] [--workdir &lt;Work dir&gt;] [--high-priority]
 
-options:
-  -h, --help              show this help message and exit
-
-required:
-  -p &lt;Serial Port&gt;        Serial port
+optional arguments:
+  -h, --help            show this help message and exit
 
 optional:
-  --baudrate &lt;Baudrate&gt;   Baudrate (default: 115200)
-  --parity &lt;Parity&gt;       Parity: N = None, E = Even, O = Odd, M = Mark, S = Space (default: N)
-  --stopbits &lt;Stop bits&gt;  Stop bits: 1, 1.5, 2 (default: 1)
-  --outdir &lt;Output dir&gt;   Output directory
+  --workdir &lt;Work dir&gt;  Directory for SDS files (default: current directory)
+  --high-priority       Enable high-priority threading for USB server (default: off)
 </code></pre>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This mode is also used for Virtual COM Port connection.</p>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
 </div>
+<ul>
+<li>For more reliable operation at higher data transfer rates, it is recommended to enable the <code>--high-priority</code> option. This increases the thread priority of the SDSIO-Server process.</li>
+<li>When using <code>--high-priority</code>, elevated privileges are required depending on your operating system:<ul>
+<li><strong>Windows</strong>: Run the Python script as an administrator.</li>
+<li><strong>macOS/Linux</strong>: Execute the script with <code>sudo</code> or ensure the user has sufficient permissions.</li>
+</ul>
+</li>
+</ul>
 <p><strong>Example:</strong></p>
-<pre><code class="language-bash">python sdsio-server.py serial -p COM0 --baudrate 115200 --outdir ./out_dir
+<pre><code class="language-bash">python sdsio-server.py usb --workdir ./work_dir
 </code></pre>
 <h2 id="sds-view">SDS-View</h2>
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDSIO-View</strong></a> outputs a time-based plot of SDS data files (<code>&lt;name&gt;.&lt;index&gt;.sds</code>) based on the meta-data file (<code>&lt;name&gt;.sds.yml</code>).</p>
