@@ -2,13 +2,14 @@
 
 The SDS template application is a test framework for DSP and ML algorithms. It allows recording and playback of real-world data streams using physical hardware or on simulation models using (Arm Virtual Hardware - FVP) to an user algorithm under test. The real-world data streams are captured in SDS data files.
 
-The SDSIO-Layer connects the SDS template application to a communication interface for SDS file I/O operations. The following SDSIO interfaces are pre-configured:
+The SDSIO-Layer connects the SDS template application to a communication interface with the SDSIO-Server for SDS file I/O operations. The following SDSIO interfaces are pre-configured:
 
 - Ethernet Interface using the MDK-Middleware Network component.
-- USB Virtual COM Port Interface using the MDK-Middleware USB component.
+- USB Bulk Interface using the MDK-Middleware USB component.
 - Memory Card Interface using the MDK-Middleware File System component.
+- For AVH-FVP target VSI communication to SDSIO-Server.
 
-With a custom SDSIO interface alternative file I/O configurations are possible.
+Note: With a custom SDSIO interface alternative file I/O configurations are possible.
 
 The template contains two projects:
 

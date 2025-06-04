@@ -4,10 +4,10 @@ edit_uri: ./edit/main/documentation
 nav:
     - Home: index.md
     - Overview: overview.md
-    - Theory of Operation: theory.md
-    - SDSIO Interface: sdsio.md
     - SDS Template Application: template.md
+    - SDSIO Interface: sdsio.md
     - Utilities: utilities.md
+    - Theory of Operation: theory.md
     - API Modules: SDS_API/modules.md
 
 plugins:

@@ -27,4 +27,8 @@ The [`layer/usb/sdsio_usb.clayer.yml`](https://github.com/ARM-software/SDS-Frame
 
 ## Layer: sdsio_fs
 
-The [`layer/filesystem/SDS_Interface.clayer`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem) is configured for recording and playback to/from the Memory Card. It uses the MDK-Middleware File System component.
+The [`layer/filesystem/sdsio_fs.clayer`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem) is configured for recording and playback to/from the Memory Card. It uses the MDK-Middleware File System component.
+
+## Layer: sdsio_fvp
+
+The [`layer/fvp/sdsio_fvp.clayer`](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp) is configured for recording and playback to/from the Host computer using a SDSIO-Server interface that integrates to the simulation model using the [VSI interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html).
