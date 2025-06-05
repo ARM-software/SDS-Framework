@@ -272,7 +272,8 @@ class sdsio_manager:
         # ensure not already open
         for (_, n, _) in self.opened_streams.values():
             if n == name:
-                printer.info(f"Stream '{name}' is already opened, cannot open again.")
+                file_name = os.path.basename(self.opened_streams[sid][0].name)
+                printer.info(f"Stream '{file_name}' is already opened, cannot open again.")
                 return resp_err
 
         # mode 1 = write, 0 = read
@@ -359,12 +360,15 @@ class sdsio_manager:
         resp.extend(sid.to_bytes(4,'little'))
         resp.extend(mode.to_bytes(4,'little'))
         resp.extend((0).to_bytes(4,'little'))
-        printer.info(f"Stream opened: {self.opened_streams[sid][1]}.")
+
+        file_name = os.path.basename(self.opened_streams[sid][0].name)
+        printer.info(f"Stream opened: {self.opened_streams[sid][1]} ({file_name}).")
         return resp
 
     def __close(self, sid):
         resp = bytearray()
         name = self.opened_streams[sid][1]
+        file_name = os.path.basename(self.opened_streams[sid][0].name)
         # clean up writer side
         if sid in self.write_buffers:
             buf = self.write_buffers.pop(sid)
@@ -382,7 +386,7 @@ class sdsio_manager:
             self.read_stop.pop(sid)
         # unregister stream
         self.opened_streams.pop(sid, None)
-        printer.info(f"Stream closed: {name}.")
+        printer.info(f"Stream closed: {name} ({file_name}).")
         return resp
 
     def __write(self, sid, data):
@@ -436,7 +440,7 @@ class sdsio_manager:
         resp.extend(sid.to_bytes(4,'little'))
         resp.extend((1).to_bytes(4,'little'))
         resp.extend((0).to_bytes(4,'little'))
-        printer.info("Ping received. Connection is active.")
+        printer.info("Ping received.")
         return resp
 
     def clean(self):
@@ -609,7 +613,7 @@ class sdsio_server_serial:
                     time.sleep(0.001)
                     continue
 
-                # Process complete messages from the buffer…
+                # Process complete messages from the buffer...
                 while len(buffer) >= 16:
                     header = buffer[:16]
                     data_size = int.from_bytes(header[12:16], 'little')
@@ -693,7 +697,6 @@ class sdsio_server_usb:
     def open(self):
         first_attempt = True
         try:
-            printer.info(f"Searching for USB device: {self.PRODUCT_STR}")
             usb_dev = None
             while usb_dev is None:
                 for dev in self.ctx.getDeviceList(skip_on_error=True):
@@ -737,9 +740,8 @@ class sdsio_server_usb:
                                 self.out_pckt_sz = ep.getMaxPacketSize()
 
             if not (self.in_ep and self.out_ep):
-                raise RuntimeError("Bulk endpoints not found")
+                raise RuntimeError("Bulk endpoints not found.")
 
-            printer.info(f"USB configured (IN=0x{self.in_ep:02X}, OUT=0x{self.out_ep:02X})")
         except KeyboardInterrupt:
             # let CTRL+C propagate if it happens here
             raise
@@ -795,7 +797,7 @@ class sdsio_server_usb:
 
     def _on_hotplug(self, context, device, event):
         if event & usb1.HOTPLUG_EVENT_DEVICE_LEFT:
-            printer.info("USB device disconnected (hotplug).")
+            printer.info("USB device disconnected.")
             self.running = False
             # wake the coros so they exit promptly
             self.loop.call_soon_threadsafe(self.in_q.put_nowait,  b'')
@@ -877,7 +879,7 @@ class sdsio_server_usb:
 
             self.open()
 
-            # hotplug if possible…
+            # hotplug if possible...
             try:
                 self.ctx.hotplugRegisterCallback(
                     callback   = self._on_hotplug,
@@ -887,9 +889,7 @@ class sdsio_server_usb:
                     product_id = 0,
                     dev_class  = usb1.HOTPLUG_MATCH_ANY
                 )
-                printer.info("Hotplug monitoring enabled.")
             except (AttributeError, usb1.USBError):
-                printer.info("Hotplug not supported, using polling fallback.")
                 self.running = True
                 self._monitor_thread = threading.Thread(
                     target=self._monitor_loop,
@@ -915,7 +915,7 @@ class sdsio_server_usb:
                 x.submit()
                 self.in_transfers.append(x)
 
-            printer.info(f"USB server running ({self.XFER_NUM}×{self.XFER_SIZE//1024} KiB IN).")
+            printer.info(f"USB Server running.")
 
             # start polling thread
             self._poll_thread = threading.Thread(
@@ -930,8 +930,8 @@ class sdsio_server_usb:
                 break
 
             # clean up and loop back to reconnect
+            self.mgr.clean()
             self.close()
-            printer.info("Re-waiting for USB device to reconnect…")
 
     def close(self):
         # Called either by KeyboardInterrupt or by internal errors/disconnects
@@ -1063,7 +1063,7 @@ def parse_arguments():
     usb_optional.add_argument("--workdir", dest="work_dir", metavar="<Work dir>",
                               help="Directory for SDS files (default: current directory) ", type=dir_path, default=".")
     usb_optional.add_argument("--high-priority", dest="high_priority", action="store_true",
-                              help="Enable high-priority threading for USB server (default: off)")
+                              help="Enable high-priority threading for USB Server (default: off)")
 
     return parser.parse_args()
 
@@ -1112,7 +1112,7 @@ async def main():
             srv = sdsio_server_usb(manager, loop, high_priority=args.high_priority)
 
             try:
-                printer.info("Starting USB server…")
+                printer.info("Starting USB Server...")
                 await srv.start()
 
             except KeyboardInterrupt:
@@ -1120,13 +1120,12 @@ async def main():
                 printer.info("KeyboardInterrupt received, shutting down.")
 
             finally:
-                # Always attempt to close the USB server, whether we're here due to Ctrl+C
+                # Always attempt to close the USB Server, whether we're here due to Ctrl+C
                 # or because srv.start() returned on its own.
-                printer.info("Closing USB server…")
+                printer.info("Closing USB Server...")
                 srv.close()
                 # Give background tasks (consumer, out_sender, monitor) a moment to exit.
                 await asyncio.sleep(0.1)
-                printer.info("USB server cleanup complete.")
 
     except KeyboardInterrupt:
         pass
