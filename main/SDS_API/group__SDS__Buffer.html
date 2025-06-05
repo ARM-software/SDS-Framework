@@ -173,7 +173,6 @@
 </tbody>
 </table>
 <h2 id="detailed-description">Detailed Description</h2>
-<p>The <strong>SDS</strong> circular <strong>buffer</strong> facilitates efficient reading from and writing to a circular buffer allocated in RAM. A callback function can be registered to respond when data thresholds (high or low) are reached. </p>
 <h2 id="public-types-documentation">Public Types Documentation</h2>
 <h3 id="typedef-sdsbufferevent_t">typedef sdsBufferEvent_t</h3>
 <p><em>Callback function for SDS circular buffer event handling.</em> </p>
@@ -269,7 +268,7 @@
     uint32_t buf_size
 ) 
 </code></pre>
-<p>Reads data from the SDS circular buffer. If there is no data in the circular buffer the function will return 0.</p>
+<p>Attempts to read up to <code>buf_size</code> bytes of data from the SDS circular buffer into a <code>buf</code>. If sufficient data is available, the requested number of bytes will be read. If only partial data is available, only the available bytes will be read. On success, the function returns the number of bytes actually read or 0 if SDS circular buffer is empty.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>id</code> <a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
@@ -289,7 +288,14 @@
     void * event_arg
 ) 
 </code></pre>
-<p>Registers a <a href="group__SDS__Buffer.html#typedef-sdsbufferevent_t"><strong>sdsBufferEvent_t</strong></a> callback function for handling buffer threshold events. If <code>event_cb</code> is NULL, the previously registered callback function is unregistered. This function should not be called concurrently with <a href="group__SDS__Buffer.html#function-sdsbufferwrite"><strong>sdsBufferWrite</strong></a> or <a href="group__SDS__Buffer.html#function-sdsbufferread"><strong>sdsBufferRead</strong></a> operations for the same buffer stream.</p>
+<p>Registers a <a href="group__SDS__Buffer.html#typedef-sdsbufferevent_t"><strong>sdsBufferEvent_t</strong></a> callback function to handle threshold events for the specified SDS buffer.</p>
+<p>The <code>event_mask</code> parameter specifies which buffer events should trigger the callback. It is a bitmask composed of values from the <a href="group__SDS__Buffer__Event__Codes.html"><strong>Event Codes</strong></a> enumeration:</p>
+<ul>
+<li><a href="group__SDS__Buffer__Event__Codes.html#define-sds_buffer_event_data_low"><strong>SDS_BUFFER_EVENT_DATA_LOW</strong></a></li>
+<li><a href="group__SDS__Buffer__Event__Codes.html#define-sds_buffer_event_data_high"><strong>SDS_BUFFER_EVENT_DATA_HIGH</strong></a></li>
+</ul>
+<p>When an event matching the mask occurs, the registered <code>event_cb</code> function is invoked with <code>event_arg</code> as its context.</p>
+<p>If <code>event_cb</code> is NULL, any previously registered callback for the specified buffer is unregistered.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>id</code> <a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>
@@ -309,7 +315,7 @@
     uint32_t buf_size
 ) 
 </code></pre>
-<p>Writes data to the SDS circular buffer. If the buffer is full, no additional data will be written until space is freed by the sdsBufferRead function.</p>
+<p>Attempts to write up to <code>buf_size</code> bytes of data from <code>buf</code> to the SDS circular buffer. If sufficient space is available in the buffer, all data will be written. If only partial space is available, only the number of bytes that fit will be written. No data is overwritten. On success, the function returns the number of bytes actually written.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>id</code> <a href="group__SDS__Buffer.html#typedef-sdsbufferid_t"><strong>sdsBufferId_t</strong></a> handle to SDS buffer stream </li>

@@ -24,7 +24,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.txt" line="168" column="9" declfile="sds/include/sds.txt" declline="168" declcolumn="9"/>
+        <location file="sds/include/sds.txt" line="229" column="9" declfile="sds/include/sds.txt" declline="229" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__IO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>int32_t</type>
@@ -142,7 +142,14 @@
 <para>Write data to I/O stream. </para>
         </briefdescription>
         <detaileddescription>
-<para>Writes data to an SDS I/O stream opened for writing. If the interface is a local file system or semihosting, data is written directly to the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a write command (SDSIO_CMD_WRITE) along with the data to the SDS I/O Server, which then writes the data to a file on the Host system.</para>
+<para>Attempts to write up to <computeroutput>buf_size</computeroutput> bytes from the memory pointed to <computeroutput>buf</computeroutput> to the SDS I/O stream identified by <computeroutput>id</computeroutput>. If the interface is a local file system or semihosting, data is written directly to the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a write command (SDSIO_CMD_WRITE) along with the data to the SDS I/O Server, which then writes the data to a file on the Host system.</para>
+<para>The function may return before all data has been written, depending on the available interface bandwidth, buffer capacity, or timeout behavior:</para>
+<para><itemizedlist>
+<listitem><para>If the write operation is successful, the function returns the number of bytes actually written. This value may be less than <emphasis>buf_size</emphasis> in case of partial write.</para>
+</listitem><listitem><para>If no data could be written before the operation times out, the function returns <ref refid="group__SDS__IO__Return__Codes_1ga366a248ca8888c4257137aeaf5d2ddb2" kindref="member">SDSIO_ERROR_TIMEOUT</ref>.</para>
+</listitem><listitem><para>If an I/O interface or protocol error occurs, the function returns <ref refid="group__SDS__IO__Return__Codes_1ga9445f070322b3667176d0022c433dea2" kindref="member">SDSIO_ERROR</ref> or <ref refid="group__SDS__IO__Return__Codes_1ga5afb9397fd46fba843f37a03ed40da09" kindref="member">SDSIO_ERROR_INTERFACE</ref>.</para>
+</listitem></itemizedlist>
+</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername direction="in">id</parametername>
@@ -197,7 +204,16 @@
 <para>Read data from I/O stream. </para>
         </briefdescription>
         <detaileddescription>
-<para>Reads data from an SDS I/O stream opened for reading. If the interface is a local file system or semihosting, data is read directly from the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO_CMD_READ) to the SDS I/O Server, which reads the file on the Host system and returns the data to the Client. If the end of the stream is reached, the function returns <ref refid="group__SDS__IO__Return__Codes_1gaf44016f63777a63a3cc5751b7c8c6fe1" kindref="member">SDSIO_EOS</ref> to indicate that no more data is available.</para>
+<para>Attempts to read up to <computeroutput>buf_size</computeroutput> bytes of data from the SDS I/O stream identified by <computeroutput>id</computeroutput> into the memory pointed to <computeroutput>buf</computeroutput>. If the interface is a local file system or semihosting, data is read directly from the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO_CMD_READ) to the SDS I/O Server, which reads the file on the Host system and returns the data to the Client.</para>
+<para>The function attempts to read data and may block based on the behavior of the underlying interface and data availability. It returns under the following conditions:</para>
+<para><itemizedlist>
+<listitem><para>If data is available, the function reads up to <computeroutput>buf_size</computeroutput> bytes and returns the number of bytes actually read. This value may be less than <computeroutput>buf_size</computeroutput>.</para>
+</listitem><listitem><para>If no data becomes available before the timeout expires, the function returns <ref refid="group__SDS__IO__Return__Codes_1ga366a248ca8888c4257137aeaf5d2ddb2" kindref="member">SDSIO_ERROR_TIMEOUT</ref>.</para>
+</listitem><listitem><para>If data is partially read but the timeout occurs before the full request is satisfied, the function returns the number of bytes read up to that point.</para>
+</listitem><listitem><para>If the end of the stream is reached and no more data remains, the function returns <ref refid="group__SDS__IO__Return__Codes_1gaf44016f63777a63a3cc5751b7c8c6fe1" kindref="member">SDSIO_EOS</ref> to indicate that the end of file has been reached and no additional data is available.</para>
+</listitem><listitem><para>If an I/O interface or protocol error occurs, the function returns <ref refid="group__SDS__IO__Return__Codes_1ga9445f070322b3667176d0022c433dea2" kindref="member">SDSIO_ERROR</ref> or <ref refid="group__SDS__IO__Return__Codes_1ga5afb9397fd46fba843f37a03ed40da09" kindref="member">SDSIO_ERROR_INTERFACE</ref>.</para>
+</listitem></itemizedlist>
+</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername direction="in">id</parametername>
@@ -283,7 +299,15 @@
 <para><ref refid="sdsio_8h_source" kindref="compound">sdsio.h</ref>: SDS I/O Interface for data streams </para>
     </briefdescription>
     <detaileddescription>
-<para>The <bold>SDS I/O</bold> interface transfers data between the circular buffer and the I/O, handling both read and write operations. </para>
+<para>The SDS I/O interface provides a generic mechanism for reading from and writing to <computeroutput>SDS file</computeroutput>s using several I/O backends.</para>
+<para>Interface can operate over:</para>
+<para><itemizedlist>
+<listitem><para>A local file system, such as an SD card or semihosting, where files are accessed directly.</para>
+</listitem><listitem><para>A communication channel such as Ethernet, USB, or UART, where access to files is performed remotely via an SDS I/O Server.</para>
+</listitem></itemizedlist>
+</para>
+<para>When using a communication channel, the embedded device runs an SDS I/O Client, which communicates with the SDS I/O Server running on the host machine. This interaction is command-based (e.g., <computeroutput>SDSIO_CMD_OPEN</computeroutput>, <computeroutput>SDSIO_CMD_READ</computeroutput>, <computeroutput>SDSIO_CMD_WRITE</computeroutput>) and enables the embedded system to remotely open, read, write, and close files located on the host. For more details, refer to <ulink url="../theory.md#sdsio server protocol">SDSIO Server Protocol</ulink>.</para>
+<para>The interface is lightweight and backend-agnostic, making it suitable for embedded data logging, host-interactive tools, or as a transport layer for higher-level components such as the SDS Recorder and Player. </para>
     </detaileddescription>
   </compounddef>
 </doxygen>

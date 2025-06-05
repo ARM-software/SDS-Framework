@@ -187,7 +187,15 @@
 <para>Register SDS buffer stream event callback function. </para>
         </briefdescription>
         <detaileddescription>
-<para>Registers a <ref refid="group__SDS__Buffer_1ga35588c55fad370bf29efa09d859d4ba4" kindref="member">sdsBufferEvent_t</ref> callback function for handling buffer threshold events. If <computeroutput>event_cb</computeroutput> is NULL, the previously registered callback function is unregistered. This function should not be called concurrently with <ref refid="group__SDS__Buffer_1ga13096d76144cc0d7cf9ff3e1be14e56a" kindref="member">sdsBufferWrite</ref> or <ref refid="group__SDS__Buffer_1gaea369e9f3e767ba347f0758120684498" kindref="member">sdsBufferRead</ref> operations for the same buffer stream.</para>
+<para>Registers a <ref refid="group__SDS__Buffer_1ga35588c55fad370bf29efa09d859d4ba4" kindref="member">sdsBufferEvent_t</ref> callback function to handle threshold events for the specified SDS buffer.</para>
+<para>The <computeroutput>event_mask</computeroutput> parameter specifies which buffer events should trigger the callback. It is a bitmask composed of values from the <ref refid="group__SDS__Buffer__Event__Codes" kindref="compound">Event Codes</ref> enumeration:</para>
+<para><itemizedlist>
+<listitem><para><ref refid="group__SDS__Buffer__Event__Codes_1ga7cb9be7e9c0942aac1fc9424613b0c69" kindref="member">SDS_BUFFER_EVENT_DATA_LOW</ref></para>
+</listitem><listitem><para><ref refid="group__SDS__Buffer__Event__Codes_1gace7390e82ed34e762f013bdbd1fe6bbb" kindref="member">SDS_BUFFER_EVENT_DATA_HIGH</ref></para>
+</listitem></itemizedlist>
+</para>
+<para>When an event matching the mask occurs, the registered <computeroutput>event_cb</computeroutput> function is invoked with <computeroutput>event_arg</computeroutput> as its context.</para>
+<para>If <computeroutput>event_cb</computeroutput> is NULL, any previously registered callback for the specified buffer is unregistered.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername direction="in">id</parametername>
@@ -250,7 +258,7 @@
 <para>Write data to SDS buffer stream. </para>
         </briefdescription>
         <detaileddescription>
-<para>Writes data to the SDS circular buffer. If the buffer is full, no additional data will be written until space is freed by the sdsBufferRead function.</para>
+<para>Attempts to write up to <computeroutput>buf_size</computeroutput> bytes of data from <computeroutput>buf</computeroutput> to the SDS circular buffer. If sufficient space is available in the buffer, all data will be written. If only partial space is available, only the number of bytes that fit will be written. No data is overwritten. On success, the function returns the number of bytes actually written.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername direction="in">id</parametername>
@@ -305,7 +313,7 @@
 <para>Read data from SDS buffer stream. </para>
         </briefdescription>
         <detaileddescription>
-<para>Reads data from the SDS circular buffer. If there is no data in the circular buffer the function will return 0.</para>
+<para>Attempts to read up to <computeroutput>buf_size</computeroutput> bytes of data from the SDS circular buffer into a <computeroutput>buf</computeroutput>. If sufficient data is available, the requested number of bytes will be read. If only partial data is available, only the available bytes will be read. On success, the function returns the number of bytes actually read or 0 if SDS circular buffer is empty.</para>
 <para><parameterlist kind="param"><parameteritem>
 <parameternamelist>
 <parametername direction="in">id</parametername>
@@ -406,7 +414,29 @@
 <para><ref refid="sds__buffer_8h_source" kindref="compound">sds_buffer.h</ref>: SDS circular buffer handling for data streams </para>
     </briefdescription>
     <detaileddescription>
-<para>The <bold>SDS</bold> circular <bold>buffer</bold> facilitates efficient reading from and writing to a circular buffer allocated in RAM. A callback function can be registered to respond when data thresholds (high or low) are reached. </para>
+<para>The <bold>SDS</bold> circular <bold>Buffer</bold> provides an interface for managing circular buffer streams used for efficient data transfer between software components. It includes functions for opening, closing, reading, writing, clearing, and monitoring buffer states using event callbacks.</para>
+<para>Each buffer stream is represented by an identifier of type <ref refid="group__SDS__Buffer_1gae47a52c5320db63b7546d03dee701e40" kindref="member">sdsBufferId_t</ref>, which is obtained via <ref refid="group__SDS__Buffer_1ga192198f64a0c5211f5ba322cc8ebf141" kindref="member">sdsBufferOpen()</ref> and used in subsequent API calls to refer to the corresponding buffer instance.</para>
+<para>Buffer Behavior The buffer operates as a circular FIFO (first-in, first-out) queue. Data written to the buffer via <ref refid="group__SDS__Buffer_1ga13096d76144cc0d7cf9ff3e1be14e56a" kindref="member">sdsBufferWrite()</ref> is stored until read by <ref refid="group__SDS__Buffer_1gaea369e9f3e767ba347f0758120684498" kindref="member">sdsBufferRead()</ref> or until the buffer is cleared or closed. The buffer supports thresholds (threshold_low and threshold_high) for monitoring usage levels and triggering user-defined events.</para>
+<sect1 id="group__SDS__Buffer_1autotoc_md0_1s1"><sect2 id="group__SDS__Buffer_1autotoc_md0">
+<title>Thread Safety</title><para>The SDS Buffer API is partially thread-safe, with the following constraints:</para>
+<para>Thread-safe operations:</para>
+<para><itemizedlist>
+<listitem><para><ref refid="group__SDS__Buffer_1gaea369e9f3e767ba347f0758120684498" kindref="member">sdsBufferRead()</ref></para>
+</listitem><listitem><para><ref refid="group__SDS__Buffer_1ga13096d76144cc0d7cf9ff3e1be14e56a" kindref="member">sdsBufferWrite()</ref></para>
+</listitem><listitem><para><ref refid="group__SDS__Buffer_1gad5bf97759480ab2de54cac48ff97c099" kindref="member">sdsBufferGetCount()</ref></para>
+</listitem></itemizedlist>
+</para>
+<para>These functions may be safely called concurrently, provided they operate on the same buffer instance (<ref refid="group__SDS__Buffer_1gae47a52c5320db63b7546d03dee701e40" kindref="member">sdsBufferId_t</ref>). This allows safe producer-consumer models where one thread writes and another reads from the same buffer.</para>
+<para>Non-thread-safe operations:</para>
+<para><itemizedlist>
+<listitem><para><ref refid="group__SDS__Buffer_1ga192198f64a0c5211f5ba322cc8ebf141" kindref="member">sdsBufferOpen()</ref></para>
+</listitem><listitem><para><ref refid="group__SDS__Buffer_1gac4e4dae9493c3c5ef09945d4008fd4d0" kindref="member">sdsBufferClose()</ref></para>
+</listitem><listitem><para><ref refid="group__SDS__Buffer_1ga464297b2b8925a6d34b99f19a873200f" kindref="member">sdsBufferClear()</ref></para>
+</listitem><listitem><para><ref refid="group__SDS__Buffer_1ga0e35ab7f4c66035234c1cf19faf6e9fe" kindref="member">sdsBufferRegisterEvents()</ref></para>
+</listitem></itemizedlist>
+</para>
+<para>These functions must not be called concurrently with each other or with <ref refid="group__SDS__Buffer_1gaea369e9f3e767ba347f0758120684498" kindref="member">sdsBufferRead()</ref> or <ref refid="group__SDS__Buffer_1ga13096d76144cc0d7cf9ff3e1be14e56a" kindref="member">sdsBufferWrite()</ref> for the same buffer. Doing so can lead to undefined behavior or data corruption. </para>
+</sect2></sect1>
     </detaileddescription>
   </compounddef>
 </doxygen>

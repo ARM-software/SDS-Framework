@@ -103,10 +103,6 @@ sds\_rec\_play.h _: SDS Recorder and Player for writing and reading SDS files vi
 ## Detailed Description
 
 
-The **SDS Recorder** and **Player** manage writing to and reading from SDS files through communication or file I/O interfaces. They support the recording and playback of real-world data for applications such as machine learning and data analysis. Refer to the chapter _SDS Interface_ for an overview. 
-
-
-    
 ## Public Types Documentation
 
 
@@ -209,7 +205,7 @@ int32_t sdsPlayGetSize (
 
 
 
-Function verifies that both the header and its associated data are present and fully valid within the SDS Stream buffer and returns the size, in bytes, of the next available data block in the player stream. If either the header or data is missing or incomplete, the function returns [**SDS\_PLAY\_ERROR\_NO\_DATA**](group__SDS__Recorder__Player__Return__Codes.md#define-sds_play_error_no_data). If the end of the stream has been reached, the function returns [**SDS\_PLAY\_EOS**](group__SDS__Recorder__Player__Return__Codes.md#define-sds_play_eos).
+Function verifies that the entire header and the complete data block specified by the header are both present in the SDS circular buffer. It returns the size, in bytes, of the next available data block in the player stream. If either the header is incomplete or the corresponding data block is not yet fully available, the function returns [**SDS\_PLAY\_ERROR\_NO\_DATA**](group__SDS__Recorder__Player__Return__Codes.md#define-sds_play_error_no_data). If the end of the stream has been reached and no further data is available, the function returns [**SDS\_PLAY\_EOS**](group__SDS__Recorder__Player__Return__Codes.md#define-sds_play_eos).
 
 
 
@@ -251,10 +247,10 @@ sdsRecPlayId_t sdsPlayOpen (
 Opens a player stream for reading timestamps and data blocks from an SDS file. The `buf` parameter specifies a user-allocated memory region used as an internal circular buffer. The buffer must be large enough to accommodate the largest expected data block plus 8 bytes for the record header.
 
 
-The `name` parameter specifies the base name of the SDS input file. The function attempts to locate and open the file `<name>.<index>.sds`, where `<index>` is an auto-incrementing value. If no matching file is found, the function returns an error. For details on the file naming convention, refer to the _SDS Data Files: Filenames_ section in the _Theory of Operation_ chapter.
+The `name` parameter specifies the base name of the SDS input file. The function attempts to locate and open the file `<name>.<index>.sds`, where `<index>` is an auto-incrementing value. If no matching file is found, the function returns an error. For details, refer to [Filenames section](../theory.md#filenames).
 
 
-This function may block for a period of time while it loads the internal circular buffer with data from the SDS file.
+This function may block for a period of time while it loads the internal SDS circular buffer with data from the SDS file.
 
 
 This function returns a handle that uniquely identifies the stream. The handle is used as a reference in subsequent function calls to perform operations on the stream.
@@ -299,13 +295,22 @@ int32_t sdsPlayRead (
 
 
 
-Reads a data block along with its associated timestamp from the internal circular buffer. The `sdsRecPlayThread` worker thread asynchronously reads the data from the SDS file using the underlying SDS I/O interface and writes it to the internal circular buffer. This asynchronous design enables efficient, non-blocking data handling and ensures optimal performance.
+Reads a data block along with its associated timestamp from the internal SDS circular buffer.
 
 
-Before attempting to read, this function verifies that both the header and its associated data are present and fully valid within the SDS Stream buffer. If either the header or data is missing or incomplete, the function aborts and returns [**SDS\_PLAY\_ERROR\_NO\_DATA**](group__SDS__Recorder__Player__Return__Codes.md#define-sds_play_error_no_data). The function confirms that the provided buffer can accommodate the entire data block. If the provided buffer is too small, it aborts and returns [**SDS\_REC\_PLAY\_ERROR\_PARAMETER**](group__SDS__Recorder__Player__Return__Codes.md#define-sds_rec_play_error_parameter). If the end of the stream has been reached, the function returns [**SDS\_PLAY\_EOS**](group__SDS__Recorder__Player__Return__Codes.md#define-sds_play_eos).
+The `sdsRecPlayThread` worker thread asynchronously reads the data from the SDS file using the underlying SDS I/O interface. For details on how the specific SDS file is selected, refer to [Filenames section](../theory.md#filenames). The retrieved data is then written to the internal SDS circular buffer. This asynchronous design enables efficient, non-blocking data handling and ensures optimal performance.
 
 
-On success, the function reads the data block from the stream buffer, stores it in the user-provided buffer, and returns the the size of the data block in bytes. The associated timestamp is returned via the output parameter `timestamp`.
+Before attempting to read, the function verifies that the entire header and the complete data block specified by the header are both present in the SDS circular buffer. If either the header is incomplete or the corresponding data block is not yet fully available, the function aborts and returns [**SDS\_PLAY\_ERROR\_NO\_DATA**](group__SDS__Recorder__Player__Return__Codes.md#define-sds_play_error_no_data).
+
+
+The function verifies that the user-provided buffer `buf`, with size `buf_size`, is large enough to accommodate the entire data block. If it is too small, the function aborts and returns [**SDS\_REC\_PLAY\_ERROR\_PARAMETER**](group__SDS__Recorder__Player__Return__Codes.md#define-sds_rec_play_error_parameter).
+
+
+If the end of the stream has been reached and no further data is available, the function returns [**SDS\_PLAY\_EOS**](group__SDS__Recorder__Player__Return__Codes.md#define-sds_play_eos).
+
+
+On success, the function reads the data block from the circular buffer, stores it in the user-provided buffer, and returns the the size of the data block in bytes. The associated timestamp is returned via the output parameter `timestamp`.
 
 
 Thread safety is ensured by allowing only a single thread to read from a given stream at a time. However, multiple threads can concurrently read from different streams, enabling parallel operations across multiple streams.
@@ -390,7 +395,7 @@ sdsRecPlayId_t sdsRecOpen (
 Opens a recorder stream for writing timestamps and data blocks to the SDS file. The `buf` parameter specifies a user-allocated memory region that serves as an internal circular buffer. The buffer must be large enough to hold at least the largest expected data block plus 8 bytes for the record header.
 
 
-The `name` parameter defines the base name for the SDS output file and is used to construct the full file name in the format `name.index.sds`. The `index` is an auto-incrementing value that ensures a unique file name is generated. If a file with the generated name already exists, the `index` is incremented until an unused name is found. For details on the file naming convention, refer to the _SDS Data Files: Filenames_ section in the _Theory of Operation_ chapter.
+The `name` parameter defines the base name for the SDS output file and is used to construct the full file name in the format `name.index.sds`. The `index` is an auto-incrementing value that ensures a unique file name is generated. If a file with the generated name already exists, the `index` is incremented until an unused name is found. For details, refer to [Filenames section](../theory.md#filenames).
 
 
 This function returns a handle that uniquely identifies the stream. The handle is used as a reference in subsequent function calls to perform operations on the stream.
@@ -502,13 +507,16 @@ int32_t sdsRecWrite (
 
 
 
-Writes a data block, including a header containing the timestamp and data block size, to the internal circular buffer. The `sdsRecPlayThread` worker thread asynchronously processes the buffer, writing the data to the SDS file via the underlying SDS I/O interface. This asynchronous design enables efficient, non-blocking data handling and optimized performance.
+Writes a data block, including a header containing the timestamp and data block size, to the internal circular buffer.
 
 
-Before writing, the function verifies that the data block fits within the available space in the internal buffer. If insufficient space is available, the operation is aborted and the function returns [**SDS\_REC\_ERROR\_NO\_SPACE**](group__SDS__Recorder__Player__Return__Codes.md#define-sds_rec_error_no_space).
+The `sdsRecPlayThread` worker thread asynchronously writes the data to the SDS file via the underlying SDS I/O interface. For an explanation of how the SDS Recorder selects and names the target SDS file, refer to [Filenames section](../theory.md#filenames). This asynchronous design enables efficient, non-blocking data handling and optimized performance.
 
 
-On success, the function writes the header and data block to the stream buffer and returns the number of data bytes written, excluding the header.
+Before attempting to write, function verifies that the entire header and the complete data block, provided via the buffer pointer `buf` and its size `buf_size`, can fit within the available space in the internal SDS circular buffer. If insufficient space is available, the operation is aborted and the function returns [**SDS\_REC\_ERROR\_NO\_SPACE**](group__SDS__Recorder__Player__Return__Codes.md#define-sds_rec_error_no_space).
+
+
+On success, the function writes the header and data block to the SDS circular buffer and returns the number of data bytes written, excluding the header.
 
 
 Thread safety is ensured by allowing only a single thread to write to a given stream at a time. However, multiple threads can concurrently write to different streams, enabling parallel operations across multiple streams.

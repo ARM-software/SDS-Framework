@@ -101,10 +101,6 @@ sds\_buffer.h _: SDS circular buffer handling for data streams_[More...](#detail
 ## Detailed Description
 
 
-The **SDS** circular **buffer** facilitates efficient reading from and writing to a circular buffer allocated in RAM. A callback function can be registered to respond when data thresholds (high or low) are reached. 
-
-
-    
 ## Public Types Documentation
 
 
@@ -327,7 +323,7 @@ int32_t sdsBufferRead (
 
 
 
-Reads data from the SDS circular buffer. If there is no data in the circular buffer the function will return 0.
+Attempts to read up to `buf_size` bytes of data from the SDS circular buffer into a `buf`. If sufficient data is available, the requested number of bytes will be read. If only partial data is available, only the available bytes will be read. On success, the function returns the number of bytes actually read or 0 if SDS circular buffer is empty.
 
 
 
@@ -369,7 +365,23 @@ int32_t sdsBufferRegisterEvents (
 
 
 
-Registers a [**sdsBufferEvent\_t**](group__SDS__Buffer.md#typedef-sdsbufferevent_t) callback function for handling buffer threshold events. If `event_cb` is NULL, the previously registered callback function is unregistered. This function should not be called concurrently with [**sdsBufferWrite**](group__SDS__Buffer.md#function-sdsbufferwrite) or [**sdsBufferRead**](group__SDS__Buffer.md#function-sdsbufferread) operations for the same buffer stream.
+Registers a [**sdsBufferEvent\_t**](group__SDS__Buffer.md#typedef-sdsbufferevent_t) callback function to handle threshold events for the specified SDS buffer.
+
+
+The `event_mask` parameter specifies which buffer events should trigger the callback. It is a bitmask composed of values from the [**Event Codes**](group__SDS__Buffer__Event__Codes.md) enumeration:
+
+
+
+* [**SDS\_BUFFER\_EVENT\_DATA\_LOW**](group__SDS__Buffer__Event__Codes.md#define-sds_buffer_event_data_low)
+* [**SDS\_BUFFER\_EVENT\_DATA\_HIGH**](group__SDS__Buffer__Event__Codes.md#define-sds_buffer_event_data_high)
+
+
+
+
+When an event matching the mask occurs, the registered `event_cb` function is invoked with `event_arg` as its context.
+
+
+If `event_cb` is NULL, any previously registered callback for the specified buffer is unregistered.
 
 
 
@@ -411,7 +423,7 @@ int32_t sdsBufferWrite (
 
 
 
-Writes data to the SDS circular buffer. If the buffer is full, no additional data will be written until space is freed by the sdsBufferRead function.
+Attempts to write up to `buf_size` bytes of data from `buf` to the SDS circular buffer. If sufficient space is available in the buffer, all data will be written. If only partial space is available, only the number of bytes that fit will be written. No data is overwritten. On success, the function returns the number of bytes actually written.
 
 
 

@@ -99,7 +99,23 @@ sdsio.h _: SDS I/O Interface for data streams_[More...](#detailed-description)
 ## Detailed Description
 
 
-The **SDS I/O** interface transfers data between the circular buffer and the I/O, handling both read and write operations. 
+The SDS I/O interface provides a generic mechanism for reading from and writing to `SDS file`s using several I/O backends.
+
+
+Interface can operate over:
+
+
+
+* A local file system, such as an SD card or semihosting, where files are accessed directly.
+* A communication channel such as Ethernet, USB, or UART, where access to files is performed remotely via an SDS I/O Server.
+
+
+
+
+When using a communication channel, the embedded device runs an SDS I/O Client, which communicates with the SDS I/O Server running on the host machine. This interaction is command-based (e.g., `SDSIO_CMD_OPEN`, `SDSIO_CMD_READ`, `SDSIO_CMD_WRITE`) and enables the embedded system to remotely open, read, write, and close files located on the host. For more details, refer to [SDSIO Server Protocol](../theory.md#sdsio server protocol).
+
+
+The interface is lightweight and backend-agnostic, making it suitable for embedded data logging, host-interactive tools, or as a transport layer for higher-level components such as the SDS Recorder and Player. 
 
 
     
@@ -267,7 +283,20 @@ int32_t sdsioRead (
 
 
 
-Reads data from an SDS I/O stream opened for reading. If the interface is a local file system or semihosting, data is read directly from the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO\_CMD\_READ) to the SDS I/O Server, which reads the file on the Host system and returns the data to the Client. If the end of the stream is reached, the function returns [**SDSIO\_EOS**](group__SDS__IO__Return__Codes.md#define-sdsio_eos) to indicate that no more data is available.
+Attempts to read up to `buf_size` bytes of data from the SDS I/O stream identified by `id` into the memory pointed to `buf`. If the interface is a local file system or semihosting, data is read directly from the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO\_CMD\_READ) to the SDS I/O Server, which reads the file on the Host system and returns the data to the Client.
+
+
+The function attempts to read data and may block based on the behavior of the underlying interface and data availability. It returns under the following conditions:
+
+
+
+* If data is available, the function reads up to `buf_size` bytes and returns the number of bytes actually read. This value may be less than `buf_size`.
+* If no data becomes available before the timeout expires, the function returns [**SDSIO\_ERROR\_TIMEOUT**](group__SDS__IO__Return__Codes.md#define-sdsio_error_timeout).
+* If data is partially read but the timeout occurs before the full request is satisfied, the function returns the number of bytes read up to that point.
+* If the end of the stream is reached and no more data remains, the function returns [**SDSIO\_EOS**](group__SDS__IO__Return__Codes.md#define-sdsio_eos) to indicate that the end of file has been reached and no additional data is available.
+* If an I/O interface or protocol error occurs, the function returns [**SDSIO\_ERROR**](group__SDS__IO__Return__Codes.md#define-sdsio_error) or [**SDSIO\_ERROR\_INTERFACE**](group__SDS__IO__Return__Codes.md#define-sdsio_error_interface).
+
+
 
 
 
@@ -338,7 +367,18 @@ int32_t sdsioWrite (
 
 
 
-Writes data to an SDS I/O stream opened for writing. If the interface is a local file system or semihosting, data is written directly to the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a write command (SDSIO\_CMD\_WRITE) along with the data to the SDS I/O Server, which then writes the data to a file on the Host system.
+Attempts to write up to `buf_size` bytes from the memory pointed to `buf` to the SDS I/O stream identified by `id`. If the interface is a local file system or semihosting, data is written directly to the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a write command (SDSIO\_CMD\_WRITE) along with the data to the SDS I/O Server, which then writes the data to a file on the Host system.
+
+
+The function may return before all data has been written, depending on the available interface bandwidth, buffer capacity, or timeout behavior:
+
+
+
+* If the write operation is successful, the function returns the number of bytes actually written. This value may be less than _buf\_size_ in case of partial write.
+* If no data could be written before the operation times out, the function returns [**SDSIO\_ERROR\_TIMEOUT**](group__SDS__IO__Return__Codes.md#define-sdsio_error_timeout).
+* If an I/O interface or protocol error occurs, the function returns [**SDSIO\_ERROR**](group__SDS__IO__Return__Codes.md#define-sdsio_error) or [**SDSIO\_ERROR\_INTERFACE**](group__SDS__IO__Return__Codes.md#define-sdsio_error_interface).
+
+
 
 
 

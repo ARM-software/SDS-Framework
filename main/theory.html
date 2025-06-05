@@ -112,7 +112,7 @@
 <h1 id="theory-of-operation">Theory of Operation</h1>
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
-<p>The SDS Framework enables to record and playback one or more data streams to an application that is under development as shown in the diagram below. With the SDSIO Interface the data streams are connected to SDS data files. The file storage can be either embedded within the system and access by a file system or external on a host computer and accessed by a communication interface such as Ethernet or USB.</p>
+<p>The SDS Framework enables to record and playback one or more data streams to an application that is under development as shown in the diagram below. With the SDSIO Interface the data streams are connected to SDS data files. The file storage can be either embedded within the system and accessed by a file system or external on a host computer and accessed by a communication interface such as Ethernet or USB.</p>
 <p>The DSP or ML algorithms that are tested operate on blocks and are executed periodically. This documentation uses these terms:</p>
 <ul>
 <li><strong>Data Block</strong>: is a set of input or output data which is processed in one step by a DSP or ML compute note.</li>
@@ -136,7 +136,7 @@
     loop periodic
         Note over AlgorithmThread: GetInputData&lt;br/&gt;(physical input or sdsPlayRead)
         Note over AlgorithmThread: Execute algorithm
-        Note over AlgorithmThread: sdsRecWrite data streams 
+        Note over AlgorithmThread: sdsRecWrite data streams
         Note over sdsRecPlayThread: Read/write data streams.
     end
     sdsControlThread--&gt;&gt;AlgorithmThread: Stop Algorithm
@@ -173,7 +173,11 @@
 </ol>
 <p>This mechanism enables automatic sequential playback, while still allowing the user to select the initial playback index by editing the index file.</p>
 <p>Example:</p>
-<p>If <code>SensorX.index.txt</code> contains the value 2, the <code>sdsPlayOpen</code> function will attempt to open the file <code>SensorX.2.sds</code>. If this file exists, it is played and the index file is updated to 3 for the next playback. If the file does not exist, playback fails and the index file is reset to 0.</p>
+<p>If <code>SensorX.index.txt</code> contains the value 2, the <code>sdsPlayOpen</code> function will attempt to open the file <code>SensorX.2.sds</code>.</p>
+<ul>
+<li>If the file exists, it is played and the index file is updated to 3 for the next playback.</li>
+<li>If the file does not exist, playback fails and the index file is reset to 0.</li>
+</ul>
 <h3 id="timestamp">Timestamp</h3>
 <p>The timestamp is a 32-bit unsigned value and is used for:</p>
 <ul>
@@ -257,7 +261,7 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <p><strong>Example</strong></p>
 <p>This example defines a data stream with the name "sensorX" that contains the values of a gyroscope, temperature sensor, and additional raw data (that are not further described).</p>
 <p><img alt="image" src="images/SDS-Metainfo.png"/></p>
-<p>The binary data that are coming form this sensors are stored in data files with the following file format: <code>&lt;sensor-name&gt;.&lt;file-index&gt;.sds</code>. In this example the files names could be:</p>
+<p>The binary data that are coming form these sensors are stored in data files with the following file format: <code>&lt;sensor-name&gt;.&lt;file-index&gt;.sds</code>. In this example the files names could be:</p>
 <pre><code class="language-yml">   sensorX.0.sds   # capture 0
    sensorX.1.sds   # capture 1
 </code></pre>
@@ -311,7 +315,7 @@ uint8_t accel_buf[(sizeof(accelerometer)*2)+0x800];      // data stream buffer f
      ... // unexpected size returned, error handling
    }
      :
-  sdsRecClose (accel_id);         // close data stream 
+  sdsRecClose (accel_id);         // close data stream
 </code></pre>
 <h2 id="buffer-size">Buffer Size</h2>
 <p>The size of the data stream buffer depends on several factors such as:</p>

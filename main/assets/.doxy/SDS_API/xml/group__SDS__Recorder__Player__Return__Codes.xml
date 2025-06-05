@@ -68,7 +68,7 @@
         <name>SDS_REC_ERROR_NO_SPACE</name>
         <initializer>(-5)</initializer>
         <briefdescription>
-<para>Insufficient space in SDS Stream buffer to write the entire data block. </para>
+<para>Insufficient space in SDS circular buffer to write the entire data block. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
@@ -80,7 +80,7 @@
         <name>SDS_PLAY_ERROR_NO_DATA</name>
         <initializer>(-6)</initializer>
         <briefdescription>
-<para>Not whole data block is available in the SDS Stream buffer. </para>
+<para>Not whole data block is available in the SDS circular buffer. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
