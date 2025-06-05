@@ -14,7 +14,7 @@ The `SDSIO-Layer` connects the SDS template application to a communication inter
 The following [SDSIO interfaces](sdsio.md) are pre-configured:
 
 - [Ethernet Interface](sdsio.md#layer-sdsio_network) using the MDK-Middleware Network component.
-- [USB Virtual COM Port Interface](sdsio.md#layer-sdsio_usb) using the MDK-Middleware USB component.
+- [USB Bulk Interface](sdsio.md#layer-sdsio_usb) using the MDK-Middleware USB component.
 - [Memory Card Interface](sdsio.md#layer-sdsio_fs) using the MDK-Middleware File System component.
 
 With a custom SDSIO interface alternative file I/O configurations are possible.

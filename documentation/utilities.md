@@ -6,7 +6,7 @@
 
 The SDS-Framework includes the following utilities that are implemented in Python.
 
-- [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via socket (TCP/IP), USB Virtual COM Port (VCOM) or serial (UART) connection.
+- [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer) or serial (UART) connection.
 - [**SDS-View:**](#sds-view) graphical data viewer for SDS data files.
 - [**SDS-Convert:**](#sds-convert) convert SDS data files into CSV, Qeexo V2 CSV, or WAV format.
 - [**SDS-Check:**](#sds-check) check SDS data files for correctness and consistency.
@@ -46,7 +46,7 @@ pip install ifaddr matplotlib numpy pandas pyyaml pyserial libusb1
 
 ## SDSIO-Server
 
-The Python utility [**SDSIO-Server**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) enables recording and playback of SDS data files via socket (TCP/IP), USB (using USB Bulk transfers, or serial (UART) connection.
+The Python utility [**SDSIO-Server**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer), or serial (UART) connection.
 It communicates with the target using these [SDSIO Client interfaces](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client):
 
 - [serial/usart](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/serial/usart) for serial communication via CMSIS-Driver USART.
