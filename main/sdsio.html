@@ -109,6 +109,7 @@
   - component: SDS:IO:Serial&amp;CMSIS USART         # USART Interface
   - component: SDS:IO:File System&amp;MDK FS         # Memory card
   - component: SDS:IO:File System&amp;Semihosting    # Simulation or Debugger via Semihosting interface
+  - component: SDS:IO:VSI                        # VSI Simulation interface of an AVH FVP
   - component: SDS:IO:Custom                     # Source code template for custom implementation
 </code></pre>
 <p>To simplify usage further, the following pre-configured SDS interface layers in <em>csolution project format</em> are available. These connect via various interfaces to the SDSIO Server, which provides read/write access to SDS data files.</p>
@@ -124,7 +125,7 @@
 <h2 id="layer-sdsio_fs">Layer: sdsio_fs</h2>
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem"><code>layer/filesystem/sdsio_fs.clayer</code></a> is configured for recording and playback to/from the Memory Card. It uses the MDK-Middleware File System component.</p>
 <h2 id="layer-sdsio_fvp">Layer: sdsio_fvp</h2>
-<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp"><code>layer/fvp/sdsio_fvp.clayer</code></a> is configured for recording and playback to/from the Host computer using a SDSIO-Server interface that integrates to the simulation model using the <a href="https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html">VSI interface</a>.</p>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp"><code>layer/fvp/sdsio_fvp.clayer</code></a> is configured for recording and playback to/from the Host computer. It uses the <a href="https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html">VSI interface</a>, which is integrated into the simulation model.</p>
               
             </div>
           </div><footer>
