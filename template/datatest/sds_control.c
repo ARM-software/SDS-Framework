@@ -61,7 +61,6 @@ __NO_RETURN void sdsControlThread (void *argument) {
   uint8_t btn_val, keypress;
   uint8_t btn_prev = 0U;
   uint8_t led0_val = 0U;
-  int32_t status;
   uint32_t no_load_cnt, prev_cnt;
   uint32_t interval_time, cnt = 0U;
 
@@ -71,8 +70,10 @@ __NO_RETURN void sdsControlThread (void *argument) {
   no_load_cnt = idle_cnt;
 
   // Initialize SDS recorder/player
-  status = sdsRecPlayInit(rec_play_event_callback);
-  SDS_ASSERT(status == SDS_REC_PLAY_OK);
+  if (sdsRecPlayInit(rec_play_event_callback) != SDS_REC_PLAY_OK) {
+    printf("SDS initialization failed!\n");
+    printf("For Network and USB SDSIO Interfaces ensure that SDSIO Server is running and restart the application!\n");
+  }
 
   // Create algorithm thread
   if (osThreadNew(AlgorithmThread, NULL, &attrAlgorithmThread) == NULL) {
