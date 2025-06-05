@@ -3,7 +3,7 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-The SDS Framework enables to record and playback one or more data streams to an application that is under development as shown in the diagram below. With the SDSIO Interface the data streams are connected to SDS data files. The file storage can be either embedded within the system and access by a file system or external on a host computer and accessed by a communication interface such as Ethernet or USB.
+The SDS Framework enables to record and playback one or more data streams to an application that is under development as shown in the diagram below. With the SDSIO Interface the data streams are connected to SDS data files. The file storage can be either embedded within the system and accessed by a file system or external on a host computer and accessed by a communication interface such as Ethernet or USB.
 
 The DSP or ML algorithms that are tested operate on blocks and are executed periodically. This documentation uses these terms:
 
@@ -34,7 +34,7 @@ sequenceDiagram
     loop periodic
         Note over AlgorithmThread: GetInputData<br/>(physical input or sdsPlayRead)
         Note over AlgorithmThread: Execute algorithm
-        Note over AlgorithmThread: sdsRecWrite data streams 
+        Note over AlgorithmThread: sdsRecWrite data streams
         Note over sdsRecPlayThread: Read/write data streams.
     end
     sdsControlThread-->>AlgorithmThread: Stop Algorithm
@@ -78,7 +78,10 @@ This mechanism enables automatic sequential playback, while still allowing the u
 
 Example:
 
-If `SensorX.index.txt` contains the value 2, the `sdsPlayOpen` function will attempt to open the file `SensorX.2.sds`. If this file exists, it is played and the index file is updated to 3 for the next playback. If the file does not exist, playback fails and the index file is reset to 0.
+If `SensorX.index.txt` contains the value 2, the `sdsPlayOpen` function will attempt to open the file `SensorX.2.sds`.
+
+- If the file exists, it is played and the index file is updated to 3 for the next playback.
+- If the file does not exist, playback fails and the index file is reset to 0.
 
 ### Timestamp
 
@@ -128,7 +131,7 @@ This example defines a data stream with the name "sensorX" that contains the val
 
 ![image](./images/SDS-Metainfo.png)
 
-The binary data that are coming form this sensors are stored in data files with the following file format: `<sensor-name>.<file-index>.sds`. In this example the files names could be:
+The binary data that are coming form these sensors are stored in data files with the following file format: `<sensor-name>.<file-index>.sds`. In this example the files names could be:
 
 ```yml
    sensorX.0.sds   # capture 0
@@ -191,7 +194,7 @@ uint8_t accel_buf[(sizeof(accelerometer)*2)+0x800];      // data stream buffer f
      ... // unexpected size returned, error handling
    }
      :
-  sdsRecClose (accel_id);         // close data stream 
+  sdsRecClose (accel_id);         // close data stream
 ```
 
 ## Buffer Size
