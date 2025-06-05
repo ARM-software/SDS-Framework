@@ -420,15 +420,15 @@ The following checks are performed:
 - Invoke the tool as explained below.
 
 ```txt
-usage: sds-check.py [-h] -s [<sds_file>]
+usage: sds-check.py [-h] -s <sds_file>
 
 SDS data validation
 
 options:
-  -h, --help       show this help message and exit
+  -h, --help     show this help message and exit
 
 required:
-  -s [<sds_file>]  SDS data recording file
+  -s <sds_file>  SDS data recording file
 ```
 
 **Example:**

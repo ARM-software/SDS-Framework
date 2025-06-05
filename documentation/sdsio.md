@@ -8,6 +8,7 @@ The SDSIO components offer flexible recorder and playback interfaces. You may ch
   - component: SDS:IO:Serial&CMSIS USART         # USART Interface
   - component: SDS:IO:File System&MDK FS         # Memory card
   - component: SDS:IO:File System&Semihosting    # Simulation or Debugger via Semihosting interface
+  - component: SDS:IO:VSI                        # VSI Simulation interface of an AVH FVP
   - component: SDS:IO:Custom                     # Source code template for custom implementation
 ```
 
@@ -31,4 +32,4 @@ The [`layer/filesystem/sdsio_fs.clayer`](https://github.com/ARM-software/SDS-Fra
 
 ## Layer: sdsio_fvp
 
-The [`layer/fvp/sdsio_fvp.clayer`](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp) is configured for recording and playback to/from the Host computer using a SDSIO-Server interface that integrates to the simulation model using the [VSI interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html).
+The [`layer/fvp/sdsio_fvp.clayer`](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp) is configured for recording and playback to/from the Host computer. It uses the [VSI interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html), which is integrated into the simulation model.
