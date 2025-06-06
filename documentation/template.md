@@ -121,11 +121,38 @@ The steps to add a custom hardware configuration are:
 
 ## Using DataTest
 
-ToDo, explain:
+The DataTest project validates the communication channel.
 
-- how to capture the files (this could be with references to the layers)
-- how to verify the correctness using [SDS-Check](utilities.md#sds-check)
-- setup playback mode to verify data playback
+### Record on Simulation Model
+
+1. Select the target `AVH-SSE-300` with Project `DataTest` and Build Type `DebugRec` to record SDS data files.
+2. Build and Run the application.
+
+This run should generate the files: ....
+
+3. Use [SDS-Check](utilities.md#sds-check) to verify correctness of recording with:
+
+...
+
+### Playback on Simulation Model
+
+1. Rename output file ...
+
+2. Change to Build Type `DebugPlay` (target `AVH-SSE-300` with Project `DataTest`).
+
+This run should generate the files: ...
+
+Compare the output files with ....
+
+
+### Record on Hardware Target
+
+....
+
+
+### Playback on Hardware Target
+
+...
 
 ### Configure Bandwidth for DataTest
 
