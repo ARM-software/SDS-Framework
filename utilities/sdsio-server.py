@@ -508,7 +508,7 @@ class async_sdsio_server_socket:
     async def start(self):
         self.server = await asyncio.start_server(self.handle_client, self.ip, self.port)
         addr = self.server.sockets[0].getsockname()
-        printer.info(f"Socket server listening on {addr}")
+        printer.info(f"Socket server listening on {addr[0]}:{addr[1]}")
         async with self.server:
             await self.server.serve_forever()
 
