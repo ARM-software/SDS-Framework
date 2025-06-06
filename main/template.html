@@ -71,6 +71,14 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#using-datatest">Using DataTest</a>
         <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#record-on-simulation-model">Record on Simulation Model</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#playback-on-simulation-model">Playback on Simulation Model</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#record-on-hardware-target">Record on Hardware Target</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#playback-on-hardware-target">Playback on Hardware Target</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#configure-bandwidth-for-datatest">Configure Bandwidth for DataTest</a>
     </li>
         </ul>
@@ -261,12 +269,32 @@ The following <a href="sdsio.html">SDSIO interfaces</a> are pre-configured:</p>
 </ul>
 </div>
 <h2 id="using-datatest">Using DataTest</h2>
-<p>ToDo, explain:</p>
-<ul>
-<li>how to capture the files (this could be with references to the layers)</li>
-<li>how to verify the correctness using <a href="utilities.html#sds-check">SDS-Check</a></li>
-<li>setup playback mode to verify data playback</li>
-</ul>
+<p>The DataTest project validates the communication channel.</p>
+<h3 id="record-on-simulation-model">Record on Simulation Model</h3>
+<ol>
+<li>Select the target <code>AVH-SSE-300</code> with Project <code>DataTest</code> and Build Type <code>DebugRec</code> to record SDS data files.</li>
+<li>Build and Run the application.</li>
+</ol>
+<p>This run should generate the files: ....</p>
+<ol>
+<li>Use <a href="utilities.html#sds-check">SDS-Check</a> to verify correctness of recording with:</li>
+</ol>
+<p>...</p>
+<h3 id="playback-on-simulation-model">Playback on Simulation Model</h3>
+<ol>
+<li>
+<p>Rename output file ...</p>
+</li>
+<li>
+<p>Change to Build Type <code>DebugPlay</code> (target <code>AVH-SSE-300</code> with Project <code>DataTest</code>).</p>
+</li>
+</ol>
+<p>This run should generate the files: ...</p>
+<p>Compare the output files with ....</p>
+<h3 id="record-on-hardware-target">Record on Hardware Target</h3>
+<p>....</p>
+<h3 id="playback-on-hardware-target">Playback on Hardware Target</h3>
+<p>...</p>
 <h3 id="configure-bandwidth-for-datatest">Configure Bandwidth for DataTest</h3>
 <p>The <strong>DataTest</strong> project uses a fixed algorithm to verify the communication interface. With the file <code>datatest/sds_algorithm_config.h</code> it is possible to configure bandwidth and interval to match the requirements of the algorithm that should be tested.</p>
 <h2 id="using-algorithmtest">Using AlgorithmTest</h2>
