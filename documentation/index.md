@@ -8,7 +8,7 @@ This user's guide assumes basic knowledge about Cortex-M software development. I
 
 ## Manual Chapters
 
-- [**Overview**](overview.md) explains the of features of the SDS-Framework and outlines the possibilities.
+- [**Overview**](overview.md) explains the features of the SDS-Framework and outlines the possibilities.
 - [**SDS Template Application**](template.md) explains the usage of the SDS-Framework for algorithm testing.
 - [**SDSIO Interface**](sdsio.md) describes the various I/O interfaces (USB, Socket, File System) for connecting to the target.
 - [**Utilities**](utilities.md) explains Python based utilities that operate with SDS data files for converting, viewing, recording, and playback.
