@@ -180,38 +180,38 @@ def main():
     file.close()
 
     if not checkSizes(filename,data):
-        print(f"Error: File size mismatch. Expected {dot(info["data_size"])} bytes, but file contains {dot(info["file_size"])} bytes.")
+        print(f"Error: File size mismatch. Expected {dot(info['data_size'])} bytes, but file contains {dot(info['file_size'])} bytes.")
         sys.exit(1)
 
     if not checkTimestamps(data):
-        print(f"Error: Timestamp not in ascending order in record {dot(info["record_id"])}.")
+        print(f"Error: Timestamp not in ascending order in record {dot(info['record_id'])}.")
         sys.exit(1)
 
     # Print summary
     print(f"File     : {filename}")
-    print(f"DataSize : {dot(info["file_size"])} bytes")
-    print(f"Records  : {dot(info["records"])}")
+    print(f"DataSize : {dot(info['file_size'])} bytes")
+    print(f"Records  : {dot(info['records'])}")
 
-    print(f"BlockSize: {dot(info["block_size"])} bytes")
+    print(f"BlockSize: {dot(info['block_size'])} bytes")
     if info["largest"] > info["block_size"] or info["smallest"] < info["block_size"]:
-        print(f"Largest  : {dot(info["largest"])} bytes")
-        print(f"Smallest : {dot(info["smallest"])} bytes")
+        print(f"Largest  : {dot(info['largest'])} bytes")
+        print(f"Smallest : {dot(info['smallest'])} bytes")
 
-    print(f"Interval : {dot(info["interval"])} ms")
+    print(f"Interval : {dot(info['interval'])} ms")
 
     datarate = round((info["block_size"] * 1000) / info["interval"])
     print(f"DataRate : {dot(datarate)} byte/s")
 
     if info["jitter"] > 0:
-        print(f"Jitter   : {dot(info["jitter"])} ms, record {dot(info["index"])}")
+        print(f"Jitter   : {dot(info['jitter'])} ms, record {dot(info['index'])}")
     else:
         print("Jitter   : 0 ms")
 
     if info["delta_time"] > info["interval"]:
-        print(f"DeltaTime: {dot(info["delta_time"])} ms, record {dot(info["delta_index"])}")
+        print(f"DeltaTime: {dot(info['delta_time'])} ms, record {dot(info['delta_index'])}")
 
     if info["dup_count"] > 0:
-        print(f"DupStamps: {dot(info["dup_count"])}, record {dot(info["dup_index"])}")
+        print(f"DupStamps: {dot(info['dup_count'])}, record {dot(info['dup_index'])}")
 
     print("Validation passed")
 
