@@ -51,7 +51,7 @@ It communicates with the target using these [SDSIO Client interfaces](https://gi
 
 - [serial/usart](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/serial/usart) for serial communication via CMSIS-Driver USART.
 - [socket](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/socket) for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.
-- [usb/bulk](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/usb) for communication via USB Bulk transfer using MDK-Middleware.
+- [usb/bulk](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/usb/mdk) for communication via USB Bulk transfer using MDK-Middleware.
 
 The SDS data stream is recorded to files with the following naming convention:
 

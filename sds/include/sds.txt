@@ -15,7 +15,7 @@ The buffer operates as a circular FIFO (first-in, first-out) queue. Data written
 is stored until read by sdsBufferRead() or until the buffer is cleared or closed. The buffer supports thresholds
 (threshold_low and threshold_high) for monitoring usage levels and triggering user-defined events.
 
-##Thread Safety
+\b Thread \b Safety
 
 The SDS Buffer API is partially thread-safe, with the following constraints:
 
@@ -304,7 +304,7 @@ with internal circular buffers, allowing efficient, non-blocking data operations
 Each recorder or player stream is identified by a handle of type \ref sdsRecPlayId_t, returned by \ref sdsRecOpen or \ref sdsPlayOpen,
 and is required for all subsequent operations on that stream.
 
-### Thread Safety
+\b Thread \b Safety
 
 The SDS Recorder and Player are **thread-safe** for regular operation:
 
