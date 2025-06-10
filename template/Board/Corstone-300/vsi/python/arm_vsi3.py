@@ -181,7 +181,7 @@ class StreamManager:
         f = entry[0]
         try:
             data = f.read(size)
-            eof = not data or len(data) < size
+            eof = not data
             return data, eof
         except Exception:
             logger.exception(f"Read error on stream ID {sid}")
