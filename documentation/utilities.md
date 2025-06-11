@@ -109,18 +109,20 @@ optional:
   --workdir <Work dir>     Directory for SDS files (default: current directory)
 ```
 
-!!! Notes
-  - The `--ipaddr` and `--interface` options are mutually exclusive.
-  - SDSIO Server only supports IPv4 addresses.
+!!! Note
+    - The `--ipaddr` and `--interface` options are mutually exclusive.
+    - SDSIO Server only supports IPv4 addresses.
 
 **Example:**
 
 For Microsoft Windows (using default computer IP):
+
 ```bash
 python sdsio-server.py socket --workdir ./work_dir
 ```
 
 For Linux:
+
 ```bash
 python sdsio-server.py socket --interface eth0 --workdir ./work_dir
 ```
@@ -138,11 +140,11 @@ optional:
   --high-priority       Enable high-priority threading for USB server (default: off)
 ```
 
-!!! Notes
-  - For more reliable operation at higher data transfer rates, it is recommended to enable the `--high-priority` option. This increases the thread priority of the SDSIO-Server process.
-  - When using `--high-priority`, elevated privileges are required depending on your operating system:
-      - **Windows**: Run the Python script as an administrator.
-      - **macOS/Linux**: Execute the script with `sudo` or ensure the user has sufficient permissions.
+!!! Note
+    - For more reliable operation at higher data transfer rates, it is recommended to enable the `--high-priority` option. This increases the thread priority of the SDSIO-Server process.
+    - When using `--high-priority`, elevated privileges are required depending on your operating system:
+        - **Windows**: Run the Python script as an administrator.
+        - **macOS/Linux**: Execute the script with `sudo` or ensure the user has sufficient permissions.
 
 **Example:**
 
@@ -152,7 +154,7 @@ python sdsio-server.py usb --workdir ./work_dir
 
 ## SDS-View
 
-The Python utility [**SDSIO-View**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) outputs a time-based plot of SDS data files (`<name>.<index>.sds`) based on the meta-data file (`<name>.sds.yml`).
+The Python utility [**SDS-View**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) outputs a time-based plot of SDS data files (`<name>.<index>.sds`) based on the meta-data file (`<name>.sds.yml`).
 
 The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description. All plots form a single recording will be displayed on the same figure (shared vertical scale).
 
@@ -195,7 +197,7 @@ python sds-view.py -y test/Gyroscope.sds.yml -s test/Gyroscope.0.sds
 
 ## SDS-Convert
 
-The Python utility [**SDSIO-Convert**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) converts SDS data files to selected format based on description in metadata (YAML) files.  
+The Python utility [**SDS-Convert**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) converts SDS data files to selected format based on description in metadata (YAML) files.  
 
 ### Usage
 
@@ -226,7 +228,7 @@ optional:
 
 !!! Note
     - The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
-    - The tool expects the SDS stream to be strictly audio — no header markers or custom formatting.
+    - The tool expects the SDS stream to be strictly audio - no header markers or custom formatting.
 
 **Example of metadata yml file for mono microphone:**
 
@@ -528,8 +530,8 @@ DeltaTime: 1.050 ms, record 2
 Validation passed
 ```
 
-This is not an error, but a report of an anomaly. If the time delta is significantly longer than the
-sampling interval —e.g., several times longer— it may indicate that one or more data records are missing
+This is not an error, but a report of an anomaly. If the time delta is significantly larger than the
+sampling interval, e.g. many times longer, this may indicate that one or more data records are missing
 from the recorded file.
 
 ### Duplicate timestamp check
@@ -559,5 +561,5 @@ Validation passed
 This is not an error, but a report of an anomaly. The report contains the number of records with
 the same timestamp and the position in the SDS file where the anomaly was detected (record number).
 
-!!! Note 
+!!! Note
     Only the first occurrence of a duplicate timestamp is reported.
