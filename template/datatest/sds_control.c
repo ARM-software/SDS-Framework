@@ -53,6 +53,32 @@ static void rec_play_event_callback (sdsRecPlayId_t id, uint32_t event) {
 
 }
 
+#ifdef SIMULATOR
+// Simulate keypress
+static uint32_t simGetSignal (uint32_t mask) {
+  static uint32_t key_cnt = 0U;
+         uint32_t ret     = 0U;
+
+  switch (key_cnt) {
+    case 20U:                           // At 2 seconds (at 1 ms RTOS tick time)
+      ret = mask;                       // Simulate keypress
+      break;
+#ifndef SDS_PLAY
+    case 120U:                          // At 12 seconds (at 1 ms RTOS tick time)
+      ret = mask;                       // Simulate keypress
+      break;
+#endif
+    case 150U:                          // At 15 seconds (at 1 ms RTOS tick time)
+      putchar(0x04);                    // Send signal to simulator to shutdown
+      break;
+  }
+
+  key_cnt++;
+
+  return ret;
+}
+#endif
+
 // Recording/playback control thread function.
 // Toggle recording/playback via USER push-button.
 // Toggle LED0 every 1 second to see that the thread is alive.
@@ -86,7 +112,11 @@ __NO_RETURN void sdsControlThread (void *argument) {
 
   for (;;) {
     // Monitor user button
+#ifdef SIMULATOR
+    btn_val  = simGetSignal(vioBUTTON0);
+#else
     btn_val  = vioGetSignal(vioBUTTON0);
+#endif
     keypress = btn_val & ~btn_prev;
     btn_prev = btn_val;
 
