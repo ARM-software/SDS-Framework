@@ -171,7 +171,7 @@
 <li>A local file system, such as an SD card or semihosting, where files are accessed directly.</li>
 <li>A communication channel such as Ethernet, USB, or UART, where access to files is performed remotely via an SDS I/O Server.</li>
 </ul>
-<p>When using a communication channel, the embedded device runs an SDS I/O Client, which communicates with the SDS I/O Server running on the host machine. This interaction is command-based (e.g., <code>SDSIO_CMD_OPEN</code>, <code>SDSIO_CMD_READ</code>, <code>SDSIO_CMD_WRITE</code>) and enables the embedded system to remotely open, read, write, and close files located on the host. For more details, refer to <a href="../theory.html#sdsio server protocol">SDSIO Server Protocol</a>.</p>
+<p>When using a communication channel, the embedded device runs an SDS I/O Client, which communicates with the SDS I/O Server running on the host machine. This interaction is command-based (e.g., <code>SDSIO_CMD_OPEN</code>, <code>SDSIO_CMD_READ</code>, <code>SDSIO_CMD_WRITE</code>) and enables the embedded system to remotely open, read, write, and close files located on the host. For more details, refer to <a href="../theory.html#sdsio-server-protocol">SDSIO Server Protocol</a>.</p>
 <p>The interface is lightweight and backend-agnostic, making it suitable for embedded data logging, host-interactive tools, or as a transport layer for higher-level components such as the SDS Recorder and Player. </p>
 <h2 id="public-types-documentation">Public Types Documentation</h2>
 <h3 id="typedef-sdsioid_t">typedef sdsioId_t</h3>

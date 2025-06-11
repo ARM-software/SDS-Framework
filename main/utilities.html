@@ -248,13 +248,13 @@ optional:
   --port &lt;TCP Port&gt;        TCP port (default: 5050)
   --workdir &lt;Work dir&gt;     Directory for SDS files (default: current directory)
 </code></pre>
-<div class="admonition notes">
-<p class="admonition-title">Notes</p>
-</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul>
 <li>The <code>--ipaddr</code> and <code>--interface</code> options are mutually exclusive.</li>
 <li>SDSIO Server only supports IPv4 addresses.</li>
 </ul>
+</div>
 <p><strong>Example:</strong></p>
 <p>For Microsoft Windows (using default computer IP):</p>
 <pre><code class="language-bash">python sdsio-server.py socket --workdir ./work_dir
@@ -272,9 +272,8 @@ optional:
   --workdir &lt;Work dir&gt;  Directory for SDS files (default: current directory)
   --high-priority       Enable high-priority threading for USB server (default: off)
 </code></pre>
-<div class="admonition notes">
-<p class="admonition-title">Notes</p>
-</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul>
 <li>For more reliable operation at higher data transfer rates, it is recommended to enable the <code>--high-priority</code> option. This increases the thread priority of the SDSIO-Server process.</li>
 <li>When using <code>--high-priority</code>, elevated privileges are required depending on your operating system:<ul>
@@ -283,11 +282,12 @@ optional:
 </ul>
 </li>
 </ul>
+</div>
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">python sdsio-server.py usb --workdir ./work_dir
 </code></pre>
 <h2 id="sds-view">SDS-View</h2>
-<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDSIO-View</strong></a> outputs a time-based plot of SDS data files (<code>&lt;name&gt;.&lt;index&gt;.sds</code>) based on the meta-data file (<code>&lt;name&gt;.sds.yml</code>).</p>
+<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-View</strong></a> outputs a time-based plot of SDS data files (<code>&lt;name&gt;.&lt;index&gt;.sds</code>) based on the meta-data file (<code>&lt;name&gt;.sds.yml</code>).</p>
 <p>The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description. All plots form a single recording will be displayed on the same figure (shared vertical scale).</p>
 <p>If there are 3 values described in the metadata file, an optional 3D view may be displayed.  </p>
 <h3 id="limitations">Limitations</h3>
@@ -319,7 +319,7 @@ optional:
 <p><strong>Example display:</strong></p>
 <p><img alt="Example output" src="images/SDS-View.png" /></p>
 <h2 id="sds-convert">SDS-Convert</h2>
-<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDSIO-Convert</strong></a> converts SDS data files to selected format based on description in metadata (YAML) files.  </p>
+<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-Convert</strong></a> converts SDS data files to selected format based on description in metadata (YAML) files.  </p>
 <h3 id="usage_2">Usage</h3>
 <ul>
 <li><a href="#setup">Setup</a> the Python environment.</li>
@@ -347,7 +347,7 @@ optional:
 <p class="admonition-title">Note</p>
 <ul>
 <li>The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.</li>
-<li>The tool expects the SDS stream to be strictly audio — no header markers or custom formatting.</li>
+<li>The tool expects the SDS stream to be strictly audio - no header markers or custom formatting.</li>
 </ul>
 </div>
 <p><strong>Example of metadata yml file for mono microphone:</strong></p>
@@ -594,8 +594,8 @@ Jitter   : 59 ms, record 19
 DeltaTime: 1.050 ms, record 2
 Validation passed
 </code></pre>
-<p>This is not an error, but a report of an anomaly. If the time delta is significantly longer than the
-sampling interval —e.g., several times longer— it may indicate that one or more data records are missing
+<p>This is not an error, but a report of an anomaly. If the time delta is significantly larger than the
+sampling interval, e.g. many times longer, this may indicate that one or more data records are missing
 from the recorded file.</p>
 <h3 id="duplicate-timestamp-check">Duplicate timestamp check</h3>
 <p>This check processes the SDS records in search of duplicated timestamps.
