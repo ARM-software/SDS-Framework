@@ -50,7 +50,6 @@ static void rec_play_event_callback (sdsRecPlayId_t id, uint32_t event) {
   if ((event & SDS_PLAY_EVENT_ERROR_NO_DATA) != 0U) {
     SDS_ASSERT(false);
   }
-
 }
 
 #ifdef SIMULATOR
@@ -60,15 +59,15 @@ static uint32_t simGetSignal (uint32_t mask) {
          uint32_t ret     = 0U;
 
   switch (key_cnt) {
-    case 20U:                           // At 2 seconds (at 1 ms RTOS tick time)
+    case 20U:                           // At 2 seconds
       ret = mask;                       // Simulate keypress
       break;
 #ifndef SDS_PLAY
-    case 120U:                          // At 12 seconds (at 1 ms RTOS tick time)
+    case 120U:                          // At 12 seconds
       ret = mask;                       // Simulate keypress
       break;
 #endif
-    case 150U:                          // At 15 seconds (at 1 ms RTOS tick time)
+    case 150U:                          // At 15 seconds
       putchar(0x04);                    // Send signal to simulator to shutdown
       break;
   }
