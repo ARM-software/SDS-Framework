@@ -107,7 +107,7 @@ The **SDS** circular **Buffer** provides an interface for managing circular buff
 Each buffer stream is represented by an identifier of type [**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t), which is obtained via [**sdsBufferOpen()**](group__SDS__Buffer.md#function-sdsbufferopen) and used in subsequent API calls to refer to the corresponding buffer instance.
 
 
-Buffer Behavior The buffer operates as a circular FIFO (first-in, first-out) queue. Data written to the buffer via [**sdsBufferWrite()**](group__SDS__Buffer.md#function-sdsbufferwrite) is stored until read by [**sdsBufferRead()**](group__SDS__Buffer.md#function-sdsbufferread) or until the buffer is cleared or closed. The buffer supports thresholds (threshold\_low and threshold\_high) for monitoring usage levels and triggering user-defined events.
+The buffer operates as a circular FIFO (first-in, first-out) queue. Data written to the buffer via [**sdsBufferWrite()**](group__SDS__Buffer.md#function-sdsbufferwrite) is stored until read by [**sdsBufferRead()**](group__SDS__Buffer.md#function-sdsbufferread) or until the buffer is cleared or closed. The buffer supports thresholds (threshold\_low and threshold\_high) for monitoring usage levels and triggering user-defined events.
 
 
 **Thread** **Safety** 

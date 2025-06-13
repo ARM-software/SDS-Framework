@@ -195,6 +195,12 @@ pip install -r requirements.txt
 </ul>
 <pre><code class="language-txt">pip install ifaddr matplotlib numpy pandas pyyaml pyserial libusb1
 </code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>These utilities are located in the SDS-Framework pack installation folder, subfolder <code>/utilities</code>.</li>
+</ul>
+</div>
 <h2 id="sdsio-server">SDSIO-Server</h2>
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDSIO-Server</strong></a> enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer), or serial (UART) connection.
 It communicates with the target using these <a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client">SDSIO Client interfaces</a>:</p>
@@ -491,7 +497,7 @@ optional:
 <pre><code class="language-bash">python sds-convert.py qeexo_v2_csv -i Gyroscope.0.sds Accelerometer.0.sds -o sensor_fusion.csv -y Gyroscope.sds.yaml Accelerometer.sds.yaml --normalize --start-tick 200 --stop-tick 300
 </code></pre>
 <p>Convert <strong>Qeexo V2 CSV</strong> files to <strong>SDS data</strong> files:</p>
-<pre><code class="language-bash">python sds-convert qeexo_v2_csv -i accelerometer_data.csv -o accelerometer.sds
+<pre><code class="language-bash">python sds-convert.py qeexo_v2_csv -i accelerometer_data.csv -o accelerometer.sds
 </code></pre>
 <h2 id="sds-check">SDS-Check</h2>
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-Check</strong></a> checks SDS data files for correctness and consistency.  </p>

@@ -71,11 +71,11 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#using-datatest">Using DataTest</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#record-on-simulation-model">Record on Simulation Model</a>
+    <li class="toctree-l3"><a class="reference internal" href="#recording-on-simulation-model">Recording on Simulation Model</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#playback-on-simulation-model">Playback on Simulation Model</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#record-on-hardware-target">Record on Hardware Target</a>
+    <li class="toctree-l3"><a class="reference internal" href="#recording-on-hardware-target">Recording on Hardware Target</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#playback-on-hardware-target">Playback on Hardware Target</a>
     </li>
@@ -270,31 +270,49 @@ The following <a href="sdsio.html">SDSIO interfaces</a> are pre-configured:</p>
 </div>
 <h2 id="using-datatest">Using DataTest</h2>
 <p>The DataTest project validates the communication channel.</p>
-<h3 id="record-on-simulation-model">Record on Simulation Model</h3>
+<h3 id="recording-on-simulation-model">Recording on Simulation Model</h3>
 <ol>
 <li>Select the target <code>AVH-SSE-300</code> with Project <code>DataTest</code> and Build Type <code>DebugRec</code> to record SDS data files.</li>
-<li>Build and Run the application.</li>
+<li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp/README.md">Build and Run</a> the application.</li>
+<li>Use <a href="utilities.html#sds-check">SDS-Check</a> to verify correctness of the recording:</li>
 </ol>
-<p>This run should generate the files: ....</p>
-<ol>
-<li>Use <a href="utilities.html#sds-check">SDS-Check</a> to verify correctness of recording with:</li>
-</ol>
-<p>...</p>
+<pre><code class="language-bash">python sds-check.py -s DataInput.0.sds
+python sds-check.py -s DataOutput.0.sds
+</code></pre>
+<p>This run should generate the files <code>DataInput.0.sds</code> and <code>DataOutput.0.sds</code> in the solution folder. The <code>DataTest</code> recorder project is configured to record 1000 data records at an interval of 10ms.</p>
+<p>When the project is restarted, new files with different names are created: <code>DataInput.1.sds</code> and <code>DataOutput.1.sds</code>. Therefore, delete the generated SDS files before restarting the application.</p>
 <h3 id="playback-on-simulation-model">Playback on Simulation Model</h3>
 <ol>
-<li>
-<p>Rename output file ...</p>
-</li>
-<li>
-<p>Change to Build Type <code>DebugPlay</code> (target <code>AVH-SSE-300</code> with Project <code>DataTest</code>).</p>
-</li>
+<li>Change to Build Type <code>DebugPlay</code> (target <code>AVH-SSE-300</code> with Project <code>DataTest</code>).</li>
+<li>Build and Run the application.</li>
 </ol>
-<p>This run should generate the files: ...</p>
-<p>Compare the output files with ....</p>
-<h3 id="record-on-hardware-target">Record on Hardware Target</h3>
-<p>....</p>
+<p>This run should read the <code>DataInput.0.sds</code> file and generate the <code>DataOutput.1.sds</code> file.</p>
+<p>Compare the output files <code>DataOutput.0.sds</code> and <code>DataOutput.1.sds</code> with any program that can compare binary files. If the communication is correct, the files should be identical.</p>
+<h3 id="recording-on-hardware-target">Recording on Hardware Target</h3>
+<ol>
+<li>Select the <code>STM32F746G-DISCO</code> target with Project <code>DataTest</code> and Build Type <code>DebugRec</code> to record SDS data files.</li>
+<li>Build and Run the application.</li>
+<li>Start and stop the recording with the user button on the evaluation board.</li>
+<li>Use <a href="utilities.html#sds-check">SDS-Check</a> to verify correctness of the recording:</li>
+</ol>
+<pre><code class="language-bash">python sds-check.py -s DataInput.0.sds
+python sds-check.py -s DataOutput.0.sds
+</code></pre>
+<p>This run should generate the files <code>DataInput.0.sds</code> and <code>DataOutput.0.sds</code> in the solution folder. When the project is restarted, new files with different names are created: <code>DataInput.1.sds</code> and <code>DataOutput.1.sds</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The <a href="https://arm-software.github.io/SDS-Framework/main/theory.html#filenames">algorithm for naming</a> the SDS files determines the names of the subsequent data files.</li>
+</ul>
+</div>
 <h3 id="playback-on-hardware-target">Playback on Hardware Target</h3>
-<p>...</p>
+<ol>
+<li>Change to Build Type <code>DebugPlay</code> (target <code>STM32F746G-DISCO</code> with Project <code>DataTest</code>).</li>
+<li>Build and Run the application.</li>
+<li>Start the payback with the user button on the evaluation board.</li>
+</ol>
+<p>This run should read the <code>DataInput.0.sds</code> file and generate the <code>DataOutput.1.sds</code> file. The playback stops automatically at the end of a stream.</p>
+<p>Compare the output files <code>DataOutput.0.sds</code> and <code>DataOutput.1.sds</code> with any program that can compare binary files. If the communication is correct, the files should be identical.</p>
 <h3 id="configure-bandwidth-for-datatest">Configure Bandwidth for DataTest</h3>
 <p>The <strong>DataTest</strong> project uses a fixed algorithm to verify the communication interface. With the file <code>datatest/sds_algorithm_config.h</code> it is possible to configure bandwidth and interval to match the requirements of the algorithm that should be tested.</p>
 <h2 id="using-algorithmtest">Using AlgorithmTest</h2>
