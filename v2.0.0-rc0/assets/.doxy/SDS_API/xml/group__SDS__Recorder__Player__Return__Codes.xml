@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="group__SDS__Recorder__Player__Return__Codes" kind="group">
+    <compoundname>SDS_Recorder_Player_Return_Codes</compoundname>
+    <title>Function Return Codes</title>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="group__SDS__Recorder__Player__Return__Codes_1ga177e52a9bfee53a688cc7ab98b135439" prot="public" static="no">
+        <name>SDS_REC_PLAY_OK</name>
+        <initializer>(0)</initializer>
+        <briefdescription>
+<para>SDS Recorder or Player function executed successfully. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_rec_play.h" line="34" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Recorder__Player__Return__Codes_1ga4b30a7d800fe0f67fee04dadd23f0ff6" prot="public" static="no">
+        <name>SDS_REC_PLAY_ERROR</name>
+        <initializer>(-1)</initializer>
+        <briefdescription>
+<para>General error during SDS Recorder or Player function execution. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_rec_play.h" line="35" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Recorder__Player__Return__Codes_1gaa504ea1fbf3f41f7eb9bda4b26bae8cd" prot="public" static="no">
+        <name>SDS_REC_PLAY_ERROR_PARAMETER</name>
+        <initializer>(-2)</initializer>
+        <briefdescription>
+<para>Invalid parameter passed to an SDS Recorder or Player function. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_rec_play.h" line="36" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Recorder__Player__Return__Codes_1ga207d07b150a9fe48db8e900a86177898" prot="public" static="no">
+        <name>SDS_REC_PLAY_ERROR_TIMEOUT</name>
+        <initializer>(-3)</initializer>
+        <briefdescription>
+<para>SDS Recorder or Player function execution timed out. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_rec_play.h" line="37" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Recorder__Player__Return__Codes_1gaf48fd6750ec8dbc296186f5785300920" prot="public" static="no">
+        <name>SDS_REC_PLAY_ERROR_IO</name>
+        <initializer>(-4)</initializer>
+        <briefdescription>
+<para>I/O error during SDS Recorder or Player function execution. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_rec_play.h" line="38" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Recorder__Player__Return__Codes_1gaec236d96148d04e6f243266ed233685d" prot="public" static="no">
+        <name>SDS_REC_ERROR_NO_SPACE</name>
+        <initializer>(-5)</initializer>
+        <briefdescription>
+<para>Insufficient space in SDS circular buffer to write the entire data block. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_rec_play.h" line="39" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Recorder__Player__Return__Codes_1ga7627fcc15ffcbb250b53c789b6472716" prot="public" static="no">
+        <name>SDS_PLAY_ERROR_NO_DATA</name>
+        <initializer>(-6)</initializer>
+        <briefdescription>
+<para>Not whole data block is available in the SDS circular buffer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_rec_play.h" line="40" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Recorder__Player__Return__Codes_1gae3df9b49d72ae4584cbb3db45948dc3b" prot="public" static="no">
+        <name>SDS_PLAY_EOS</name>
+        <initializer>(-7)</initializer>
+        <briefdescription>
+<para>End of stream reached in SDS Player operation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds_rec_play.h" line="41" column="9" bodyfile="sds/include/sds_rec_play.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>SDS Recorder and Player Function Return Codes. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The following values are returned by most <computeroutput>sdsRec</computeroutput> and <computeroutput>sdsPlay</computeroutput> functions. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

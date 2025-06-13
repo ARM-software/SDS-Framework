@@ -1,0 +1,313 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="group__SDS__IO__Interface" kind="group">
+    <compoundname>SDS_IO_Interface</compoundname>
+    <title>SDS I/O Interface</title>
+    <innergroup refid="group__SDS__IO__Return__Codes">Function Return Codes</innergroup>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="group__SDS__IO__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioInit</definition>
+        <argsstring>(void)</argsstring>
+        <name>sdsioInit</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Initialize SDS I/O. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Initializes the SDS I/O interface. The interface may be a local file system (e.g., an SD card) or semihosting, or a communication channel such as Ethernet, USB or UART. In the case of a communication channel, the SDS I/O Client is used to interact with the SDS I/O Server running on a Host machine. The initialization process includes setting up the communication interface and verifying that the I/O Server is active on the Host.</para>
+<para><simplesect kind="return"><para>SDSIO_OK on success or a negative value on error (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.txt" line="228" column="9" declfile="sds/include/sds.txt" declline="228" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__IO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioUninit</definition>
+        <argsstring>(void)</argsstring>
+        <name>sdsioUninit</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Un-initialize SDS I/O. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>De-initializes the SDS I/O interface. If a communication channel such as Ethernet, USB or USART is used, the corresponding communication interface is also de-initialized.</para>
+<para><simplesect kind="return"><para>SDSIO_OK on success or a negative value on error (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="62" column="9" declfile="sds/include/sdsio.h" declline="62" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__IO__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref></type>
+        <definition>sdsioId_t sdsioOpen</definition>
+        <argsstring>(const char *name, sdsioMode_t mode)</argsstring>
+        <name>sdsioOpen</name>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kindref="member">sdsioMode_t</ref></type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+<para>Open I/O stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Opens an SDS I/O stream for reading or writing. If the interface is a local file system or semihosting, the file is opened directly. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends an open command (SDSIO_CMD_OPEN) to the SDS I/O Server to open the file on the Host system. The function returns the handle to the SDS I/O stream; if the I/O stream could not be opened, it returns NULL.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>stream name (pointer to NULL terminated string) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">mode</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kindref="member">sdsioMode_t</ref> open mode </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref> Handle to SDS I/O stream, or NULL if operation failed </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="71" column="11" declfile="sds/include/sdsio.h" declline="71" declcolumn="11"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__IO__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioClose</definition>
+        <argsstring>(sdsioId_t id)</argsstring>
+        <name>sdsioClose</name>
+        <param>
+          <type><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Close I/O stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Closes an SDS I/O stream. If the interface is a local file system or semihosting, the file is closed directly. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a close command (SDSIO_CMD_CLOSE) to the SDS I/O Server to close the file on the Host system.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref> handle to SDS I/O stream </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>SDSIO_OK on success or a negative value on error (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="80" column="9" declfile="sds/include/sdsio.h" declline="80" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__IO__Interface_1gafb6b812114b27595ead2d18f2b151e6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioWrite</definition>
+        <argsstring>(sdsioId_t id, const void *buf, uint32_t buf_size)</argsstring>
+        <name>sdsioWrite</name>
+        <param>
+          <type><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>buf</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>buf_size</declname>
+        </param>
+        <briefdescription>
+<para>Write data to I/O stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Attempts to write up to <computeroutput>buf_size</computeroutput> bytes from the memory pointed to <computeroutput>buf</computeroutput> to the SDS I/O stream identified by <computeroutput>id</computeroutput>. If the interface is a local file system or semihosting, data is written directly to the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a write command (SDSIO_CMD_WRITE) along with the data to the SDS I/O Server, which then writes the data to a file on the Host system.</para>
+<para>The function may return before all data has been written, depending on the available interface bandwidth, buffer capacity, or timeout behavior:</para>
+<para><itemizedlist>
+<listitem><para>If the write operation is successful, the function returns the number of bytes actually written. This value may be less than <emphasis>buf_size</emphasis> in case of partial write.</para>
+</listitem><listitem><para>If no data could be written before the operation times out, the function returns <ref refid="group__SDS__IO__Return__Codes_1ga366a248ca8888c4257137aeaf5d2ddb2" kindref="member">SDSIO_ERROR_TIMEOUT</ref>.</para>
+</listitem><listitem><para>If an I/O interface or protocol error occurs, the function returns <ref refid="group__SDS__IO__Return__Codes_1ga9445f070322b3667176d0022c433dea2" kindref="member">SDSIO_ERROR</ref> or <ref refid="group__SDS__IO__Return__Codes_1ga5afb9397fd46fba843f37a03ed40da09" kindref="member">SDSIO_ERROR_INTERFACE</ref>.</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref> handle to SDS I/O stream </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to buffer with data to write </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer size in bytes </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of bytes successfully written or a negative value on error (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="91" column="9" declfile="sds/include/sdsio.h" declline="91" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="group__SDS__IO__Interface_1gaed816e11cb116354d8d95d97693a736c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioRead</definition>
+        <argsstring>(sdsioId_t id, void *buf, uint32_t buf_size)</argsstring>
+        <name>sdsioRead</name>
+        <param>
+          <type><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref></type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>buf</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>buf_size</declname>
+        </param>
+        <briefdescription>
+<para>Read data from I/O stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Attempts to read up to <computeroutput>buf_size</computeroutput> bytes of data from the SDS I/O stream identified by <computeroutput>id</computeroutput> into the memory pointed to <computeroutput>buf</computeroutput>. If the interface is a local file system or semihosting, data is read directly from the file. For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO_CMD_READ) to the SDS I/O Server, which reads the file on the Host system and returns the data to the Client.</para>
+<para>The function attempts to read data and may block based on the behavior of the underlying interface and data availability. It returns under the following conditions:</para>
+<para><itemizedlist>
+<listitem><para>If data is available, the function reads up to <computeroutput>buf_size</computeroutput> bytes and returns the number of bytes actually read. This value may be less than <computeroutput>buf_size</computeroutput>.</para>
+</listitem><listitem><para>If no data becomes available before the timeout expires, the function returns <ref refid="group__SDS__IO__Return__Codes_1ga366a248ca8888c4257137aeaf5d2ddb2" kindref="member">SDSIO_ERROR_TIMEOUT</ref>.</para>
+</listitem><listitem><para>If data is partially read but the timeout occurs before the full request is satisfied, the function returns the number of bytes read up to that point.</para>
+</listitem><listitem><para>If the end of the stream is reached and no more data remains, the function returns <ref refid="group__SDS__IO__Return__Codes_1gaf44016f63777a63a3cc5751b7c8c6fe1" kindref="member">SDSIO_EOS</ref> to indicate that the end of file has been reached and no additional data is available.</para>
+</listitem><listitem><para>If an I/O interface or protocol error occurs, the function returns <ref refid="group__SDS__IO__Return__Codes_1ga9445f070322b3667176d0022c433dea2" kindref="member">SDSIO_ERROR</ref> or <ref refid="group__SDS__IO__Return__Codes_1ga5afb9397fd46fba843f37a03ed40da09" kindref="member">SDSIO_ERROR_INTERFACE</ref>.</para>
+</listitem></itemizedlist>
+</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kindref="member">sdsioId_t</ref> handle to SDS I/O stream </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to buffer for data to read </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer size in bytes </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of bytes successfully read, or a negative value on error or EOS (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="102" column="9" declfile="sds/include/sdsio.h" declline="102" declcolumn="9"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" prot="public" static="no">
+        <type>void *</type>
+        <definition>typedef void* sdsioId_t</definition>
+        <argsstring></argsstring>
+        <name>sdsioId_t</name>
+        <briefdescription>
+<para>Handle to SDS I/O data stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This <emphasis>pointer</emphasis> defines the handle to SDS I/O data stream. It is used to identify a data stream across the different functions. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="31" column="14" bodyfile="sds/include/sdsio.h" bodystart="31" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" prot="public" static="no" strong="no">
+        <type></type>
+        <name>sdsioMode_t</name>
+        <enumvalue id="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41ae1e892569bf150769083e37f812029a3" prot="public">
+          <name>sdsioModeRead</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41a2e552b9f633629884f6d5205e384ca94" prot="public">
+          <name>sdsioModeWrite</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>This <emphasis>enum</emphasis> identifies the <emphasis>read</emphasis> or <emphasis>write</emphasis> mode to SDS I/O data streams. It is a parameter of the <ref refid="group__SDS__IO__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" kindref="member">sdsioOpen</ref> function. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio.h" line="34" column="1" bodyfile="sds/include/sdsio.h" bodystart="34" bodyend="37"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="sdsio_8h_source" kindref="compound">sdsio.h</ref>: SDS I/O Interface for data streams </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The SDS I/O interface provides a generic mechanism for reading from and writing to <computeroutput>SDS file</computeroutput>s using several I/O backends.</para>
+<para>Interface can operate over:</para>
+<para><itemizedlist>
+<listitem><para>A local file system, such as an SD card or semihosting, where files are accessed directly.</para>
+</listitem><listitem><para>A communication channel such as Ethernet, USB, or UART, where access to files is performed remotely via an SDS I/O Server.</para>
+</listitem></itemizedlist>
+</para>
+<para>When using a communication channel, the embedded device runs an SDS I/O Client, which communicates with the SDS I/O Server running on the host machine. This interaction is command-based (e.g., <computeroutput>SDSIO_CMD_OPEN</computeroutput>, <computeroutput>SDSIO_CMD_READ</computeroutput>, <computeroutput>SDSIO_CMD_WRITE</computeroutput>) and enables the embedded system to remotely open, read, write, and close files located on the host. For more details, refer to <ulink url="../theory.md#sdsio-server-protocol">SDSIO Server Protocol</ulink>.</para>
+<para>The interface is lightweight and backend-agnostic, making it suitable for embedded data logging, host-interactive tools, or as a transport layer for higher-level components such as the SDS Recorder and Player. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

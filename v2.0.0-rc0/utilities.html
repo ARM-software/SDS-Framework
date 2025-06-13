@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Utilities - SDS-Framework</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Utilities";
+        var mkdocs_page_input_path = "utilities.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="index.html" class="icon icon-home"> SDS-Framework
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="template.html">SDS Template Application</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="sdsio.html">SDSIO Interface</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Utilities</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sdsio-server">SDSIO-Server</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#serial-mode">Serial Mode</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#socket-mode">Socket Mode</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#usb-mode">USB Mode</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sds-view">SDS-View</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_1">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sds-convert">SDS-Convert</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_2">Usage</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#audio-wav">Audio WAV</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#simple-csv">Simple CSV</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#qeexo-v2-csv">Qeexo V2 CSV</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sds-check">SDS-Check</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_3">Usage</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#summary-report">Summary Report</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#size-consistency-check">Size consistency check</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#timestamp-consistency-check">Timestamp consistency check</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#jitter-check">Jitter check</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#delta-time-check">Delta time check</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#duplicate-timestamp-check">Duplicate timestamp check</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="theory.html">Theory of Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="SDS_API/modules.html">API Modules</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SDS-Framework</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html" class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Utilities</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/utilities.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="utilities">Utilities</h1>
+<!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD024 -->
+
+<p>The SDS-Framework includes the following utilities that are implemented in Python.</p>
+<ul>
+<li><a href="#sdsio-server"><strong>SDSIO-Server:</strong></a> enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer) or serial (UART) connection.</li>
+<li><a href="#sds-view"><strong>SDS-View:</strong></a> graphical data viewer for SDS data files.</li>
+<li><a href="#sds-convert"><strong>SDS-Convert:</strong></a> convert SDS data files into CSV, Qeexo V2 CSV, or WAV format.</li>
+<li><a href="#sds-check"><strong>SDS-Check:</strong></a> check SDS data files for correctness and consistency.</li>
+</ul>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li><strong>Python 3.9</strong> or later with packages:<ul>
+<li>ifaddr</li>
+<li>matplotlib</li>
+<li>numpy</li>
+<li>pandas</li>
+<li>pyyaml</li>
+<li>pyserial</li>
+<li>libusb1</li>
+</ul>
+</li>
+</ul>
+<h2 id="setup">Setup</h2>
+<ul>
+<li>Verify the installed Python version with:</li>
+</ul>
+<pre><code class="language-txt">python --version
+</code></pre>
+<ul>
+<li>Option 1: Use a Python environment:</li>
+</ul>
+<pre><code class="language-txt">python -m venv sds                 // create environment with name sds
+sds\Scripts\activate
+pip install -r requirements.txt
+</code></pre>
+<ul>
+<li>Option 2: Install the required Python packages with <code>pip</code>:</li>
+</ul>
+<pre><code class="language-txt">pip install ifaddr matplotlib numpy pandas pyyaml pyserial libusb1
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>These utilities are located in the SDS-Framework pack installation folder, subfolder <code>/utilities</code>.</li>
+</ul>
+</div>
+<h2 id="sdsio-server">SDSIO-Server</h2>
+<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDSIO-Server</strong></a> enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer), or serial (UART) connection.
+It communicates with the target using these <a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client">SDSIO Client interfaces</a>:</p>
+<ul>
+<li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/serial/usart">serial/usart</a> for serial communication via CMSIS-Driver USART.</li>
+<li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/socket">socket</a> for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.</li>
+<li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/usb/mdk">usb/bulk</a> for communication via USB Bulk transfer using MDK-Middleware.</li>
+</ul>
+<p>The SDS data stream is recorded to files with the following naming convention:</p>
+<p><code>&lt;name&gt;.&lt;index&gt;.sds</code></p>
+<ul>
+<li><code>&lt;name&gt;</code> is the name of the I/O stream specified with the function <code>sdsRecOpen</code> or <code>sdsPlayOpen</code> on the target.</li>
+<li><code>&lt;index&gt;</code> is the zero-based index which is incremented for each subsequent recording.</li>
+<li>For more details see <a href="theory.html#filenames">Filenames section</a></li>
+</ul>
+<p>The data content of the <code>&lt;name&gt;.&lt;index&gt;.sds</code> is described with metadata file <code>&lt;name&gt;.sds.yml</code> in <a href="https://github.com/ARM-software/SDS-Framework/tree/main/schema">YAML format</a>.</p>
+<h3 id="usage">Usage</h3>
+<ul>
+<li><a href="#setup">Setup</a> the Python environment.</li>
+<li>Depending on the SDS interface used on the target use either <a href="#serial-mode">Serial Mode</a>, <a href="#socket-mode">Socket Mode</a> or <a href="#usb-mode">USB Mode</a> as described below.</li>
+<li>The SDSIO_Server terminates with <code>Ctrl+C</code>.</li>
+</ul>
+<h4 id="serial-mode">Serial Mode</h4>
+<pre><code class="language-txt">usage: sdsio-server.py serial [-h] -p &lt;Serial Port&gt; [--baudrate &lt;Baudrate&gt;] [--parity &lt;Parity&gt;] [--stopbits &lt;Stop bits&gt;] [--connect-timeout &lt;Timeout&gt;] [--workdir &lt;Work dir&gt;]
+
+optional arguments:
+  -h, --help                   show this help message and exit
+
+required:
+  -p &lt;Serial Port&gt;             Serial port
+
+optional:
+  --baudrate &lt;Baudrate&gt;        Baudrate (default: 115200)
+  --parity &lt;Parity&gt;            Parity: N=None, E=Even, O=Odd, M=Mark, S=Space (default: N)
+  --stopbits &lt;Stop bits&gt;       Stop bits: 1, 1.5, 2 (default: 1)
+  --connect-timeout &lt;Timeout&gt;  Serial port connection timeout in seconds (default: no timeout)
+  --workdir &lt;Work dir&gt;         Directory for SDS files (default: current directory)
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">python sdsio-server.py serial -p COM0 --baudrate 115200 --workdir ./work_dir
+</code></pre>
+<h4 id="socket-mode">Socket Mode</h4>
+<pre><code class="language-txt">usage: sdsio-server.py socket [-h] [--ipaddr &lt;IP&gt; | --interface &lt;Interface&gt;] [--port &lt;TCP Port&gt;] [--workdir &lt;Work dir&gt;]
+
+optional arguments:
+  -h, --help               show this help message and exit
+
+optional:
+  --ipaddr &lt;IP&gt;            Server IP address (cannot be used with --interface)
+  --interface &lt;Interface&gt;  Network interface (cannot be used with --ipaddr)
+  --port &lt;TCP Port&gt;        TCP port (default: 5050)
+  --workdir &lt;Work dir&gt;     Directory for SDS files (default: current directory)
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The <code>--ipaddr</code> and <code>--interface</code> options are mutually exclusive.</li>
+<li>SDSIO Server only supports IPv4 addresses.</li>
+</ul>
+</div>
+<p><strong>Example:</strong></p>
+<p>For Microsoft Windows (using default computer IP):</p>
+<pre><code class="language-bash">python sdsio-server.py socket --workdir ./work_dir
+</code></pre>
+<p>For Linux:</p>
+<pre><code class="language-bash">python sdsio-server.py socket --interface eth0 --workdir ./work_dir
+</code></pre>
+<h4 id="usb-mode">USB Mode</h4>
+<pre><code class="language-txt">usage: sdsio-server.py usb [-h] [--workdir &lt;Work dir&gt;] [--high-priority]
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+optional:
+  --workdir &lt;Work dir&gt;  Directory for SDS files (default: current directory)
+  --high-priority       Enable high-priority threading for USB server (default: off)
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>For more reliable operation at higher data transfer rates, it is recommended to enable the <code>--high-priority</code> option. This increases the thread priority of the SDSIO-Server process.</li>
+<li>When using <code>--high-priority</code>, elevated privileges are required depending on your operating system:<ul>
+<li><strong>Windows</strong>: Run the Python script as an administrator.</li>
+<li><strong>macOS/Linux</strong>: Execute the script with <code>sudo</code> or ensure the user has sufficient permissions.</li>
+</ul>
+</li>
+</ul>
+</div>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">python sdsio-server.py usb --workdir ./work_dir
+</code></pre>
+<h2 id="sds-view">SDS-View</h2>
+<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-View</strong></a> outputs a time-based plot of SDS data files (<code>&lt;name&gt;.&lt;index&gt;.sds</code>) based on the meta-data file (<code>&lt;name&gt;.sds.yml</code>).</p>
+<p>The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description. All plots form a single recording will be displayed on the same figure (shared vertical scale).</p>
+<p>If there are 3 values described in the metadata file, an optional 3D view may be displayed.  </p>
+<h3 id="limitations">Limitations</h3>
+<ul>
+<li>Data in recording must all be of the same type (float, uint32_t, uint16_t, ...)</li>
+</ul>
+<h3 id="usage_1">Usage</h3>
+<ul>
+<li><a href="#setup">Setup</a> the Python environment.</li>
+<li>Invoke the tool as explained below.</li>
+</ul>
+<pre><code class="language-txt">usage: sds-view.py [-h] -y &lt;yaml_file&gt; -s &lt;sds_file&gt; [&lt;sds_file&gt; ...] [--3D]
+
+View SDS data
+
+options:
+  -h, --help                      show this help message and exit
+
+required:
+  -y &lt;yaml_file&gt;                  YAML sensor description file
+  -s &lt;sds_file&gt; [&lt;sds_file&gt; ...]  SDS data recording file
+
+optional:
+  --3D                            Plot 3D view in addition to normal 2D
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">python sds-view.py -y test/Gyroscope.sds.yml -s test/Gyroscope.0.sds
+</code></pre>
+<p><strong>Example display:</strong></p>
+<p><img alt="Example output" src="images/SDS-View.png" /></p>
+<h2 id="sds-convert">SDS-Convert</h2>
+<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-Convert</strong></a> converts SDS data files to selected format based on description in metadata (YAML) files.  </p>
+<h3 id="usage_2">Usage</h3>
+<ul>
+<li><a href="#setup">Setup</a> the Python environment.</li>
+<li>Depending on the required format use the tool as shown below.</li>
+</ul>
+<h4 id="audio-wav">Audio WAV</h4>
+<p>The <code>audio_wav</code> mode converts raw microphone data from <code>.sds</code> files into a standard RIFF/WAV file using linear
+PCM encoding. The conversion process involves appending a WAV header, generated from parameters specified in the
+associated metadata <code>.yml</code> file, to the raw audio data extracted from the <code>.sds</code> stream. The metadata defines
+essential audio parameters such as channel configuration (mono or stereo), sample rate (frame rate), and sample
+width (bit depth).</p>
+<pre><code class="language-txt">usage: sds-convert.py audio_wav [-h] -i &lt;input_file&gt; [&lt;input_file&gt; ...] -o &lt;output_file&gt; [-y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]]
+
+options:
+  -h, --help                          show this help message and exit
+
+required:
+  -i &lt;input_file&gt; [&lt;input_file&gt; ...]  Input file
+  -o &lt;output_file&gt;                    Output file
+
+optional:
+  -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]    YAML sensor description file
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.</li>
+<li>The tool expects the SDS stream to be strictly audio - no header markers or custom formatting.</li>
+</ul>
+</div>
+<p><strong>Example of metadata yml file for mono microphone:</strong></p>
+<pre><code class="language-yml">sds:
+  name: Microphone
+  description: Mono microphone with 16kHz sample rate
+  frequency: 16000
+  content:
+  - value: Mono
+    type: int16_t
+</code></pre>
+<p><strong>Example of metadata yml file for stereo microphone:</strong></p>
+<pre><code class="language-yml">sds:
+  name: Microphone
+  description: Stereo microphone with 16kHz sample rate
+  frequency: 16000
+  content:
+  - value: Left channel
+    type: int16_t
+  - value: Right channel
+    type: int16_t
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">python sds-convert.py audio_wav -i Microphone.0.sds -o microphone.wav -y Microphone.sds.yml
+</code></pre>
+<h4 id="simple-csv">Simple CSV</h4>
+<p>The <code>simple_csv</code> mode converts sensor data from <code>.sds</code> files into a human-readable CSV format.
+This mode is designed for exporting data from a single sensor. If the sensor has multiple
+channels, each channel will appear as a separate column in the output CSV.</p>
+<p>Timestamps are represented in floating-point format, in seconds. Using the <code>--normalize</code> flag causes
+all timestamps in the input file to be offset so that the first timestamp is <code>0</code>.</p>
+<p>Users may specify a time range selection of the input data to be processed using the following flags:</p>
+<ul>
+<li><code>--start-timestamp &lt;timestamp&gt;</code>: Starting input data timestamp in floating-point format, in seconds.</li>
+<li><code>--stop-timestamp &lt;timestamp&gt;</code>: Stopping input data timestamp in floating-point format, in seconds.</li>
+</ul>
+<pre><code class="language-txt">usage: sds-convert.py simple_csv [-h] -i &lt;input_file&gt; [&lt;input_file&gt; ...] -o &lt;output_file&gt; [-y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]] [--normalize] [--start-timestamp &lt;timestamp&gt;] [--stop-timestamp &lt;timestamp&gt;]
+
+options:
+  -h, --help                          show this help message and exit
+
+required:
+  -i &lt;input_file&gt; [&lt;input_file&gt; ...]  Input file
+  -o &lt;output_file&gt;                    Output file
+
+optional:
+  -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]    YAML sensor description file
+  --normalize                         Normalize timestamps so they start with 0
+  --start-timestamp &lt;timestamp&gt;       Starting input data timestamp, in seconds (default: None)
+  --stop-timestamp &lt;timestamp&gt;        Stopping input data timestamp, in seconds (default: None)
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.</li>
+<li>Current implementation assumes that the tick frequency is <code>1ms</code> and does not use the <code>tick-frequency</code> value from the metadata file.</li>
+</ul>
+</div>
+<p><strong>Example of metadata yml file for gyroscope:</strong></p>
+<pre><code class="language-yml">sds:
+  name: Gyroscope
+  description: Gyroscope with 1667Hz sample rate
+  frequency: 1667
+  content:
+  - value: x
+    type: int16_t
+    scale: 0.07
+    unit: dps
+  - value: y
+    type: int16_t
+    scale: 0.07
+    unit: dps
+  - value: z
+    type: int16_t
+    scale: 0.07
+    unit: dps
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">python sds-convert.py simple_csv  -i Gyroscope.0.sds -o gyroscope_simple.csv -y Gyroscope.sds.yml --normalize --start-tick 0.2 --stop-tick 0.3
+</code></pre>
+<h4 id="qeexo-v2-csv">Qeexo V2 CSV</h4>
+<p>Timestamps are represented in integer format, in milliseconds. Using the <code>--normalize</code> flag causes
+all timestamps in the input file to be offset so that the first timestamp is <code>0</code>.</p>
+<p>Users may specify a time range selection of the input data to be processed using the following flags:</p>
+<ul>
+<li><code>--start-timestamp &lt;timestamp&gt;</code>: Starting input data timestamp in integer format, in milliseconds.</li>
+<li><code>--stop-timestamp &lt;timestamp&gt;</code>: Stopping input data timestamp in integer format, in milliseconds.</li>
+</ul>
+<p>By default, the output file will have raw timestamps in integer format, in milliseconds.
+The default output timestamp interval is set to <code>50 ms</code>.
+To override this setting use the <code>--interval &lt;ms&gt;</code> flag, where <code>&lt;ms&gt;</code> is the desired interval in milliseconds.</p>
+<p>An optional label can be added to the output by providing a string argument to the <code>--label &lt;text&gt;</code> flag.
+This <code>&lt;text&gt;</code> will populate the label column in the output file.</p>
+<p>Link to <a href="https://docs.qeexo.com/guides/userguides/data-management#2-1-Data-format-specification">Qeexo V2 CSV format specification</a>.</p>
+<pre><code class="language-txt">usage: sds-convert.py qeexo_v2_csv [-h] -i &lt;input_file&gt; [&lt;input_file&gt; ...] -o &lt;output_file&gt; [-y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]] [--normalize] [--start-timestamp &lt;timestamp&gt;] [--stop-timestamp &lt;timestamp&gt;] [--label 'label'] [--interval &lt;interval&gt;] [--sds_index &lt;sds_index&gt;]
+
+options:
+  -h, --help                          show this help message and exit
+
+required:
+  -i &lt;input_file&gt; [&lt;input_file&gt; ...]  Input file
+  -o &lt;output_file&gt;                    Output file
+
+optional:
+  -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]    YAML sensor description file
+  --normalize                         Normalize timestamps so they start with 0
+  --start-timestamp &lt;timestamp&gt;       Starting input data timestamp, in ms (default: None)
+  --stop-timestamp &lt;timestamp&gt;        Stopping input data timestamp, in ms (default: None)
+  --label 'label'                     Qeexo class label for sensor data (default: None)
+  --interval &lt;interval&gt;               Qeexo timestamp interval, in ms (default: 50)
+  --sds_index &lt;sds_index&gt;             SDS file index to write (default: &lt;sensor&gt;.0.sds)
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.</li>
+<li>Current implementation assumes that the tick frequency is <code>1ms</code> and does not use the <code>tick-frequency</code> value from the metadata file.</li>
+</ul>
+</div>
+<p><strong>Example of metadata yml file for accelerometer:</strong></p>
+<pre><code class="language-yml">sds:
+  name: Accelerometer
+  description: Accelerometer with 1667Hz sample rate
+  frequency: 1667
+  content:
+  - value: x
+    type: int16_t
+    scale: 0.000061
+    unit: G
+  - value: y
+    type: int16_t
+    scale: 0.000061
+    unit: G
+  - value: z
+    type: int16_t
+    scale: 0.000061
+    unit: G
+</code></pre>
+<p><strong>Examples:</strong></p>
+<p>Convert <strong>SDS data</strong> files to <strong>Qeexo V2 CSV</strong> files:</p>
+<pre><code class="language-bash">python sds-convert.py qeexo_v2_csv -i Gyroscope.0.sds Accelerometer.0.sds -o sensor_fusion.csv -y Gyroscope.sds.yaml Accelerometer.sds.yaml --normalize --start-tick 200 --stop-tick 300
+</code></pre>
+<p>Convert <strong>Qeexo V2 CSV</strong> files to <strong>SDS data</strong> files:</p>
+<pre><code class="language-bash">python sds-convert.py qeexo_v2_csv -i accelerometer_data.csv -o accelerometer.sds
+</code></pre>
+<h2 id="sds-check">SDS-Check</h2>
+<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-Check</strong></a> checks SDS data files for correctness and consistency.  </p>
+<p>The following checks are performed:</p>
+<ul>
+<li><a href="#size-consistency-check">Size consistency check</a>: data size of all records should match the size of the SDS file.</li>
+<li><a href="#timestamp-consistency-check">Timestamp consistency check</a>: verify that timestamps of the records are in ascending order.</li>
+<li><a href="#jitter-check">Jitter check</a>: print the record with the largest deviation from the average timestamp interval.</li>
+<li><a href="#delta-time-check">Delta time check</a>: find the record with the largest timestamps difference from the following record.</li>
+<li><a href="#duplicate-timestamp-check">Duplicate timestamp check</a>: find records that have identical timestamps.</li>
+</ul>
+<h3 id="usage_3">Usage</h3>
+<ul>
+<li><a href="#setup">Setup</a> the Python environment.</li>
+<li>Invoke the tool as explained below.</li>
+</ul>
+<pre><code class="language-txt">usage: sds-check.py [-h] -s &lt;sds_file&gt;
+
+SDS data validation
+
+options:
+  -h, --help     show this help message and exit
+
+required:
+  -s &lt;sds_file&gt;  SDS data recording file
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-txt">python sds-check.py -s Accelerometer.0.sds
+File     : Accelerometer.0.sds
+DataSize : 156.020 bytes
+Records  : 289
+BlockSize: 532 bytes
+Largest  : 552 bytes
+Smallest : 462 bytes
+Interval : 50 ms
+DataRate : 10.640 byte/s
+Jitter   : 0 ms
+Validation passed
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The time values assume an tick rate of 1000 Hz.</p>
+</div>
+<h3 id="summary-report">Summary Report</h3>
+<p>After processing the SDS data file, the SDS-Check utility prints a summary report with statistics:</p>
+<ul>
+<li><strong>DataSize</strong>:  total size of the data in bytes</li>
+<li><strong>Records</strong>:   total number of records</li>
+<li><strong>BlockSize</strong>: average block size of a data record</li>
+<li><strong>Largest</strong>:   largest block size, if different from the average block size (optional)</li>
+<li><strong>Smallest</strong>:  smallest block size, if different from the average block size (optional)</li>
+<li><strong>Interval</strong>:  time interval of the recording in milliseconds</li>
+<li><strong>DataRate</strong>:  recorded data rate in bytes per second</li>
+<li><strong>Jitter</strong>:    deviation from the expected timestamps</li>
+<li><strong>DeltaTime</strong>: largest difference of the neighboring timestamps, if deviating from the recording interval (optional)</li>
+<li><strong>DupStamps</strong>: number of duplicated timestamps, if found (optional)</li>
+</ul>
+<h3 id="size-consistency-check">Size consistency check</h3>
+<p>This check processes the SDS data records and calculates the total size of the SDS data.
+It is the sum of all data records (header + data). This data size should match the size of
+the SDS file.</p>
+<p>If the sizes do not match this error is printed:</p>
+<pre><code class="language-txt">Error: File size mismatch. Expected 360 bytes, but file contains 363 bytes.
+</code></pre>
+<h3 id="timestamp-consistency-check">Timestamp consistency check</h3>
+<p>This check processes the SDS records and ensures that the timestamps recorded in the records
+are arranged in ascending order. If the utility detects that the timestamp of the subsequent
+data record is lower than the current one, this error is printed:</p>
+<pre><code class="language-txt">Error: Timestamp not in ascending order in record 23.
+</code></pre>
+<h3 id="jitter-check">Jitter check</h3>
+<p>This check processes the SDS data records and searches for a maximum deviation of the recorded
+timestamps from the expected ones. If the deviation is found, the record number is saved. The
+maximum deviation is evaluated as <strong>jitter</strong> and printed out in the summary report.</p>
+<pre><code class="language-txt">File     : Gyroscope.0.sds
+DataSize : 153.334 bytes
+Records  : 284
+BlockSize: 532 bytes
+Largest  : 606 bytes
+Smallest : 444 bytes
+Interval : 50 ms
+DataRate : 10.640 byte/s
+Jitter   : 0 ms
+Validation passed
+</code></pre>
+<h3 id="delta-time-check">Delta time check</h3>
+<p>This check processes the SDS records and tries to find the largest difference in timestamps
+between two neighboring records, called <strong>DeltaTime</strong>.</p>
+<p>For normally recorded files, the delta time and the recording interval are identical, so no information
+about the delta time status is printed. If the delta time and the recording interval are not identical,
+i.e. a difference is detected, the record number is also saved and the <strong>DeltaTime</strong> is printed in
+the summary report.</p>
+<pre><code class="language-txt">File     : Temperature.0.sds
+DataSize : 360 bytes
+Records  : 30
+BlockSize: 4 bytes
+Interval : 1.024 ms
+DataRate : 4 byte/s
+Jitter   : 59 ms, record 19
+DeltaTime: 1.050 ms, record 2
+Validation passed
+</code></pre>
+<p>This is not an error, but a report of an anomaly. If the time delta is significantly larger than the
+sampling interval, e.g. many times longer, this may indicate that one or more data records are missing
+from the recorded file.</p>
+<h3 id="duplicate-timestamp-check">Duplicate timestamp check</h3>
+<p>This check processes the SDS records in search of duplicated timestamps.
+This means that the same timestamp is used in several consecutive data records.</p>
+<p>This may indicate that the recording loop in an embedded application is not set up correctly. It is also
+possible that duplicate timestamps are caused by unexpected thread delays in the embedded application.</p>
+<p>Duplicate timestamps are unusual in typical recording files. If multiple timestamps with the same value
+are found in the SDS file, <strong>DupStamps</strong> will be added in the summary report.</p>
+<pre><code class="language-txt">File     : DataInput.0.sds
+DataSize : 17.509.440 bytes
+Records  : 47.580
+BlockSize: 360 bytes
+Interval : 1 ms
+DataRate : 360.000 byte/s
+Jitter   : 4 ms, record 4
+DeltaTime: 5 ms, record 5
+DupStamps: 4, record 1
+Validation passed
+</code></pre>
+<p>This is not an error, but a report of an anomaly. The report contains the number of records with
+the same timestamp and the position in the SDS file where the anomaly was detected (record number).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Only the first occurrence of a duplicate timestamp is reported.</p>
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="sdsio.html" class="btn btn-neutral float-left" title="SDSIO Interface"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="theory.html" class="btn btn-neutral float-right" title="Theory of Operation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/ARM-software/SDS-Framework" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="sdsio.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="theory.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
