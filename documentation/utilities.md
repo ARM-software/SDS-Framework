@@ -44,6 +44,9 @@ pip install -r requirements.txt
 pip install ifaddr matplotlib numpy pandas pyyaml pyserial libusb1
 ```
 
+!!! Note
+    - These utilities are located in the SDS-Framework pack installation folder, subfolder `/utilities`.
+
 ## SDSIO-Server
 
 The Python utility [**SDSIO-Server**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer), or serial (UART) connection.
@@ -401,7 +404,7 @@ python sds-convert.py qeexo_v2_csv -i Gyroscope.0.sds Accelerometer.0.sds -o sen
 Convert **Qeexo V2 CSV** files to **SDS data** files:
 
 ```bash
-python sds-convert qeexo_v2_csv -i accelerometer_data.csv -o accelerometer.sds
+python sds-convert.py qeexo_v2_csv -i accelerometer_data.csv -o accelerometer.sds
 ```
 
 ## SDS-Check

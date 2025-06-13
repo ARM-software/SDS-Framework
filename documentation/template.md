@@ -123,36 +123,56 @@ The steps to add a custom hardware configuration are:
 
 The DataTest project validates the communication channel.
 
-### Record on Simulation Model
+### Recording on Simulation Model
 
 1. Select the target `AVH-SSE-300` with Project `DataTest` and Build Type `DebugRec` to record SDS data files.
-2. Build and Run the application.
+2. [Build and Run](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp/README.md) the application.
+3. Use [SDS-Check](utilities.md#sds-check) to verify correctness of the recording:
 
-This run should generate the files: ....
+```bash
+python sds-check.py -s DataInput.0.sds
+python sds-check.py -s DataOutput.0.sds
+```
 
-3. Use [SDS-Check](utilities.md#sds-check) to verify correctness of recording with:
+This run should generate the files `DataInput.0.sds` and `DataOutput.0.sds` in the solution folder. The `DataTest` recorder project is configured to record 1000 data records at an interval of 10ms.
 
-...
+When the project is restarted, new files with different names are created: `DataInput.1.sds` and `DataOutput.1.sds`. Therefore, delete the generated SDS files before restarting the application.
 
 ### Playback on Simulation Model
 
-1. Rename output file ...
+1. Change to Build Type `DebugPlay` (target `AVH-SSE-300` with Project `DataTest`).
+2. Build and Run the application.
 
-2. Change to Build Type `DebugPlay` (target `AVH-SSE-300` with Project `DataTest`).
+This run should read the `DataInput.0.sds` file and generate the `DataOutput.1.sds` file.
 
-This run should generate the files: ...
+Compare the output files `DataOutput.0.sds` and `DataOutput.1.sds` with any program that can compare binary files. If the communication is correct, the files should be identical.
 
-Compare the output files with ....
+### Recording on Hardware Target
 
+1. Select the `STM32F746G-DISCO` target with Project `DataTest` and Build Type `DebugRec` to record SDS data files.
+2. Build and Run the application.
+3. Start and stop the recording with the user button on the evaluation board.
+4. Use [SDS-Check](utilities.md#sds-check) to verify correctness of the recording:
 
-### Record on Hardware Target
+```bash
+python sds-check.py -s DataInput.0.sds
+python sds-check.py -s DataOutput.0.sds
+```
 
-....
+This run should generate the files `DataInput.0.sds` and `DataOutput.0.sds` in the solution folder. When the project is restarted, new files with different names are created: `DataInput.1.sds` and `DataOutput.1.sds`.
 
+!!! Note
+    - The [algorithm for naming](https://arm-software.github.io/SDS-Framework/main/theory.html#filenames) the SDS files determines the names of the subsequent data files.
 
 ### Playback on Hardware Target
 
-...
+1. Change to Build Type `DebugPlay` (target `STM32F746G-DISCO` with Project `DataTest`).
+2. Build and Run the application.
+3. Start the payback with the user button on the evaluation board.
+
+This run should read the `DataInput.0.sds` file and generate the `DataOutput.1.sds` file. The playback stops automatically at the end of a stream.
+
+Compare the output files `DataOutput.0.sds` and `DataOutput.1.sds` with any program that can compare binary files. If the communication is correct, the files should be identical.
 
 ### Configure Bandwidth for DataTest
 

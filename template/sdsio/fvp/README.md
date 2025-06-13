@@ -30,16 +30,13 @@ mps3_board.v_path=Board/Corstone-300/vsi/python/
 
 During the simulation, the SDS files are saved on or read from the Host computer. The following steps are required to configure the project for execution on the AVH-FVP simulator:
 
-- create a [New Solution](https://arm-software.github.io/SDS-Framework/main/template.html#create-new-solution) named `SDS` in an empty folder with VS Code.
+- create a [New Solution](https://arm-software.github.io/SDS-Framework/main/template.html#create-new-solution) named `SDS` in an empty folder with VS Code IDE.
 - select the active target `AVH-SSE-300` and build the application.
 - open a [vcpkg-configuration.json](https://learn.arm.com/learning-paths/embedded-and-microcontrollers/vcpkg-tool-installation/config_creation/)
-  file and add `arm:models/arm/avh-fvp` to the required tools:
+  file and add the following line to the **"requires"** section:
 
   ```json
-  "requires": {
-     ..
-    "arm:models/arm/avh-fvp": "~11.29.27"
-  }
+  "arm:models/arm/avh-fvp": "~11.29.27"
   ```
 
 - open a file `tasks.json` and add a simulation task `AVH-FVP`:

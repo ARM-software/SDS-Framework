@@ -10,7 +10,6 @@ and monitoring buffer states using event callbacks.
 Each buffer stream is represented by an identifier of type sdsBufferId_t, which is obtained via sdsBufferOpen()
 and used in subsequent API calls to refer to the corresponding buffer instance.
 
-Buffer Behavior
 The buffer operates as a circular FIFO (first-in, first-out) queue. Data written to the buffer via sdsBufferWrite()
 is stored until read by sdsBufferRead() or until the buffer is cleared or closed. The buffer supports thresholds
 (threshold_low and threshold_high) for monitoring usage levels and triggering user-defined events.
