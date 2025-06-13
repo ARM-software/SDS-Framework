@@ -18,7 +18,9 @@
 
 // SDS Recorder & Player
 
+#if !defined(__STDC_NO_ATOMICS__)
 #include <stdatomic.h>
+#endif
 #include <string.h>
 
 #include "cmsis_compiler.h"
@@ -106,7 +108,7 @@ static osEventFlagsId_t sdsRecPlayOpenEventFlags;
 
 // Atomic Operation: Write 32-bit value to memory if existing value in memory is zero.
 //  Return: 1 when new value is written or 0 otherwise.
-#if ATOMIC_CHAR32_T_LOCK_FREE < 2
+#if defined(__STDC_NO_ATOMICS__) || !defined(ATOMIC_CHAR32_T_LOCK_FREE) || (ATOMIC_CHAR32_T_LOCK_FREE < 2)
 __STATIC_INLINE uint32_t atomic_wr32_if_zero (uint32_t *mem, uint32_t val) {
   uint32_t primask = __get_PRIMASK();
   uint32_t ret = 0U;
