@@ -103,6 +103,48 @@ sds\_rec\_play.h _: SDS Recorder and Player for writing and reading SDS files vi
 ## Detailed Description
 
 
+The **SDS Recorder** and **Player** manage writing to and reading from SDS files through communication or file I/O interfaces. They support the recording and playback of real-world data for applications such as machine learning and data analysis. Refer to the chapter _SDS Interface_ for an overview.
+
+
+The system uses a dedicated worker thread (`sdsRecPlayThread`) to handle file I/O asynchronously. User-facing APIs interact only with internal circular buffers, allowing efficient, non-blocking data operations.
+
+
+Each recorder or player stream is identified by a handle of type [**sdsRecPlayId\_t**](group__SDS__Recorder__Player.md#typedef-sdsrecplayid_t), returned by [**sdsRecOpen**](group__SDS__Recorder__Player.md#function-sdsrecopen) or [**sdsPlayOpen**](group__SDS__Recorder__Player.md#function-sdsplayopen), and is required for all subsequent operations on that stream.
+
+
+**Thread** **Safety** 
+
+
+The SDS Recorder and Player are **thread-safe** for regular operation:
+
+
+
+* A single thread may read from or write to a specific stream at a time.
+* Multiple streams can be used concurrently by separate threads without conflict.
+
+
+
+
+While operational calls are thread-safe, **improper reuse of closed streams can lead to data corruption**:
+
+
+
+* When a stream is closed via sdsRecPlayClose, its internal control block may be **reallocated** if another stream is opened.
+* If a `read` or `write` operation is still pending on a handle after it has been closed, and a new stream is opened that causes control block reuse, the pending operation may unexpectedly complete on the **newly opened stream**.
+
+
+
+
+To prevent such issues:
+
+
+
+* Avoid opening a new stream immediately after closing another unless you can guarantee that all references and asynchronous operations related to the previous stream have been fully completed or canceled. 
+
+
+
+
+    
 ## Public Types Documentation
 
 

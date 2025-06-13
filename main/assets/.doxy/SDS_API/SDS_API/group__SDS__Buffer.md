@@ -101,6 +101,51 @@ sds\_buffer.h _: SDS circular buffer handling for data streams_[More...](#detail
 ## Detailed Description
 
 
+The **SDS** circular **Buffer** provides an interface for managing circular buffer streams used for efficient data transfer between software components. It includes functions for opening, closing, reading, writing, clearing, and monitoring buffer states using event callbacks.
+
+
+Each buffer stream is represented by an identifier of type [**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t), which is obtained via [**sdsBufferOpen()**](group__SDS__Buffer.md#function-sdsbufferopen) and used in subsequent API calls to refer to the corresponding buffer instance.
+
+
+Buffer Behavior The buffer operates as a circular FIFO (first-in, first-out) queue. Data written to the buffer via [**sdsBufferWrite()**](group__SDS__Buffer.md#function-sdsbufferwrite) is stored until read by [**sdsBufferRead()**](group__SDS__Buffer.md#function-sdsbufferread) or until the buffer is cleared or closed. The buffer supports thresholds (threshold\_low and threshold\_high) for monitoring usage levels and triggering user-defined events.
+
+
+**Thread** **Safety** 
+
+
+The SDS Buffer API is partially thread-safe, with the following constraints:
+
+
+Thread-safe operations:
+
+
+
+* [**sdsBufferRead()**](group__SDS__Buffer.md#function-sdsbufferread)
+* [**sdsBufferWrite()**](group__SDS__Buffer.md#function-sdsbufferwrite)
+* [**sdsBufferGetCount()**](group__SDS__Buffer.md#function-sdsbuffergetcount)
+
+
+
+
+These functions may be safely called concurrently, provided they operate on the same buffer instance ([**sdsBufferId\_t**](group__SDS__Buffer.md#typedef-sdsbufferid_t)). This allows safe producer-consumer models where one thread writes and another reads from the same buffer.
+
+
+Non-thread-safe operations:
+
+
+
+* [**sdsBufferOpen()**](group__SDS__Buffer.md#function-sdsbufferopen)
+* [**sdsBufferClose()**](group__SDS__Buffer.md#function-sdsbufferclose)
+* [**sdsBufferClear()**](group__SDS__Buffer.md#function-sdsbufferclear)
+* [**sdsBufferRegisterEvents()**](group__SDS__Buffer.md#function-sdsbufferregisterevents)
+
+
+
+
+These functions must not be called concurrently with each other or with [**sdsBufferRead()**](group__SDS__Buffer.md#function-sdsbufferread) or [**sdsBufferWrite()**](group__SDS__Buffer.md#function-sdsbufferwrite) for the same buffer. Doing so can lead to undefined behavior or data corruption. 
+
+
+    
 ## Public Types Documentation
 
 

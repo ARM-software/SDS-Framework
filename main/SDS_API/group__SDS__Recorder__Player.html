@@ -181,6 +181,24 @@
 </tbody>
 </table>
 <h2 id="detailed-description">Detailed Description</h2>
+<p>The <strong>SDS Recorder</strong> and <strong>Player</strong> manage writing to and reading from SDS files through communication or file I/O interfaces. They support the recording and playback of real-world data for applications such as machine learning and data analysis. Refer to the chapter <em>SDS Interface</em> for an overview.</p>
+<p>The system uses a dedicated worker thread (<code>sdsRecPlayThread</code>) to handle file I/O asynchronously. User-facing APIs interact only with internal circular buffers, allowing efficient, non-blocking data operations.</p>
+<p>Each recorder or player stream is identified by a handle of type <a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a>, returned by <a href="group__SDS__Recorder__Player.html#function-sdsrecopen"><strong>sdsRecOpen</strong></a> or <a href="group__SDS__Recorder__Player.html#function-sdsplayopen"><strong>sdsPlayOpen</strong></a>, and is required for all subsequent operations on that stream.</p>
+<p><strong>Thread</strong> <strong>Safety</strong> </p>
+<p>The SDS Recorder and Player are <strong>thread-safe</strong> for regular operation:</p>
+<ul>
+<li>A single thread may read from or write to a specific stream at a time.</li>
+<li>Multiple streams can be used concurrently by separate threads without conflict.</li>
+</ul>
+<p>While operational calls are thread-safe, <strong>improper reuse of closed streams can lead to data corruption</strong>:</p>
+<ul>
+<li>When a stream is closed via sdsRecPlayClose, its internal control block may be <strong>reallocated</strong> if another stream is opened.</li>
+<li>If a <code>read</code> or <code>write</code> operation is still pending on a handle after it has been closed, and a new stream is opened that causes control block reuse, the pending operation may unexpectedly complete on the <strong>newly opened stream</strong>.</li>
+</ul>
+<p>To prevent such issues:</p>
+<ul>
+<li>Avoid opening a new stream immediately after closing another unless you can guarantee that all references and asynchronous operations related to the previous stream have been fully completed or canceled. </li>
+</ul>
 <h2 id="public-types-documentation">Public Types Documentation</h2>
 <h3 id="typedef-sdsrecplayevent_t">typedef sdsRecPlayEvent_t</h3>
 <p><em>Callback function for recorder and player events.</em> </p>

@@ -34,6 +34,8 @@
 {
 #endif
 
+#include <stdint.h>
+
 // SDSIO Client works in a pair with SDSIO Server. Communication protocol is documented in the following link:
 // https://arm-software.github.io/SDS-Framework/main/theory/#sdsio-server-protocol
 
