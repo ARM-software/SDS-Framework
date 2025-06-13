@@ -81,7 +81,7 @@ ARM.CMSIS-View.pdsc
 # - release   Tag annotations, or release descriptions (in order)
 # - tag       Tag annotations only
 #
-# PACK_CHANGELOG_MODE="<full|release|tag>"
+PACK_CHANGELOG_MODE="tag"
 
 #
 # custom pre-processing steps
