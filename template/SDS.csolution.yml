@@ -12,6 +12,15 @@ solution:
   # This is a CMSIS-Toolbox Reference Application that requires a compatible board layer
   # Refer to https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/ for more information
 
+
+  # List of miscellaneous tool-specific controls
+  misc:
+    - for-compiler: AC6      # GDB requires DWARF 5, remove when using uVision Debugger
+      C-CPP:
+        - -gdwarf-5
+      ASM:
+        - -gdwarf-5
+        
   packs:
     - pack: ARM::SDS          # search SDS pack for layers
 
