@@ -180,7 +180,7 @@ The **DataTest** project uses a fixed algorithm to verify the communication inte
 
 ## Using AlgorithmTest
 
-ToDo
+The project *AlgorithmTest** allows to add custom algorithms for testing. It is prepared for recording and playback of SDS data files.
 
 ### Add User Algorithm
 
@@ -194,6 +194,4 @@ In the SDS template application these files require changes to interface with th
 
 Configured variants of the SDS template application are provided in a separate [GitHub repository github.com/Arm-Examples/sds-examples](https://github.com/Arm-Examples/sds-examples). These examples show the usage of the SDS-Framework with real-world devices and use cases.
 
-### Using Example Projects
-
-ToDo
+For details refer to **README.md** files that are included with the example configurations.
