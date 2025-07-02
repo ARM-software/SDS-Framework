@@ -181,7 +181,7 @@
 </tbody>
 </table>
 <h2 id="detailed-description">Detailed Description</h2>
-<p>The <strong>SDS Recorder</strong> and <strong>Player</strong> manage writing to and reading from SDS files through communication or file I/O interfaces. They support the recording and playback of real-world data for applications such as machine learning and data analysis. Refer to the chapter <em>SDS Interface</em> for an overview.</p>
+<p>The <strong>SDS Recorder</strong> and <strong>Player</strong> manage writing to and reading from SDS files through communication or file I/O interfaces. They support the recording and playback of real-world data for applications such as machine learning and data analysis. For details on I/O interfaces, refer to chapter <a href="../sdsio.html#SDSIO_Interface">SDS Interface</a>.</p>
 <p>The system uses a dedicated worker thread (<code>sdsRecPlayThread</code>) to handle file I/O asynchronously. User-facing APIs interact only with internal circular buffers, allowing efficient, non-blocking data operations.</p>
 <p>Each recorder or player stream is identified by a handle of type <a href="group__SDS__Recorder__Player.html#typedef-sdsrecplayid_t"><strong>sdsRecPlayId_t</strong></a>, returned by <a href="group__SDS__Recorder__Player.html#function-sdsrecopen"><strong>sdsRecOpen</strong></a> or <a href="group__SDS__Recorder__Player.html#function-sdsplayopen"><strong>sdsPlayOpen</strong></a>, and is required for all subsequent operations on that stream.</p>
 <p><strong>Thread</strong> <strong>Safety</strong> </p>

@@ -265,7 +265,7 @@ The following <a href="sdsio.html">SDSIO interfaces</a> are pre-configured:</p>
 </ul>
 </div>
 <h2 id="using-datatest">Using DataTest</h2>
-<p>The DataTest project validates the communication channel.</p>
+<p>The <strong>DataTest</strong> project validates the communication channel.</p>
 <h3 id="recording-on-simulation-model">Recording on Simulation Model</h3>
 <ol>
 <li>Select the target <code>AVH-SSE-300</code> with Project <code>DataTest</code> and Build Type <code>DebugRec</code> to record SDS data files.</li>
@@ -305,14 +305,14 @@ python sds-check.py -s DataOutput.0.sds
 <ol>
 <li>Change to Build Type <code>DebugPlay</code> (target <code>STM32F746G-DISCO</code> with Project <code>DataTest</code>).</li>
 <li>Build and Run the application.</li>
-<li>Start the payback with the user button on the evaluation board.</li>
+<li>Start the playback with the user button on the evaluation board.</li>
 </ol>
 <p>This run should read the <code>DataInput.0.sds</code> file and generate the <code>DataOutput.1.sds</code> file. The playback stops automatically at the end of a stream.</p>
 <p>Compare the output files <code>DataOutput.0.sds</code> and <code>DataOutput.1.sds</code> with any program that can compare binary files. If the communication is correct, the files should be identical.</p>
 <h3 id="configure-bandwidth-for-datatest">Configure Bandwidth for DataTest</h3>
 <p>The <strong>DataTest</strong> project uses a fixed algorithm to verify the communication interface. With the file <code>datatest/sds_algorithm_config.h</code> it is possible to configure bandwidth and interval to match the requirements of the algorithm that should be tested.</p>
 <h2 id="using-algorithmtest">Using AlgorithmTest</h2>
-<p>The project <em>AlgorithmTest</em>* allows to add custom algorithms for testing. It is prepared for recording and playback of SDS data files.</p>
+<p>The project <strong>AlgorithmTest</strong> allows to add custom algorithms for testing. It is prepared for recording and playback of SDS data files.</p>
 <h3 id="add-user-algorithm">Add User Algorithm</h3>
 <p>In the SDS template application these files require changes to interface with the DSP and ML algorithm that is tested:</p>
 <ul>

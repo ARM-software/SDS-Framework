@@ -112,7 +112,7 @@ Interface can operate over:
 
 
 
-When using a communication channel, the embedded device runs an SDS I/O Client, which communicates with the SDS I/O Server running on the host machine. This interaction is command-based (e.g., `SDSIO_CMD_OPEN`, `SDSIO_CMD_READ`, `SDSIO_CMD_WRITE`) and enables the embedded system to remotely open, read, write, and close files located on the host. For more details, refer to [SDSIO Server Protocol](../theory.md#sdsio-server-protocol).
+When using a communication channel, the embedded device runs an SDS I/O Client, which communicates with the SDS I/O Server running on the Host machine. This interaction is command-based (e.g., `SDSIO_CMD_OPEN`, `SDSIO_CMD_READ`, `SDSIO_CMD_WRITE`) and enables the embedded system to remotely open, read, write, and close files located on the Host. For more details, refer to [SDSIO Server Protocol](../theory.md#sdsio-server-protocol).
 
 
 The interface is lightweight and backend-agnostic, making it suitable for embedded data logging, host-interactive tools, or as a transport layer for higher-level components such as the SDS Recorder and Player. 

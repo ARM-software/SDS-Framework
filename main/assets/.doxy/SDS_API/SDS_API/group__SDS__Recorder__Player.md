@@ -103,7 +103,7 @@ sds\_rec\_play.h _: SDS Recorder and Player for writing and reading SDS files vi
 ## Detailed Description
 
 
-The **SDS Recorder** and **Player** manage writing to and reading from SDS files through communication or file I/O interfaces. They support the recording and playback of real-world data for applications such as machine learning and data analysis. Refer to the chapter _SDS Interface_ for an overview.
+The **SDS Recorder** and **Player** manage writing to and reading from SDS files through communication or file I/O interfaces. They support the recording and playback of real-world data for applications such as machine learning and data analysis. For details on I/O interfaces, refer to chapter [SDS Interface](../sdsio.md#SDSIO_Interface).
 
 
 The system uses a dedicated worker thread (`sdsRecPlayThread`) to handle file I/O asynchronously. User-facing APIs interact only with internal circular buffers, allowing efficient, non-blocking data operations.

@@ -224,7 +224,13 @@ It communicates with the target using these <a href="https://github.com/ARM-soft
 <li>The SDSIO_Server terminates with <code>Ctrl+C</code>.</li>
 </ul>
 <h4 id="serial-mode">Serial Mode</h4>
-<pre><code class="language-txt">usage: sdsio-server.py serial [-h] -p &lt;Serial Port&gt; [--baudrate &lt;Baudrate&gt;] [--parity &lt;Parity&gt;] [--stopbits &lt;Stop bits&gt;] [--connect-timeout &lt;Timeout&gt;] [--workdir &lt;Work dir&gt;]
+<pre><code class="language-txt">usage: sdsio-server.py serial [-h]  
+                              -p &lt;Serial Port&gt;  
+                              [--baudrate &lt;Baudrate&gt;]  
+                              [--parity &lt;Parity&gt;]  
+                              [--stopbits &lt;Stop bits&gt;]  
+                              [--connect-timeout &lt;Timeout&gt;]  
+                              [--workdir &lt;Work dir&gt;]
 
 optional arguments:
   -h, --help                   show this help message and exit
@@ -243,7 +249,10 @@ optional:
 <pre><code class="language-bash">python sdsio-server.py serial -p COM0 --baudrate 115200 --workdir ./work_dir
 </code></pre>
 <h4 id="socket-mode">Socket Mode</h4>
-<pre><code class="language-txt">usage: sdsio-server.py socket [-h] [--ipaddr &lt;IP&gt; | --interface &lt;Interface&gt;] [--port &lt;TCP Port&gt;] [--workdir &lt;Work dir&gt;]
+<pre><code class="language-txt">usage: sdsio-server.py socket [-h]  
+                              [--ipaddr &lt;IP&gt; | --interface &lt;Interface&gt;]  
+                              [--port &lt;TCP Port&gt;]  
+                              [--workdir &lt;Work dir&gt;]
 
 optional arguments:
   -h, --help               show this help message and exit
@@ -269,7 +278,9 @@ optional:
 <pre><code class="language-bash">python sdsio-server.py socket --interface eth0 --workdir ./work_dir
 </code></pre>
 <h4 id="usb-mode">USB Mode</h4>
-<pre><code class="language-txt">usage: sdsio-server.py usb [-h] [--workdir &lt;Work dir&gt;] [--high-priority]
+<pre><code class="language-txt">usage: sdsio-server.py usb [-h]  
+                           [--workdir &lt;Work dir&gt;]  
+                           [--high-priority]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -305,7 +316,10 @@ optional:
 <li><a href="#setup">Setup</a> the Python environment.</li>
 <li>Invoke the tool as explained below.</li>
 </ul>
-<pre><code class="language-txt">usage: sds-view.py [-h] -y &lt;yaml_file&gt; -s &lt;sds_file&gt; [&lt;sds_file&gt; ...] [--3D]
+<pre><code class="language-txt">usage: sds-view.py [-h]  
+                   -y &lt;yaml_file&gt;  
+                   -s &lt;sds_file&gt; [&lt;sds_file&gt; ...]  
+                   [--3D]
 
 View SDS data
 
@@ -337,7 +351,10 @@ PCM encoding. The conversion process involves appending a WAV header, generated 
 associated metadata <code>.yml</code> file, to the raw audio data extracted from the <code>.sds</code> stream. The metadata defines
 essential audio parameters such as channel configuration (mono or stereo), sample rate (frame rate), and sample
 width (bit depth).</p>
-<pre><code class="language-txt">usage: sds-convert.py audio_wav [-h] -i &lt;input_file&gt; [&lt;input_file&gt; ...] -o &lt;output_file&gt; [-y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]]
+<pre><code class="language-txt">usage: sds-convert.py audio_wav [-h]  
+                                -i &lt;input_file&gt; [&lt;input_file&gt; ...]  
+                                -o &lt;output_file&gt;  
+                                [-y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]]
 
 options:
   -h, --help                          show this help message and exit
@@ -390,7 +407,13 @@ all timestamps in the input file to be offset so that the first timestamp is <co
 <li><code>--start-timestamp &lt;timestamp&gt;</code>: Starting input data timestamp in floating-point format, in seconds.</li>
 <li><code>--stop-timestamp &lt;timestamp&gt;</code>: Stopping input data timestamp in floating-point format, in seconds.</li>
 </ul>
-<pre><code class="language-txt">usage: sds-convert.py simple_csv [-h] -i &lt;input_file&gt; [&lt;input_file&gt; ...] -o &lt;output_file&gt; [-y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]] [--normalize] [--start-timestamp &lt;timestamp&gt;] [--stop-timestamp &lt;timestamp&gt;]
+<pre><code class="language-txt">usage: sds-convert.py simple_csv [-h]  
+                                 -i &lt;input_file&gt; [&lt;input_file&gt; ...]  
+                                 -o &lt;output_file&gt;  
+                                 [-y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]]  
+                                 [--normalize]  
+                                 [--start-timestamp &lt;timestamp&gt;]  
+                                 [--stop-timestamp &lt;timestamp&gt;]
 
 options:
   -h, --help                          show this help message and exit
@@ -409,7 +432,7 @@ optional:
 <p class="admonition-title">Note</p>
 <ul>
 <li>The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.</li>
-<li>Current implementation assumes that the tick frequency is <code>1ms</code> and does not use the <code>tick-frequency</code> value from the metadata file.</li>
+<li>Current implementation assumes that the tick frequency is <code>1000 Hz</code> and does not use the <code>tick-frequency</code> value from the metadata file.</li>
 </ul>
 </div>
 <p><strong>Example of metadata yml file for gyroscope:</strong></p>
@@ -432,9 +455,11 @@ optional:
     unit: dps
 </code></pre>
 <p><strong>Example:</strong></p>
-<pre><code class="language-bash">python sds-convert.py simple_csv  -i Gyroscope.0.sds -o gyroscope_simple.csv -y Gyroscope.sds.yml --normalize --start-tick 0.2 --stop-tick 0.3
+<pre><code class="language-bash">python sds-convert.py simple_csv -i Gyroscope.0.sds -o gyroscope_simple.csv -y Gyroscope.sds.yml --normalize --start-tick 0.2 --stop-tick 0.3
 </code></pre>
 <h4 id="qeexo-v2-csv">Qeexo V2 CSV</h4>
+<p>The <code>qeexo_v2_csv</code> mode converts sensor data from .sds files into a Qeexo V2 CSV format.</p>
+<p>Link to <a href="https://docs.qeexo.com/guides/userguides/data-management#2-1-Data-format-specification">Qeexo V2 CSV format specification</a>.</p>
 <p>Timestamps are represented in integer format, in milliseconds. Using the <code>--normalize</code> flag causes
 all timestamps in the input file to be offset so that the first timestamp is <code>0</code>.</p>
 <p>Users may specify a time range selection of the input data to be processed using the following flags:</p>
@@ -447,8 +472,15 @@ The default output timestamp interval is set to <code>50 ms</code>.
 To override this setting use the <code>--interval &lt;ms&gt;</code> flag, where <code>&lt;ms&gt;</code> is the desired interval in milliseconds.</p>
 <p>An optional label can be added to the output by providing a string argument to the <code>--label &lt;text&gt;</code> flag.
 This <code>&lt;text&gt;</code> will populate the label column in the output file.</p>
-<p>Link to <a href="https://docs.qeexo.com/guides/userguides/data-management#2-1-Data-format-specification">Qeexo V2 CSV format specification</a>.</p>
-<pre><code class="language-txt">usage: sds-convert.py qeexo_v2_csv [-h] -i &lt;input_file&gt; [&lt;input_file&gt; ...] -o &lt;output_file&gt; [-y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]] [--normalize] [--start-timestamp &lt;timestamp&gt;] [--stop-timestamp &lt;timestamp&gt;] [--label 'label'] [--interval &lt;interval&gt;] [--sds_index &lt;sds_index&gt;]
+<pre><code class="language-txt">usage: sds-convert.py qeexo_v2_csv [-h] -i &lt;input_file&gt; [&lt;input_file&gt; ...]  
+                                   -o &lt;output_file&gt;  
+                                   [-y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]]  
+                                   [--normalize]  
+                                   [--start-timestamp &lt;timestamp&gt;]  
+                                   [--stop-timestamp &lt;timestamp&gt;]  
+                                   [--label 'label']  
+                                   [--interval &lt;interval&gt;]  
+                                   [--sds_index &lt;sds_index&gt;]
 
 options:
   -h, --help                          show this help message and exit
@@ -470,7 +502,7 @@ optional:
 <p class="admonition-title">Note</p>
 <ul>
 <li>The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.</li>
-<li>Current implementation assumes that the tick frequency is <code>1ms</code> and does not use the <code>tick-frequency</code> value from the metadata file.</li>
+<li>Current implementation assumes that the tick frequency is <code>1000 Hz</code> and does not use the <code>tick-frequency</code> value from the metadata file.</li>
 </ul>
 </div>
 <p><strong>Example of metadata yml file for accelerometer:</strong></p>
@@ -539,7 +571,7 @@ Validation passed
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The time values assume an tick rate of 1000 Hz.</p>
+<p>The time values assume an tick frequency of 1000 Hz.</p>
 </div>
 <h3 id="summary-report">Summary Report</h3>
 <p>After processing the SDS data file, the SDS-Check utility prints a summary report with statistics:</p>
@@ -547,13 +579,13 @@ Validation passed
 <li><strong>DataSize</strong>:  total size of the data in bytes</li>
 <li><strong>Records</strong>:   total number of records</li>
 <li><strong>BlockSize</strong>: average block size of a data record</li>
-<li><strong>Largest</strong>:   largest block size, if different from the average block size (optional)</li>
-<li><strong>Smallest</strong>:  smallest block size, if different from the average block size (optional)</li>
+<li><strong>Largest</strong>:   largest block size, if different from the average block size</li>
+<li><strong>Smallest</strong>:  smallest block size, if different from the average block size</li>
 <li><strong>Interval</strong>:  time interval of the recording in milliseconds</li>
 <li><strong>DataRate</strong>:  recorded data rate in bytes per second</li>
 <li><strong>Jitter</strong>:    deviation from the expected timestamps</li>
 <li><strong>DeltaTime</strong>: largest difference of the neighboring timestamps, if deviating from the recording interval (optional)</li>
-<li><strong>DupStamps</strong>: number of duplicated timestamps, if found (optional)</li>
+<li><strong>DupStamps</strong>: number of duplicated timestamps, if found</li>
 </ul>
 <h3 id="size-consistency-check">Size consistency check</h3>
 <p>This check processes the SDS data records and calculates the total size of the SDS data.
@@ -570,8 +602,8 @@ data record is lower than the current one, this error is printed:</p>
 </code></pre>
 <h3 id="jitter-check">Jitter check</h3>
 <p>This check processes the SDS data records and searches for a maximum deviation of the recorded
-timestamps from the expected ones. If the deviation is found, the record number is saved. The
-maximum deviation is evaluated as <strong>jitter</strong> and printed out in the summary report.</p>
+timestamps from the expected ones. If the deviation is found, the maximum deviation is 
+evaluated as <strong>jitter</strong> and together with record number printed out in the summary report.</p>
 <pre><code class="language-txt">File     : Gyroscope.0.sds
 DataSize : 153.334 bytes
 Records  : 284
@@ -588,8 +620,7 @@ Validation passed
 between two neighboring records, called <strong>DeltaTime</strong>.</p>
 <p>For normally recorded files, the delta time and the recording interval are identical, so no information
 about the delta time status is printed. If the delta time and the recording interval are not identical,
-i.e. a difference is detected, the record number is also saved and the <strong>DeltaTime</strong> is printed in
-the summary report.</p>
+i.e. a difference is detected, the <strong>DeltaTime</strong> together with record number is printed out in the summary report.</p>
 <pre><code class="language-txt">File     : Temperature.0.sds
 DataSize : 360 bytes
 Records  : 30

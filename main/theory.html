@@ -117,7 +117,7 @@
 <ul>
 <li><strong>Data Block</strong>: is a set of input or output data which is processed in one step by a DSP or ML compute note.</li>
 <li><strong>Block size</strong>: is the number of bytes of a data block.</li>
-<li><strong>Interval</strong>: is the periodic time interval that the compute node executes.</li>
+<li><strong>Interval</strong>: is the periodic time interval at which the compute node executes.</li>
 </ul>
 <p><img alt="SDSIO Interface for Player and Recorder" src="images/SDS-InOut.png"/></p>
 <p>The core of the SDS-Framework is a circular buffer handling (<code>sds_buffer.c/h</code>) that is controlled by the Recorder/Player interface functions (<code>sds_rec_play.c/h</code>). This circular buffer is the queue for the file I/O communication (<code>sdsio_x.c / sdsio.h</code>). Using the Recorder/Player functions, the data stream under development may read and write data streams as shown in the diagram above.</p>
@@ -187,7 +187,7 @@
 </ul>
 <p>The same timestamp connects different SDS file records. It is therefore useful to
 use the same timestamp for the recording of one iteration of a DSP or ML algorithm.
-In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timestamp value.</p>
+In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timestamp resolution.</p>
 <h3 id="file-format">File Format</h3>
 <p>The <strong>SDS Framework</strong> uses a binary data file format to store the individual data streams. It supports the recording and playback of multiple data streams that may have jitters.  Therefore each stream contains timestamp information that allows to correlate the data streams as it is for example required in a sensor fusion application.</p>
 <p>The binary data format (stored in <code>*.&lt;n&gt;.sds</code> data files) has a record structure with a variable size. Each record has the following format:</p>
@@ -292,21 +292,24 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 </code></pre>
 <h2 id="code-example">Code Example</h2>
 <p>The following code snippets show the usage of the <strong>Recorder Interface</strong>. In this case an accelerometer data stream is recorded.</p>
-<pre><code class="language-c">// *** variable definitions ***
+<pre><code class="language-c">#include "sds_rec_play.h"
+
+// variable definitions
 struct {                          // sensor data stream format
   uint16_t x;
   uint16_t y;
   uint16_t z;
 } accelerometer [30];             // number of samples in one data stream record
 
-sdsRecId_t *accel_id,             // data stream id
+sdsRecPlayId_t *accel_id;         // data stream id
 uint8_t accel_buf[(sizeof(accelerometer)*2)+0x800];      // data stream buffer for circular buffer handling
+int32_t n;                        // number of bytes written to data stream
      :
 // *** function calls ***
    sdsRecPlayInit(NULL);          // init SDS Recorder/Player  
      :
    // open data stream for recording
-   accel_id = sdsRecOpen("Accel", accel_buf, sizeof(accel_buf), 2*(sizeof(accelerometer));
+   accel_id = sdsRecOpen("Accel", accel_buf, sizeof(accel_buf));
      :
    // write data in accelerometer buffer with timestamp from RTOS kernel.
    timestamp = osKernelGetTickCount();
@@ -427,7 +430,7 @@ The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
 &gt;  4   | Handle | Size |  0   |
 |******|********|******|******|
 </code></pre>
-<p>The Response ID=4 <strong>SDSIO_CMD_READ</strong> provides the data read from an SDS data file on the HOST computer.
+<p>The Response ID=4 <strong>SDSIO_CMD_READ</strong> provides the data read from an SDS data file on the Host computer.
 <code>Size</code> is the <code>Data</code> size in bytes that was read and <code>Status</code> with nonzero = end of stream, else 0.</p>
 <pre><code class="language-txt">| WORD |  WORD  |  WORD  | WORD |++++++|
 &lt;  4   | Handle | Status | Size | Data |
@@ -445,14 +448,14 @@ The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
 |******|******|********|******|
 </code></pre>
 <h2 id="sdsio-message-sequence">SDSIO Message Sequence</h2>
-<p>This is the message sequence of the SDS DataTest example when connected to MDK-Middleware Ethernet.
+<p>This is the message sequence of the SDS <strong>DataTest</strong> example using SDSIO Server.
 It contains the following threads that execute on the target.</p>
 <ul>
-<li>Control: Overall execution Control thread (sdsControlThread)</li>
-<li>Algorithm: Algorithm under test thread (AlgorithmThread)</li>
-<li>Recorder/Playback: SDS Recorder/Playback thread (sdsRecPlayThread)</li>
+<li><strong>Control</strong>: Overall execution Control thread (sdsControlThread)</li>
+<li><strong>Algorithm</strong>: Algorithm under test thread (AlgorithmThread)</li>
+<li><strong>Recorder/Playback</strong>: SDS Recorder/Playback thread (sdsRecPlayThread)</li>
 </ul>
-<p>The Server is the SDSIO Server executing on the target system.</p>
+<p>The <strong>Server</strong> is the <strong>SDSIO Server</strong> executing on the target system.</p>
 <p><strong>Recording flowchart</strong></p>
 <div class="mermaid">sequenceDiagram
     participant sdsControlThread
@@ -477,7 +480,7 @@ It contains the following threads that execute on the target.</p>
     activate AlgorithmThread
     loop periodic
         Note over AlgorithmThread: sdsRecWrite
-        AlgorithmThread-&gt;&gt;Recorder: Buffer data reached or crossed threshold
+        AlgorithmThread-&gt;&gt;Recorder: Buffered data reached or crossed threshold
         loop send all data from buffer
             Recorder-&gt;&gt;Server: SDSIO_CMD_WRITE
         end
@@ -520,7 +523,7 @@ It contains the following threads that execute on the target.</p>
     sdsControlThread-&gt;&gt;Server: SDSIO_CMD_OPEN
     Server--&gt;&gt;sdsControlThread: Response
     sdsControlThread-&gt;&gt;Playback: Open request
-    loop read data until threshold
+    loop read data until threshold is reached
         Playback-&gt;&gt;Server: SDSIO_CMD_READ
         Server--&gt;&gt;Playback: Data
     end
