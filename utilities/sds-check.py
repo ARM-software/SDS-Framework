@@ -172,6 +172,11 @@ def main():
         print(f"Error: The file '{filename}' does not exist.")
         sys.exit(1)
 
+    # Check if the file is empty
+    if os.path.getsize(filename) == 0:
+        print(f"Error: The file '{filename}' is empty.")
+        sys.exit(1)
+
     # Load data from SDS file
     Record = RecordManager()
 
