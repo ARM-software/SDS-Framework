@@ -71,7 +71,7 @@ static sdsRecPlayEvent_t sdsRecPlayEvent = NULL;
 
 // Thread Resources
 static const osThreadAttr_t sdsRecPlayThreadAttr = {
-  "SDS_RecPlay_Thread",
+  "sdsRecPlay",
   osThreadDetached,
   NULL, 0, NULL, 0,
   SDS_REC_PLAY_THREAD_PRIORITY,
