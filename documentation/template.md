@@ -121,7 +121,7 @@ The steps to add a custom hardware configuration are:
 
 ## Using DataTest
 
-The DataTest project validates the communication channel.
+The **DataTest** project validates the communication channel.
 
 ### Recording on Simulation Model
 
@@ -168,7 +168,7 @@ This run should generate the files `DataInput.0.sds` and `DataOutput.0.sds` in t
 
 1. Change to Build Type `DebugPlay` (target `STM32F746G-DISCO` with Project `DataTest`).
 2. Build and Run the application.
-3. Start the payback with the user button on the evaluation board.
+3. Start the playback with the user button on the evaluation board.
 
 This run should read the `DataInput.0.sds` file and generate the `DataOutput.1.sds` file. The playback stops automatically at the end of a stream.
 
@@ -180,7 +180,7 @@ The **DataTest** project uses a fixed algorithm to verify the communication inte
 
 ## Using AlgorithmTest
 
-The project *AlgorithmTest** allows to add custom algorithms for testing. It is prepared for recording and playback of SDS data files.
+The project **AlgorithmTest** allows to add custom algorithms for testing. It is prepared for recording and playback of SDS data files.
 
 ### Add User Algorithm
 

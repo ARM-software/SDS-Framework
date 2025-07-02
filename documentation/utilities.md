@@ -75,7 +75,13 @@ The data content of the `<name>.<index>.sds` is described with metadata file `<n
 #### Serial Mode
 
 ```txt
-usage: sdsio-server.py serial [-h] -p <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>] [--workdir <Work dir>]
+usage: sdsio-server.py serial [-h]  
+                              -p <Serial Port>  
+                              [--baudrate <Baudrate>]  
+                              [--parity <Parity>]  
+                              [--stopbits <Stop bits>]  
+                              [--connect-timeout <Timeout>]  
+                              [--workdir <Work dir>]
 
 optional arguments:
   -h, --help                   show this help message and exit
@@ -100,7 +106,10 @@ python sdsio-server.py serial -p COM0 --baudrate 115200 --workdir ./work_dir
 #### Socket Mode
 
 ```txt
-usage: sdsio-server.py socket [-h] [--ipaddr <IP> | --interface <Interface>] [--port <TCP Port>] [--workdir <Work dir>]
+usage: sdsio-server.py socket [-h]  
+                              [--ipaddr <IP> | --interface <Interface>]  
+                              [--port <TCP Port>]  
+                              [--workdir <Work dir>]
 
 optional arguments:
   -h, --help               show this help message and exit
@@ -133,7 +142,9 @@ python sdsio-server.py socket --interface eth0 --workdir ./work_dir
 #### USB Mode
 
 ```txt
-usage: sdsio-server.py usb [-h] [--workdir <Work dir>] [--high-priority]
+usage: sdsio-server.py usb [-h]  
+                           [--workdir <Work dir>]  
+                           [--high-priority]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -173,7 +184,10 @@ If there are 3 values described in the metadata file, an optional 3D view may be
 - Invoke the tool as explained below.
 
 ```txt
-usage: sds-view.py [-h] -y <yaml_file> -s <sds_file> [<sds_file> ...] [--3D]
+usage: sds-view.py [-h]  
+                   -y <yaml_file>  
+                   -s <sds_file> [<sds_file> ...]  
+                   [--3D]
 
 View SDS data
 
@@ -216,7 +230,10 @@ essential audio parameters such as channel configuration (mono or stereo), sampl
 width (bit depth).
 
 ```txt
-usage: sds-convert.py audio_wav [-h] -i <input_file> [<input_file> ...] -o <output_file> [-y <yaml_file> [<yaml_file> ...]]
+usage: sds-convert.py audio_wav [-h]  
+                                -i <input_file> [<input_file> ...]  
+                                -o <output_file>  
+                                [-y <yaml_file> [<yaml_file> ...]]
 
 options:
   -h, --help                          show this help message and exit
@@ -280,7 +297,13 @@ Users may specify a time range selection of the input data to be processed using
 - `--stop-timestamp <timestamp>`: Stopping input data timestamp in floating-point format, in seconds.
 
 ```txt
-usage: sds-convert.py simple_csv [-h] -i <input_file> [<input_file> ...] -o <output_file> [-y <yaml_file> [<yaml_file> ...]] [--normalize] [--start-timestamp <timestamp>] [--stop-timestamp <timestamp>]
+usage: sds-convert.py simple_csv [-h]  
+                                 -i <input_file> [<input_file> ...]  
+                                 -o <output_file>  
+                                 [-y <yaml_file> [<yaml_file> ...]]  
+                                 [--normalize]  
+                                 [--start-timestamp <timestamp>]  
+                                 [--stop-timestamp <timestamp>]
 
 options:
   -h, --help                          show this help message and exit
@@ -298,7 +321,7 @@ optional:
 
 !!! Note
     - The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
-    - Current implementation assumes that the tick frequency is `1ms` and does not use the `tick-frequency` value from the metadata file.
+    - Current implementation assumes that the tick frequency is `1000 Hz` and does not use the `tick-frequency` value from the metadata file.
 
 **Example of metadata yml file for gyroscope:**
 
@@ -325,10 +348,14 @@ sds:
 **Example:**
 
 ```bash
-python sds-convert.py simple_csv  -i Gyroscope.0.sds -o gyroscope_simple.csv -y Gyroscope.sds.yml --normalize --start-tick 0.2 --stop-tick 0.3
+python sds-convert.py simple_csv -i Gyroscope.0.sds -o gyroscope_simple.csv -y Gyroscope.sds.yml --normalize --start-tick 0.2 --stop-tick 0.3
 ```
 
 #### Qeexo V2 CSV
+
+The `qeexo_v2_csv` mode converts sensor data from .sds files into a Qeexo V2 CSV format.
+
+Link to [Qeexo V2 CSV format specification](https://docs.qeexo.com/guides/userguides/data-management#2-1-Data-format-specification).
 
 Timestamps are represented in integer format, in milliseconds. Using the `--normalize` flag causes
 all timestamps in the input file to be offset so that the first timestamp is `0`.
@@ -345,10 +372,16 @@ To override this setting use the `--interval <ms>` flag, where `<ms>` is the des
 An optional label can be added to the output by providing a string argument to the `--label <text>` flag.
 This `<text>` will populate the label column in the output file.
 
-Link to [Qeexo V2 CSV format specification](https://docs.qeexo.com/guides/userguides/data-management#2-1-Data-format-specification).
-
 ```txt
-usage: sds-convert.py qeexo_v2_csv [-h] -i <input_file> [<input_file> ...] -o <output_file> [-y <yaml_file> [<yaml_file> ...]] [--normalize] [--start-timestamp <timestamp>] [--stop-timestamp <timestamp>] [--label 'label'] [--interval <interval>] [--sds_index <sds_index>]
+usage: sds-convert.py qeexo_v2_csv [-h] -i <input_file> [<input_file> ...]  
+                                   -o <output_file>  
+                                   [-y <yaml_file> [<yaml_file> ...]]  
+                                   [--normalize]  
+                                   [--start-timestamp <timestamp>]  
+                                   [--stop-timestamp <timestamp>]  
+                                   [--label 'label']  
+                                   [--interval <interval>]  
+                                   [--sds_index <sds_index>]
 
 options:
   -h, --help                          show this help message and exit
@@ -369,7 +402,7 @@ optional:
 
 !!! Note
     - The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
-    - Current implementation assumes that the tick frequency is `1ms` and does not use the `tick-frequency` value from the metadata file.
+    - Current implementation assumes that the tick frequency is `1000 Hz` and does not use the `tick-frequency` value from the metadata file.
 
 **Example of metadata yml file for accelerometer:**
 
@@ -453,7 +486,7 @@ Validation passed
 ```
 
 !!! Note
-    The time values assume an tick rate of 1000 Hz.
+    The time values assume an tick frequency of 1000 Hz.
 
 ### Summary Report
 
@@ -462,13 +495,13 @@ After processing the SDS data file, the SDS-Check utility prints a summary repor
 - **DataSize**:  total size of the data in bytes
 - **Records**:   total number of records
 - **BlockSize**: average block size of a data record
-- **Largest**:   largest block size, if different from the average block size (optional)
-- **Smallest**:  smallest block size, if different from the average block size (optional)
+- **Largest**:   largest block size, if different from the average block size
+- **Smallest**:  smallest block size, if different from the average block size
 - **Interval**:  time interval of the recording in milliseconds
 - **DataRate**:  recorded data rate in bytes per second
 - **Jitter**:    deviation from the expected timestamps
 - **DeltaTime**: largest difference of the neighboring timestamps, if deviating from the recording interval (optional)
-- **DupStamps**: number of duplicated timestamps, if found (optional)
+- **DupStamps**: number of duplicated timestamps, if found
 
 ### Size consistency check
 
@@ -495,8 +528,8 @@ Error: Timestamp not in ascending order in record 23.
 ### Jitter check
 
 This check processes the SDS data records and searches for a maximum deviation of the recorded
-timestamps from the expected ones. If the deviation is found, the record number is saved. The
-maximum deviation is evaluated as **jitter** and printed out in the summary report.
+timestamps from the expected ones. If the deviation is found, the maximum deviation is 
+evaluated as **jitter** and together with record number printed out in the summary report.
 
 ```txt
 File     : Gyroscope.0.sds
@@ -518,8 +551,7 @@ between two neighboring records, called **DeltaTime**.
 
 For normally recorded files, the delta time and the recording interval are identical, so no information
 about the delta time status is printed. If the delta time and the recording interval are not identical,
-i.e. a difference is detected, the record number is also saved and the **DeltaTime** is printed in
-the summary report.
+i.e. a difference is detected, the **DeltaTime** together with record number is printed out in the summary report.
 
 ```txt
 File     : Temperature.0.sds

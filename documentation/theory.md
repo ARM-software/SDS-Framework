@@ -1,4 +1,4 @@
-# Theory of Operation
+﻿# Theory of Operation
 
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
@@ -9,7 +9,7 @@ The DSP or ML algorithms that are tested operate on blocks and are executed peri
 
 - **Data Block**: is a set of input or output data which is processed in one step by a DSP or ML compute note.
 - **Block size**: is the number of bytes of a data block.
-- **Interval**: is the periodic time interval that the compute node executes.
+- **Interval**: is the periodic time interval at which the compute node executes.
 
 ![SDSIO Interface for Player and Recorder](images/SDS-InOut.png)
 
@@ -93,7 +93,7 @@ The timestamp is a 32-bit unsigned value and is used for:
 
 The same timestamp connects different SDS file records. It is therefore useful to
 use the same timestamp for the recording of one iteration of a DSP or ML algorithm.
-In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timestamp value.
+In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timestamp resolution.
 
 ### File Format
 
@@ -171,21 +171,24 @@ sds:                   # describes a synchronous data stream
 The following code snippets show the usage of the **Recorder Interface**. In this case an accelerometer data stream is recorded.
 
 ```c
-// *** variable definitions ***
+#include "sds_rec_play.h"
+
+// variable definitions
 struct {                          // sensor data stream format
   uint16_t x;
   uint16_t y;
   uint16_t z;
 } accelerometer [30];             // number of samples in one data stream record
 
-sdsRecId_t *accel_id,             // data stream id
+sdsRecPlayId_t *accel_id;         // data stream id
 uint8_t accel_buf[(sizeof(accelerometer)*2)+0x800];      // data stream buffer for circular buffer handling
+int32_t n;                        // number of bytes written to data stream
      :
 // *** function calls ***
    sdsRecPlayInit(NULL);          // init SDS Recorder/Player  
      :
    // open data stream for recording
-   accel_id = sdsRecOpen("Accel", accel_buf, sizeof(accel_buf), 2*(sizeof(accelerometer));
+   accel_id = sdsRecOpen("Accel", accel_buf, sizeof(accel_buf));
      :
    // write data in accelerometer buffer with timestamp from RTOS kernel.
    timestamp = osKernelGetTickCount();
@@ -285,7 +288,7 @@ The Command ID=4 **SDSIO_CMD_READ** reads data from an SDS data file on the Host
 |******|********|******|******|
 ```
 
-The Response ID=4 **SDSIO_CMD_READ** provides the data read from an SDS data file on the HOST computer.
+The Response ID=4 **SDSIO_CMD_READ** provides the data read from an SDS data file on the Host computer.
 `Size` is the `Data` size in bytes that was read and `Status` with nonzero = end of stream, else 0.
 
 ```txt
@@ -314,14 +317,14 @@ The Response ID=5 **SDSIO_CMD_PING** returns the `Status` with nonzero = server 
 
 ## SDSIO Message Sequence
 
-This is the message sequence of the SDS DataTest example when connected to MDK-Middleware Ethernet.
+This is the message sequence of the SDS **DataTest** example using SDSIO Server.
 It contains the following threads that execute on the target.
 
-- Control: Overall execution Control thread (sdsControlThread)
-- Algorithm: Algorithm under test thread (AlgorithmThread)
-- Recorder/Playback: SDS Recorder/Playback thread (sdsRecPlayThread)
+- **Control**: Overall execution Control thread (sdsControlThread)
+- **Algorithm**: Algorithm under test thread (AlgorithmThread)
+- **Recorder/Playback**: SDS Recorder/Playback thread (sdsRecPlayThread)
 
-The Server is the SDSIO Server executing on the target system.
+The **Server** is the **SDSIO Server** executing on the target system.
 
 **Recording flowchart**
 
@@ -349,7 +352,7 @@ sequenceDiagram
     activate AlgorithmThread
     loop periodic
         Note over AlgorithmThread: sdsRecWrite
-        AlgorithmThread->>Recorder: Buffer data reached or crossed threshold
+        AlgorithmThread->>Recorder: Buffered data reached or crossed threshold
         loop send all data from buffer
             Recorder->>Server: SDSIO_CMD_WRITE
         end
@@ -395,7 +398,7 @@ sequenceDiagram
     sdsControlThread->>Server: SDSIO_CMD_OPEN
     Server-->>sdsControlThread: Response
     sdsControlThread->>Playback: Open request
-    loop read data until threshold
+    loop read data until threshold is reached
         Playback->>Server: SDSIO_CMD_READ
         Server-->>Playback: Data
     end

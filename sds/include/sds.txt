@@ -164,8 +164,8 @@ Interface can operate over:
 - A communication channel such as Ethernet, USB, or UART, where access to files is performed remotely via an SDS I/O Server.
 
 When using a communication channel, the embedded device runs an SDS I/O Client, which communicates with the SDS I/O Server
-running on the host machine. This interaction is command-based (e.g., `SDSIO_CMD_OPEN`, `SDSIO_CMD_READ`, `SDSIO_CMD_WRITE`) and enables
-the embedded system to remotely open, read, write, and close files located on the host. For more details, refer to
+running on the Host machine. This interaction is command-based (e.g., `SDSIO_CMD_OPEN`, `SDSIO_CMD_READ`, `SDSIO_CMD_WRITE`) and enables
+the embedded system to remotely open, read, write, and close files located on the Host. For more details, refer to
 [SDSIO Server Protocol](../theory.md#sdsio-server-protocol).
 
 The interface is lightweight and backend-agnostic, making it suitable for embedded data logging, host-interactive tools,
@@ -295,7 +295,7 @@ The function attempts to read data and may block based on the behavior of the un
 \details
 The **SDS Recorder** and **Player** manage writing to and reading from SDS files through communication or file I/O interfaces.
 They support the recording and playback of real-world data for applications such as machine learning and data analysis.
-Refer to the chapter *SDS Interface* for an overview.
+For details on I/O interfaces, refer to chapter [SDS Interface](../sdsio.md#SDSIO_Interface).
 
 The system uses a dedicated worker thread (`sdsRecPlayThread`) to handle file I/O asynchronously. User-facing APIs interact only
 with internal circular buffers, allowing efficient, non-blocking data operations.
