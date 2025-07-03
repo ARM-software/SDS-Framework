@@ -13,15 +13,8 @@
   <repository type="git">https://github.com/ARM-software/SDS-Framework.git</repository>
 
   <releases>
-    <release version="2.0.0-dev">
-      Active Development ...
-      Major rework of the SDS-Framework
-      Added documentation
-      Examples:
-      - Added reference application examples
-      Utilities:
-      - Added SDS-Check
-      - Added support in SDS-Convert for conversion from QeexoV2CSV to SDS format
+    <release version="2.1.0-dev">
+      Active development ...
     </release>
   </releases>
 
