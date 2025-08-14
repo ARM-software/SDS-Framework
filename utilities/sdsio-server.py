@@ -890,6 +890,7 @@ class sdsio_server_usb:
                     dev_class  = usb1.HOTPLUG_MATCH_ANY
                 )
             except (AttributeError, usb1.USBError):
+                # Hotplug not available; use polling monitor thread
                 self.running = True
                 self._monitor_thread = threading.Thread(
                     target=self._monitor_loop,
@@ -915,6 +916,8 @@ class sdsio_server_usb:
                 x.submit()
                 self.in_transfers.append(x)
 
+            # Mark server active in the normal path too (hotplug working)
+            self.running = True
             printer.info(f"USB Server running.")
 
             # start polling thread
