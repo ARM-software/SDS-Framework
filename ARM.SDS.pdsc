@@ -15,6 +15,8 @@
   <releases>
     <release version="2.1.0-dev">
       Active development ...
+
+      SDSIO-Server: Correct USB SDSIO device detection (prevent macOS libusb crash)
     </release>
   </releases>
 
