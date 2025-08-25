@@ -178,27 +178,31 @@
 </li>
 </ul>
 <h2 id="setup">Setup</h2>
-<ul>
-<li>Verify the installed Python version with:</li>
-</ul>
-<pre><code class="language-txt">python --version
-</code></pre>
-<ul>
-<li>Option 1: Use a Python environment:</li>
-</ul>
-<pre><code class="language-txt">python -m venv sds                 // create environment with name sds
-sds\Scripts\activate
-pip install -r requirements.txt
-</code></pre>
-<ul>
-<li>Option 2: Install the required Python packages with <code>pip</code>:</li>
-</ul>
-<pre><code class="language-txt">pip install ifaddr matplotlib numpy pandas pyyaml pyserial libusb1
-</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>These utilities are located in the SDS-Framework pack installation folder, subfolder <code>/utilities</code>.</li>
+<li>These utilities are located in the SDS-Framework pack installation folder, subfolder <code>/utilities</code>. Replace <code>2.0.0</code> with the version number of your SDS pack installation.</li>
+</ul>
+</div>
+<p>Perform the following steps to setup the Python environment for using the SDS utilities.</p>
+<ul>
+<li><a href="https://www.python.org/downloads/">Install Python</a> or verify the version with:</li>
+</ul>
+<pre><code class="language-bash">&gt;python --version
+</code></pre>
+<ul>
+<li>Navigate in the folder SDS/utilities and install the required Python packages with <code>pip</code>:</li>
+</ul>
+<pre><code class="language-bash">&gt;cd %CMSIS_PACK_ROOT%/ARM/SDS/2.0.0/utilities
+&gt;pip install -r requirements.txt
+</code></pre>
+<ul>
+<li>Add to the system <strong>Path</strong> environment variable the path to the <code>%CMSIS_PACK_ROOT%/ARM/SDS/2.0.0/utilities</code> folder.</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<ul>
+<li>When the <strong>Path</strong> environment variable is configured, you may simply start the utilities by using its name. For example entering <code>&gt;sdsio-server</code> starts the utility.</li>
 </ul>
 </div>
 <h2 id="sdsio-server">SDSIO-Server</h2>
