@@ -24,28 +24,28 @@ The SDS-Framework includes the following utilities that are implemented in Pytho
 
 ## Setup
 
-- Verify the installed Python version with:
-
-```txt
-python --version
-```
-
-- Option 1: Use a Python environment:
-
-```txt
-python -m venv sds                 // create environment with name sds
-sds\Scripts\activate
-pip install -r requirements.txt
-```
-
-- Option 2: Install the required Python packages with `pip`:
-
-```txt
-pip install ifaddr matplotlib numpy pandas pyyaml pyserial libusb1
-```
-
 !!! Note
-    - These utilities are located in the SDS-Framework pack installation folder, subfolder `/utilities`.
+    - These utilities are located in the SDS-Framework pack installation folder, subfolder `/utilities`. Replace `2.0.0` with the version number of your SDS pack installation.
+
+Perform the following steps to setup the Python environment for using the SDS utilities.
+
+- [Install Python](https://www.python.org/downloads/) or verify the version with:
+
+```bash
+>python --version
+```
+
+- Navigate in the folder SDS/utilities and install the required Python packages with `pip`:
+
+```bash
+>cd %CMSIS_PACK_ROOT%/ARM/SDS/2.0.0/utilities
+>pip install -r requirements.txt
+```
+
+- Add to the system **Path** environment variable the path to the `%CMSIS_PACK_ROOT%/ARM/SDS/2.0.0/utilities` folder.
+
+!!! Tip
+    - When the **Path** environment variable is configured, you may simply start the utilities by using its name. For example entering `>sdsio-server` starts the utility.
 
 ## SDSIO-Server
 
