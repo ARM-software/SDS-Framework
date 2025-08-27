@@ -187,7 +187,7 @@ def prepareData(meta_data, raw_data, data_manipulation):
         # Decode retrieved data points
         tmp_data = list(unpack(f"{int(len(tmp_data))}{d_type}", b''.join(tmp_data)))
         # Scale and offset data points if output format is not Qeexo V2 CSV
-        if data_manipulation == True:
+        if data_manipulation:
             if "scale" in channel:
                 scale = channel["scale"]
             else:
@@ -248,7 +248,7 @@ def write_SDS_SimpleCSV(args, data, meta_data):
         if record_row != [[] for i in range(0, len(meta_data))]:
             csv_timestamp = timestamp[cnt]
             # Normalize output timestamps
-            if normalize == True:
+            if normalize:
                 csv_timestamp -= timestamp[0]
             # Interpolate timestamps if there is more than one data point in this record
             if len(record_row[0]) > 1:
@@ -260,7 +260,7 @@ def write_SDS_SimpleCSV(args, data, meta_data):
                     csv_timestamp_next = csv_timestamp + (csv_timestamp - csv_timestamp_previous)
                 else:
                     csv_timestamp_next = timestamp[cnt + 1]
-                    if normalize == True:
+                    if normalize:
                         csv_timestamp_next -= timestamp[0]
 
                 # Interpolate timestamps between current and next record, based on the number of
@@ -272,8 +272,8 @@ def write_SDS_SimpleCSV(args, data, meta_data):
                 for t in range(0, len(tmp_time)):
                     # If start/stop timestamp parameters are specified, write to output file
                     # when timestamps are between selected boundaries
-                    if (csv_start_timestamp == None) or (tmp_time[t] >= csv_start_timestamp):
-                        if (csv_stop_timestamp == None) or (csv_stop_timestamp > tmp_time[t]):
+                    if (csv_start_timestamp is None) or (tmp_time[t] >= csv_start_timestamp):
+                        if (csv_stop_timestamp is None) or (csv_stop_timestamp > tmp_time[t]):
                             tmp_record_row = [record_row[i][t] for i in range(len(record_row))]
                             writer.writerow([float(tmp_time[t])] + tmp_record_row)
                         else:
@@ -281,8 +281,8 @@ def write_SDS_SimpleCSV(args, data, meta_data):
             else:
                 # If start/stop timestamp parameters are specified, write to output file
                 # when timestamps are between selected boundaries
-                if (csv_start_timestamp == None) or (csv_timestamp >= csv_start_timestamp):
-                    if (csv_stop_timestamp == None) or (csv_stop_timestamp > csv_timestamp):
+                if (csv_start_timestamp is None) or (csv_timestamp >= csv_start_timestamp):
+                    if (csv_stop_timestamp is None) or (csv_stop_timestamp > csv_timestamp):
                         # Write generated CSV row to output file
                         writer.writerow([float(csv_timestamp)] + record_row[0])
                     else:
@@ -290,6 +290,8 @@ def write_SDS_SimpleCSV(args, data, meta_data):
             cnt += 1
         else:
             break
+
+    csv_file.close()
 
 
 # Write data to CSV file using Qeexo V2 format
@@ -372,15 +374,15 @@ def write_SDS_QeexoV2CSV(args, data, meta_data):
         # Write current row into CSV file and increment CSV timestamp by one interval.
         # If there is no data present in this row, exit while loop without writing to the file.
         if csv_row != [[] for i in range(0, len(data.keys()))]:
-            if normalize == True:
+            if normalize:
                 tmp_csv_timestamp = csv_timestamp - csv_timestamp_base
             else:
                 tmp_csv_timestamp = csv_timestamp
 
             # If start/stop timestamp parameters are specified, write to output file
             # when timestamps are between selected boundaries
-            if (csv_start_timestamp == None) or (tmp_csv_timestamp >= csv_start_timestamp):
-                if (csv_stop_timestamp == None) or (csv_stop_timestamp > tmp_csv_timestamp):
+            if (csv_start_timestamp is None) or (tmp_csv_timestamp >= csv_start_timestamp):
+                if (csv_stop_timestamp is None) or (csv_stop_timestamp > tmp_csv_timestamp):
                     writer.writerow([tmp_csv_timestamp] + csv_row + [args.label])
                 else:
                     break
@@ -623,7 +625,7 @@ def main():
     # WAV
     elif "wav" in args.convert_format:
         if 'sds' in in_extension:
-            filename = other_files.split('.wav')[0]
+            filename = other_files[0].split('.wav')[0]
             createWAV(filename)
 
             if args.convert_format == "audio_wav":
