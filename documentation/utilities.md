@@ -44,7 +44,7 @@ Perform the following steps to setup the Python environment for using the SDS ut
 
 - Add to the system **Path** environment variable the path to the `%CMSIS_PACK_ROOT%/ARM/SDS/2.0.0/utilities` folder.
 
-  Note: %CMSIS_PACK_ROOT% is a placeholder for the PACK location on your local PC.
+  Note: `%CMSIS_PACK_ROOT%` is just a placeholder for the Pack location on your local PC. The **Path** variable must be extended by the absolute path to the `utilities` folder.
 
 - Extend the PACKEXT system environment variable by .PY
 
