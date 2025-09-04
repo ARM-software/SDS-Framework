@@ -29,6 +29,7 @@ import logging
 import asyncio
 import ctypes
 from ctypes import wintypes
+from typing import Optional
 
 
 # ---------------------------------------------------------------------------- #
@@ -215,6 +216,22 @@ class sdsio_manager:
         # status bar
         self.status = StatusBar(self)
 
+    def _format_stream_path(self, file_obj, base: Optional[str] = None) -> str:
+        try:
+            base_dir = self.work_dir if base is None else base
+            p = os.path.relpath(file_obj.name, base_dir)
+            # If file is outside base_dir, relpath starts with '..' (e.g., '../foo' or '..\foo')
+            if p == os.pardir or p.startswith(os.pardir + os.sep):
+                return os.path.abspath(file_obj.name)
+        except Exception:
+            # Different drives on Windows or other relpath issues → use absolute
+            return file_obj.name
+
+        # p is relative here; add ./ or .\ for clarity if not already present
+        if p.startswith("./") or p.startswith(".\\"):
+            return p
+        return (".\\" if os.sep == "\\" else "./") + p
+
     def _file_write_worker(self, sid, file_obj, buf: ByteStreamBuffer, stop_evt):
         chunk_size = 64 * 1024
         try:
@@ -366,14 +383,21 @@ class sdsio_manager:
         resp.extend(mode.to_bytes(4,'little'))
         resp.extend((0).to_bytes(4,'little'))
 
-        file_name = os.path.basename(self.opened_streams[sid][0].name)
-        printer.info(f"Stream opened: {self.opened_streams[sid][1]} ({file_name}).")
+        file_obj, stream_name, mode = self.opened_streams[sid]
+        file_path = self._format_stream_path(file_obj, base=os.getcwd())
+        if mode == 1:
+            printer.info(f"Record:   {stream_name} ({file_path}).")
+        else:
+            printer.info(f"Playback: {stream_name} ({file_path}).")
         return resp
 
     def __close(self, sid):
         resp = bytearray()
         name = self.opened_streams[sid][1]
-        file_name = os.path.basename(self.opened_streams[sid][0].name)
+
+        file_obj, stream_name, mode = self.opened_streams[sid]
+        file_path = self._format_stream_path(file_obj, base=os.getcwd())
+
         # clean up writer side
         if sid in self.write_buffers:
             buf = self.write_buffers.pop(sid)
@@ -391,7 +415,8 @@ class sdsio_manager:
             self.read_stop.pop(sid)
         # unregister stream
         self.opened_streams.pop(sid, None)
-        printer.info(f"Stream closed: {name} ({file_name}).")
+
+        printer.info(f"Closed:   {name} ({file_path}).")
         return resp
 
     def __write(self, sid, data):
