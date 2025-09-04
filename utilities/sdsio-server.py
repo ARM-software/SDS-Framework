@@ -270,9 +270,9 @@ class sdsio_manager:
             return resp_err
 
         # ensure not already open
-        for (_, n, _) in self.opened_streams.values():
+        for (f, n, _) in self.opened_streams.values():
             if n == name:
-                file_name = os.path.basename(self.opened_streams[sid][0].name)
+                file_name = os.path.basename(f.name)
                 printer.info(f"Stream '{file_name}' is already opened, cannot open again.")
                 return resp_err
 
@@ -350,9 +350,14 @@ class sdsio_manager:
             # update index for next read
             try:
                 with open(index_file, 'w') as ix:
-                    ix.write(str(idx + 1 if path.exists(fname) else idx))
+                    ix.write(str(idx + 1 if path.exists(fname) else 0))
             except Exception:
                 printer.warning(f"Could not update index file for {name}")
+
+            if not path.exists(fname):
+                printer.info(f"Stream open failed: '{name}'. File `{fname}` does not exist.")
+                return resp_err
+
 
         # build success response
         resp = bytearray()
