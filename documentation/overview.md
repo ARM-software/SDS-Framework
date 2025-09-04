@@ -27,3 +27,17 @@ The [**SDSIO Server**](utilities.md#sdsio-server) running on a host computer cap
 ![Analysis of SDS data files](images/Analyse.png)
 
 In a simulation environment, the **SDS Playback Interface** streams the SDS data files back to the algorithm under test. With this interface, the algorithm receives the same data stream as in the physical hardware. The setup can therefore be used for validation, performance optimizations, and runs even in CI environments for test automation.
+
+## SDS Performance Measurements
+
+| Board                 | STMicroelectronics B-U585I-IOT02A    | Alif Semiconductor AppKit-E7   | Alif Semiconductor DevKit-E7   |
+|-----------------------|--------------------------------------|--------------------------------|--------------------------------|
+| CPU speed [MHz]       | 160                                  | 400                            | 400                            |
+| I/O Interface         | USB Full-speed                       | USB High-speed                 | Ethernet 10/100                |
+| Bandwidth [bytes/sec] | 1.1M                                 | 15M                            | 6M                             |
+| Idle time [%]         | 86                                   | 63                             | 65                             |
+| Internal buffers size | Default                              | Default                        | Default                        |
+
+Performance measurements were obtained using the [DataTest](https://arm-software.github.io/SDS-Framework/main/template.html#using-datatest) project, which validates captured data streams on the available board interfaces (Ethernet and USB Bulk).
+SDS data files were verified using the [SDS-Check](https://arm-software.github.io/SDS-Framework/main/utilities.html#sds-check) utility.
+With user configurable parameters (Bandwidth and Internal buffers size), the Idle time (when CPU is not executing the application code) was measured.
