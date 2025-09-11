@@ -13,7 +13,7 @@ nav:
 plugins:
     - search
     - mermaid2    # pip install mkdocs-mermaid2-plugin
-    - mkdoxy:     # pip install mkdoxy  (may require PYTHONPATH to be set)
+    - mkdoxy:     # pip install mkdoxy
         projects:
           SDS_API:
             src-dirs: ./sds/include
