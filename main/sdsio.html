@@ -62,6 +62,12 @@
     <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_fs">Layer: sdsio_fs</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_fvp">Layer: sdsio_fvp</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#configuration-file-sdsioyml">Configuration File: sdsio.yml</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#protocol-file-sdsiolog">Protocol File: sdsio.log</a>
+    </li>
+        </ul>
     </li>
     </ul>
                 </li>
@@ -119,13 +125,82 @@
 <li><a href="#layer-sdsio_fs">Memory Card Interface</a> using the MDK-Middleware File System component.</li>
 </ul>
 <h2 id="layer-sdsio_network">Layer: sdsio_network</h2>
-<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/network"><code>layer/network/sdsio_network.clayer.yml</code></a> is configured for recording and playback via Ethernet interface. It uses the MDK-Middleware Network component.</p>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/network"><code>layer/network/sdsio_network.clayer.yml</code></a> is configured for recording and playback via Ethernet interface. It uses the  <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> Network component.</p>
+<p>For <a href="theory.html#sds-data-files">SDS data file</a> access the <a href="utilities.html#sdsio-server">SDSIO-Server</a> is started on the Host computer as shown below.  This output an IP address as shown below:</p>
+<pre><code class="language-bash">&gt;Press Ctrl+C to exit.
+Socket server listening on 172.20.10.2:5050
+</code></pre>
+<p>This is the IP address that the target hardware needs to connect and it is require to configure this IP address in the file <code>./layer/network/RTE/SDS/sdsio_config_socket.h</code> with  the define <code>SDSIO_SOCKET_SERVER_IP</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>It is important that a firewall of the Host computer is configured so that it can be reached from the target device undre its IP address. </li>
+</ul>
+</div>
 <h2 id="layer-sdsio_usb">Layer: sdsio_usb</h2>
-<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/usb"><code>layer/usb/sdsio_usb.clayer.yml</code></a> is configured for recording and playback via USB Device interface. It uses the MDK-Middleware USB Device component.</p>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/usb"><code>layer/usb/sdsio_usb.clayer.yml</code></a> is configured for recording and playback via USB Device interface. It uses the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> USB Device component and connects via a USB interface to a Host computer.</p>
+<p>For <a href="theory.html#sds-data-files">SDS data file</a> access the <a href="utilities.html#sdsio-server">SDSIO-Server</a> is started on the Host computer with:</p>
+<pre><code class="language-bash">&gt;sdsio-server.py usb
+</code></pre>
 <h2 id="layer-sdsio_fs">Layer: sdsio_fs</h2>
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem"><code>layer/filesystem/sdsio_fs.clayer</code></a> is configured for recording and playback to/from the Memory Card. It uses the MDK-Middleware File System component.</p>
 <h2 id="layer-sdsio_fvp">Layer: sdsio_fvp</h2>
-<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp"><code>template/sdsio/fvp/sdsio_fvp.clayer</code></a> is configured for recording and playback to/from the Host computer. It uses the <a href="https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html">VSI interface</a>, which is integrated into the simulation model.</p>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp"><code>template/sdsio/fvp/sdsio_fvp.clayer</code></a> targets AVH FVP simulation and is configured for recording and playback to/from the Host computer. It uses the <a href="https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html">SDSIO VSI interface</a> implemented by the file <code>vsi/python/arm_vsi3.py</code>, which is loaded by the FVP simulation model. As the SDSIO server is implemented in <code>arm_vsi3.py</code> there is no separate SDSIO server needed.</p>
+<h3 id="configuration-file-sdsioyml">Configuration File: sdsio.yml</h3>
+<p>The SDSIO VSI interface can be configured using the <code>sdsio.yml</code> file in the current working folder that is used to start the FVP simulator. This configuration settings define the <a href="theory.html#sds-data-files">SDS data file</a> access during FVP simulation.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Node</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>dir:</code></td>
+<td style="text-align: left;">Directory that contains the <a href="theory.html#sds-data-files">SDS data files</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>idx-start:</code></td>
+<td style="text-align: left;">First index of the <a href="theory.html#sds-data-files">SDS data file</a> that are accessed; default: 0.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>idx-end:</code></td>
+<td style="text-align: left;">Last index of the <a href="theory.html#sds-data-files">SDS data file</a> that are accessed; default no upper limit.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>idx-list:</code></td>
+<td style="text-align: left;">Index lists of <a href="theory.html#sds-data-files">SDS data files</a> that are accessed; if given <code>index-start:</code> and <code>index-end:</code> are not used.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">dir: ./algorithm/SDS Recordings
+idx-start: 0
+idx-end: 11
+#idx-list: [1, 3]             # list of index to check (when applied, idx-start/end is ignored)
+</code></pre>
+<h3 id="protocol-file-sdsiolog">Protocol File: sdsio.log</h3>
+<p>During the FVP simulation a log file is generated that lists the [SDS data file](theory.md#sds-data-files accesses.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-txt">Created by ...\Board\Corstone-300\vsi\python\arm_vsi3.py
+
+Playback:  DataInput (.\algorithm\SDS Recordings\DataInput.0.sds).
+Record:    DataOutput (.\algorithm\SDS Recordings\DataOutput.0.sds).
+Closed:    DataInput.
+Closed:    DataOutput.
+Playback:  DataInput (.\algorithm\SDS Recordings\DataInput.1.sds).
+Record:    DataOutput (.\algorithm\SDS Recordings\DataOutput.1.sds).
+Closed:    DataInput.
+Closed:    DataOutput.
+   :
+   :
+Playback:  DataInput (.\algorithm\SDS Recordings\DataInput.11.sds).
+Record:    DataOutput (.\algorithm\SDS Recordings\DataOutput.11.sds).
+Closed:    DataInput.
+Closed:    DataOutput.
+Playback:  DataInput - ACCESS REJECTED. Index excluded in sdsio.yml
+</code></pre>
               
             </div>
           </div><footer>
