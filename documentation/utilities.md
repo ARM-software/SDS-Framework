@@ -44,9 +44,13 @@ Perform the following steps to setup the Python environment for using the SDS ut
 
 - Add to the system **Path** environment variable the path to the `%CMSIS_PACK_ROOT%/ARM/SDS/2.0.0/utilities` folder.
 
-  Note: `%CMSIS_PACK_ROOT%` is just a placeholder for the Pack location on your local PC. The **Path** variable must be extended by the absolute path to the `utilities` folder.
+!!! Notes
+    - `%CMSIS_PACK_ROOT%` is just a placeholder for the Pack location on your local PC. The **Path** variable must be extended by the absolute path to the `utilities` folder.
+    - Do not set the variable `PYTHONPATH` as this may conflict with the Python scripts that are used in AVH FVP models. AVH FVP use Python version 3.9 which may create a conflict.
 
-- Extend the **PATHEXT** system environment variable by `.PY`.
+### Windows
+
+- On Windows, ensure that the  environment variable **PATHEXT** contains the extension `.PY`.
 
 !!! Tip
     - When the **Path** environment variable is configured, you may simply start the utilities by using its name. For example entering `>sdsio-server` starts the utility.
