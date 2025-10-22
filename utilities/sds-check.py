@@ -132,14 +132,14 @@ def checkTimestamps(data):
         else:
             count = 0
 
-
     #Check the jitter, save the index at which the jitter is greatest
-    interval = (data["timestamp"][-1] - data["timestamp"][0]) / (data_len-1)
-    timestamp = data["timestamp"][0] + interval
+    info["tick_span"] = data["timestamp"][-1] - data["timestamp"][0] 
 
+    interval = info["tick_span"] / (data_len-1)
     info["interval"] = round(interval)
-    info["jitter"] = int(0)
+    info["jitter"]   = int(0)
 
+    timestamp = data["timestamp"][0] + interval
     for n in range(1,data_len):
         diff = round(abs(data["timestamp"][n] - timestamp))
         if diff > info["jitter"]:
@@ -164,8 +164,12 @@ def main():
     required = parser.add_argument_group("required")
     required.add_argument("-s", dest="sds", metavar="<sds_file>", help="SDS data recording file", required=True)
 
+    optional = parser.add_argument_group("optional")
+    optional.add_argument("-t", dest="tick_rate", metavar="<tick_rate>", help="Timestamp tick rate in Hz (default: 1000 for 1 ms tick interval)", required=False)
+
     args = parser.parse_args()
     filename = args.sds
+    tickrate = 1000 if args.tick_rate is None else int(args.tick_rate)
 
     # Check if the file exists
     if not os.path.isfile(filename):
@@ -193,30 +197,55 @@ def main():
         sys.exit(1)
 
     # Print summary
-    print(f"File     : {filename}")
-    print(f"DataSize : {dot(info['file_size'])} bytes")
-    print(f"Records  : {dot(info['records'])}")
+    print(f"File Name         : {filename}")
+    print(f"File Size         : {dot(info['file_size'])} bytes")
+    print(f"Number of Records : {dot(info['records'])}")
 
-    print(f"BlockSize: {dot(info['block_size'])} bytes")
-    if info["largest"] > info["block_size"] or info["smallest"] < info["block_size"]:
-        print(f"Largest  : {dot(info['largest'])} bytes")
-        print(f"Smallest : {dot(info['smallest'])} bytes")
-
-    print(f"Interval : {dot(info['interval'])} ms")
-
-    datarate = round((info["block_size"] * 1000) / info["interval"])
-    print(f"DataRate : {dot(datarate)} byte/s")
-
-    if info["jitter"] > 0:
-        print(f"Jitter   : {dot(info['jitter'])} ms, record {dot(info['index'])}")
+    # Print recording time
+    rectime = info["tick_span"] * 1000 / tickrate
+    if rectime < 5000:
+        print(f"Recording Time    : {dot(round(rectime))} ms")
     else:
-        print("Jitter   : 0 ms")
+        print(f"Recording Time    : {dot(round(rectime/1000))} s")
 
+    # Print recording interval
+    interval = info["interval"] * 1000 / tickrate
+    if interval >= 10000 :
+        print(f"Recording Interval: {dot(round(interval//1000))} s")
+    elif interval >= 10 or (interval-int(interval)) == 0:
+        print(f"Recording Interval: {dot(round(interval))} ms")
+    else:
+        print(f"Recording Interval: {dot(round(interval*1000))} us")
+
+    # Print data size (without headers)
+    print(f"Data Size         : {dot(info['block_size'] * info['records'])} bytes")
+
+    if info["largest"] > info["block_size"] or info["smallest"] < info["block_size"]:
+        print(f"Largest Block     : {dot(info['largest'])} bytes")
+        print(f"Smallest Block    : {dot(info['smallest'])} bytes")
+        print(f"Average Block     : {dot(info['block_size'])} bytes")
+    else:
+        print(f"Data Block        : {dot(info['block_size'])} bytes")
+    
+    # Print data rate
+    datarate = round((info["block_size"] * tickrate) / info["interval"])
+    print(f"Data Rate         : {dot(datarate)} byte/s")
+
+    # Print jitter
+    jitter = round(info["jitter"] * 1000 / tickrate) 
+    if info["jitter"] > 0:
+        print(f"Max Jitter        : {dot(jitter)} ms, in record {dot(info['index'])}")
+    else:
+        print(f"Jitter            : Not detected")
+
+    # Print delta time
+    deltatime = round(info["delta_time"] * 1000 / tickrate) 
     if info["delta_time"] > info["interval"]:
-        print(f"DeltaTime: {dot(info['delta_time'])} ms, record {dot(info['delta_index'])}")
+        print(f"Max Delta Time    : {dot(deltatime)} ms, in record {dot(info['delta_index'])}")
 
+    # Print number of duplicated timestamps
     if info["dup_count"] > 0:
-        print(f"DupStamps: {dot(info['dup_count'])}, record {dot(info['dup_index'])}")
+        print(f"Duplicate Tstamps : {dot(info['dup_count'])}, found at record {dot(info['dup_index'])}")
 
     print("Validation passed")
 
