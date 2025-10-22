@@ -554,57 +554,65 @@ optional:
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-Check</strong></a> checks SDS data files for correctness and consistency.  </p>
 <p>The following checks are performed:</p>
 <ul>
-<li><a href="#size-consistency-check">Size consistency check</a>: data size of all records should match the size of the SDS file.</li>
-<li><a href="#timestamp-consistency-check">Timestamp consistency check</a>: verify that timestamps of the records are in ascending order.</li>
-<li><a href="#jitter-check">Jitter check</a>: print the record with the largest deviation from the average timestamp interval.</li>
-<li><a href="#delta-time-check">Delta time check</a>: find the record with the largest timestamps difference from the following record.</li>
-<li><a href="#duplicate-timestamp-check">Duplicate timestamp check</a>: find records that have identical timestamps.</li>
+<li><a href="#size-consistency-check">Size consistency check</a>: The data size of all records should match the size of the SDS file.</li>
+<li><a href="#timestamp-consistency-check">Timestamp consistency check</a>: Verifies that the timestamps of the records are in ascending order.</li>
+<li><a href="#jitter-check">Jitter check</a>: Prints the record with the largest deviation from the average timestamp interval.</li>
+<li><a href="#delta-time-check">Delta time check</a>: Finds the record with the largest timestamp difference from the following record.</li>
+<li><a href="#duplicate-timestamp-check">Duplicate timestamp check</a>: Finds records with identical timestamps.</li>
 </ul>
 <h3 id="usage_3">Usage</h3>
 <ul>
 <li><a href="#setup">Setup</a> the Python environment.</li>
 <li>Invoke the tool as explained below.</li>
 </ul>
-<pre><code class="language-txt">usage: sds-check.py [-h] -s &lt;sds_file&gt;
+<pre><code class="language-txt">usage: sds-check.py [-h] -s &lt;sds_file&gt; [-t &lt;tick_rate&gt;]
 
 SDS data validation
 
 options:
-  -h, --help     show this help message and exit
+  -h, --help      show this help message and exit
 
 required:
-  -s &lt;sds_file&gt;  SDS data recording file
+  -s &lt;sds_file&gt;   SDS data recording file
+
+optional:
+  -t &lt;tick_rate&gt;  Timestamp tick rate in Hz (default: 1000 for 1 ms tick interval)
 </code></pre>
 <p><strong>Example:</strong></p>
 <pre><code class="language-txt">python sds-check.py -s Accelerometer.0.sds
-File     : Accelerometer.0.sds
-DataSize : 156.020 bytes
-Records  : 289
-BlockSize: 532 bytes
-Largest  : 552 bytes
-Smallest : 462 bytes
-Interval : 50 ms
-DataRate : 10.640 byte/s
-Jitter   : 0 ms
+File Name         : Accelerometer.0.sds
+File Size         : 156.020 bytes
+Number of Records : 289
+Recording Time    : 14 s
+Recording Interval: 50 ms
+Data Size         : 153.748 bytes
+Largest Block     : 552 bytes
+Smallest Block    : 462 bytes
+Average Block     : 532 bytes
+Data Rate         : 10.640 byte/s
+Jitter            : Not detected
 Validation passed
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The time values assume an tick frequency of 1000 Hz.</p>
+<p>The default tick frequency is 1000 Hz.</p>
 </div>
 <h3 id="summary-report">Summary Report</h3>
 <p>After processing the SDS data file, the SDS-Check utility prints a summary report with statistics:</p>
 <ul>
-<li><strong>DataSize</strong>:  total size of the data in bytes</li>
-<li><strong>Records</strong>:   total number of records</li>
-<li><strong>BlockSize</strong>: average block size of a data record</li>
-<li><strong>Largest</strong>:   largest block size, if different from the average block size</li>
-<li><strong>Smallest</strong>:  smallest block size, if different from the average block size</li>
-<li><strong>Interval</strong>:  time interval of the recording in milliseconds</li>
-<li><strong>DataRate</strong>:  recorded data rate in bytes per second</li>
-<li><strong>Jitter</strong>:    deviation from the expected timestamps</li>
-<li><strong>DeltaTime</strong>: largest difference of the neighboring timestamps, if deviating from the recording interval (optional)</li>
-<li><strong>DupStamps</strong>: number of duplicated timestamps, if found</li>
+<li><strong>File Name</strong>         : Name of the SDS data file</li>
+<li><strong>File Size</strong>         : Size of the file in bytes</li>
+<li><strong>Number of Records</strong> : Total number of records</li>
+<li><strong>Recording Time</strong>    : Duration of the recording in seconds or milliseconds</li>
+<li><strong>Recording Interval</strong>: Time interval of the recording in milliseconds</li>
+<li><strong>Data Size</strong>         : Size of the data w/o record headers in bytes</li>
+<li><strong>Largest Block</strong>     : Largest block size, if different from the average block size</li>
+<li><strong>Smallest Block</strong>    : Smallest block size, if different from the average block size</li>
+<li><strong>Average Block</strong>     : Average block size of a data record</li>
+<li><strong>Data Rate</strong>         : Recorded data rate in bytes per second</li>
+<li><strong>Max Jitter</strong>        : Maximum deviation from the expected timestamps, if detected (optional)</li>
+<li><strong>Max Delta Time</strong>    : Largest difference of the neighboring timestamps, if deviating from the recording interval (optional)</li>
+<li><strong>Duplicate Tstamps</strong> : Number of duplicated timestamps, if found</li>
 </ul>
 <h3 id="size-consistency-check">Size consistency check</h3>
 <p>This check processes the SDS data records and calculates the total size of the SDS data.
@@ -620,55 +628,62 @@ data record is lower than the current one, this error is printed:</p>
 <pre><code class="language-txt">Error: Timestamp not in ascending order in record 23.
 </code></pre>
 <h3 id="jitter-check">Jitter check</h3>
-<p>This check processes the SDS data records and searches for a maximum deviation of the recorded
-timestamps from the expected ones. If the deviation is found, the maximum deviation is 
-evaluated as <strong>jitter</strong> and together with record number printed out in the summary report.</p>
-<pre><code class="language-txt">File     : Gyroscope.0.sds
-DataSize : 153.334 bytes
-Records  : 284
-BlockSize: 532 bytes
-Largest  : 606 bytes
-Smallest : 444 bytes
-Interval : 50 ms
-DataRate : 10.640 byte/s
-Jitter   : 0 ms
+<p>This check processes the SDS data records and searches for the maximum deviation of the recorded
+timestamps from the expected ones. If a deviation is found, the maximum deviation is 
+evaluated as <strong>jitter</strong> and, together with the record number, is printed in the summary report.</p>
+<pre><code class="language-txt">File Name         : Gyroscope.0.sds
+File Size         : 153.334 bytes
+Number of Records : 284
+Recording Time    : 14 s
+Recording Interval: 50 ms
+Data Size         : 151.088 bytes
+Largest Block     : 606 bytes
+Smallest Block    : 444 bytes
+Average Block     : 532 bytes
+Data Rate         : 10.640 byte/s
+Jitter            : Not detected
 Validation passed
 </code></pre>
 <h3 id="delta-time-check">Delta time check</h3>
-<p>This check processes the SDS records and tries to find the largest difference in timestamps
-between two neighboring records, called <strong>DeltaTime</strong>.</p>
+<p>This check processes the SDS records and finds the largest difference in timestamps
+between two neighboring records, called <strong>Max Delta Time</strong>.</p>
 <p>For normally recorded files, the delta time and the recording interval are identical, so no information
 about the delta time status is printed. If the delta time and the recording interval are not identical,
-i.e. a difference is detected, the <strong>DeltaTime</strong> together with record number is printed out in the summary report.</p>
-<pre><code class="language-txt">File     : Temperature.0.sds
-DataSize : 360 bytes
-Records  : 30
-BlockSize: 4 bytes
-Interval : 1.024 ms
-DataRate : 4 byte/s
-Jitter   : 59 ms, record 19
-DeltaTime: 1.050 ms, record 2
+that is, a difference is detected, the <strong>Max Delta Time</strong> together with the record number is printed
+in the summary report.</p>
+<pre><code class="language-txt">File Name         : Temperature.0.sds
+File Size         : 360 bytes
+Number of Records : 30
+Recording Time    : 30 s
+Recording Interval: 1.024 ms
+Data Size         : 120 bytes
+Data Block        : 4 bytes
+Data Rate         : 4 byte/s
+Max Jitter        : 59 ms, in record 19
+Max Delta Time    : 1.050 ms, in record 2
 Validation passed
 </code></pre>
 <p>This is not an error, but a report of an anomaly. If the time delta is significantly larger than the
-sampling interval, e.g. many times longer, this may indicate that one or more data records are missing
-from the recorded file.</p>
+sampling interval, for example many times longer, this may indicate that one or more data records are
+missing from the recorded file.</p>
 <h3 id="duplicate-timestamp-check">Duplicate timestamp check</h3>
-<p>This check processes the SDS records in search of duplicated timestamps.
-This means that the same timestamp is used in several consecutive data records.</p>
+<p>This check processes the SDS records to identify duplicated timestamps. This means that the same timestamp
+is used in several consecutive data records.</p>
 <p>This may indicate that the recording loop in an embedded application is not set up correctly. It is also
 possible that duplicate timestamps are caused by unexpected thread delays in the embedded application.</p>
 <p>Duplicate timestamps are unusual in typical recording files. If multiple timestamps with the same value
-are found in the SDS file, <strong>DupStamps</strong> will be added in the summary report.</p>
-<pre><code class="language-txt">File     : DataInput.0.sds
-DataSize : 17.509.440 bytes
-Records  : 47.580
-BlockSize: 360 bytes
-Interval : 1 ms
-DataRate : 360.000 byte/s
-Jitter   : 4 ms, record 4
-DeltaTime: 5 ms, record 5
-DupStamps: 4, record 1
+are found in the SDS file, <strong>Duplicate Tstamps</strong> will be added to the summary report.</p>
+<pre><code class="language-txt">File Name         : DataInput.0.sds
+File Size         : 164.075.008 bytes
+Number of Records : 445.856
+Recording Time    : 446 s
+Recording Interval: 1 ms
+Data Size         : 160.508.160 bytes
+Data Block        : 360 bytes
+Data Rate         : 360.000 byte/s
+Max Jitter        : 26 ms, in record 273.884
+Max Delta Time    : 35 ms, in record 277.863
+Duplicate Tstamps : 4, found at record 1
 Validation passed
 </code></pre>
 <p>This is not an error, but a report of an anomaly. The report contains the number of records with
