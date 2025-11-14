@@ -17,6 +17,7 @@
  */
 
 #include <stdio.h>
+#include "RTE_Components.h"
 #include "cmsis_os2.h"
 #include "sds_main.h"
 #include "sds_control.h"
@@ -50,6 +51,8 @@ static sdsRecPlayId_t recIdDataInput  = NULL;
 #endif
 static sdsRecPlayId_t recIdDataOutput = NULL;
 
+// SDS file sequence number
+static uint32_t sequence_num = 0;
 
 // Public functions
 
@@ -67,7 +70,8 @@ int32_t OpenStreams (void) {
   playIdDataInput = sdsPlayOpen("DataInput", sds_play_buf_data_in, sizeof(sds_play_buf_data_in));
   SDS_ASSERT(playIdDataInput != NULL);
   if (playIdDataInput == NULL) {
-    printf("Failed to open SDS stream for playback of input data!\n");
+    sdsStreamingState = SDS_STREAMING_END;      // end simulation
+    printf("No more SDS data files for playback of input data!\n");
     status = -1;
   }
 #else
@@ -80,27 +84,37 @@ int32_t OpenStreams (void) {
   }
 #endif
 
-  // Open stream for recording of output data
-  recIdDataOutput = sdsRecOpen("DataOutput", sds_rec_buf_data_out, sizeof(sds_rec_buf_data_out));
-  SDS_ASSERT(recIdDataOutput != NULL);
-  if (recIdDataOutput == NULL) {
-    printf("Failed to open SDS stream for recording of output data!\n");
-    status = -1;
+  if (status == 0) {
+    // Open stream for recording of output data
+    recIdDataOutput = sdsRecOpen("DataOutput", sds_rec_buf_data_out, sizeof(sds_rec_buf_data_out));
+    SDS_ASSERT(recIdDataOutput != NULL);
+    if (recIdDataOutput == NULL) {
+      printf("ERROR: Failed to open SDS stream for recording of output data!\n");
+      status = -1;
+    }
   }
 
 #ifdef SDS_PLAY
   if (status == 0) {
-    printf("SDS playback and recording started\n");
+    printf("SDS playback and recording (#%d) started\n", sequence_num);
   } else {
-    printf("SDS playback and recording start failed!\n");
-    printf("For Network and USB SDSIO Interfaces ensure that SDSIO Server is running and restart the application!\n");
+    if (sequence_num == 0) {
+      printf("ERROR: SDS playback and recording start failed!\n");
+#if defined(RTE_SDS_IO_SOCKET) || defined(RTE_SDS_IO_USB) || defined(RTE_SDS_IO_SERIAL) || defined(RTE_SDS_IO_CUSTOM)
+      printf("Ensure that SDSIO Server is running and restart the application!\n");
+#endif
+    }
   }
 #else
   if (status == 0) {
-    printf("SDS recording started\n");
+    printf("SDS recording (#%d) started\n", sequence_num);
   } else {
-    printf("SDS recording start failed!\n");
-    printf("For Network and USB SDSIO Interfaces ensure that SDSIO Server is running and restart the application!\n");
+    if (sequence_num == 0) {
+      printf("ERROR: SDS recording start failed!\n");
+#if defined(RTE_SDS_IO_SOCKET) || defined(RTE_SDS_IO_USB) || defined(RTE_SDS_IO_SERIAL) || defined(RTE_SDS_IO_CUSTOM)
+      printf("Ensure that SDSIO Server is running and restart the application!\n");
+#endif
+    }
   }
 #endif
 
@@ -120,7 +134,7 @@ int32_t CloseStreams (void) {
   status = sdsPlayClose(playIdDataInput);
   SDS_ASSERT(status == SDS_REC_PLAY_OK);
   if (status != 0) {
-    printf("Failed to close SDS stream for playback of input data!\n");
+    printf("ERROR: Failed to close SDS stream for playback of input data!\n");
     status = -1;
   }
 #else
@@ -128,7 +142,7 @@ int32_t CloseStreams (void) {
   status = sdsRecClose(recIdDataInput);
   SDS_ASSERT(status == SDS_REC_PLAY_OK);
   if (status != 0) {
-    printf("Failed to close SDS stream for recording of input data!\n");
+    printf("ERROR: Failed to close SDS stream for recording of input data!\n");
     status = -1;
   }
 #endif
@@ -137,23 +151,24 @@ int32_t CloseStreams (void) {
   status = sdsRecClose(recIdDataOutput);
   SDS_ASSERT(status == SDS_REC_PLAY_OK);
   if (status != 0) {
-    printf("Failed to close SDS stream for recording of output data!\n");
+    printf("ERROR: Failed to close SDS stream for recording of output data!\n");
     status = -1;
   }
 
 #ifdef SDS_PLAY
   if (status == 0) {
-    printf("SDS playback and recording stopped\n");
+    printf("SDS playback and recording (#%d) stopped\n====\n\n", sequence_num);
   } else {
-    printf("SDS playback and recording stop failed!\n");
+    printf("ERROR: SDS playback and recording stop failed!\n====\n\n");
   }
 #else
   if (status == 0) {
-    printf("SDS recording stopped\n");
+    printf("SDS recording (#%d) stopped\n====\n\n", sequence_num);
   } else {
-    printf("SDS recording stop failed!\n");
+    printf("ERROR: SDS recording stop failed!\n====\n\n");
   }
 #endif
+  sequence_num++;
 
   return status;
 }

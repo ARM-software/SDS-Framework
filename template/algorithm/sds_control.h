@@ -34,6 +34,7 @@ extern "C"
 #define SDS_STREAMING_ACTIVE      1     // Streaming is active, SDS streams are open and ready for read/write operations
 #define SDS_STREAMING_STOP        2     // Request to stop streaming and close the open streams
 #define SDS_STREAMING_STOP_SAFE   3     // Safe state for streaming to be stopped
+#define SDS_STREAMING_END         4     // Request to end streaming (no more data)
 
 // Assert macro
 #define SDS_ASSERT(cond)                \
