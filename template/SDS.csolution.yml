@@ -1,6 +1,6 @@
 solution:
   description: SDS recorder/player reference example
-  created-for: CMSIS-Toolbox@2.9.0
+  created-for: CMSIS-Toolbox@2.12.0
   cdefault:
 
   # List of tested compilers that can be selected
@@ -12,15 +12,6 @@ solution:
   # This is a CMSIS-Toolbox Reference Application that requires a compatible board layer
   # Refer to https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/ for more information
 
-
-  # List of miscellaneous tool-specific controls
-  misc:
-    - for-compiler: AC6      # GDB requires DWARF 5, remove when using uVision Debugger
-      C-CPP:
-        - -gdwarf-5
-      ASM:
-        - -gdwarf-5
-        
   packs:
     - pack: ARM::SDS          # search SDS pack for layers
 
@@ -36,6 +27,14 @@ solution:
       variables:
         - Board-Layer: $SolutionDir()$/Board/Corstone-300/Board.clayer.yml
         - SDSIO-Layer: $SolutionDir()$/sdsio/fvp/sdsio_fvp.clayer.yml
+      target-set:
+        - set:
+          images:
+            - project-context: DataTest.DebugRec
+          debugger:
+            name: Arm-FVP
+            model: FVP_Corstone_SSE-300
+            config-file: Board/Corstone-300/fvp_config.txt
 
   # List of different build configurations.
   build-types:
@@ -63,3 +62,6 @@ solution:
   projects:
     - project: datatest/DataTest.cproject.yml
     - project: algorithm/AlgorithmTest.cproject.yml
+      not-for-context:
+        - .DebugRec+AVH-SSE-300
+        - .ReleaseRec+AVH-SSE-300
