@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - name: Checkout this repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install tools
         uses: ARM-software/cmsis-actions/vcpkg@v1
