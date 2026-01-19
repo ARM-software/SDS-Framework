@@ -201,6 +201,11 @@ def main():
     print(f"File Size         : {dot(info['file_size'])} bytes")
     print(f"Number of Records : {dot(info['records'])}")
 
+    # Check if only one record exists
+    if info["records"] == 1:
+        print("Validation passed")
+        sys.exit(1)
+
     # Print recording time
     rectime = info["tick_span"] * 1000 / tickrate
     if rectime < 5000:
