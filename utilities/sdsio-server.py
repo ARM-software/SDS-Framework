@@ -38,7 +38,7 @@ from typing import Optional
 class ByteStreamBuffer:
     def __init__(self, max_size=None):
         if max_size is None:
-            max_size = 10 * 1024 * 1024  # default to 10 MB
+            max_size = 1024 * 1024 * 1024  # default to 1 GB
         self._buf = bytearray(max_size)
         self._max = max_size
         self._head = 0      # next read position
@@ -287,11 +287,9 @@ class sdsio_manager:
             return resp_err
 
         # ensure not already open
-        for (f, n, _) in self.opened_streams.values():
-            if n == name:
-                file_name = os.path.basename(f.name)
-                printer.info(f"Stream '{file_name}' is already opened, cannot open again.")
-                return resp_err
+        if any(n == name for (_, n, _) in self.opened_streams.values()):
+            printer.info(f"Stream '{name}' is already opened, cannot open again.")
+            return resp_err
 
         # mode 1 = write, 0 = read
         if mode == 1:
@@ -312,7 +310,7 @@ class sdsio_manager:
                 self.stream_id += 1
                 sid = self.stream_id
             self.opened_streams[sid] = (f, name, mode)
-            buf = ByteStreamBuffer(max_size=100 * 1024 * 1024)  # 100 MB
+            buf = ByteStreamBuffer()
             stop_evt = threading.Event()
             thr = threading.Thread(
                 target=self._file_write_worker,
@@ -327,7 +325,6 @@ class sdsio_manager:
         else:
             # read mode: determine file, update index, start reader thread
             idx = 0
-            sid = 0
             index_file = path.join(self.work_dir, f"{name}.index.txt")
             if path.exists(index_file):
                 try:
@@ -337,44 +334,51 @@ class sdsio_manager:
                             idx = int(line)
                 except:
                     pass
+
             fname = path.join(self.work_dir, f"{name}.{idx}.sds")
 
-            if  path.exists(fname):
+            # Check if file exists
+            if not path.exists(fname):
+                # Update index to 0 on failure
                 try:
-                    f = open(fname, "rb")  # Attempt to open the file in read mode
-                except:
-                    printer.error(f"Failed to open file '{fname}'")
-                    return resp_err  # Return an error response if the file cannot be opened
+                    with open(index_file, 'w') as ix:
+                        ix.write('0')
+                except Exception:
+                    printer.warning(f"Could not update index file for {name}")
+                printer.info(f"Stream open failed: '{name}'. File `{fname}` does not exist.")
+                return resp_err
 
-                # allocate new sid
-                with self.manager_lock:
-                    self.stream_id += 1
-                    sid = self.stream_id
-                self.opened_streams[sid] = (f, name, mode)
+            # file exists, try to open it
+            try:
+                f = open(fname, "rb")  # Attempt to open the file in read mode
+            except:
+                printer.error(f"Failed to open file '{fname}'")
+                return resp_err  # Return an error response if the file cannot be opened
 
-                buf = ByteStreamBuffer()
-                stop_evt = threading.Event()
-                thr = threading.Thread(
-                    target=self._file_read_worker,
-                    args=(sid, f, buf, stop_evt),
-                    daemon=True
-                )
-                thr.start()
-                self.read_buffers[sid] = buf
-                self.read_threads[sid] = thr
-                self.read_stop[sid]  = stop_evt
+            # allocate new sid
+            with self.manager_lock:
+                self.stream_id += 1
+                sid = self.stream_id
+            self.opened_streams[sid] = (f, name, mode)
+
+            buf = ByteStreamBuffer()
+            stop_evt = threading.Event()
+            thr = threading.Thread(
+                target=self._file_read_worker,
+                args=(sid, f, buf, stop_evt),
+                daemon=True
+            )
+            thr.start()
+            self.read_buffers[sid] = buf
+            self.read_threads[sid] = thr
+            self.read_stop[sid]  = stop_evt
 
             # update index for next read
             try:
                 with open(index_file, 'w') as ix:
-                    ix.write(str(idx + 1 if path.exists(fname) else 0))
+                    ix.write(str(idx + 1))
             except Exception:
                 printer.warning(f"Could not update index file for {name}")
-
-            if not path.exists(fname):
-                printer.info(f"Stream open failed: '{name}'. File `{fname}` does not exist.")
-                return resp_err
-
 
         # build success response
         resp = bytearray()
