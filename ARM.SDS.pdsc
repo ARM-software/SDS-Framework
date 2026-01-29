@@ -17,6 +17,7 @@
       Active development ...
 
       SDSIO-Server: Correct USB SDSIO device detection (prevent macOS libusb crash)
+      SDSIO-Client: Correct USB high-speed configuration
     </release>
   </releases>
 

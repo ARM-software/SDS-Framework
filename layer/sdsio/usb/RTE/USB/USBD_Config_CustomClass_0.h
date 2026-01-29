@@ -199,7 +199,7 @@
 //                 <0=>None
 //                 <1=>1 additional
 //                 <2=>2 additional
-#define USBD_CUSTOM_CLASS0_IF0_EP0_HS_WMAXPACKETSIZE               4608
+#define USBD_CUSTOM_CLASS0_IF0_EP0_HS_WMAXPACKETSIZE               512
 
 //             <o.0..7>Endpoint Polling Interval <0-255>
 //               <i>Specifies the frequency of requests initiated by USB Host (in 125 us units).
@@ -284,7 +284,7 @@
 //                 <0=>None
 //                 <1=>1 additional
 //                 <2=>2 additional
-#define USBD_CUSTOM_CLASS0_IF0_EP1_HS_WMAXPACKETSIZE               4608
+#define USBD_CUSTOM_CLASS0_IF0_EP1_HS_WMAXPACKETSIZE               512
 
 //             <o.0..7>Endpoint Polling Interval <0-255>
 //               <i>Specifies the frequency of requests initiated by USB Host (in 125 us units).
