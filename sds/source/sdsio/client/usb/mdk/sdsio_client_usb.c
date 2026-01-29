@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -21,6 +21,7 @@
 #include "rl_usb.h"                     // Keil.MDK-Plus::USB:CORE
 #include "Driver_USBD.h"
 #include "cmsis_os2.h"
+#include "cmsis_compiler.h"
 
 #include <string.h>
 
@@ -41,7 +42,7 @@ static uint32_t bulkOutEpAddr;
 static uint32_t bulkInEpAddr;
 
 // USBD bulk OUT buffer
-static uint8_t  bulkOutBuffer[SDSIO_USB_BULK_OUT_BUF_SIZE];
+static uint8_t  bulkOutBuffer[SDSIO_USB_BULK_OUT_BUF_SIZE] __ALIGNED(32);
 static uint32_t bulkOutCnt;
 static uint32_t bulkOutIdx;
 
