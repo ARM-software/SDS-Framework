@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "sds": {
@@ -19,7 +19,8 @@
         },
         "tick-frequency": {
           "type": "number",
-          "description": "Tick frequency of the timestamp value (optional); default: 1000 for 1 milli-second interval"
+          "description": "Tick frequency of the timestamp value (optional); default: 1000 for 1 milli-second interval",
+          "default": 1000
         },
         "content": {
           "type": "array",
@@ -37,11 +38,13 @@
               },
               "offset": {
                 "type": "number",
-                "description": "Offset of the value (optional); default: 0"
+                "description": "Offset of the value (optional); default: 0",
+                "default": 0
               },
               "scale": {
                 "type": "number",
-                "description": "Scale factor of the value (optional); default: 1.0"
+                "description": "Scale factor of the value (optional); default: 1.0",
+                "default": 1.0
               },
               "unit": {
                 "type": "string",
