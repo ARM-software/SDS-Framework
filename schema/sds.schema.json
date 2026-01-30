@@ -49,6 +49,75 @@
               "unit": {
                 "type": "string",
                 "description": "Physical unit of the value (optional); default: no units"
+              },
+              "image": {
+                "type": "object",
+                "description": "Image stream metadata, applicable when the value represents an image frame",
+                "properties": {
+                  "pixel_format": {
+                    "type": "string",
+                    "description": "Pixel format identifier.",
+                    "enum": [
+                      "RAW8",
+                      "RAW10",
+                      "RGB565",
+                      "RGB888",
+                      "NV12",
+                      "NV21",
+                      "I420",
+                      "NV16",
+                      "NV61",
+                      "YUYV",
+                      "UYVY",
+                      "YUV422P",
+                      "YUV444",
+                      "YUV444P"
+                    ]
+                  },
+                  "width": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Number of pixels per row."
+                  },
+                  "height": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Number of rows."
+                  },
+                  "stride_bytes": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Bytes per row for single-plane formats."
+                  },
+                  "planes": {
+                    "type": "array",
+                    "description": "Per-plane stride (for multi-plane formats).",
+                    "minItems": 2,
+                    "maxItems": 3,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "stride_bytes": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "description": "Bytes per row for this plane."
+                        }
+                      },
+                      "required": ["stride_bytes"]
+                    }
+                  }
+                },
+                "required": ["pixel_format", "width", "height"],
+                "oneOf": [
+                  {
+                    "required": ["stride_bytes"],
+                    "not": { "required": ["planes"] }
+                  },
+                  {
+                    "required": ["planes"],
+                    "not": { "required": ["stride_bytes"] }
+                  }
+                ]
               }
             },
             "required": ["value", "type"]
