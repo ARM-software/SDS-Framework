@@ -243,7 +243,7 @@ int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size) {
   uint32_t  num = 0U;
   int32_t   ret = SDSIO_ERROR;
   int32_t   event_status;
-  uint32_t  cnt;
+  uint32_t  cnt, len;
   usbStatus usb_status;
 
   while (num < buf_size) {
@@ -259,10 +259,19 @@ int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size) {
       bulkOutIdx += cnt;
       bulkOutCnt -= cnt;
     } else {
+      if ((buf_size - num) < sizeof(bulkOutBuffer)) {
+        // Round up to nearest multiple of bulkMaxPacketSize
+        len = (((buf_size - num) + bulkMaxPacketSize - 1U) / bulkMaxPacketSize) * bulkMaxPacketSize;
+        if (len > sizeof(bulkOutBuffer)) {
+          len = sizeof(bulkOutBuffer);
+        }
+      } else {
+        len = sizeof(bulkOutBuffer);
+      }
       usb_status = USBD_EndpointRead(SDSIO_USB_DEVICE_INDEX,
                                     bulkOutEpAddr,
                                     bulkOutBuffer,
-                                    sizeof(bulkOutBuffer));
+                                    len);
       if (usb_status != usbOK) {
         // Error happened.
         if (usb_status == usbTimeout) {
