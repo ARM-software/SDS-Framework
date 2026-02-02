@@ -16,16 +16,22 @@
 
 # Python SDS Data Converter
 
-import argparse
-import csv
-import json
-import sys
-import wave
-from struct import calcsize, unpack
+try:
+    import argparse
+    import csv
+    import json
+    import sys
+    import wave
+    from struct import calcsize, unpack
 
-import numpy as np
-import pandas as pd
-import yaml
+    import cv2
+    import numpy as np
+    import pandas as pd
+    import yaml
+except ImportError as err:
+    print(f"SDS-Convert: Failed to import module: {err}")
+except Exception as e:
+    print(f"SDS-Convert: Exception: {type(e).__name__}")
 
 
 class RecordManager:
@@ -458,6 +464,137 @@ def write_SDS_AudioWAV(framerate, data, meta_data):
     wave_file.close()
 
 
+# Convert pixel format string to OpenCV color conversion code
+def get_color_conversion(pixel_format):
+    conversions = {
+        'RAW8' : cv2.COLOR_GRAY2BGR,
+        'RGB888': cv2.COLOR_RGB2BGR,
+        'RGB565': cv2.COLOR_BGR5652BGR,
+        'YUYV': cv2.COLOR_YUV2BGR_YUYV,
+        'UYVY': cv2.COLOR_YUV2BGR_UYVY,
+        'NV12': cv2.COLOR_YUV2BGR_NV12,
+        'NV21': cv2.COLOR_YUV2BGR_NV21,
+        'I420': cv2.COLOR_YUV2BGR_I420,
+        'YUV444': cv2.COLOR_YUV2BGR,
+        'YUV444P': cv2.COLOR_YUV2BGR,
+        'RAW8': None,  # Grayscale, no conversion needed
+    }
+    return conversions.get(pixel_format, None)
+
+
+# Create and write MP4 video file from SDS recording
+def write_SDS_VideoMP4(filename, framerate, data, meta_data):
+    global video_writer
+
+    # Extract image metadata from first content item
+    if len(meta_data) == 0 or 'image' not in meta_data[0]:
+        sys.exit("Error: YAML metadata must contain image information for video conversion")
+
+    video_meta = meta_data[0]['image']
+    pixel_format = video_meta['pixel_format']
+    width = video_meta['width']
+    height = video_meta['height']
+
+    # Determine bytes per frame based on pixel format
+    if pixel_format == 'RAW8':
+        bytes_per_frame = width * height
+        channels = 1
+    elif pixel_format == 'RAW10':
+        sys.exit(f"Error: Pixel format {pixel_format} not supported for MP4 conversion")
+    elif pixel_format == 'RGB565':
+        bytes_per_frame = width * height * 2
+        channels = 3
+    elif pixel_format == 'RGB888':
+        bytes_per_frame = width * height * 3
+        channels = 3
+    elif pixel_format in ['YUYV', 'UYVY']:
+        bytes_per_frame = width * height * 2
+        channels = 3
+    elif pixel_format in ['NV12', 'NV21', 'I420']:
+        bytes_per_frame = width * height * 3 // 2
+        channels = 3
+    elif pixel_format in ['YUV444', 'YUV444P']:
+        bytes_per_frame = width * height * 3
+        channels = 3
+    else:
+        sys.exit(f"Error: Unknown pixel format: {pixel_format}")
+
+    # Setup video writer (OpenCV uses BGR color space)
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # MP4 codec (H.264)
+    video_writer = cv2.VideoWriter(f"{filename}.mp4", fourcc, framerate, (width, height))
+
+    if not video_writer.isOpened():
+        sys.exit("Error: Could not open video writer")
+
+    # Process each record in the SDS file
+    raw_data = data["raw_data"]
+    timestamp = data["timestamp"]
+    data_size = data["data_size"]
+
+    frame_count = 0
+    for idx in range(len(timestamp)):
+        frame_size = data_size[idx]
+
+        # Extract frame data
+        if len(raw_data) < frame_size:
+            print(f"Warning: Insufficient data for frame {idx}")
+            break
+
+        frame_data = raw_data[:frame_size]
+        raw_data = raw_data[frame_size:]
+
+        # Skip if frame size doesn't match expected size
+        if frame_size != bytes_per_frame:
+            print(f"Warning: Frame {idx} size mismatch. Expected {bytes_per_frame}, got {frame_size}")
+            continue
+
+        # Convert bytes to numpy array
+        frame_array = np.frombuffer(frame_data, dtype=np.uint8)
+
+        # Reshape frame based on pixel format
+        try:
+            if pixel_format == 'RAW8':
+                # Grayscale - reshape and convert to BGR
+                frame = frame_array.reshape((height, width))
+            elif pixel_format == 'RGB565':
+                # RGB565 - reshape and convert
+                frame = frame_array.reshape((height, width, 2))
+            elif pixel_format == 'RGB888':
+                # RGB888 - reshape and convert to BGR
+                frame = frame_array.reshape((height, width, 3))
+            elif pixel_format in ['YUYV', 'UYVY']:
+                # YUV422 packed formats
+                frame = frame_array.reshape((height, width, 2))
+            elif pixel_format in ['NV12', 'NV21']:
+                # YUV420 semi-planar formats
+                frame = frame_array.reshape((height * 3 // 2, width))
+            elif pixel_format == 'I420':
+                # YUV420 planar format
+                frame = frame_array.reshape((height * 3 // 2, width))
+            elif pixel_format in ['YUV444', 'YUV444P']:
+                # YUV444 formats
+                frame = frame_array.reshape((height, width, 3))
+            else:
+                print(f"Warning: Unsupported pixel format for frame {idx}: {pixel_format}")
+                continue
+
+            # Convert color space to BGR
+            color_code = get_color_conversion(pixel_format)
+            frame_bgr = cv2.cvtColor(frame, color_code)
+
+            # Write frame to video
+            video_writer.write(frame_bgr)
+            frame_count += 1
+
+        except Exception as e:
+            print(f"Error processing frame {idx}: {e}")
+            continue
+
+    # Close video writer
+    video_writer.release()
+    print(f"Video conversion complete: {frame_count} frames written to {filename}.mp4")
+
+
 def in_file(in_file):
     global in_extension
 
@@ -489,13 +626,23 @@ def main():
 
     # Parse arguments
     formatter = lambda prog: argparse.HelpFormatter(prog, max_help_position=60)
-    parser = argparse.ArgumentParser(description="Convert from or to SDS files using selected data conversion format",
-                                     formatter_class=formatter)
+    parser = argparse.ArgumentParser(
+        description="Convert from or to SDS files using selected data conversion format",
+        epilog="Example: python sds-convert.py audio_wav -i input.sds -o output.wav -y metadata.yml",
+        formatter_class=formatter)
 
-    subparsers = parser.add_subparsers(dest="convert_format", help="Data conversion format", required=True)
+    subparsers = parser.add_subparsers(
+        dest="convert_format",
+        title="conversion formats",
+        description="Choose a format to convert to/from SDS files",
+        help="Use '<format> --help' for format-specific options",
+        required=True)
 
     # Audio WAV
-    parser_audio_wav = subparsers.add_parser("audio_wav", formatter_class=formatter)
+    parser_audio_wav = subparsers.add_parser("audio_wav",
+                                             help="Convert SDS audio stream to audio WAV format",
+                                             description="Convert SDS files to audio WAV format",
+                                             formatter_class=formatter)
     parser_audio_wav_required = parser_audio_wav.add_argument_group("required")
     parser_audio_wav_required.add_argument("-i", dest="in_file", metavar="<input_file>",
                                            help="Input file", nargs="+", type=in_file, required=True)
@@ -503,10 +650,13 @@ def main():
                                            help="Output file", type=out_file, required=True)
     parser_audio_wav_optional = parser_audio_wav.add_argument_group("optional")
     parser_audio_wav_optional.add_argument("-y", dest="yaml", metavar="<yaml_file>",
-                                           help="YAML sensor description file", nargs="+", default=None)
+                                           help="YAML metadata file", nargs="+", default=None)
 
     # Simple CSV
-    parser_simple_csv = subparsers.add_parser("simple_csv", formatter_class=formatter)
+    parser_simple_csv = subparsers.add_parser("simple_csv",
+                                              help="Convert SDS stream to CSV format (single sensor)",
+                                              description="Convert SDS files to CSV format with timestamps and data columns",
+                                              formatter_class=formatter)
     parser_simple_csv_required = parser_simple_csv.add_argument_group("required")
     parser_simple_csv_required.add_argument("-i", dest="in_file", metavar="<input_file>",
                                             help="Input file", nargs="+", type=in_file, required=True)
@@ -514,7 +664,7 @@ def main():
                                             help="Output file", type=out_file, required=True)
     parser_simple_csv_optional = parser_simple_csv.add_argument_group("optional")
     parser_simple_csv_optional.add_argument("-y", dest="yaml", metavar="<yaml_file>",
-                                            help="YAML sensor description file", nargs="+", default=None)
+                                            help="YAML metadata file", nargs="+", default=None)
     parser_simple_csv_optional.add_argument("--normalize", dest="normalize",
                                             help="Normalize timestamps so they start with 0", action="store_true")
     parser_simple_csv_optional.add_argument("--start-timestamp", dest="start_timestamp", metavar="<timestamp>",
@@ -525,7 +675,10 @@ def main():
                                             type=float, default=None)
 
     # Qeexo V2 CSV
-    parser_qeexo_v2_csv = subparsers.add_parser("qeexo_v2_csv", formatter_class=formatter)
+    parser_qeexo_v2_csv = subparsers.add_parser("qeexo_v2_csv",
+                                                help="Convert SDS to/from Qeexo AutoML V2 CSV format",
+                                                description="Convert SDS files to Qeexo AutoML V2 CSV format (supports multiple sensors)",
+                                                formatter_class=formatter)
     parser_qeexo_v2_csv_required = parser_qeexo_v2_csv.add_argument_group("required")
     parser_qeexo_v2_csv_required.add_argument("-i", dest="in_file", metavar="<input_file>",
                                               help="Input file", nargs="+", type=in_file, required=True)
@@ -533,7 +686,7 @@ def main():
                                               help="Output file", type=out_file, required=True)
     parser_qeexo_v2_csv_optional = parser_qeexo_v2_csv.add_argument_group("optional")
     parser_qeexo_v2_csv_optional.add_argument("-y", dest="yaml", metavar="<yaml_file>",
-                                              help="YAML sensor description file", nargs="+", default=None)
+                                              help="YAML metadata file", nargs="+", default=None)
     parser_qeexo_v2_csv_optional.add_argument("--normalize", dest="normalize",
                                               help="Normalize timestamps so they start with 0", action="store_true")
     parser_qeexo_v2_csv_optional.add_argument("--start-timestamp", dest="start_timestamp", metavar="<timestamp>",
@@ -551,6 +704,24 @@ def main():
                                               help="SDS file index to write (default: <sensor>.%(default)s.sds)",
                                               type=int, default=0)
 
+    # Video to MP4
+    parser_video = subparsers.add_parser("video",
+                                         help="Convert SDS video stream to MP4 format",
+                                         description="Convert SDS video recordings to MP4 format (requires video metadata)",
+                                         formatter_class=formatter)
+    parser_video_required = parser_video.add_argument_group("required")
+    parser_video_required.add_argument("-i", dest="in_file", metavar="<input_file>",
+                                       help="Input file", nargs="+", type=in_file, required=True)
+    parser_video_required.add_argument("-o", dest="out_file", metavar="<output_file>",
+                                       help="Output file", type=out_file, required=True)
+    parser_video_required.add_argument("-y", dest="yaml", metavar="<yaml_file>",
+                                       help="YAML metadata file", nargs="+", required=True)
+
+    # Parse arguments - show help if no arguments provided
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+    
     args = parser.parse_args()
 
     if not isinstance(args.in_file, list):
@@ -635,6 +806,19 @@ def main():
                 write_SDS_AudioWAV(sensor_frequency[sensor_name[0]], data[sensor_name[0]], meta_data[sensor_name[0]])
         else:
             sys.exit('WAV to SDS conversion is not supported.')
+
+    # Video
+    elif "video" in args.convert_format:
+        if 'sds' in in_extension:
+            filename = other_files[0].split('.mp4')[0]
+
+            if args.convert_format == "video":
+                # Only used for one sensor/video stream
+                if (len(args.yaml) > 1) or (len(sds_files) > 1):
+                    sys.exit("Video MP4 file format only supports 1 metadata and 1 SDS file")
+                write_SDS_VideoMP4(filename, sensor_frequency[sensor_name[0]], data[sensor_name[0]], meta_data[sensor_name[0]])
+        else:
+            sys.exit('MP4 to SDS conversion is not supported.')
 
 
 if __name__ == "__main__":
