@@ -1,0 +1,12 @@
+sds:
+  name: Video Stream - RAW8
+  description: RAW8 grayscale video frames from monochrome camera
+  frequency: 30
+  content:
+    - value: Frame
+      type: uint8_t
+      image:
+        pixel_format: RAW8
+        width: 1280
+        height: 720
+        stride_bytes: 1280

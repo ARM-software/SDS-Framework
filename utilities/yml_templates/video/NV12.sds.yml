@@ -1,0 +1,15 @@
+sds:
+  name: Video Stream - NV12
+  description: NV12 (YUV420 semi-planar) video frames from camera
+  frequency: 30
+  content:
+    - value: Frame
+      type: uint8_t
+      image:
+        pixel_format: NV12
+        width: 1280
+        height: 720
+        planes:
+          - stride_bytes: 1280    # Y
+          - stride_bytes: 1280    # UV
+

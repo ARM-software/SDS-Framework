@@ -1,0 +1,12 @@
+sds:
+  name: Video Stream - YUV444
+  description: YUV444 (packed 4:4:4) video frames from camera
+  frequency: 30
+  content:
+    - value: Frame
+      type: uint8_t
+      image:
+        pixel_format: YUV444
+        width: 1280
+        height: 720
+        stride_bytes: 3840   # 3 bytes per pixel
