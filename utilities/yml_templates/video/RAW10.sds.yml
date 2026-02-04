@@ -1,0 +1,12 @@
+sds:
+  name: Video Stream - RAW10
+  description: RAW10 video frames from Bayer camera sensor
+  frequency: 30
+  content:
+    - value: Frame
+      type: uint16_t
+      image:
+        pixel_format: RAW10
+        width: 1280
+        height: 720
+        stride_bytes: 2560   # 2 bytes per pixel (10-bit stored in 16-bit containers)
