@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
     "sds": {
@@ -19,7 +19,8 @@
         },
         "tick-frequency": {
           "type": "number",
-          "description": "Tick frequency of the timestamp value (optional); default: 1000 for 1 milli-second interval"
+          "description": "Tick frequency of the timestamp value (optional); default: 1000 for 1 milli-second interval",
+          "default": 1000
         },
         "content": {
           "type": "array",
@@ -37,15 +38,86 @@
               },
               "offset": {
                 "type": "number",
-                "description": "Offset of the value (optional); default: 0"
+                "description": "Offset of the value (optional); default: 0",
+                "default": 0
               },
               "scale": {
                 "type": "number",
-                "description": "Scale factor of the value (optional); default: 1.0"
+                "description": "Scale factor of the value (optional); default: 1.0",
+                "default": 1.0
               },
               "unit": {
                 "type": "string",
                 "description": "Physical unit of the value (optional); default: no units"
+              },
+              "image": {
+                "type": "object",
+                "description": "Image stream metadata, applicable when the value represents an image frame",
+                "properties": {
+                  "pixel_format": {
+                    "type": "string",
+                    "description": "Pixel format identifier.",
+                    "enum": [
+                      "RAW8",
+                      "RAW10",
+                      "RGB565",
+                      "RGB888",
+                      "NV12",
+                      "NV21",
+                      "I420",
+                      "NV16",
+                      "NV61",
+                      "YUYV",
+                      "UYVY",
+                      "YUV422P",
+                      "YUV444",
+                      "YUV444P"
+                    ]
+                  },
+                  "width": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Number of pixels per row."
+                  },
+                  "height": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Number of rows."
+                  },
+                  "stride_bytes": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Bytes per row for single-plane formats."
+                  },
+                  "planes": {
+                    "type": "array",
+                    "description": "Per-plane stride (for multi-plane formats).",
+                    "minItems": 2,
+                    "maxItems": 3,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "stride_bytes": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "description": "Bytes per row for this plane."
+                        }
+                      },
+                      "required": ["stride_bytes"]
+                    }
+                  }
+                },
+                "required": ["pixel_format", "width", "height"],
+                "oneOf": [
+                  {
+                    "required": ["stride_bytes"],
+                    "not": { "required": ["planes"] }
+                  },
+                  {
+                    "required": ["planes"],
+                    "not": { "required": ["stride_bytes"] }
+                  }
+                ]
               }
             },
             "required": ["value", "type"]
