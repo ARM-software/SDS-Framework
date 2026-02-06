@@ -33,9 +33,9 @@ project:
         - file: sds_algorithm_user.c
         - file: sds_algorithm_config.h
         - file: sds_data_in_user.c
-          not-for-context:
-            - .DebugPlay
-            - .ReleasePlay
+          for-context:
+            - .DebugRec
+            - .ReleaseRec
         - file: sds_data_in_play.c
           for-context:
             - .DebugPlay
