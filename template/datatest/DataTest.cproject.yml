@@ -15,7 +15,6 @@ project:
         - STDIN
         - STDOUT
         - STDERR
-        - Heap: 65536
 
   define:
     - OS_IDLE_THREAD_NAME: \"Idle\"
@@ -33,9 +32,9 @@ project:
         - file: sds_algorithm_test.c
         - file: sds_algorithm_config.h
         - file: sds_data_in_test.c
-          not-for-context:
-            - .DebugPlay
-            - .ReleasePlay
+          for-context:
+            - .DebugRec
+            - .ReleaseRec
         - file: sds_data_in_play.c
           for-context:
             - .DebugPlay
