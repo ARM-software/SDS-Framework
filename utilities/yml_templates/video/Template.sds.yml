@@ -1,0 +1,25 @@
+sds:
+  name: Video Stream
+  description: Generic stream of video frames
+  frequency: 30
+  content:
+  - value: Frame
+    type:  uint8_t
+    image:
+      pixel_format: <string>             # RAW8, RAW10, RAW12, RAW16,
+                                         # RGB565, RGB888, BGR888,
+                                         # NV12, NV21, I420,
+                                         # YUYV, UYVY, NV16, NV61, YUV422P,
+                                         # YUV444, YUV444P
+      width: <pixels>                    # number of pixels per row
+      height: <pixels>                   # number of rows
+
+      # Exactly one of the following must be present (mutually exclusive):
+      # - stride_bytes (single-plane)
+      # - planes[] (multi-plane)
+
+      stride_bytes: <bytes_per_row>      # single-plane formats (RAW*, RGB*, YUYV, YUV444, ...)
+      planes:                            # multi-plane formats (NV12, NV21, ...)
+        - stride_bytes: <bytes_per_row>  # plane 0 (e.g., Y)
+        - stride_bytes: <bytes_per_row>  # plane 1 (e.g., UV)
+        - stride_bytes: <bytes_per_row>  # plane 2 (e.g., V) [optional]

@@ -14,13 +14,14 @@ The SDS-Framework includes the following utilities that are implemented in Pytho
 ## Requirements
 
 - **Python 3.9** or later with packages:
-    - ifaddr
-    - matplotlib
-    - numpy
-    - pandas
-    - pyyaml
-    - pyserial
-    - libusb1
+  - ifaddr
+  - matplotlib
+  - numpy
+  - opencv-python
+  - pandas
+  - pyyaml
+  - pyserial
+  - libusb1
 
 ## Setup
 
@@ -243,6 +244,8 @@ usage: sds-convert.py audio_wav [-h]
                                 -o <output_file>  
                                 [-y <yaml_file> [<yaml_file> ...]]
 
+Convert SDS files to audio WAV format
+
 options:
   -h, --help                          show this help message and exit
 
@@ -251,7 +254,7 @@ required:
   -o <output_file>                    Output file
 
 optional:
-  -y <yaml_file> [<yaml_file> ...]    YAML sensor description file
+  -y <yaml_file> [<yaml_file> ...]    YAML metadata file
 ```
 
 !!! Note
@@ -313,6 +316,8 @@ usage: sds-convert.py simple_csv [-h]
                                  [--start-timestamp <timestamp>]  
                                  [--stop-timestamp <timestamp>]
 
+Convert SDS files to CSV format with timestamps and data columns
+
 options:
   -h, --help                          show this help message and exit
 
@@ -321,7 +326,7 @@ required:
   -o <output_file>                    Output file
 
 optional:
-  -y <yaml_file> [<yaml_file> ...]    YAML sensor description file
+  -y <yaml_file> [<yaml_file> ...]    YAML metadata file
   --normalize                         Normalize timestamps so they start with 0
   --start-timestamp <timestamp>       Starting input data timestamp, in seconds (default: None)
   --stop-timestamp <timestamp>        Stopping input data timestamp, in seconds (default: None)
@@ -391,6 +396,8 @@ usage: sds-convert.py qeexo_v2_csv [-h] -i <input_file> [<input_file> ...]
                                    [--interval <interval>]  
                                    [--sds_index <sds_index>]
 
+Convert SDS files to Qeexo AutoML V2 CSV format (supports multiple sensors)
+
 options:
   -h, --help                          show this help message and exit
 
@@ -399,7 +406,7 @@ required:
   -o <output_file>                    Output file
 
 optional:
-  -y <yaml_file> [<yaml_file> ...]    YAML sensor description file
+  -y <yaml_file> [<yaml_file> ...]    YAML metadata file
   --normalize                         Normalize timestamps so they start with 0
   --start-timestamp <timestamp>       Starting input data timestamp, in ms (default: None)
   --stop-timestamp <timestamp>        Stopping input data timestamp, in ms (default: None)
@@ -446,6 +453,55 @@ Convert **Qeexo V2 CSV** files to **SDS data** files:
 
 ```bash
 python sds-convert.py qeexo_v2_csv -i accelerometer_data.csv -o accelerometer.sds
+```
+
+#### Video
+
+The `video` mode converts the stream of video frames from the `.sds` file into a standard MP4 (H.264)
+video file. Video frame format shall be specified in the `.yml` metadata file, where pixel format,
+resolution and frame stride shall be properly specified.
+
+```txt
+usage: sds-convert.py video [-h]
+                            -i <input_file> [<input_file> ...]
+                            -o <output_file>
+                            -y <yaml_file> [<yaml_file> ...]
+
+Convert SDS video recordings to MP4 format (requires video metadata)
+
+options:
+  -h, --help                          show this help message and exit
+
+required:
+  -i <input_file> [<input_file> ...]  Input file
+  -o <output_file>                    Output file
+  -y <yaml_file> [<yaml_file> ...]    YAML metadata file
+```
+
+!!! Note
+    - The tool expects the SDS stream to be strictly video frames - no header markers or custom formatting.
+
+**Example of metadata yml file for RGB888 video stream:**
+
+```yml
+sds:
+  name: Video Stream - RGB888
+  description: 192 x 192 RGB888 video frames
+  frequency: 30
+  content:
+    - value: Frame
+      type: uint8_t
+      image:
+        pixel_format: RGB888
+        width: 192
+        height: 192
+        stride_bytes: 576   # 3 bytes per pixel
+```
+
+**Example:**
+
+```bash
+python sds-convert.py video -i Camera.0.sds -o Camera.0.mp4 -y Camera.sds.yml
 ```
 
 ## SDS-Check
