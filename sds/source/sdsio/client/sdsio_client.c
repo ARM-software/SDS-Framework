@@ -312,7 +312,11 @@ int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
       if (ret == sizeof(header_t)) {
         // Send data.
         ret = sdsioClientSend((const uint8_t *)buf, buf_size);
-      }  else if (ret >= 0) {
+        if ((ret >= 0) && (ret < buf_size)) {
+          // Incomplete data sent.
+          ret = SDSIO_ERROR_INTERFACE;
+        }
+      } else if (ret >= 0) {
         // Incomplete header sent.
         ret = SDSIO_ERROR_INTERFACE;
       }
