@@ -99,6 +99,8 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#qeexo-v2-csv">Qeexo V2 CSV</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#video">Video</a>
+    </li>
         </ul>
     </li>
         </ul>
@@ -170,16 +172,15 @@
 </ul>
 <h2 id="requirements">Requirements</h2>
 <ul>
-<li><strong>Python 3.9</strong> or later with packages:<ul>
+<li><strong>Python 3.9</strong> or later with packages:</li>
 <li>ifaddr</li>
 <li>matplotlib</li>
 <li>numpy</li>
+<li>opencv-python</li>
 <li>pandas</li>
 <li>pyyaml</li>
 <li>pyserial</li>
 <li>libusb1</li>
-</ul>
-</li>
 </ul>
 <h2 id="setup">Setup</h2>
 <div class="admonition note">
@@ -375,6 +376,8 @@ width (bit depth).</p>
                                 -o &lt;output_file&gt;  
                                 [-y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]]
 
+Convert SDS files to audio WAV format
+
 options:
   -h, --help                          show this help message and exit
 
@@ -383,7 +386,7 @@ required:
   -o &lt;output_file&gt;                    Output file
 
 optional:
-  -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]    YAML sensor description file
+  -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]    YAML metadata file
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -434,6 +437,8 @@ all timestamps in the input file to be offset so that the first timestamp is <co
                                  [--start-timestamp &lt;timestamp&gt;]  
                                  [--stop-timestamp &lt;timestamp&gt;]
 
+Convert SDS files to CSV format with timestamps and data columns
+
 options:
   -h, --help                          show this help message and exit
 
@@ -442,7 +447,7 @@ required:
   -o &lt;output_file&gt;                    Output file
 
 optional:
-  -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]    YAML sensor description file
+  -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]    YAML metadata file
   --normalize                         Normalize timestamps so they start with 0
   --start-timestamp &lt;timestamp&gt;       Starting input data timestamp, in seconds (default: None)
   --stop-timestamp &lt;timestamp&gt;        Stopping input data timestamp, in seconds (default: None)
@@ -501,6 +506,8 @@ This <code>&lt;text&gt;</code> will populate the label column in the output file
                                    [--interval &lt;interval&gt;]  
                                    [--sds_index &lt;sds_index&gt;]
 
+Convert SDS files to Qeexo AutoML V2 CSV format (supports multiple sensors)
+
 options:
   -h, --help                          show this help message and exit
 
@@ -509,7 +516,7 @@ required:
   -o &lt;output_file&gt;                    Output file
 
 optional:
-  -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]    YAML sensor description file
+  -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]    YAML metadata file
   --normalize                         Normalize timestamps so they start with 0
   --start-timestamp &lt;timestamp&gt;       Starting input data timestamp, in ms (default: None)
   --stop-timestamp &lt;timestamp&gt;        Stopping input data timestamp, in ms (default: None)
@@ -549,6 +556,48 @@ optional:
 </code></pre>
 <p>Convert <strong>Qeexo V2 CSV</strong> files to <strong>SDS data</strong> files:</p>
 <pre><code class="language-bash">python sds-convert.py qeexo_v2_csv -i accelerometer_data.csv -o accelerometer.sds
+</code></pre>
+<h4 id="video">Video</h4>
+<p>The <code>video</code> mode converts the stream of video frames from the <code>.sds</code> file into a standard MP4 (H.264)
+video file. Video frame format shall be specified in the <code>.yml</code> metadata file, where pixel format,
+resolution and frame stride shall be properly specified.</p>
+<pre><code class="language-txt">usage: sds-convert.py video [-h]
+                            -i &lt;input_file&gt; [&lt;input_file&gt; ...]
+                            -o &lt;output_file&gt;
+                            -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]
+
+Convert SDS video recordings to MP4 format (requires video metadata)
+
+options:
+  -h, --help                          show this help message and exit
+
+required:
+  -i &lt;input_file&gt; [&lt;input_file&gt; ...]  Input file
+  -o &lt;output_file&gt;                    Output file
+  -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]    YAML metadata file
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The tool expects the SDS stream to be strictly video frames - no header markers or custom formatting.</li>
+</ul>
+</div>
+<p><strong>Example of metadata yml file for RGB888 video stream:</strong></p>
+<pre><code class="language-yml">sds:
+  name: Video Stream - RGB888
+  description: 192 x 192 RGB888 video frames
+  frequency: 30
+  content:
+    - value: Frame
+      type: uint8_t
+      image:
+        pixel_format: RGB888
+        width: 192
+        height: 192
+        stride_bytes: 576   # 3 bytes per pixel
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">python sds-convert.py video -i Camera.0.sds -o Camera.0.mp4 -y Camera.sds.yml
 </code></pre>
 <h2 id="sds-check">SDS-Check</h2>
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-Check</strong></a> checks SDS data files for correctness and consistency.  </p>
