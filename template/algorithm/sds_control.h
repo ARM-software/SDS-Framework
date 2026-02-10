@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -31,10 +31,11 @@ extern "C"
 
 // SDS streaming states
 #define SDS_STREAMING_INACTIVE    0     // Streaming is not active
-#define SDS_STREAMING_ACTIVE      1     // Streaming is active, SDS streams are open and ready for read/write operations
-#define SDS_STREAMING_STOP        2     // Request to stop streaming and close the open streams
-#define SDS_STREAMING_STOP_SAFE   3     // Safe state for streaming to be stopped
-#define SDS_STREAMING_END         4     // Request to end streaming (no more data)
+#define SDS_STREAMING_START       1     // Request to start streaming, SDS streams are open and ready for read/write operations
+#define SDS_STREAMING_ACTIVE      2     // Streaming is active
+#define SDS_STREAMING_STOP        3     // Request to stop streaming and close the open streams
+#define SDS_STREAMING_STOP_SAFE   4     // Safe state for streaming to be stopped
+#define SDS_STREAMING_END         5     // Request to end streaming (no more data)
 
 // Assert macro
 #define SDS_ASSERT(cond)                \

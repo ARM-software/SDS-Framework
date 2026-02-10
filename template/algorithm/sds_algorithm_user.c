@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -33,7 +33,7 @@ int32_t InitAlgorithm (void) {
 }
 
 /**
-  \fn           int32_t ExecuteAlgorithm (const uint8_t *in_buf, uint32_t in_num, uint8_t *out_buf, uint32_t out_num)
+  \fn           int32_t ExecuteAlgorithm (uint8_t *in_buf, uint32_t in_num, uint8_t *out_buf, uint32_t out_num)
   \brief        Execute algorithm under test.
   \param[in]    in_buf          pointer to memory buffer containing input data for algorithm
   \param[in]    in_num          number of data bytes in input data buffer (in bytes)
@@ -41,7 +41,7 @@ int32_t InitAlgorithm (void) {
   \param[in]    out_num         maximum number of data bytes returned as algorithm output (in bytes)
   \return       0 on success; -1 on error
 */
-int32_t ExecuteAlgorithm (const uint8_t *in_buf, uint32_t in_num, uint8_t *out_buf, uint32_t out_num) {
+int32_t ExecuteAlgorithm (uint8_t *in_buf, uint32_t in_num, uint8_t *out_buf, uint32_t out_num) {
 
 #warning "Add user code to execute algorithm under test!"
 

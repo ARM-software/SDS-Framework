@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -63,14 +63,25 @@ int32_t GetInputData (uint8_t *buf, uint32_t max_len) {
 
   // Wait for playback activation
   while (sdsStreamingState != SDS_STREAMING_ACTIVE) {
+    if (sdsStreamingState == SDS_STREAMING_START) {
+      // Request to start streaming, transit to active state
+      sdsStreamingState = SDS_STREAMING_ACTIVE;
+      break;
+    }
     osDelay(100U);
   }
 
-  // Short delay to safeguard against playback data drainage
-  osDelay(10U);
-
   // Read input data from playback stream
   retv = sdsPlayRead(playIdDataInput, &playTimestamp, buf, max_len);
+
+  // If there is not enough data in stream buffer, wait for it
+  if (retv == SDS_PLAY_ERROR_NO_DATA) {
+    do {
+      osDelay(10U);
+      retv = sdsPlayRead(playIdDataInput, &playTimestamp, buf, max_len);
+    } while (retv == SDS_PLAY_ERROR_NO_DATA);
+  }
+
   if (retv > 0) {
     SDS_ASSERT(retv == max_len);
   } else {
