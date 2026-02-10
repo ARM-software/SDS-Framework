@@ -372,26 +372,23 @@ associated metadata <code>.yml</code> file, to the raw audio data extracted from
 essential audio parameters such as channel configuration (mono or stereo), sample rate (frame rate), and sample
 width (bit depth).</p>
 <pre><code class="language-txt">usage: sds-convert.py audio_wav [-h]  
-                                -i &lt;input_file&gt; [&lt;input_file&gt; ...]  
+                                -i &lt;input_file&gt;  
                                 -o &lt;output_file&gt;  
-                                [-y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]]
+                                -y &lt;yaml_file&gt;
 
 Convert SDS files to audio WAV format
 
 options:
-  -h, --help                          show this help message and exit
+  -h, --help        show this help message and exit
 
 required:
-  -i &lt;input_file&gt; [&lt;input_file&gt; ...]  Input file
-  -o &lt;output_file&gt;                    Output file
-
-optional:
-  -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]    YAML metadata file
+  -i &lt;input_file&gt;   Input file
+  -o &lt;output_file&gt;  Output file
+  -y &lt;yaml_file&gt;    YAML metadata file
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.</li>
 <li>The tool expects the SDS stream to be strictly audio - no header markers or custom formatting.</li>
 </ul>
 </div>
@@ -430,9 +427,9 @@ all timestamps in the input file to be offset so that the first timestamp is <co
 <li><code>--stop-timestamp &lt;timestamp&gt;</code>: Stopping input data timestamp in floating-point format, in seconds.</li>
 </ul>
 <pre><code class="language-txt">usage: sds-convert.py simple_csv [-h]  
-                                 -i &lt;input_file&gt; [&lt;input_file&gt; ...]  
+                                 -i &lt;input_file&gt;  
                                  -o &lt;output_file&gt;  
-                                 [-y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]]  
+                                 -y &lt;yaml_file&gt;  
                                  [--normalize]  
                                  [--start-timestamp &lt;timestamp&gt;]  
                                  [--stop-timestamp &lt;timestamp&gt;]
@@ -440,22 +437,21 @@ all timestamps in the input file to be offset so that the first timestamp is <co
 Convert SDS files to CSV format with timestamps and data columns
 
 options:
-  -h, --help                          show this help message and exit
+  -h, --help                     show this help message and exit
 
 required:
-  -i &lt;input_file&gt; [&lt;input_file&gt; ...]  Input file
-  -o &lt;output_file&gt;                    Output file
+  -i &lt;input_file&gt;                Input file
+  -o &lt;output_file&gt;               Output file
+  -y &lt;yaml_file&gt;                 YAML metadata file
 
 optional:
-  -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]    YAML metadata file
-  --normalize                         Normalize timestamps so they start with 0
-  --start-timestamp &lt;timestamp&gt;       Starting input data timestamp, in seconds (default: None)
-  --stop-timestamp &lt;timestamp&gt;        Stopping input data timestamp, in seconds (default: None)
+  --normalize                    Normalize timestamps so they start with 0
+  --start-timestamp &lt;timestamp&gt;  Starting input data timestamp, in seconds (default: None)
+  --stop-timestamp &lt;timestamp&gt;   Stopping input data timestamp, in seconds (default: None)
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.</li>
 <li>Current implementation assumes that the tick frequency is <code>1000 Hz</code> and does not use the <code>tick-frequency</code> value from the metadata file.</li>
 </ul>
 </div>
@@ -562,19 +558,19 @@ optional:
 video file. Video frame format shall be specified in the <code>.yml</code> metadata file, where pixel format,
 resolution and frame stride shall be properly specified.</p>
 <pre><code class="language-txt">usage: sds-convert.py video [-h]
-                            -i &lt;input_file&gt; [&lt;input_file&gt; ...]
+                            -i &lt;input_file&gt;
                             -o &lt;output_file&gt;
-                            -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]
+                            -y &lt;yaml_file&gt;
 
 Convert SDS video recordings to MP4 format (requires video metadata)
 
 options:
-  -h, --help                          show this help message and exit
+  -h, --help        show this help message and exit
 
 required:
-  -i &lt;input_file&gt; [&lt;input_file&gt; ...]  Input file
-  -o &lt;output_file&gt;                    Output file
-  -y &lt;yaml_file&gt; [&lt;yaml_file&gt; ...]    YAML metadata file
+  -i &lt;input_file&gt;   Input file
+  -o &lt;output_file&gt;  Output file
+  -y &lt;yaml_file&gt;    YAML metadata file
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
