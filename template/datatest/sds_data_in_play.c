@@ -77,7 +77,7 @@ int32_t GetInputData (uint8_t *buf, uint32_t max_len) {
   // If there is not enough data in stream buffer, wait for it
   if (retv == SDS_PLAY_ERROR_NO_DATA) {
     do {
-      osDelay(10);
+      osDelay(10U);
       retv = sdsPlayRead(playIdDataInput, &playTimestamp, buf, max_len);
     } while (retv == SDS_PLAY_ERROR_NO_DATA);
   }
