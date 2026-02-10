@@ -240,25 +240,22 @@ width (bit depth).
 
 ```txt
 usage: sds-convert.py audio_wav [-h]  
-                                -i <input_file> [<input_file> ...]  
+                                -i <input_file>  
                                 -o <output_file>  
-                                [-y <yaml_file> [<yaml_file> ...]]
+                                -y <yaml_file>
 
 Convert SDS files to audio WAV format
 
 options:
-  -h, --help                          show this help message and exit
+  -h, --help        show this help message and exit
 
 required:
-  -i <input_file> [<input_file> ...]  Input file
-  -o <output_file>                    Output file
-
-optional:
-  -y <yaml_file> [<yaml_file> ...]    YAML metadata file
+  -i <input_file>   Input file
+  -o <output_file>  Output file
+  -y <yaml_file>    YAML metadata file
 ```
 
 !!! Note
-    - The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
     - The tool expects the SDS stream to be strictly audio - no header markers or custom formatting.
 
 **Example of metadata yml file for mono microphone:**
@@ -309,9 +306,9 @@ Users may specify a time range selection of the input data to be processed using
 
 ```txt
 usage: sds-convert.py simple_csv [-h]  
-                                 -i <input_file> [<input_file> ...]  
+                                 -i <input_file>  
                                  -o <output_file>  
-                                 [-y <yaml_file> [<yaml_file> ...]]  
+                                 -y <yaml_file>  
                                  [--normalize]  
                                  [--start-timestamp <timestamp>]  
                                  [--stop-timestamp <timestamp>]
@@ -319,21 +316,20 @@ usage: sds-convert.py simple_csv [-h]
 Convert SDS files to CSV format with timestamps and data columns
 
 options:
-  -h, --help                          show this help message and exit
+  -h, --help                     show this help message and exit
 
 required:
-  -i <input_file> [<input_file> ...]  Input file
-  -o <output_file>                    Output file
+  -i <input_file>                Input file
+  -o <output_file>               Output file
+  -y <yaml_file>                 YAML metadata file
 
 optional:
-  -y <yaml_file> [<yaml_file> ...]    YAML metadata file
-  --normalize                         Normalize timestamps so they start with 0
-  --start-timestamp <timestamp>       Starting input data timestamp, in seconds (default: None)
-  --stop-timestamp <timestamp>        Stopping input data timestamp, in seconds (default: None)
+  --normalize                    Normalize timestamps so they start with 0
+  --start-timestamp <timestamp>  Starting input data timestamp, in seconds (default: None)
+  --stop-timestamp <timestamp>   Stopping input data timestamp, in seconds (default: None)
 ```
 
 !!! Note
-    - The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
     - Current implementation assumes that the tick frequency is `1000 Hz` and does not use the `tick-frequency` value from the metadata file.
 
 **Example of metadata yml file for gyroscope:**
@@ -463,19 +459,19 @@ resolution and frame stride shall be properly specified.
 
 ```txt
 usage: sds-convert.py video [-h]
-                            -i <input_file> [<input_file> ...]
+                            -i <input_file>
                             -o <output_file>
-                            -y <yaml_file> [<yaml_file> ...]
+                            -y <yaml_file>
 
 Convert SDS video recordings to MP4 format (requires video metadata)
 
 options:
-  -h, --help                          show this help message and exit
+  -h, --help        show this help message and exit
 
 required:
-  -i <input_file> [<input_file> ...]  Input file
-  -o <output_file>                    Output file
-  -y <yaml_file> [<yaml_file> ...]    YAML metadata file
+  -i <input_file>   Input file
+  -o <output_file>  Output file
+  -y <yaml_file>    YAML metadata file
 ```
 
 !!! Note

@@ -642,29 +642,34 @@ def main():
     parser_audio_wav = subparsers.add_parser("audio_wav",
                                              help="Convert SDS audio stream to audio WAV format",
                                              description="Convert SDS files to audio WAV format",
-                                             formatter_class=formatter)
+                                             formatter_class=formatter, add_help=False)
+    parser_audio_wav_options = parser_audio_wav.add_argument_group("options")
+    parser_audio_wav_options.add_argument("-h", "--help", action="help",
+                                          help="show this help message and exit")
     parser_audio_wav_required = parser_audio_wav.add_argument_group("required")
     parser_audio_wav_required.add_argument("-i", dest="in_file", metavar="<input_file>",
-                                           help="Input file", nargs="+", type=in_file, required=True)
+                                           help="Input file", type=in_file, required=True)
     parser_audio_wav_required.add_argument("-o", dest="out_file", metavar="<output_file>",
                                            help="Output file", type=out_file, required=True)
-    parser_audio_wav_optional = parser_audio_wav.add_argument_group("optional")
-    parser_audio_wav_optional.add_argument("-y", dest="yaml", metavar="<yaml_file>",
-                                           help="YAML metadata file", nargs="+", default=None)
+    parser_audio_wav_required.add_argument("-y", dest="yaml", metavar="<yaml_file>",
+                                           help="YAML metadata file", required=True)
 
     # Simple CSV
     parser_simple_csv = subparsers.add_parser("simple_csv",
                                               help="Convert SDS stream to CSV format (single sensor)",
                                               description="Convert SDS files to CSV format with timestamps and data columns",
-                                              formatter_class=formatter)
+                                              formatter_class=formatter, add_help=False)
+    parser_simple_csv_options = parser_simple_csv.add_argument_group("options")
+    parser_simple_csv_options.add_argument("-h", "--help", action="help",
+                                           help="show this help message and exit")
     parser_simple_csv_required = parser_simple_csv.add_argument_group("required")
     parser_simple_csv_required.add_argument("-i", dest="in_file", metavar="<input_file>",
-                                            help="Input file", nargs="+", type=in_file, required=True)
+                                            help="Input file", type=in_file, required=True)
     parser_simple_csv_required.add_argument("-o", dest="out_file", metavar="<output_file>",
                                             help="Output file", type=out_file, required=True)
+    parser_simple_csv_required.add_argument("-y", dest="yaml", metavar="<yaml_file>",
+                                            help="YAML metadata file", required=True)
     parser_simple_csv_optional = parser_simple_csv.add_argument_group("optional")
-    parser_simple_csv_optional.add_argument("-y", dest="yaml", metavar="<yaml_file>",
-                                            help="YAML metadata file", nargs="+", default=None)
     parser_simple_csv_optional.add_argument("--normalize", dest="normalize",
                                             help="Normalize timestamps so they start with 0", action="store_true")
     parser_simple_csv_optional.add_argument("--start-timestamp", dest="start_timestamp", metavar="<timestamp>",
@@ -678,7 +683,10 @@ def main():
     parser_qeexo_v2_csv = subparsers.add_parser("qeexo_v2_csv",
                                                 help="Convert SDS to/from Qeexo AutoML V2 CSV format",
                                                 description="Convert SDS files to Qeexo AutoML V2 CSV format (supports multiple sensors)",
-                                                formatter_class=formatter)
+                                                formatter_class=formatter, add_help=False)
+    parser_qeexo_v2_csv_options = parser_qeexo_v2_csv.add_argument_group("options")
+    parser_qeexo_v2_csv_options.add_argument("-h", "--help", action="help",
+                                             help="show this help message and exit")
     parser_qeexo_v2_csv_required = parser_qeexo_v2_csv.add_argument_group("required")
     parser_qeexo_v2_csv_required.add_argument("-i", dest="in_file", metavar="<input_file>",
                                               help="Input file", nargs="+", type=in_file, required=True)
@@ -708,20 +716,23 @@ def main():
     parser_video = subparsers.add_parser("video",
                                          help="Convert SDS video stream to MP4 format",
                                          description="Convert SDS video recordings to MP4 format (requires video metadata)",
-                                         formatter_class=formatter)
+                                         formatter_class=formatter, add_help=False)
+    parser_video_options = parser_video.add_argument_group("options")
+    parser_video_options.add_argument("-h", "--help", action="help",
+                                      help="show this help message and exit")
     parser_video_required = parser_video.add_argument_group("required")
     parser_video_required.add_argument("-i", dest="in_file", metavar="<input_file>",
-                                       help="Input file", nargs="+", type=in_file, required=True)
+                                       help="Input file", type=in_file, required=True)
     parser_video_required.add_argument("-o", dest="out_file", metavar="<output_file>",
                                        help="Output file", type=out_file, required=True)
     parser_video_required.add_argument("-y", dest="yaml", metavar="<yaml_file>",
-                                       help="YAML metadata file", nargs="+", required=True)
+                                       help="YAML metadata file", required=True)
 
     # Parse arguments - show help if no arguments provided
     if len(sys.argv) == 1:
         parser.print_help(sys.stderr)
         sys.exit(1)
-    
+
     args = parser.parse_args()
 
     if not isinstance(args.in_file, list):
@@ -733,25 +744,27 @@ def main():
     if 'sds' in in_extension:
         sds_files   = args.in_file
         other_files = args.out_file
+        # YAML is always required when converting FROM SDS
         if args.yaml is None:
             sys.exit("YAML file is missing from arguments. [-y <yaml_file>]")
-        else:
-            # Load data from YAML file
-            sensor_name = []
-            meta_data = {}
-            sensor_frequency = {}
-            for filename in args.yaml:
-                try:
-                    with open(filename, "r") as file:
-                        yaml_data = yaml.load(file, Loader=yaml.FullLoader)["sds"]
-                        sensor_name.append(yaml_data["name"])
-                        sensor_frequency[sensor_name[-1]] = yaml_data["frequency"]
-                        meta_data[sensor_name[-1]] = yaml_data["content"]
-                except Exception as e:
-                    sys.exit(f"Error loading YAML file: {e}")
+        # Load data from YAML file
+        sensor_name = []
+        meta_data = {}
+        sensor_frequency = {}
+        for filename in args.yaml:
+            try:
+                with open(filename, "r") as file:
+                    yaml_data = yaml.load(file, Loader=yaml.FullLoader)["sds"]
+                    sensor_name.append(yaml_data["name"])
+                    sensor_frequency[sensor_name[-1]] = yaml_data["frequency"]
+                    meta_data[sensor_name[-1]] = yaml_data["content"]
+            except Exception as e:
+                sys.exit(f"Error loading YAML file: {e}")
     elif 'sds' in out_extension:
         other_files = args.in_file
         sds_files   = args.out_file
+        # YAML is optional when converting TO SDS with qeexo_v2_csv (CSV to SDS)
+        # For other formats, conversion TO SDS is not supported
     else:
         sys.exit("SDS file is missing from arguments.")
 
