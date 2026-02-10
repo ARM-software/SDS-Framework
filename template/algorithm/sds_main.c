@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -187,8 +187,12 @@ __NO_RETURN void AlgorithmThread (void *argument) {
   InitAlgorithm();
 
   for (;;) {
+    if (sdsStreamingState == SDS_STREAMING_START) {
+      // Request to start streaming, transit to active state (synchronus to main loop)
+      sdsStreamingState = SDS_STREAMING_ACTIVE;
+    }
     if (sdsStreamingState == SDS_STREAMING_STOP) {
-      // Request to stop streaming, transit to state safe for stopping
+      // Request to stop streaming, transit to state safe for stopping (synchronus to main loop)
       sdsStreamingState = SDS_STREAMING_STOP_SAFE;
     }
 
@@ -198,21 +202,27 @@ __NO_RETURN void AlgorithmThread (void *argument) {
       continue;
     }
 
-    // Execute algorithm under test
-    if (ExecuteAlgorithm((const uint8_t *)sds_algo_data_in_buf, sizeof(sds_algo_data_in_buf), sds_algo_data_out_buf, sizeof(sds_algo_data_out_buf)) != 0) {
-      // If there was an error executing algorithm skip recording
-      continue;
-    }
-
-    if (sdsStreamingState == SDS_STREAMING_ACTIVE) {
-#ifdef SDS_PLAY
-      timestamp = playTimestamp;
-#else
+#ifndef SDS_PLAY
+    if ((sdsStreamingState == SDS_STREAMING_ACTIVE) || (sdsStreamingState == SDS_STREAMING_STOP)) {
       timestamp = osKernelGetTickCount();
 
       // Record algorithm input data
       retv = sdsRecWrite(recIdDataInput, timestamp, sds_algo_data_in_buf, sizeof(sds_algo_data_in_buf));
       SDS_ASSERT(retv == sizeof(sds_algo_data_in_buf));
+    }
+#endif
+
+    // Execute algorithm under test
+    if (ExecuteAlgorithm(sds_algo_data_in_buf, sizeof(sds_algo_data_in_buf), sds_algo_data_out_buf, sizeof(sds_algo_data_out_buf)) != 0) {
+      // If there was an error executing algorithm skip recording
+      continue;
+    }
+
+    if ((sdsStreamingState == SDS_STREAMING_ACTIVE) || (sdsStreamingState == SDS_STREAMING_STOP)) {
+#ifdef SDS_PLAY
+      // During playback, use the recorded timestamps for output data so that the output data timestamps
+      // exactly match those from the original recording
+      timestamp = playTimestamp;
 #endif
 
       // Record algorithm output data

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -194,7 +194,7 @@ __NO_RETURN void sdsControlThread (void *argument) {
         if (OpenStreams() == 0) {
           // Turn LED1 on
           vioSetSignal(vioLED1, vioLEDon);
-          sdsStreamingState = SDS_STREAMING_ACTIVE;
+          sdsStreamingState = SDS_STREAMING_START;
         }
         break;
 
