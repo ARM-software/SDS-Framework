@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2025 Arm Limited. All rights reserved.
+# Copyright (c) 2023-2026 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -28,9 +28,10 @@ import time
 import logging
 import asyncio
 import ctypes
-from ctypes import wintypes
 from typing import Optional
 
+if os.name == "nt":
+    from ctypes import wintypes
 
 # ---------------------------------------------------------------------------- #
 #           Byte oriented in memory buffer with per-stream flow control        #
@@ -494,7 +495,7 @@ class sdsio_manager:
         elif cmd == 4: return self.__read(sid, arg)
         elif cmd == 5: return self.__pingServer(sid)
         else:
-            printer.info(f"Unknown command: {cmd}")
+            printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
             return bytearray()
 
 
@@ -521,9 +522,18 @@ class async_sdsio_server_socket:
 
     async def handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         try:
+            printer.info(f"SDSIO Client connected.")
             while True:
                 # read fixed-size header, then payload
                 hdr = await reader.readexactly(16)
+
+                # validate command before reading payload
+                cmd = int.from_bytes(hdr[0:4],'little')
+                if cmd not in (1, 2, 3, 4, 5):
+                    printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
+                    printer.info("Closing SDSIO Client connection...")
+                    break
+
                 sz  = int.from_bytes(hdr[12:16],'little')
                 pl  = await reader.readexactly(sz) if sz > 0 else b''
                 resp= self.manager.execute_request(hdr + pl)
@@ -531,10 +541,11 @@ class async_sdsio_server_socket:
                     writer.write(resp)
                     await writer.drain()
         except (asyncio.IncompleteReadError, ConnectionResetError, OSError):
-            printer.info(f"Client disconnected.")
+            printer.info(f"SDSIO Client disconnected.")
         except Exception:
             printer.info(f"Server Error")
         finally:
+            printer.info("Waiting for SDSIO Client to reconnect...")
             await self._safe_close(reader, writer)
             # Clean up any streams
             self.manager.clean()
@@ -650,6 +661,14 @@ class sdsio_server_serial:
                 # Process complete messages from the buffer...
                 while len(buffer) >= 16:
                     header = buffer[:16]
+
+                    # validate command before reading payload
+                    cmd = int.from_bytes(header[0:4], 'little')
+                    if cmd not in (1, 2, 3, 4, 5):
+                        printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
+                        buffer.clear()
+                        return  # Exit start(), finally block will clean up
+
                     data_size = int.from_bytes(header[12:16], 'little')
                     req_len = 16 + data_size
                     if len(buffer) < req_len:
@@ -672,6 +691,8 @@ def sdsio_server_serial_run_supervised(port, baudrate, parity, stop_bits, connec
                 stop_bits, connect_timeout, manager
             )
             srv.start()
+            # start() returned normally (e.g., invalid command)
+            printer.info("Server restarting...")
         except Exception:
             printer.info(f"Server fatal error.")
             printer.info("Server restarting...")
@@ -727,6 +748,7 @@ class sdsio_server_usb:
         self._monitor_thread = None
         self.vendor_id       = None
         self.product_id      = None
+        self._protocol_error = False
 
     def open(self):
         first_attempt = True
@@ -863,6 +885,18 @@ class sdsio_server_usb:
             self._rx_buf.extend(data)
             while len(self._rx_buf) >= 16:
                 hdr   = self._rx_buf[:16]
+
+                # validate command before reading payload
+                cmd = int.from_bytes(hdr[0:4],'little')
+                if cmd not in (1, 2, 3, 4, 5):
+                    printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
+                    self._protocol_error = True
+                    self.running = False
+                    self._rx_buf.clear()
+                    # Wake up _out_sender so it can exit cleanly
+                    self.out_q.put_nowait(b'')
+                    break
+
                 sz    = int.from_bytes(hdr[12:16], 'little')
                 total = 16 + sz
                 if len(self._rx_buf) < total:
@@ -910,6 +944,7 @@ class sdsio_server_usb:
             self._monitor_thread = None
             self.vendor_id       = None
             self.product_id      = None
+            self._protocol_error = False
 
             self.open()
 
@@ -952,7 +987,7 @@ class sdsio_server_usb:
 
             # Mark server active in the normal path too (hotplug working)
             self.running = True
-            printer.info(f"USB Server running.")
+            printer.info(f"SDSIO Client USB device connected.")
 
             # start polling thread
             self._poll_thread = threading.Thread(
@@ -967,8 +1002,46 @@ class sdsio_server_usb:
                 break
 
             # clean up and loop back to reconnect
+            protocol_err = self._protocol_error
             self.mgr.clean()
             self.close()
+
+            # On protocol error, wait for device to be physically reset
+            if protocol_err:
+                await asyncio.to_thread(self._wait_for_device_reset)
+
+    def _wait_for_device_reset(self):
+        """Wait for USB device to be removed and reattached."""
+        vid = self.vendor_id
+        pid = self.product_id
+        if not vid or not pid:
+            return
+
+        poll_ctx = usb1.USBContext()
+        try:
+            def _device_present():
+                for dev in poll_ctx.getDeviceList(skip_on_error=True):
+                    try:
+                        if dev.getVendorID() == vid and dev.getProductID() == pid:
+                            return True
+                    except usb1.USBError:
+                        continue
+                return False
+
+            # Wait for device to disappear
+            printer.info("Waiting for SDSIO Client USB device to disconnect...")
+            while _device_present():
+                time.sleep(0.5)
+
+            # Wait for device to reappear
+            printer.info("Waiting for SDSIO Client USB device to reconnect...")
+            while not _device_present():
+                time.sleep(0.5)
+        finally:
+            try:
+                poll_ctx.close()
+            except Exception:
+                pass
 
     def close(self):
         # Called either by KeyboardInterrupt or by internal errors/disconnects
