@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -130,11 +130,16 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
   int32_t num = 0U;
   int32_t ret = SDSIO_ERROR;
   int32_t sock_status;
+  uint32_t retry = 0U;
 
   while (num < buf_size) {
     sock_status = iotSocketSend(socket, buf + num, buf_size - num);
     if (sock_status >= 0) {
       num += sock_status;
+      retry = 0U;
+    } else if ((sock_status == IOT_SOCKET_ENOMEM) && (retry < 5)) {
+      osDelay(retry + 2U);
+      retry++;
     } else {
       if (sock_status == IOT_SOCKET_EAGAIN) {
         // Timeout happened.
