@@ -508,6 +508,8 @@ class async_sdsio_server_socket:
         self.port = port
         self.manager = manager
         self.server = None
+        self._handler_tasks = set()
+        self._shutting_down = False
 
     async def _safe_close(self, reader, writer):
         writer.close()
@@ -521,6 +523,8 @@ class async_sdsio_server_socket:
             pass
 
     async def handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+        task = asyncio.current_task()
+        self._handler_tasks.add(task)
         try:
             printer.info(f"SDSIO Client connected.")
             while True:
@@ -540,22 +544,43 @@ class async_sdsio_server_socket:
                 if resp:
                     writer.write(resp)
                     await writer.drain()
+        except asyncio.CancelledError:
+            raise                          # re-raise per docs
         except (asyncio.IncompleteReadError, ConnectionResetError, OSError):
-            printer.info(f"SDSIO Client disconnected.")
-        except Exception:
-            printer.info(f"Server Error")
+            if not self._shutting_down:
+                printer.info(f"SDSIO Client disconnected.")
         finally:
-            printer.info("Waiting for SDSIO Client to reconnect...")
+            self._handler_tasks.discard(task)
             await self._safe_close(reader, writer)
             # Clean up any streams
             self.manager.clean()
+            if not self._shutting_down:
+                printer.info("Waiting for SDSIO Client to reconnect...")
 
     async def start(self):
         self.server = await asyncio.start_server(self.handle_client, self.ip, self.port)
         addr = self.server.sockets[0].getsockname()
         printer.info(f"Socket server listening on {addr[0]}:{addr[1]}")
-        async with self.server:
-            await self.server.serve_forever()
+        try:
+            # Block until cancelled (start_server already accepts connections)
+            await asyncio.Event().wait()
+        except KeyboardInterrupt:
+            # Python 3.9-3.10: KeyboardInterrupt raised directly (not as CancelledError)
+            pass
+        finally:
+            # Signal handlers that this is a deliberate shutdown
+            self._shutting_down = True
+            # Stop accepting new connections
+            self.server.close()
+            # Cancel active handler tasks so they don't block shutdown
+            for task in list(self._handler_tasks):
+                task.cancel()
+            if self._handler_tasks:
+                done, pending = await asyncio.wait(
+                    list(self._handler_tasks), timeout=2.0
+                )
+                for task in pending:
+                    task.cancel()
 
 async def sdsio_server_socket_run_supervised(ip, port, manager):
     while True:
@@ -749,8 +774,9 @@ class sdsio_server_usb:
         self.vendor_id       = None
         self.product_id      = None
         self._protocol_error = False
+        self._shutdown_event = threading.Event()
 
-    def open(self):
+    async def open(self):
         first_attempt = True
         try:
             usb_dev = None
@@ -766,7 +792,7 @@ class sdsio_server_usb:
                     if first_attempt:
                         printer.info("Waiting for SDSIO Client USB device...")
                         first_attempt = False
-                    time.sleep(0.5)
+                    await asyncio.sleep(0.5)
 
             # remember IDs for reconnect detection
             self.vendor_id  = usb_dev.getVendorID()
@@ -853,11 +879,17 @@ class sdsio_server_usb:
 
     def _on_hotplug(self, context, device, event):
         if event & usb1.HOTPLUG_EVENT_DEVICE_LEFT:
-            printer.info("USB device disconnected.")
+            if not self._protocol_error:
+                printer.info("USB device disconnected.")
             self.running = False
             # wake the coros so they exit promptly
-            self.loop.call_soon_threadsafe(self.in_q.put_nowait,  b'')
-            self.loop.call_soon_threadsafe(self.out_q.put_nowait, b'')
+            try:
+                if self.loop and self.in_q:
+                    self.loop.call_soon_threadsafe(self.in_q.put_nowait,  b'')
+                if self.loop and self.out_q:
+                    self.loop.call_soon_threadsafe(self.out_q.put_nowait, b'')
+            except Exception:
+                pass
 
     def _monitor_loop(self):
         while self.running:
@@ -873,10 +905,18 @@ class sdsio_server_usb:
                 except usb1.USBError:
                     continue
             if not found:
-                printer.info("USB device disconnected.")
+                if not self.running:
+                    break
+                if not self._protocol_error:
+                    printer.info("USB device disconnected.")
                 self.running = False
-                self.loop.call_soon_threadsafe(self.in_q.put_nowait,  b'')
-                self.loop.call_soon_threadsafe(self.out_q.put_nowait, b'')
+                try:
+                    if self.loop and self.in_q:
+                        self.loop.call_soon_threadsafe(self.in_q.put_nowait,  b'')
+                    if self.loop and self.out_q:
+                        self.loop.call_soon_threadsafe(self.out_q.put_nowait, b'')
+                except Exception:
+                    pass
                 break
 
     async def _consumer(self):
@@ -945,8 +985,9 @@ class sdsio_server_usb:
             self.vendor_id       = None
             self.product_id      = None
             self._protocol_error = False
+            self._shutdown_event.clear()
 
-            self.open()
+            await self.open()
 
             # hotplug if possible...
             try:
@@ -999,16 +1040,28 @@ class sdsio_server_usb:
             try:
                 await asyncio.gather(self._consumer(), self._out_sender())
             except asyncio.CancelledError:
-                break
+                # Ctrl+C: clean up and exit the reconnect loop
+                self.mgr.clean()
+                self.close()
+                raise
 
-            # clean up and loop back to reconnect
+            # clean up this connection
             protocol_err = self._protocol_error
             self.mgr.clean()
             self.close()
 
             # On protocol error, wait for device to be physically reset
             if protocol_err:
-                await asyncio.to_thread(self._wait_for_device_reset)
+                try:
+                    self._shutdown_event.clear()
+                    await asyncio.to_thread(self._wait_for_device_reset)
+                except asyncio.CancelledError:
+                    # Ctrl+C during device reset wait
+                    try:
+                        self._shutdown_event.set()
+                    except Exception:
+                        pass
+                    raise
 
     def _wait_for_device_reset(self):
         """Wait for USB device to be removed and reattached."""
@@ -1031,12 +1084,14 @@ class sdsio_server_usb:
             # Wait for device to disappear
             printer.info("Waiting for SDSIO Client USB device to disconnect...")
             while _device_present():
-                time.sleep(0.5)
+                if self._shutdown_event.wait(0.5):
+                    return
 
             # Wait for device to reappear
             printer.info("Waiting for SDSIO Client USB device to reconnect...")
             while not _device_present():
-                time.sleep(0.5)
+                if self._shutdown_event.wait(0.5):
+                    return
         finally:
             try:
                 poll_ctx.close()
@@ -1046,6 +1101,14 @@ class sdsio_server_usb:
     def close(self):
         # Called either by KeyboardInterrupt or by internal errors/disconnects
         self.running = False
+        self._shutdown_event.set()
+
+        # Ensure any asyncio coroutines blocked on the queues are woken
+        try:
+            self.loop.call_soon_threadsafe(self.in_q.put_nowait, b'')
+            self.loop.call_soon_threadsafe(self.out_q.put_nowait, b'')
+        except Exception:
+            pass
 
         for x in self.in_transfers:
             try:
@@ -1081,11 +1144,15 @@ class sdsio_server_usb:
             self.handle.close()
         except:
             pass
+        try:
+            self.ctx.close()
+        except:
+            pass
 
         if self._poll_thread:
-            self._poll_thread.join(timeout=0.2)
+            self._poll_thread.join(timeout=2.0)
         if self._monitor_thread:
-            self._monitor_thread.join(timeout=0.2)
+            self._monitor_thread.join(timeout=2.0)
 
 async def sdsio_server_usb_run_supervised(manager):
     loop = asyncio.get_running_loop()
@@ -1347,22 +1414,8 @@ async def main():
         elif args.server_type == "usb":
             loop = asyncio.get_running_loop()
             srv = sdsio_server_usb(manager, loop, high_priority=args.high_priority)
-
-            try:
-                printer.info("Starting USB Server...")
-                await srv.start()
-
-            except KeyboardInterrupt:
-                # This block runs if a KeyboardInterrupt is raised during srv.start()
-                printer.info("KeyboardInterrupt received, shutting down.")
-
-            finally:
-                # Always attempt to close the USB Server, whether we're here due to Ctrl+C
-                # or because srv.start() returned on its own.
-                printer.info("Closing USB Server...")
-                srv.close()
-                # Give background tasks (consumer, out_sender, monitor) a moment to exit.
-                await asyncio.sleep(0.1)
+            printer.info("Starting USB Server...")
+            await srv.start()
 
     except KeyboardInterrupt:
         pass
@@ -1370,7 +1423,6 @@ async def main():
     finally:
         # Clean up all SDS streams on exit
         manager.clean()
-        printer.info("Server stopped.")
 
 if __name__ == "__main__":
     # minimal printer until main() configures it
@@ -1380,3 +1432,4 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         printer.info("KeyboardInterrupt received, shutting down.")
+    printer.info("Server stopped.")
