@@ -1,0 +1,14 @@
+sds:
+  name: Video Stream - NV16
+  description: NV16 (YUV422 semi-planar, UV) video frames from camera
+  frequency: 30
+  content:
+    - value: Frame
+      type: uint8_t
+      image:
+        pixel_format: NV16
+        width: 1280
+        height: 720
+        planes:
+          - stride_bytes: 1280   # Y
+          - stride_bytes: 1280   # UV
