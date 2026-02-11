@@ -15,9 +15,26 @@
   <releases>
     <release version="2.1.0-dev">
       Active development ...
-
-      SDSIO-Server: Correct USB SDSIO device detection (prevent macOS libusb crash)
-      SDSIO-Client: Correct USB high-speed configuration
+      SDS-Framework:
+      - Improved SDSIO network layer socket startup operation and messaging
+      - Improved application template
+      - Improved documentation
+      - Corrected SDSIO USB layer configuration for high-speed
+      - Fixed an issue where playback would stop after the first few records with SDSIO using USB interface
+      - Fixed an issue where recording could occasionally get stuck with SDSIO using Ethernet interface
+      SDSIO-Server utility:
+      - Improved user interface
+      - Improved behavior in case of communication errors
+      - Improved behavior for connect/disconnect events
+      - Improved handling of Ctrl + C for shutdown
+      - Fixed USB device plug-in detection on macOS
+      - Fixed playback failure when no .sds file exists
+      SDS-Convert utility:
+      - Added support for conversion to MP4 video format
+      - Fixed a failure when converting to WAV audio format
+      SDS-Check utility:
+      - Added option to set the tick_rate
+      - Fixed a failure when only one record exists in an .sds file
     </release>
   </releases>
 
@@ -100,7 +117,7 @@
     </component>
 
     <!-- SDS I/O (Socket) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="Socket" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via Socket">
+    <component Cclass="SDS" Cgroup="IO" Csub="Socket" Capiversion="2.0.0" Cversion="2.0.1" condition="SDS IO via Socket">
       <description>I/O via Socket to SDSIO Server (using component MDK-Packs::IoT Utility:Socket)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -115,7 +132,7 @@
     </component>
 
     <!-- SDS I/O (USB - MDK_USB) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="USB" Cvariant="MDK USB" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via USB - MDK USB">
+    <component Cclass="SDS" Cgroup="IO" Csub="USB" Cvariant="MDK USB" Capiversion="2.0.0" Cversion="2.0.1" condition="SDS IO via USB - MDK USB">
       <description>I/O via USB Virtual COM Port to SDSIO Server (using component Keil::USB:Device:Custom)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -131,7 +148,7 @@
     </component>
 
     <!-- SDS I/O (Serial - CMSIS USART) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="Serial" Cvariant="CMSIS USART" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via Serial Port - CMSIS USART">
+    <component Cclass="SDS" Cgroup="IO" Csub="Serial" Cvariant="CMSIS USART" Capiversion="2.0.0" Cversion="2.0.1" condition="SDS IO via Serial Port - CMSIS USART">
       <description>I/O via Serial Port to SDSIO Server (using component CMSIS Driver:USART)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -147,7 +164,7 @@
     </component>
 
     <!-- SDS I/O (Custom client) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="Custom" Capiversion="2.0.0" Cversion="2.0.0">
+    <component Cclass="SDS" Cgroup="IO" Csub="Custom" Capiversion="2.0.0" Cversion="2.0.1">
       <description>I/O via Custom I/O to SDSIO Server</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
