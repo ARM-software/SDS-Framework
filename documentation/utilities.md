@@ -39,11 +39,11 @@ Perform the following steps to setup the Python environment for using the SDS ut
 - Navigate in the folder SDS/utilities and install the required Python packages with `pip`:
 
 ```bash
->cd %CMSIS_PACK_ROOT%/ARM/SDS/2.0.0/utilities
+>cd %CMSIS_PACK_ROOT%/ARM/SDS/2.1.0/utilities
 >pip install -r requirements.txt
 ```
 
-- Add to the system **Path** environment variable the path to the `%CMSIS_PACK_ROOT%/ARM/SDS/2.0.0/utilities` folder.
+- Add to the system **Path** environment variable the path to the `%CMSIS_PACK_ROOT%/ARM/SDS/2.1.0/utilities` folder.
 
 !!! Notes
     - `%CMSIS_PACK_ROOT%` is just a placeholder for the Pack location on your local PC. The **Path** variable must be extended by the absolute path to the `utilities` folder.
