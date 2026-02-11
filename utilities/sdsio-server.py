@@ -1431,5 +1431,5 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        printer.info("KeyboardInterrupt received, shutting down.")
+        printer.info("Ctrl+C received, shutting down.")
     printer.info("Server stopped.")
