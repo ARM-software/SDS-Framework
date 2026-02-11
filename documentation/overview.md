@@ -32,11 +32,10 @@ In a simulation environment, the **SDS Playback Interface** streams the SDS data
 
 | Board                 | STMicroelectronics B-U585I-IOT02A    | Alif Semiconductor AppKit-E7   | Alif Semiconductor DevKit-E7   |
 |-----------------------|--------------------------------------|--------------------------------|--------------------------------|
-| CPU speed [MHz]       | 160                                  | 400                            | 400                            |
+| CPU speed             | 160 MHz                              | 400 Mhz                        | 400 MHz                        |
 | I/O Interface         | USB Full-speed                       | USB High-speed                 | Ethernet 10/100                |
-| Bandwidth [bytes/sec] | 1.1M                                 | 15M                            | 6M                             |
-| Idle time [%]         | 86                                   | 63                             | 65                             |
-| Internal buffers size | Default                              | Default                        | Default                        |
+| Bandwidth             | 1.1 MB/s                             | 15 MB/s                        | 6 MB/s                         |
+| Idle time             | 86 %                                 | 63 %                           | 65 %                           |
 
 Performance measurements were obtained using the [DataTest](https://arm-software.github.io/SDS-Framework/main/template.html#using-datatest) project, which validates captured data streams on the available board interfaces (Ethernet and USB Bulk).
 SDS data files were verified using the [SDS-Check](https://arm-software.github.io/SDS-Framework/main/utilities.html#sds-check) utility.
