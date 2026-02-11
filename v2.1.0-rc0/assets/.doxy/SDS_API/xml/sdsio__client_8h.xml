@@ -1,0 +1,270 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="sdsio__client_8h" kind="file" language="C++">
+    <compoundname>sdsio_client.h</compoundname>
+    <includes local="no">stdint.h</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>sds/include/sdsio_client.h</label>
+        <link refid="sdsio__client_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structheader__t" prot="public">header_t</innerclass>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="sdsio__client_8h_1a7b369851e01704d1eaab012e24a10feb" prot="public" static="no">
+        <name>SDSIO_CMD_OPEN</name>
+        <initializer>1U</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio_client.h" line="41" column="9" bodyfile="sds/include/sdsio_client.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="sdsio__client_8h_1a63d9e5313c7835b80643cf1082c65655" prot="public" static="no">
+        <name>SDSIO_CMD_CLOSE</name>
+        <initializer>2U</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio_client.h" line="42" column="9" bodyfile="sds/include/sdsio_client.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="sdsio__client_8h_1a4de48b3b2771c6d8cf8dd23762ca88bd" prot="public" static="no">
+        <name>SDSIO_CMD_WRITE</name>
+        <initializer>3U</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio_client.h" line="43" column="9" bodyfile="sds/include/sdsio_client.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="sdsio__client_8h_1a5f590e25db16864b790486529b198d43" prot="public" static="no">
+        <name>SDSIO_CMD_READ</name>
+        <initializer>4U</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio_client.h" line="44" column="9" bodyfile="sds/include/sdsio_client.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="sdsio__client_8h_1ab6cfde472e1f500f95b24a60b1ddfbca" prot="public" static="no">
+        <name>SDSIO_CMD_PING</name>
+        <initializer>5U</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio_client.h" line="45" column="9" bodyfile="sds/include/sdsio_client.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="sdsio__client_8h_1a218439059dfa1e5eeac94eccc105ce78" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioClientInit</definition>
+        <argsstring>(void)</argsstring>
+        <name>sdsioClientInit</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Initialize SDSIO Client and ping SDSIO Server to verify connection. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>SDSIO_OK on success or a negative value on error (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio_client.h" line="55" column="9" declfile="sds/include/sdsio_client.h" declline="55" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="sdsio__client_8h_1a1b2e6dfd8729d1aeeda575f91a029f50" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioClientUninit</definition>
+        <argsstring>(void)</argsstring>
+        <name>sdsioClientUninit</name>
+        <param>
+          <type>void</type>
+        </param>
+        <briefdescription>
+<para>Un-Initialize SDSIO Client. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>SDSIO_OK on success or a negative value on error (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio_client.h" line="63" column="9" declfile="sds/include/sdsio_client.h" declline="63" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="sdsio__client_8h_1a72aa1d3dd10c5df0d5c4a00408a99326" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioClientSend</definition>
+        <argsstring>(const uint8_t *buf, uint32_t buf_size)</argsstring>
+        <name>sdsioClientSend</name>
+        <param>
+          <type>const uint8_t *</type>
+          <declname>buf</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>buf_size</declname>
+        </param>
+        <briefdescription>
+<para>Send data to SDSIO-Server. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to buffer with data to send </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer size in bytes </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of bytes successfully sent or a negative value on error (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio_client.h" line="73" column="9" declfile="sds/include/sdsio_client.h" declline="73" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="sdsio__client_8h_1a5e54bc6d6a2a92b8d395d9d66997473a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t sdsioClientReceive</definition>
+        <argsstring>(uint8_t *buf, uint32_t buf_size)</argsstring>
+        <name>sdsioClientReceive</name>
+        <param>
+          <type>uint8_t *</type>
+          <declname>buf</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>buf_size</declname>
+        </param>
+        <briefdescription>
+<para>Receive data from SDSIO-Server. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="out">buf</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>pointer to buffer for data to read </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">buf_size</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>buffer size in bytes </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>number of bytes successfully received or a negative value on error (see <ref refid="group__SDS__IO__Return__Codes" kindref="compound">Function Return Codes</ref>) </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sdsio_client.h" line="83" column="9" declfile="sds/include/sdsio_client.h" declline="83" declcolumn="9"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>2025<sp/>Arm<sp/>Limited.<sp/>All<sp/>rights<sp/>reserved.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>SPDX-License-Identifier:<sp/>Apache-2.0</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the<sp/>License);<sp/>you<sp/>may</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance<sp/>with<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/>www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,<sp/>software</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an<sp/>AS<sp/>IS<sp/>BASIS,<sp/>WITHOUT</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>See<sp/>the<sp/>License<sp/>for<sp/>the<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>limitations<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>SDSIO_CLIENT_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDSIO_CLIENT_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"><sp/></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stdint.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SDSIO<sp/>Client<sp/>works<sp/>in<sp/>a<sp/>pair<sp/>with<sp/>SDSIO<sp/>Server.<sp/>Communication<sp/>protocol<sp/>is<sp/>documented<sp/>in<sp/>the<sp/>following<sp/>link:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment">//<sp/>https://arm-software.github.io/SDS-Framework/main/theory/#sdsio-server-protocol</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/></highlight><highlight class="comment">//<sp/>SDSIO<sp/>header</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33" refid="structheader__t" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"><sp/><sp/>uint32_t<sp/>command;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"><sp/><sp/>uint32_t<sp/>sdsio_id;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"><sp/><sp/>uint32_t<sp/>argument;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/><sp/>uint32_t<sp/>data_size;</highlight></codeline>
+<codeline lineno="38"><highlight class="normal">}<sp/><ref refid="structheader__t" kindref="compound">header_t</ref>;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SDSIO<sp/>Server<sp/>Command<sp/>IDs</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDSIO_CMD_OPEN<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1U</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDSIO_CMD_CLOSE<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>2U</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDSIO_CMD_WRITE<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>3U</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDSIO_CMD_READ<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>4U</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDSIO_CMD_PING<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>5U</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Function<sp/>prototypes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal">int32_t<sp/>sdsioClientInit<sp/>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal">int32_t<sp/>sdsioClientUninit<sp/>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="73"><highlight class="normal">int32_t<sp/>sdsioClientSend<sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>uint8_t<sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83"><highlight class="normal">int32_t<sp/>sdsioClientReceive<sp/>(uint8_t<sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">/*<sp/>SDSIO_CLIENT_H<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
+    </programlisting>
+    <location file="sds/include/sdsio_client.h"/>
+  </compounddef>
+</doxygen>
