@@ -739,6 +739,8 @@ def main():
         args.in_file = [args.in_file]
     if not isinstance(args.out_file, list):
         args.out_file = [args.out_file]
+    if args.yaml is not None and not isinstance(args.yaml, list):
+        args.yaml = [args.yaml]
 
     # Determine conversion direction
     if 'sds' in in_extension:
