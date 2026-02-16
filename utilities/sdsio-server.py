@@ -864,14 +864,26 @@ class sdsio_server_usb:
                 pass
 
     def _on_in_complete(self, xfer: usb1.USBTransfer):
-        if xfer.getStatus() == usb1.TRANSFER_COMPLETED:
+        status = xfer.getStatus()
+        if status == usb1.TRANSFER_COMPLETED:
             data = bytes(xfer.getBuffer()[:xfer.getActualLength()])
             self.loop.call_soon_threadsafe(self.in_q.put_nowait, data)
         if self.running:
             try:
                 xfer.submit()
-            except usb1.USBError:
-                pass
+            except usb1.USBError as e:
+                # Track dead transfers; if all IN transfers fail, trigger reconnect
+                if not hasattr(self, '_dead_in_xfers'):
+                    self._dead_in_xfers = set()
+                self._dead_in_xfers.add(id(xfer))
+                if len(self._dead_in_xfers) >= len(self.in_transfers):
+                    printer.warning("USB device disconnected or reset detected. Reconnecting...")
+                    self.running = False
+                    try:
+                        self.loop.call_soon_threadsafe(self.in_q.put_nowait,  b'')
+                        self.loop.call_soon_threadsafe(self.out_q.put_nowait, b'')
+                    except Exception:
+                        pass
 
     def _on_out_complete(self, xfer: usb1.USBTransfer):
         self.out_in_flight.discard(xfer)
@@ -985,6 +997,7 @@ class sdsio_server_usb:
             self.vendor_id       = None
             self.product_id      = None
             self._protocol_error = False
+            self._dead_in_xfers  = set()
             self._shutdown_event.clear()
 
             await self.open()
