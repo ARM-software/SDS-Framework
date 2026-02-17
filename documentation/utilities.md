@@ -56,6 +56,13 @@ Perform the following steps to setup the Python environment for using the SDS ut
 !!! Tip
     - When the **Path** environment variable is configured, you may simply start the utilities by using its name. For example entering `>sdsio-server` starts the utility.
 
+### MacOS
+  - On macOS, the **libusb** system library is required. If not already installed, you can install it using with [Homebrew](https://brew.sh/):
+
+```bash
+>brew install libusb
+```
+
 ## SDSIO-Server
 
 The Python utility [**SDSIO-Server**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer), or serial (UART) connection.
@@ -181,7 +188,7 @@ The Python utility [**SDS-View**](https://github.com/ARM-software/SDS-Framework/
 
 The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description. All plots form a single recording will be displayed on the same figure (shared vertical scale).
 
-If there are 3 values described in the metadata file, an optional 3D view may be displayed.  
+If there are 3 values described in the metadata file, an optional 3D view may be displayed.
 
 ### Limitations
 
@@ -223,7 +230,7 @@ python sds-view.py -y test/Gyroscope.sds.yml -s test/Gyroscope.0.sds
 
 ## SDS-Convert
 
-The Python utility [**SDS-Convert**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) converts SDS data files to selected format based on description in metadata (YAML) files.  
+The Python utility [**SDS-Convert**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) converts SDS data files to selected format based on description in metadata (YAML) files.
 
 ### Usage
 
@@ -502,7 +509,7 @@ python sds-convert.py video -i Camera.0.sds -o Camera.0.mp4 -y Camera.sds.yml
 
 ## SDS-Check
 
-The Python utility [**SDS-Check**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) checks SDS data files for correctness and consistency.  
+The Python utility [**SDS-Check**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) checks SDS data files for correctness and consistency.
 
 The following checks are performed:
 
@@ -596,7 +603,7 @@ Error: Timestamp not in ascending order in record 23.
 ### Jitter check
 
 This check processes the SDS data records and searches for the maximum deviation of the recorded
-timestamps from the expected ones. If a deviation is found, the maximum deviation is 
+timestamps from the expected ones. If a deviation is found, the maximum deviation is
 evaluated as **jitter** and, together with the record number, is printed in the summary report.
 
 ```txt
