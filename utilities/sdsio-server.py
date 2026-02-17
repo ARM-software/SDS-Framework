@@ -775,6 +775,7 @@ class sdsio_server_usb:
         self.product_id      = None
         self._protocol_error = False
         self._shutdown_event = threading.Event()
+        self._disconnect_lock = threading.Lock()
 
     async def open(self):
         first_attempt = True
@@ -824,8 +825,7 @@ class sdsio_server_usb:
             if not (self.in_ep and self.out_ep):
                 raise RuntimeError("Bulk endpoints not found.")
 
-        except KeyboardInterrupt:
-            # let CTRL+C propagate if it happens here
+        except asyncio.CancelledError:
             raise
 
     def _tune_current_thread(self):
@@ -863,15 +863,35 @@ class sdsio_server_usb:
             except usb1.USBErrorInterrupted:
                 pass
 
+    def _signal_disconnect(self):
+        """Thread-safe: stop session and wake coroutines.
+
+        Does NOT print any message — the caller in start() determines
+        whether the device is truly gone after gather() exits.
+        """
+        with self._disconnect_lock:
+            if not self.running:
+                return                          # already handled
+            self.running = False
+        try:
+            self.loop.call_soon_threadsafe(self.in_q.put_nowait,  b'')
+            self.loop.call_soon_threadsafe(self.out_q.put_nowait, b'')
+        except Exception:
+            pass
+
     def _on_in_complete(self, xfer: usb1.USBTransfer):
-        if xfer.getStatus() == usb1.TRANSFER_COMPLETED:
+        status = xfer.getStatus()
+        if status == usb1.TRANSFER_COMPLETED:
             data = bytes(xfer.getBuffer()[:xfer.getActualLength()])
             self.loop.call_soon_threadsafe(self.in_q.put_nowait, data)
         if self.running:
             try:
                 xfer.submit()
-            except usb1.USBError:
-                pass
+            except usb1.USBError as e:
+                # Track dead transfers; if all IN transfers fail, trigger reconnect
+                self._dead_in_xfers.add(id(xfer))
+                if len(self._dead_in_xfers) >= len(self.in_transfers):
+                    self._signal_disconnect()
 
     def _on_out_complete(self, xfer: usb1.USBTransfer):
         self.out_in_flight.discard(xfer)
@@ -879,45 +899,36 @@ class sdsio_server_usb:
 
     def _on_hotplug(self, context, device, event):
         if event & usb1.HOTPLUG_EVENT_DEVICE_LEFT:
-            if not self._protocol_error:
-                printer.info("USB device disconnected.")
-            self.running = False
-            # wake the coros so they exit promptly
-            try:
-                if self.loop and self.in_q:
-                    self.loop.call_soon_threadsafe(self.in_q.put_nowait,  b'')
-                if self.loop and self.out_q:
-                    self.loop.call_soon_threadsafe(self.out_q.put_nowait, b'')
-            except Exception:
-                pass
+            self._signal_disconnect()
 
     def _monitor_loop(self):
-        while self.running:
-            time.sleep(0.5)
-            # printer.debug("Check device.")
-            found = False
-            for dev in self.ctx.getDeviceList(skip_on_error=True):
-                try:
-                    if (dev.getVendorID()  == self.vendor_id and
-                        dev.getProductID() == self.product_id):
-                        found = True
+        miss_count = 0
+        MISS_THRESHOLD = 3          # require 3 consecutive misses (~1.5 s)
+        poll_ctx = usb1.USBContext()
+        try:
+            while self.running:
+                time.sleep(0.5)
+                found = False
+                for dev in poll_ctx.getDeviceList(skip_on_error=True):
+                    try:
+                        if (dev.getVendorID()  == self.vendor_id and
+                            dev.getProductID() == self.product_id):
+                            found = True
+                            break
+                    except usb1.USBError:
+                        continue
+                if found:
+                    miss_count = 0
+                else:
+                    miss_count += 1
+                    if miss_count >= MISS_THRESHOLD:
+                        self._signal_disconnect()
                         break
-                except usb1.USBError:
-                    continue
-            if not found:
-                if not self.running:
-                    break
-                if not self._protocol_error:
-                    printer.info("USB device disconnected.")
-                self.running = False
-                try:
-                    if self.loop and self.in_q:
-                        self.loop.call_soon_threadsafe(self.in_q.put_nowait,  b'')
-                    if self.loop and self.out_q:
-                        self.loop.call_soon_threadsafe(self.out_q.put_nowait, b'')
-                except Exception:
-                    pass
-                break
+        finally:
+            try:
+                poll_ctx.close()
+            except Exception:
+                pass
 
     async def _consumer(self):
         while self.running:
@@ -968,6 +979,7 @@ class sdsio_server_usb:
                 self.out_q.task_done()
 
     async def start(self):
+        _silent_reconnect = False
         while True:
             self.ctx = usb1.USBContext()
             self.handle          = None
@@ -985,9 +997,18 @@ class sdsio_server_usb:
             self.vendor_id       = None
             self.product_id      = None
             self._protocol_error = False
+            self._dead_in_xfers  = set()
             self._shutdown_event.clear()
 
-            await self.open()
+            try:
+                await self.open()
+            except asyncio.CancelledError:
+                # Ctrl+C while waiting for device — close USB context to avoid leak
+                try:
+                    self.ctx.close()
+                except Exception:
+                    pass
+                raise
 
             # hotplug if possible...
             try:
@@ -1028,7 +1049,11 @@ class sdsio_server_usb:
 
             # Mark server active in the normal path too (hotplug working)
             self.running = True
-            printer.info(f"SDSIO Client USB device connected.")
+            if not _silent_reconnect:
+                printer.info(f"SDSIO Client USB device connected.")
+            else:
+                printer.debug("USB session re-established.")
+                _silent_reconnect = False
 
             # start polling thread
             self._poll_thread = threading.Thread(
@@ -1049,6 +1074,33 @@ class sdsio_server_usb:
             protocol_err = self._protocol_error
             self.mgr.clean()
             self.close()
+
+            # Determine whether the device is truly gone (using a fresh context
+            # so we don't rely on the now-closed self.ctx).
+            if not protocol_err:
+                check_ctx = usb1.USBContext()
+                try:
+                    device_present = any(
+                        dev for dev in check_ctx.getDeviceList(skip_on_error=True)
+                        if (dev.getVendorID()  == self.vendor_id and
+                            dev.getProductID() == self.product_id)
+                    )
+                except Exception:
+                    device_present = False
+                finally:
+                    try:
+                        check_ctx.close()
+                    except Exception:
+                        pass
+
+                if device_present:
+                    # Transient USB failure — device is still plugged in.
+                    # Loop back and silently reconnect.
+                    printer.debug("USB transfers interrupted; reconnecting...")
+                    _silent_reconnect = True
+                    continue
+                else:
+                    printer.info("USB device disconnected.")
 
             # On protocol error, wait for device to be physically reset
             if protocol_err:
