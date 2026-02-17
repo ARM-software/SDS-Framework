@@ -65,6 +65,8 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#windows">Windows</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#macos">MacOS</a>
+    </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#sdsio-server">SDSIO-Server</a>
@@ -221,6 +223,12 @@
 <li>When the <strong>Path</strong> environment variable is configured, you may simply start the utilities by using its name. For example entering <code>&gt;sdsio-server</code> starts the utility.</li>
 </ul>
 </div>
+<h3 id="macos">MacOS</h3>
+<ul>
+<li>On macOS, the <strong>libusb</strong> system library is required. If not already installed, you can install it using with <a href="https://brew.sh/">Homebrew</a>:</li>
+</ul>
+<pre><code class="language-bash">&gt;brew install libusb
+</code></pre>
 <h2 id="sdsio-server">SDSIO-Server</h2>
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDSIO-Server</strong></a> enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer), or serial (UART) connection.
 It communicates with the target using these <a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client">SDSIO Client interfaces</a>:</p>
@@ -326,7 +334,7 @@ optional:
 <h2 id="sds-view">SDS-View</h2>
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-View</strong></a> outputs a time-based plot of SDS data files (<code>&lt;name&gt;.&lt;index&gt;.sds</code>) based on the meta-data file (<code>&lt;name&gt;.sds.yml</code>).</p>
 <p>The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description. All plots form a single recording will be displayed on the same figure (shared vertical scale).</p>
-<p>If there are 3 values described in the metadata file, an optional 3D view may be displayed.  </p>
+<p>If there are 3 values described in the metadata file, an optional 3D view may be displayed.</p>
 <h3 id="limitations">Limitations</h3>
 <ul>
 <li>Data in recording must all be of the same type (float, uint32_t, uint16_t, ...)</li>
@@ -359,7 +367,7 @@ optional:
 <p><strong>Example display:</strong></p>
 <p><img alt="Example output" src="images/SDS-View.png" /></p>
 <h2 id="sds-convert">SDS-Convert</h2>
-<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-Convert</strong></a> converts SDS data files to selected format based on description in metadata (YAML) files.  </p>
+<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-Convert</strong></a> converts SDS data files to selected format based on description in metadata (YAML) files.</p>
 <h3 id="usage_2">Usage</h3>
 <ul>
 <li><a href="#setup">Setup</a> the Python environment.</li>
@@ -596,7 +604,7 @@ required:
 <pre><code class="language-bash">python sds-convert.py video -i Camera.0.sds -o Camera.0.mp4 -y Camera.sds.yml
 </code></pre>
 <h2 id="sds-check">SDS-Check</h2>
-<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-Check</strong></a> checks SDS data files for correctness and consistency.  </p>
+<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-Check</strong></a> checks SDS data files for correctness and consistency.</p>
 <p>The following checks are performed:</p>
 <ul>
 <li><a href="#size-consistency-check">Size consistency check</a>: The data size of all records should match the size of the SDS file.</li>
@@ -674,7 +682,7 @@ data record is lower than the current one, this error is printed:</p>
 </code></pre>
 <h3 id="jitter-check">Jitter check</h3>
 <p>This check processes the SDS data records and searches for the maximum deviation of the recorded
-timestamps from the expected ones. If a deviation is found, the maximum deviation is 
+timestamps from the expected ones. If a deviation is found, the maximum deviation is
 evaluated as <strong>jitter</strong> and, together with the record number, is printed in the summary report.</p>
 <pre><code class="language-txt">File Name         : Gyroscope.0.sds
 File Size         : 153.334 bytes
