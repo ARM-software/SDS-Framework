@@ -32,7 +32,10 @@
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
           <a href="index.html" class="icon icon-home"> SDS-Framework
-        </a><div role="search">
+        </a>
+        <div class="version">
+          2.1.0
+        </div><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
   </form>
@@ -59,8 +62,6 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">Utilities</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#windows">Windows</a>
@@ -165,30 +166,19 @@
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD024 -->
 
-<p>The SDS-Framework includes the following utilities that are implemented in Python.</p>
+<p>The SDS-Framework pack includes in the folder <code>/utilities</code> several utilities that are implemented in Python.
+Install <strong>Python 3.9</strong> or later and packages listed in file <code>/utilities/requirements.txt</code> to run these utilities:</p>
 <ul>
 <li><a href="#sdsio-server"><strong>SDSIO-Server:</strong></a> enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer) or serial (UART) connection.</li>
 <li><a href="#sds-view"><strong>SDS-View:</strong></a> graphical data viewer for SDS data files.</li>
 <li><a href="#sds-convert"><strong>SDS-Convert:</strong></a> convert SDS data files into CSV, Qeexo V2 CSV, or WAV format.</li>
 <li><a href="#sds-check"><strong>SDS-Check:</strong></a> check SDS data files for correctness and consistency.</li>
 </ul>
-<h2 id="requirements">Requirements</h2>
-<ul>
-<li><strong>Python 3.9</strong> or later with packages:</li>
-<li>ifaddr</li>
-<li>matplotlib</li>
-<li>numpy</li>
-<li>opencv-python</li>
-<li>pandas</li>
-<li>pyyaml</li>
-<li>pyserial</li>
-<li>libusb1</li>
-</ul>
 <h2 id="setup">Setup</h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>These utilities are located in the SDS-Framework pack installation folder, subfolder <code>/utilities</code>. Replace <code>2.0.0</code> with the version number of your SDS pack installation.</li>
+<li>The example below uses version 2.1.0 of the SDS pack. Adapt the version to match the installed SDS pack on your computer.</li>
 </ul>
 </div>
 <p>Perform the following steps to setup the Python environment for using the SDS utilities.</p>
@@ -198,7 +188,7 @@
 <pre><code class="language-bash">&gt;python --version
 </code></pre>
 <ul>
-<li>Navigate in the folder SDS/utilities and install the required Python packages with <code>pip</code>:</li>
+<li>Navigate in the folder SDS/\&lt;version&gt;/utilities and install the required Python packages with <code>pip</code>:</li>
 </ul>
 <pre><code class="language-bash">&gt;cd %CMSIS_PACK_ROOT%/ARM/SDS/2.1.0/utilities
 &gt;pip install -r requirements.txt
@@ -603,6 +593,8 @@ required:
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">python sds-convert.py video -i Camera.0.sds -o Camera.0.mp4 -y Camera.sds.yml
 </code></pre>
+<p>!!! Note: 
+    - Refer to <a href="theory.html#image-metadata-format">Theory of Operation - Image Metadata Format</a> for more information about the supported video formats.</p>
 <h2 id="sds-check">SDS-Check</h2>
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-Check</strong></a> checks SDS data files for correctness and consistency.</p>
 <p>The following checks are performed:</p>

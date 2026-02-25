@@ -29,7 +29,10 @@
 <div class="wy-side-scroll">
 <div class="wy-side-nav-search">
 <a class="icon icon-home" href="index.html"> SDS-Framework
-        </a><div role="search">
+        </a>
+<div class="version">
+          2.1.0
+        </div><div role="search">
 <form action="./search.html" class="wy-form" id="rtd-search-form" method="get">
 <input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
 </form>
@@ -70,6 +73,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#file-format">File Format</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#yaml-metadata-format">YAML Metadata Format</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#image-metadata-format">Image Metadata Format</a>
+</li>
+</ul>
 </li>
 </ul>
 </li>
@@ -197,18 +204,18 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <li><strong>binary data</strong>: SDS stream (little endian, no padding) as described with the <code>*.sds.yml</code> file.</li>
 </ol>
 <h3 id="yaml-metadata-format">YAML Metadata Format</h3>
-<p>The content of each data stream may be described in a <a href="https://en.wikipedia.org/wiki/YAML">YAML</a> metadata file that is created by the user. The following section defines the YAML format of this metadata file. The file <code>sds.schema.json</code> is a schema description of the SDS Format Description.</p>
+<p>The content of each data stream may be described in a <a href="https://en.wikipedia.org/wiki/YAML">YAML</a> metadata file that is created by the user. The following section defines the YAML format of this metadata file. The file <code>schema/sds.schema.json</code> is a schema description of the SDS Format Description.</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;"><code>sds:</code></th>
-<th>Start of the SDS Format Description</th>
+<th>Start of the SDS format description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">    <code>name:</code></td>
-<td>Name of the Synchronous Data Stream (SDS)</td>
+<td>Name of the Synchronous Data Stream (required)</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>description:</code></td>
@@ -216,15 +223,15 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 </tr>
 <tr>
 <td style="text-align: left;">    <code>frequency:</code></td>
-<td>Capture frequency of the SDS</td>
+<td>Capture frequency of the SDS (required)</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>tick-frequency:</code></td>
-<td>Tick frequency of the timestamp value (optional); default: 1000 for 1 millisecond interval</td>
+<td>Tick frequency of the timestamp value (optional); default: 1000</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>content:</code></td>
-<td>List of values captured (see below)</td>
+<td>List of values captured (required, see below)</td>
 </tr>
 </tbody>
 </table>
@@ -238,11 +245,11 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <tbody>
 <tr>
 <td style="text-align: left;"><code>- value:</code></td>
-<td>Name of the value</td>
+<td>Name of the value (required)</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>type:</code></td>
-<td>Data type of the value</td>
+<td>Data type of the value (required)</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>offset:</code></td>
@@ -254,10 +261,59 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 </tr>
 <tr>
 <td style="text-align: left;">    <code>unit:</code></td>
-<td>Physical unit of the value (optional); default: no units</td>
+<td>Physical unit of the value (optional)</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>image:</code></td>
+<td>Image stream metadata (optional, see below)</td>
 </tr>
 </tbody>
 </table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>image:</code></th>
+<th><a href="#image-metadata-format">Image metadata</a> for one <code>content</code> entry</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">    <code>pixel_format:</code></td>
+<td>Pixel format identifier (required)</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>width:</code></td>
+<td>Number of pixels per row (required, integer &gt;= 1)</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>height:</code></td>
+<td>Number of rows (required, integer &gt;= 1)</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>stride_bytes:</code></td>
+<td>Bytes per row for single-plane formats (optional)</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>planes:</code></td>
+<td>Per-plane stride for multi-plane formats (optional, 2..3 entries)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>planes:</code></th>
+<th>Per-plane metadata entry</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- stride_bytes:</code></td>
+<td>Bytes per row for this plane (required, integer &gt;= 1)</td>
+</tr>
+</tbody>
+</table>
+<p>For <code>image</code>, exactly one of <code>stride_bytes</code> or <code>planes</code> must be provided.</p>
 <p><strong>Example</strong></p>
 <p>This example defines a data stream with the name "sensorX" that contains the values of a gyroscope, temperature sensor, and additional raw data (that are not further described).</p>
 <p><img alt="image" src="images/SDS-Metainfo.png"/></p>
@@ -290,6 +346,91 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
   - value: flag
     type: uint32_t:1   # a single bit stored in a 32-bit int
 </code></pre>
+<h4 id="image-metadata-format">Image Metadata Format</h4>
+<p>The <code>pixel_format</code> values listed in <code>sds.schema.json</code> map to the following template files located in the folder <code>schema\image_format</code> and Linux V4L2 references:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>pixel_format:</code></th>
+<th style="text-align: left;">Template file</th>
+<th style="text-align: left;">V4L2 reference page</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>RAW8</code></td>
+<td style="text-align: left;"><code>RAW8.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-luma.html">Luma-Only formats</a> <em>(GREY family)</em></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>RAW10</code></td>
+<td style="text-align: left;"><code>RAW10.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-srggb10.html">10-bit Bayer (expanded to 16-bit)</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>RGB565</code></td>
+<td style="text-align: left;"><code>RGB565.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-rgb.html">RGB formats</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>RGB888</code></td>
+<td style="text-align: left;"><code>RGB888.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-rgb.html">RGB formats</a> <em>(RGB24)</em></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>NV12</code></td>
+<td style="text-align: left;"><code>NV12.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html">Planar YUV formats</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>NV21</code></td>
+<td style="text-align: left;"><code>NV21.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html">Planar YUV formats</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>I420</code></td>
+<td style="text-align: left;"><code>I420.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html">Planar YUV formats</a> <em>(YUV420 / YU12 family)</em></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>NV16</code></td>
+<td style="text-align: left;"><code>NV16.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html">Planar YUV formats</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>NV61</code></td>
+<td style="text-align: left;"><code>NV61.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html">Planar YUV formats</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>YUYV</code></td>
+<td style="text-align: left;"><code>YUYV.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-packed-yuv.html">Packed YUV formats</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>UYVY</code></td>
+<td style="text-align: left;"><code>UYVY.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-packed-yuv.html">Packed YUV formats</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>YUV422P</code></td>
+<td style="text-align: left;"><code>YUV422P.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html">Planar YUV formats</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>YUV444</code></td>
+<td style="text-align: left;"><code>YUV444.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-packed-yuv.html">Packed YUV formats</a> <em>(packed 4:4:4)</em></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>YUV444P</code></td>
+<td style="text-align: left;"><code>YUV444P.sds.yml</code></td>
+<td style="text-align: left;"><a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html">Planar YUV formats</a> <em>(YUV444M family)</em></td>
+</tr>
+</tbody>
+</table>
+<p>!!! Note:
+    - When RAW10 is packed (4 pixels in 5 bytes), use <a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-srggb10p.html">10-bit packed Bayer formats</a>.</p>
 <h2 id="code-example">Code Example</h2>
 <p>The following code snippets show the usage of the <strong>Recorder Interface</strong>. In this case an accelerometer data stream is recorded.</p>
 <pre><code class="language-c">#include "sds_rec_play.h"
