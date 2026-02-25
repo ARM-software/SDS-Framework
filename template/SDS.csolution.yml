@@ -13,12 +13,10 @@ solution:
   # Refer to https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/ for more information
 
   packs:
-    - pack: ARM::SDS          # search SDS pack for layers
+    - pack: ARM::SDS # search SDS pack for layers
 
   # List different hardware targets that are used to deploy the solution.
   target-types:
-    - type: ${Name}
-
     - type: AVH-SSE-300 # simulator target
       board: ARM::V2M-MPS3-SSE-300-FVP
       device: ARM::SSE-300-MPS3
@@ -65,3 +63,4 @@ solution:
       not-for-context:
         - .DebugRec+AVH-SSE-300
         - .ReleaseRec+AVH-SSE-300
+  compiler: AC6

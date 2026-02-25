@@ -1,4 +1,6 @@
 site_name: SDS-Framework
+extra:
+  version: 2.1.0
 repo_url: https://github.com/ARM-software/SDS-Framework
 edit_uri: ./edit/main/documentation
 nav:

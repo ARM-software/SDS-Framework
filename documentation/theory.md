@@ -53,6 +53,7 @@ Each data stream is stored in a separate SDS data file. In the diagram below `SC
 - Each call to the function `sdsPlayRead` reads one data block.
 
 ### Filenames
+
 SDS data files use the naming format `<name>.<file-index>.sds`. `<name>` is the base name specified by the user, and `<file-index>` is a sequential number that starts at 0.
 
 **Recording (sdsRecOpen):**
@@ -107,23 +108,38 @@ The binary data format (stored in `*.<n>.sds` data files) has a record structure
 
 ### YAML Metadata Format
 
-The content of each data stream may be described in a [YAML](https://en.wikipedia.org/wiki/YAML) metadata file that is created by the user. The following section defines the YAML format of this metadata file. The file `sds.schema.json` is a schema description of the SDS Format Description.
+The content of each data stream may be described in a [YAML](https://en.wikipedia.org/wiki/YAML) metadata file that is created by the user. The following section defines the YAML format of this metadata file. The file `schema/sds.schema.json` is a schema description of the SDS Format Description.
 
-`sds:`                               | Start of the SDS Format Description
+`sds:`                               | Start of the SDS format description
 :------------------------------------|---------------------------------------------------
-&nbsp;&nbsp;&nbsp; `name:`           | Name of the Synchronous Data Stream (SDS)
+&nbsp;&nbsp;&nbsp; `name:`           | Name of the Synchronous Data Stream (required)
 &nbsp;&nbsp;&nbsp; `description:`    | Additional descriptive text (optional)
-&nbsp;&nbsp;&nbsp; `frequency:`      | Capture frequency of the SDS
-&nbsp;&nbsp;&nbsp; `tick-frequency:` | Tick frequency of the timestamp value (optional); default: 1000 for 1 millisecond interval
-&nbsp;&nbsp;&nbsp; `content:`        | List of values captured (see below)
+&nbsp;&nbsp;&nbsp; `frequency:`      | Capture frequency of the SDS (required)
+&nbsp;&nbsp;&nbsp; `tick-frequency:` | Tick frequency of the timestamp value (optional); default: 1000
+&nbsp;&nbsp;&nbsp; `content:`        | List of values captured (required, see below)
 
 `content:`                           | List of values captured (in the order of the data file)
 :------------------------------------|---------------------------------------------------
-`- value:`                           | Name of the value
-&nbsp;&nbsp;&nbsp; `type:`           | Data type of the value
+`- value:`                           | Name of the value (required)
+&nbsp;&nbsp;&nbsp; `type:`           | Data type of the value (required)
 &nbsp;&nbsp;&nbsp; `offset:`         | Offset of the value (optional); default: 0
 &nbsp;&nbsp;&nbsp; `scale:`          | Scale factor of the value (optional); default: 1.0
-&nbsp;&nbsp;&nbsp; `unit:`           | Physical unit of the value (optional); default: no units
+&nbsp;&nbsp;&nbsp; `unit:`           | Physical unit of the value (optional)
+&nbsp;&nbsp;&nbsp; `image:`          | Image stream metadata (optional, see below)
+
+`image:`                             | [Image metadata](#image-metadata-format) for one `content` entry
+:------------------------------------|---------------------------------------------------
+&nbsp;&nbsp;&nbsp; `pixel_format:`   | Pixel format identifier (required)
+&nbsp;&nbsp;&nbsp; `width:`          | Number of pixels per row (required, integer >= 1)
+&nbsp;&nbsp;&nbsp; `height:`         | Number of rows (required, integer >= 1)
+&nbsp;&nbsp;&nbsp; `stride_bytes:`   | Bytes per row for single-plane formats (optional)
+&nbsp;&nbsp;&nbsp; `planes:`         | Per-plane stride for multi-plane formats (optional, 2..3 entries)
+
+`planes:`                            | Per-plane metadata entry
+:------------------------------------|---------------------------------------------------
+`- stride_bytes:`                    | Bytes per row for this plane (required, integer >= 1)
+
+For `image`, exactly one of `stride_bytes` or `planes` must be provided.
 
 **Example**
 
@@ -165,6 +181,30 @@ sds:                   # describes a synchronous data stream
   - value: flag
     type: uint32_t:1   # a single bit stored in a 32-bit int
 ```
+
+#### Image Metadata Format
+
+The `pixel_format` values listed in `sds.schema.json` map to the following template files located in the folder `schema\image_format` and Linux V4L2 references:
+
+`pixel_format:` | Template file | V4L2 reference page
+:---------------------|:--------------|:------------------
+`RAW8` | `RAW8.sds.yml` | [Luma-Only formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-luma.html) *(GREY family)*
+`RAW10` | `RAW10.sds.yml` | [10-bit Bayer (expanded to 16-bit)](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-srggb10.html)
+`RGB565` | `RGB565.sds.yml` | [RGB formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-rgb.html)
+`RGB888` | `RGB888.sds.yml` | [RGB formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-rgb.html) *(RGB24)*
+`NV12` | `NV12.sds.yml` | [Planar YUV formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html)
+`NV21` | `NV21.sds.yml` | [Planar YUV formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html)
+`I420` | `I420.sds.yml` | [Planar YUV formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html) *(YUV420 / YU12 family)*
+`NV16` | `NV16.sds.yml` | [Planar YUV formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html)
+`NV61` | `NV61.sds.yml` | [Planar YUV formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html)
+`YUYV` | `YUYV.sds.yml` | [Packed YUV formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-packed-yuv.html)
+`UYVY` | `UYVY.sds.yml` | [Packed YUV formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-packed-yuv.html)
+`YUV422P` | `YUV422P.sds.yml` | [Planar YUV formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html)
+`YUV444` | `YUV444.sds.yml` | [Packed YUV formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-packed-yuv.html) *(packed 4:4:4)*
+`YUV444P` | `YUV444P.sds.yml` | [Planar YUV formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html) *(YUV444M family)*
+
+!!! Note:
+    - When RAW10 is packed (4 pixels in 5 bytes), use [10-bit packed Bayer formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-srggb10p.html).
 
 ## Code Example
 
