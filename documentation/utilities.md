@@ -4,29 +4,18 @@
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD024 -->
 
-The SDS-Framework includes the following utilities that are implemented in Python.
+The SDS-Framework pack includes in the folder `/utilities` several utilities that are implemented in Python.
+Install **Python 3.9** or later and packages listed in file `/utilities/requirements.txt` to run these utilities:
 
 - [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer) or serial (UART) connection.
 - [**SDS-View:**](#sds-view) graphical data viewer for SDS data files.
 - [**SDS-Convert:**](#sds-convert) convert SDS data files into CSV, Qeexo V2 CSV, or WAV format.
 - [**SDS-Check:**](#sds-check) check SDS data files for correctness and consistency.
 
-## Requirements
-
-- **Python 3.9** or later with packages:
-  - ifaddr
-  - matplotlib
-  - numpy
-  - opencv-python
-  - pandas
-  - pyyaml
-  - pyserial
-  - libusb1
-
 ## Setup
 
 !!! Note
-    - These utilities are located in the SDS-Framework pack installation folder, subfolder `/utilities`. Replace `2.0.0` with the version number of your SDS pack installation.
+    - The example below uses version 2.1.0 of the SDS pack. Adapt the version to match the installed SDS pack on your computer.
 
 Perform the following steps to setup the Python environment for using the SDS utilities.
 
@@ -36,7 +25,7 @@ Perform the following steps to setup the Python environment for using the SDS ut
 >python --version
 ```
 
-- Navigate in the folder SDS/utilities and install the required Python packages with `pip`:
+- Navigate in the folder SDS/\<version\>/utilities and install the required Python packages with `pip`:
 
 ```bash
 >cd %CMSIS_PACK_ROOT%/ARM/SDS/2.1.0/utilities
@@ -57,7 +46,8 @@ Perform the following steps to setup the Python environment for using the SDS ut
     - When the **Path** environment variable is configured, you may simply start the utilities by using its name. For example entering `>sdsio-server` starts the utility.
 
 ### MacOS
-  - On macOS, the **libusb** system library is required. If not already installed, you can install it using with [Homebrew](https://brew.sh/):
+
+- On macOS, the **libusb** system library is required. If not already installed, you can install it using with [Homebrew](https://brew.sh/):
 
 ```bash
 >brew install libusb
@@ -506,6 +496,9 @@ sds:
 ```bash
 python sds-convert.py video -i Camera.0.sds -o Camera.0.mp4 -y Camera.sds.yml
 ```
+
+!!! Note: 
+    - Refer to [Theory of Operation - Image Metadata Format](theory.md#image-metadata-format) for more information about the supported video formats.
 
 ## SDS-Check
 

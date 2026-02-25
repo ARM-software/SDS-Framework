@@ -7,13 +7,11 @@
 
 The **Synchronous Data Stream (SDS) Framework** implements a data stream management, provides methods and helper tools for developing and optimizing embedded applications that integrate DSP and ML algorithms. This framework may be used stand-alone, but also in combination with [**CMSIS-Stream**](https://github.com/ARM-software/CMSIS-Stream) that allows to combine algorithms using a compute graph.
 
-
 ## Examples
 
 The [SDS template application](https://arm-software.github.io/SDS-Framework/main/template.html) demonstarte the recording and playback of real-world data streams using physical hardware or simulation via [Arm Virtual Hardware - FVP](https://github.com/ARM-software/AVH). Simulation enables cost-effective, automated regression testing on desktops or in cloud-based CI/MLOps pipelines. The real-world data streams are captured in [SDS data files](https://arm-software.github.io/SDS-Framework/main/theory.html#sds-data-files).
 
 Refer to [Overview](./overview/README.md) for more details.
-
 
 ## Related
 
@@ -21,7 +19,6 @@ Refer to [Overview](./overview/README.md) for more details.
 - The [SDS Examples](https://github.com/Arm-Examples/sds-examples) is a repository with SDS examples configured for various Evaluation Boards and use the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil/overview/) for the[SDSIO Interface](https://arm-software.github.io/SDS-Framework/main/sdsio.html).
 - [ML Developers Guide for Cortex-M Processors and Ethos-U NPU](https://developer.arm.com/documentation/109267).
 - [Arm Virtual Hardware - FVP](https://github.com/arm-software/avh) repository with documentation.
-
 
 ## Files and Directories
 
@@ -39,10 +36,10 @@ This is a list of the relevant files and directories.
 | [.github/workflows](./.github/workflows) | GitHub Actions for validation and publishing. |
 | [.ci](./.ci)                             | Files that relate to CI tests. |
 
-
 ## Continuous Integration (CI)
 
 The underlying build system of [Keil Studio](https://www.keil.arm.com/) uses the [CMSIS-Toolbox](https://open-cmsis-pack.github.io/cmsis-toolbox/) and CMake. [CI](https://en.wikipedia.org/wiki/Continuous_integration) is effectively supported with:
+
 - Tool installation based on a single [`vcpkg-configuration.json`](./vcpkg-configuration.json) file for desktop and CI environments.
 - CMSIS solution files (`*.csolution.yml`) that enable seamless builds in CI, for example using GitHub actions.
 
@@ -52,11 +49,9 @@ The underlying build system of [Keil Studio](https://www.keil.arm.com/) uses the
 | [gh-pages](./.github/workflows/gh-pages.yml)              | Deploying this content to GitHub Pages.    |
 | [build_examples](./.github/workflows/build_examples.yml)  | Builds the application binaries by using the Arm Compiler for Embedded (AC6) on a GitHub hosted runner. |
 
-
 ## License
 
 The SDS Framework is licensed under [![License](https://img.shields.io/github/license/arm-software/sds-framework?label)](https://github.com/ARM-software/sds-framework/blob/main/LICENSE).
-
 
 ## Documentation
 
