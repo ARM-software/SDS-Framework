@@ -63,4 +63,3 @@ solution:
       not-for-context:
         - .DebugRec+AVH-SSE-300
         - .ReleaseRec+AVH-SSE-300
-  compiler: AC6
