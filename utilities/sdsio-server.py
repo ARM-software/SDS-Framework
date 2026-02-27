@@ -1219,7 +1219,7 @@ def dir_path(work_dir):
     if path.isdir(work_dir):
         return work_dir
     else:
-        raise argparse.ArgumentTypeError(f"Invalid output directory: {work_dir}!")
+        raise argparse.ArgumentTypeError(f"Directory '{work_dir}' does not exist!")
 
 def ip_validator(ip_str):
     try:
