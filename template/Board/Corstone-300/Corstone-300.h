@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------
- * Copyright (c) 2024 Arm Limited (or its affiliates). All rights reserved.
- *
+ * Copyright (c) 2025 Arm Limited (or its affiliates).
+ * All rights reserved.
  * SPDX-License-Identifier: Apache-2.0
  *
  * Licensed under the Apache License, Version 2.0 (the License); you may
@@ -16,20 +16,22 @@
  * limitations under the License.
  *---------------------------------------------------------------------------*/
 
-#include "RTE_Components.h"
-#include  CMSIS_device_header
+#ifndef CORSTONE_300_H_
+#define CORSTONE_300_H_
 
-#include "main.h"
+#include "Driver_USART.h"
 
-int main (void) {
+// CMSIS Driver instances of Board peripherals
+#define CMSIS_DRIVER_USART  0  // CMSIS Driver USART instance number
 
-  /* Initialize STDIO */
-  stdio_init();
+// Retarget stdio to CMSIS UART
+#define RETARGET_STDIO_UART 0
 
-  #if defined(ETHOSU_ARCH)
-  /* Initialize Ethos NPU */
-  ethos_setup();
-  #endif
+// CMSIS Drivers
+extern ARM_DRIVER_USART Driver_USART0;          /* Serial */
 
-  return (app_main());
-}
+#ifdef CMSIS_shield_header
+#include CMSIS_shield_header
+#endif
+
+#endif /* CORSTONE_300_H_ */
