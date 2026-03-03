@@ -347,7 +347,7 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
     type: uint32_t:1   # a single bit stored in a 32-bit int
 </code></pre>
 <h4 id="image-metadata-format">Image Metadata Format</h4>
-<p>The <code>pixel_format</code> values listed in <code>sds.schema.json</code> map to the following template files located in the folder <code>schema\image_format</code> and Linux V4L2 references:</p>
+<p>The <code>pixel_format</code> values listed in <code>sds.schema.json</code> map to the following template files located in the folder <code>schema\image_format</code> and Linux V4L2 references.</p>
 <table>
 <thead>
 <tr>
@@ -429,8 +429,12 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 </tr>
 </tbody>
 </table>
-<p>!!! Note:
-    - When RAW10 is packed (4 pixels in 5 bytes), use <a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-srggb10p.html">10-bit packed Bayer formats</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>When RAW10 is packed (4 pixels in 5 bytes), use <a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-srggb10p.html">10-bit packed Bayer formats</a>.</li>
+</ul>
+</div>
 <h2 id="code-example">Code Example</h2>
 <p>The following code snippets show the usage of the <strong>Recorder Interface</strong>. In this case an accelerometer data stream is recorded.</p>
 <pre><code class="language-c">#include "sds_rec_play.h"
