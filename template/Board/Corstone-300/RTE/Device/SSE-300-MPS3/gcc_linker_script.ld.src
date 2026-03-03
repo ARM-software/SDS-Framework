@@ -89,9 +89,20 @@ ENTRY(Reset_Handler)
 
 SECTIONS
 {
-  .text :
+  .boot :
   {
     KEEP(*(.vectors))
+  } > ROM0
+
+#if defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
+  .gnu.sgstubs :
+  {
+    . = ALIGN(32);
+  } > ROM0
+#endif
+
+  .text :
+  {
     *(.text*)
 
     KEEP(*(.init))
@@ -114,25 +125,18 @@ SECTIONS
     *(.rodata*)
 
     KEEP(*(.eh_frame*))
-  } > ROM0
-
-#if defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
-  .gnu.sgstubs :
-  {
-    . = ALIGN(32);
-  } > ROM0
-#endif
+  } > ROM1
 
   .ARM.extab :
   {
     *(.ARM.extab* .gnu.linkonce.armextab.*)
-  } > ROM0
+  } > ROM1
 
   __exidx_start = .;
   .ARM.exidx :
   {
     *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-  } > ROM0
+  } > ROM1
   __exidx_end = .;
 
   .copy.table :
@@ -144,6 +148,10 @@ SECTIONS
     LONG (ADDR(.data))
     LONG (SIZEOF(.data) / 4)
 
+    LONG (LOADADDR(.init_buf))
+    LONG (ADDR(.init_buf))
+    LONG (SIZEOF(.init_buf) / 4)
+
     /* Add each additional data section here */
 /*
     LONG (LOADADDR(.data2))
@@ -151,7 +159,7 @@ SECTIONS
     LONG (SIZEOF(.data2) / 4)
 */
     __copy_table_end__ = .;
-  } > ROM0
+  } > ROM1
 
   .zero.table :
   {
@@ -169,7 +177,7 @@ SECTIONS
     LONG (SIZEOF(.bss2) / 4)
 */
     __zero_table_end__ = .;
-  } > ROM0
+  } > ROM1
 
   /*
    * This __etext variable is kept for backward compatibility with older,
@@ -209,7 +217,7 @@ SECTIONS
     /* All data end */
     __data_end__ = .;
 
-  } > RAM0 AT > ROM0
+  } > RAM0 AT > ROM1
 
   /*
    * Secondary data section, optional
@@ -228,7 +236,7 @@ SECTIONS
     . = ALIGN(4);
     __data2_end__ = .;
 
-  } > RAM1 AT > ROM0 
+  } > RAM1 AT > ROM1
 */
 
   .bss :
@@ -305,4 +313,29 @@ SECTIONS
 
   /* Check if data + heap + stack exceeds RAM limit */
   ASSERT(__StackLimit >= __HeapLimit, "region RAM overflowed with stack")
+
+  /* Non-initialized buffers in fast access RAM */
+  .cache (NOLOAD):
+  {
+    . = ALIGN(32);
+    *(*ethos_cache_buf)  /* Ethos-U Cache Area */
+    *(*activation_buf)   /* NN Activation Tensor (activation buffer / tensor arena) */
+  } > RAM1
+
+  /* Initialized buffers in fast access RAM */
+  /* Entry must exist in .copy.table        */
+  .init_buf :
+  {
+    /* Add objects that go into RAM1 */
+  } > RAM1 AT > ROM1
+
+  .rom2 :
+  {
+    *(*nn_model)         /* NN Model Binary Representation */
+  } > ROM2
+
+  .rom3 :
+  {
+    /* Add objects that go into ROM3 */
+  } > ROM3
 }

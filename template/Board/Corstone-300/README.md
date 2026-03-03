@@ -1,35 +1,39 @@
-# Board: Corstone-300 (AVH-SSE-300)
+# Board: Arm V2M-MPS3-SSE-300-FVP
 
-## Corstone-300 Board Layer
+## Board Layer for Corstone-300 FVP
 
-Device: **SSE-300-MPS3**
+This layer works for:
 
-System Core Clock: **32 MHz**
-
-The Arm Virtual Hardware is configured with `fvp_config.txt` file.
+```yml
+  board: ARM::V2M-MPS3-SSE-300-FVP
+  device: ARM::SSE-300-MPS3
+```
 
 ### System Configuration
 
-| System resource       | Setting
-|:----------------------|:---------------------------------------------
-| Heap                  | 768 kB (configured in the `mps3-sse-300.sct`)
-| Stack (MSP)           |  32 kB (configured in the `mps3-sse-300.sct`)
+| System Component        | Setting
+|:------------------------|:----------------------------------
+| Heap                    | 768 kB (configured in linker file)
+| Stack (MSP)             |  32 kB (configured in linker file)
 
 ### STDIO mapping
 
-**STDIO** is routed to terminal/console of Host machine running the simulation.
+**STDIO** is routed to terminal via **UART0** peripheral
 
 ### CMSIS-Driver mapping
 
-| CMSIS-Driver          | Peripheral            | Connection
-|:----------------------|:----------------------|:------------------------------
-| CMSIS-Driver VIO      | RAM Memory            | CMSIS_VIO
+| CMSIS-Driver           | Peripheral | Connection
+|:-----------------------|:-----------|:----------------------
+| Driver_USART0          | UART0      | STDIN, STDOUT, STDERR
+| CMSIS-Driver VIO       | VIO        | CMSIS_VIO
 
-### Other Driver mapping
+### CMSIS-Driver Virtual I/O mapping
 
-| Driver                | VSI Peripheral        | Source/Destination
-|:----------------------|:----------------------|:------------------------------
-| Audio In              | 0                     | Audio WAVE file
-| Audio Out             | 1                     | Audio WAVE file
-| Video In              | 4, 5                  | Camera, video WMV, AVI or MP4 file
-| Video Out             | 6, 7                  | Display, video WMV, AVI or MP4 file
+VIO driver interfaces with the `arm_vio.py` Python stub implementation which
+stores and loads signal values.
+
+### FVP Configuration File
+
+| File               | Description
+|:-------------------|:-------------
+| fvp_config.txt     | Corstone-300 FVP without Ethos-U or with Ethos-U55/U65
