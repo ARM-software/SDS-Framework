@@ -497,8 +497,8 @@ sds:
 python sds-convert.py video -i Camera.0.sds -o Camera.0.mp4 -y Camera.sds.yml
 ```
 
-!!! Note: 
-    - Refer to [Theory of Operation - Image Metadata Format](theory.md#image-metadata-format) for more information about the supported video formats.
+!!! Note
+    - [Theory of Operation - Image Metadata Format](theory.md#image-metadata-format) contains more information about the supported video formats.
 
 ## SDS-Check
 
