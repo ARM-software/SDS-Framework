@@ -96,7 +96,7 @@ Use the command `CMSIS:Manage Solution Settings` to choose a one project that yo
 
 ![Select Project](images/SelectProject.png)
 
-Once the configuration is selected, use the build command to generate the template application. Then download the application to the selected target.
+Once the configuration is selected, click `Save` and use the build command to generate the template application. Then download the application to the selected target.
 
 ### Compile for Custom Hardware
 
@@ -125,7 +125,7 @@ The **DataTest** project validates the communication channel.
 
 ### Recording on Simulation Model
 
-1. Select the target `AVH-SSE-300` with Project `DataTest` and Build Type `DebugRec` to record SDS data files.
+1. Select the target `AVH-SSE-300` (or `AVH-SSE-320`) with Project `DataTest` and Build Type `DebugRec` to record SDS data files.
 2. [Build and Run](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp/README.md) the application.
 3. Use [SDS-Check](utilities.md#sds-check) to verify correctness of the recording:
 

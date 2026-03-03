@@ -184,7 +184,7 @@ sds:                   # describes a synchronous data stream
 
 #### Image Metadata Format
 
-The `pixel_format` values listed in `sds.schema.json` map to the following template files located in the folder `schema\image_format` and Linux V4L2 references:
+The `pixel_format` values listed in `sds.schema.json` map to the following template files located in the folder `schema\image_format` and Linux V4L2 references.
 
 `pixel_format:` | Template file | V4L2 reference page
 :---------------------|:--------------|:------------------
@@ -203,7 +203,7 @@ The `pixel_format` values listed in `sds.schema.json` map to the following templ
 `YUV444` | `YUV444.sds.yml` | [Packed YUV formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-packed-yuv.html) *(packed 4:4:4)*
 `YUV444P` | `YUV444P.sds.yml` | [Planar YUV formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-yuv-planar.html) *(YUV444M family)*
 
-!!! Note:
+!!! Note
     - When RAW10 is packed (4 pixels in 5 bytes), use [10-bit packed Bayer formats](https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-srggb10p.html).
 
 ## Code Example
