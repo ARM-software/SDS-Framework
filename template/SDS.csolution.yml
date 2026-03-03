@@ -17,7 +17,7 @@ solution:
 
   # List different hardware targets that are used to deploy the solution.
   target-types:
-    - type: AVH-SSE-300 # simulator target
+    - type: AVH-SSE-300
       board: ARM::V2M-MPS3-SSE-300-FVP
       device: ARM::SSE-300-MPS3
       define:
@@ -33,6 +33,23 @@ solution:
             name: Arm-FVP
             model: FVP_Corstone_SSE-300
             config-file: Board/Corstone-300/fvp_config.txt
+
+    - type: AVH-SSE-320
+      board: ARM::SSE-320
+      device: ARM::SSE-320-FVP
+      define:
+        - SIMULATOR
+      variables:
+        - Board-Layer: $SolutionDir()$/Board/Corstone-320/Board.clayer.yml
+        - SDSIO-Layer: $SolutionDir()$/sdsio/fvp/sdsio_fvp.clayer.yml
+      target-set:
+        - set:
+          images:
+            - project-context: DataTest.DebugRec
+          debugger:
+            name: Arm-FVP
+            model: FVP_Corstone_SSE-320
+            config-file: Board/Corstone-320/fvp_config.txt
 
   # List of different build configurations.
   build-types:
