@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.13.2" xml:lang="en-US">
+  <compound refid="structheader__t" kind="struct"><name>header_t</name>
+    <member refid="structheader__t_1a7d0080b156d735fbd3b03697ac73002e" kind="variable"><name>command</name></member>
+    <member refid="structheader__t_1ab8f25c3dec558f4b14e796ee921f4692" kind="variable"><name>sdsio_id</name></member>
+    <member refid="structheader__t_1ac9a68c9fae67196a4a3076afd296d4bb" kind="variable"><name>argument</name></member>
+    <member refid="structheader__t_1a9eb3c34361611380f8ce14d386cd8476" kind="variable"><name>data_size</name></member>
+  </compound>
+  <compound refid="sds_8txt" kind="file"><name>sds.txt</name>
+    <member refid="group__SDS__IO__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" kind="function"><name>sdsioInit</name></member>
+  </compound>
+  <compound refid="sds__buffer_8h" kind="file"><name>sds_buffer.h</name>
+    <member refid="group__SDS__Buffer__Return__Codes_1gada5802a42b145a41f23bca98b38b800c" kind="define"><name>SDS_BUFFER_OK</name></member>
+    <member refid="group__SDS__Buffer__Return__Codes_1ga677df880ac1830a58f4b5760858b0d5b" kind="define"><name>SDS_BUFFER_ERROR</name></member>
+    <member refid="group__SDS__Buffer__Return__Codes_1gaa8d0f4a47c3d37ccd5d6a3d7cb573848" kind="define"><name>SDS_BUFFER_ERROR_PARAMETER</name></member>
+    <member refid="group__SDS__Buffer__Event__Codes_1ga7cb9be7e9c0942aac1fc9424613b0c69" kind="define"><name>SDS_BUFFER_EVENT_DATA_LOW</name></member>
+    <member refid="group__SDS__Buffer__Event__Codes_1gace7390e82ed34e762f013bdbd1fe6bbb" kind="define"><name>SDS_BUFFER_EVENT_DATA_HIGH</name></member>
+    <member refid="group__SDS__Buffer_1gae47a52c5320db63b7546d03dee701e40" kind="typedef"><name>sdsBufferId_t</name></member>
+    <member refid="group__SDS__Buffer_1ga35588c55fad370bf29efa09d859d4ba4" kind="typedef"><name>sdsBufferEvent_t</name></member>
+    <member refid="group__SDS__Buffer_1ga192198f64a0c5211f5ba322cc8ebf141" kind="function"><name>sdsBufferOpen</name></member>
+    <member refid="group__SDS__Buffer_1gac4e4dae9493c3c5ef09945d4008fd4d0" kind="function"><name>sdsBufferClose</name></member>
+    <member refid="group__SDS__Buffer_1ga0e35ab7f4c66035234c1cf19faf6e9fe" kind="function"><name>sdsBufferRegisterEvents</name></member>
+    <member refid="group__SDS__Buffer_1ga13096d76144cc0d7cf9ff3e1be14e56a" kind="function"><name>sdsBufferWrite</name></member>
+    <member refid="group__SDS__Buffer_1gaea369e9f3e767ba347f0758120684498" kind="function"><name>sdsBufferRead</name></member>
+    <member refid="group__SDS__Buffer_1ga464297b2b8925a6d34b99f19a873200f" kind="function"><name>sdsBufferClear</name></member>
+    <member refid="group__SDS__Buffer_1gad5bf97759480ab2de54cac48ff97c099" kind="function"><name>sdsBufferGetCount</name></member>
+  </compound>
+  <compound refid="sds__rec__play_8h" kind="file"><name>sds_rec_play.h</name>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1ga177e52a9bfee53a688cc7ab98b135439" kind="define"><name>SDS_REC_PLAY_OK</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1ga4b30a7d800fe0f67fee04dadd23f0ff6" kind="define"><name>SDS_REC_PLAY_ERROR</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1gaa504ea1fbf3f41f7eb9bda4b26bae8cd" kind="define"><name>SDS_REC_PLAY_ERROR_PARAMETER</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1ga207d07b150a9fe48db8e900a86177898" kind="define"><name>SDS_REC_PLAY_ERROR_TIMEOUT</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1gaf48fd6750ec8dbc296186f5785300920" kind="define"><name>SDS_REC_PLAY_ERROR_IO</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1gaec236d96148d04e6f243266ed233685d" kind="define"><name>SDS_REC_ERROR_NO_SPACE</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1ga7627fcc15ffcbb250b53c789b6472716" kind="define"><name>SDS_PLAY_ERROR_NO_DATA</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1gae3df9b49d72ae4584cbb3db45948dc3b" kind="define"><name>SDS_PLAY_EOS</name></member>
+    <member refid="group__SDS__Recorder__Player__Event__Codes_1ga56f39c6ca4e9ad0489e0494003e74ab2" kind="define"><name>SDS_REC_PLAY_EVENT_ERROR_IO</name></member>
+    <member refid="group__SDS__Recorder__Player__Event__Codes_1gaf36b00fc03d794ee64a9e3fa2954bf74" kind="define"><name>SDS_REC_EVENT_ERROR_NO_SPACE</name></member>
+    <member refid="group__SDS__Recorder__Player__Event__Codes_1gae663dd7b0ee0a0ff7eb012da3f002dc8" kind="define"><name>SDS_PLAY_EVENT_ERROR_NO_DATA</name></member>
+    <member refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kind="typedef"><name>sdsRecPlayId_t</name></member>
+    <member refid="group__SDS__Recorder__Player_1gabc0b41916556eb206326e497392e922c" kind="typedef"><name>sdsRecPlayEvent_t</name></member>
+    <member refid="group__SDS__Recorder__Player_1gac8362dbc509cb878fa330da3a80ee044" kind="function"><name>sdsRecPlayInit</name></member>
+    <member refid="group__SDS__Recorder__Player_1ga7e78ce16473390833db5ed3e6efb8cf1" kind="function"><name>sdsRecPlayUninit</name></member>
+    <member refid="group__SDS__Recorder__Player_1ga23cdde344f40bcc5d06931473bb8b719" kind="function"><name>sdsRecOpen</name></member>
+    <member refid="group__SDS__Recorder__Player_1ga7b010ae467e0ad6cdfb97569da2597a1" kind="function"><name>sdsRecClose</name></member>
+    <member refid="group__SDS__Recorder__Player_1gad1f1655942d66149438082b55702d09f" kind="function"><name>sdsRecWrite</name></member>
+    <member refid="group__SDS__Recorder__Player_1ga22965fa58400c58e13376134bf1eafa8" kind="function"><name>sdsPlayOpen</name></member>
+    <member refid="group__SDS__Recorder__Player_1gabaef35fad3049663a108750c2561e8ca" kind="function"><name>sdsPlayClose</name></member>
+    <member refid="group__SDS__Recorder__Player_1ga219c99e93cedd38573cb0aba5d0fcc75" kind="function"><name>sdsPlayRead</name></member>
+    <member refid="group__SDS__Recorder__Player_1ga8195b2eb0f3a3988928eb3a577441ebd" kind="function"><name>sdsPlayGetSize</name></member>
+  </compound>
+  <compound refid="sdsio_8h" kind="file"><name>sdsio.h</name>
+    <member refid="group__SDS__IO__Return__Codes_1gae2eb088ff47b195c4b98a7f9ef10066b" kind="define"><name>SDSIO_OK</name></member>
+    <member refid="group__SDS__IO__Return__Codes_1ga9445f070322b3667176d0022c433dea2" kind="define"><name>SDSIO_ERROR</name></member>
+    <member refid="group__SDS__IO__Return__Codes_1ga85e648797b6b85e80d8dd8de765a93e6" kind="define"><name>SDSIO_ERROR_PARAMETER</name></member>
+    <member refid="group__SDS__IO__Return__Codes_1ga366a248ca8888c4257137aeaf5d2ddb2" kind="define"><name>SDSIO_ERROR_TIMEOUT</name></member>
+    <member refid="group__SDS__IO__Return__Codes_1ga5afb9397fd46fba843f37a03ed40da09" kind="define"><name>SDSIO_ERROR_INTERFACE</name></member>
+    <member refid="group__SDS__IO__Return__Codes_1ga00906b051c892231b69acef3f9177f7d" kind="define"><name>SDSIO_ERROR_NO_SERVER</name></member>
+    <member refid="group__SDS__IO__Return__Codes_1gaf44016f63777a63a3cc5751b7c8c6fe1" kind="define"><name>SDSIO_EOS</name></member>
+    <member refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kind="enum"><name>sdsioMode_t</name></member>
+    <member refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kind="typedef"><name>sdsioId_t</name></member>
+    <member refid="sdsio_8h_1ab3fc1abd1e43a7c55f041ef48e987ad8" kind="function"><name>sdsioInit</name></member>
+    <member refid="group__SDS__IO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" kind="function"><name>sdsioUninit</name></member>
+    <member refid="group__SDS__IO__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" kind="function"><name>sdsioOpen</name></member>
+    <member refid="group__SDS__IO__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" kind="function"><name>sdsioClose</name></member>
+    <member refid="group__SDS__IO__Interface_1gafb6b812114b27595ead2d18f2b151e6e" kind="function"><name>sdsioWrite</name></member>
+    <member refid="group__SDS__IO__Interface_1gaed816e11cb116354d8d95d97693a736c" kind="function"><name>sdsioRead</name></member>
+  </compound>
+  <compound refid="sdsio__client_8h" kind="file"><name>sdsio_client.h</name>
+    <member refid="sdsio__client_8h_1a7b369851e01704d1eaab012e24a10feb" kind="define"><name>SDSIO_CMD_OPEN</name></member>
+    <member refid="sdsio__client_8h_1a63d9e5313c7835b80643cf1082c65655" kind="define"><name>SDSIO_CMD_CLOSE</name></member>
+    <member refid="sdsio__client_8h_1a4de48b3b2771c6d8cf8dd23762ca88bd" kind="define"><name>SDSIO_CMD_WRITE</name></member>
+    <member refid="sdsio__client_8h_1a5f590e25db16864b790486529b198d43" kind="define"><name>SDSIO_CMD_READ</name></member>
+    <member refid="sdsio__client_8h_1ab6cfde472e1f500f95b24a60b1ddfbca" kind="define"><name>SDSIO_CMD_PING</name></member>
+    <member refid="sdsio__client_8h_1a218439059dfa1e5eeac94eccc105ce78" kind="function"><name>sdsioClientInit</name></member>
+    <member refid="sdsio__client_8h_1a1b2e6dfd8729d1aeeda575f91a029f50" kind="function"><name>sdsioClientUninit</name></member>
+    <member refid="sdsio__client_8h_1a72aa1d3dd10c5df0d5c4a00408a99326" kind="function"><name>sdsioClientSend</name></member>
+    <member refid="sdsio__client_8h_1a5e54bc6d6a2a92b8d395d9d66997473a" kind="function"><name>sdsioClientReceive</name></member>
+  </compound>
+  <compound refid="group__SDS__Buffer" kind="group"><name>SDS_Buffer</name>
+    <member refid="group__SDS__Buffer_1gae47a52c5320db63b7546d03dee701e40" kind="typedef"><name>sdsBufferId_t</name></member>
+    <member refid="group__SDS__Buffer_1ga35588c55fad370bf29efa09d859d4ba4" kind="typedef"><name>sdsBufferEvent_t</name></member>
+    <member refid="group__SDS__Buffer_1ga192198f64a0c5211f5ba322cc8ebf141" kind="function"><name>sdsBufferOpen</name></member>
+    <member refid="group__SDS__Buffer_1gac4e4dae9493c3c5ef09945d4008fd4d0" kind="function"><name>sdsBufferClose</name></member>
+    <member refid="group__SDS__Buffer_1ga0e35ab7f4c66035234c1cf19faf6e9fe" kind="function"><name>sdsBufferRegisterEvents</name></member>
+    <member refid="group__SDS__Buffer_1ga13096d76144cc0d7cf9ff3e1be14e56a" kind="function"><name>sdsBufferWrite</name></member>
+    <member refid="group__SDS__Buffer_1gaea369e9f3e767ba347f0758120684498" kind="function"><name>sdsBufferRead</name></member>
+    <member refid="group__SDS__Buffer_1ga464297b2b8925a6d34b99f19a873200f" kind="function"><name>sdsBufferClear</name></member>
+    <member refid="group__SDS__Buffer_1gad5bf97759480ab2de54cac48ff97c099" kind="function"><name>sdsBufferGetCount</name></member>
+  </compound>
+  <compound refid="group__SDS__Buffer__Return__Codes" kind="group"><name>SDS_Buffer_Return_Codes</name>
+    <member refid="group__SDS__Buffer__Return__Codes_1gada5802a42b145a41f23bca98b38b800c" kind="define"><name>SDS_BUFFER_OK</name></member>
+    <member refid="group__SDS__Buffer__Return__Codes_1ga677df880ac1830a58f4b5760858b0d5b" kind="define"><name>SDS_BUFFER_ERROR</name></member>
+    <member refid="group__SDS__Buffer__Return__Codes_1gaa8d0f4a47c3d37ccd5d6a3d7cb573848" kind="define"><name>SDS_BUFFER_ERROR_PARAMETER</name></member>
+  </compound>
+  <compound refid="group__SDS__Buffer__Event__Codes" kind="group"><name>SDS_Buffer_Event_Codes</name>
+    <member refid="group__SDS__Buffer__Event__Codes_1ga7cb9be7e9c0942aac1fc9424613b0c69" kind="define"><name>SDS_BUFFER_EVENT_DATA_LOW</name></member>
+    <member refid="group__SDS__Buffer__Event__Codes_1gace7390e82ed34e762f013bdbd1fe6bbb" kind="define"><name>SDS_BUFFER_EVENT_DATA_HIGH</name></member>
+  </compound>
+  <compound refid="group__SDS__IO__Interface" kind="group"><name>SDS_IO_Interface</name>
+    <member refid="group__SDS__IO__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" kind="function"><name>sdsioInit</name></member>
+    <member refid="group__SDS__IO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" kind="function"><name>sdsioUninit</name></member>
+    <member refid="group__SDS__IO__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" kind="function"><name>sdsioOpen</name></member>
+    <member refid="group__SDS__IO__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" kind="function"><name>sdsioClose</name></member>
+    <member refid="group__SDS__IO__Interface_1gafb6b812114b27595ead2d18f2b151e6e" kind="function"><name>sdsioWrite</name></member>
+    <member refid="group__SDS__IO__Interface_1gaed816e11cb116354d8d95d97693a736c" kind="function"><name>sdsioRead</name></member>
+    <member refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kind="typedef"><name>sdsioId_t</name></member>
+    <member refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kind="enum"><name>sdsioMode_t</name></member>
+    <member refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41ae1e892569bf150769083e37f812029a3" kind="enumvalue"><name>sdsioModeRead</name></member>
+    <member refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41a2e552b9f633629884f6d5205e384ca94" kind="enumvalue"><name>sdsioModeWrite</name></member>
+  </compound>
+  <compound refid="group__SDS__IO__Return__Codes" kind="group"><name>SDS_IO_Return_Codes</name>
+    <member refid="group__SDS__IO__Return__Codes_1gae2eb088ff47b195c4b98a7f9ef10066b" kind="define"><name>SDSIO_OK</name></member>
+    <member refid="group__SDS__IO__Return__Codes_1ga9445f070322b3667176d0022c433dea2" kind="define"><name>SDSIO_ERROR</name></member>
+    <member refid="group__SDS__IO__Return__Codes_1ga85e648797b6b85e80d8dd8de765a93e6" kind="define"><name>SDSIO_ERROR_PARAMETER</name></member>
+    <member refid="group__SDS__IO__Return__Codes_1ga366a248ca8888c4257137aeaf5d2ddb2" kind="define"><name>SDSIO_ERROR_TIMEOUT</name></member>
+    <member refid="group__SDS__IO__Return__Codes_1ga5afb9397fd46fba843f37a03ed40da09" kind="define"><name>SDSIO_ERROR_INTERFACE</name></member>
+    <member refid="group__SDS__IO__Return__Codes_1ga00906b051c892231b69acef3f9177f7d" kind="define"><name>SDSIO_ERROR_NO_SERVER</name></member>
+    <member refid="group__SDS__IO__Return__Codes_1gaf44016f63777a63a3cc5751b7c8c6fe1" kind="define"><name>SDSIO_EOS</name></member>
+  </compound>
+  <compound refid="group__SDS__Recorder__Player" kind="group"><name>SDS_Recorder_Player</name>
+    <member refid="group__SDS__Recorder__Player_1ga91a6334159e31346891a3d21db5c5d37" kind="typedef"><name>sdsRecPlayId_t</name></member>
+    <member refid="group__SDS__Recorder__Player_1gabc0b41916556eb206326e497392e922c" kind="typedef"><name>sdsRecPlayEvent_t</name></member>
+    <member refid="group__SDS__Recorder__Player_1gac8362dbc509cb878fa330da3a80ee044" kind="function"><name>sdsRecPlayInit</name></member>
+    <member refid="group__SDS__Recorder__Player_1ga7e78ce16473390833db5ed3e6efb8cf1" kind="function"><name>sdsRecPlayUninit</name></member>
+    <member refid="group__SDS__Recorder__Player_1ga23cdde344f40bcc5d06931473bb8b719" kind="function"><name>sdsRecOpen</name></member>
+    <member refid="group__SDS__Recorder__Player_1ga7b010ae467e0ad6cdfb97569da2597a1" kind="function"><name>sdsRecClose</name></member>
+    <member refid="group__SDS__Recorder__Player_1gad1f1655942d66149438082b55702d09f" kind="function"><name>sdsRecWrite</name></member>
+    <member refid="group__SDS__Recorder__Player_1ga22965fa58400c58e13376134bf1eafa8" kind="function"><name>sdsPlayOpen</name></member>
+    <member refid="group__SDS__Recorder__Player_1gabaef35fad3049663a108750c2561e8ca" kind="function"><name>sdsPlayClose</name></member>
+    <member refid="group__SDS__Recorder__Player_1ga219c99e93cedd38573cb0aba5d0fcc75" kind="function"><name>sdsPlayRead</name></member>
+    <member refid="group__SDS__Recorder__Player_1ga8195b2eb0f3a3988928eb3a577441ebd" kind="function"><name>sdsPlayGetSize</name></member>
+  </compound>
+  <compound refid="group__SDS__Recorder__Player__Return__Codes" kind="group"><name>SDS_Recorder_Player_Return_Codes</name>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1ga177e52a9bfee53a688cc7ab98b135439" kind="define"><name>SDS_REC_PLAY_OK</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1ga4b30a7d800fe0f67fee04dadd23f0ff6" kind="define"><name>SDS_REC_PLAY_ERROR</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1gaa504ea1fbf3f41f7eb9bda4b26bae8cd" kind="define"><name>SDS_REC_PLAY_ERROR_PARAMETER</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1ga207d07b150a9fe48db8e900a86177898" kind="define"><name>SDS_REC_PLAY_ERROR_TIMEOUT</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1gaf48fd6750ec8dbc296186f5785300920" kind="define"><name>SDS_REC_PLAY_ERROR_IO</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1gaec236d96148d04e6f243266ed233685d" kind="define"><name>SDS_REC_ERROR_NO_SPACE</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1ga7627fcc15ffcbb250b53c789b6472716" kind="define"><name>SDS_PLAY_ERROR_NO_DATA</name></member>
+    <member refid="group__SDS__Recorder__Player__Return__Codes_1gae3df9b49d72ae4584cbb3db45948dc3b" kind="define"><name>SDS_PLAY_EOS</name></member>
+  </compound>
+  <compound refid="group__SDS__Recorder__Player__Event__Codes" kind="group"><name>SDS_Recorder_Player_Event_Codes</name>
+    <member refid="group__SDS__Recorder__Player__Event__Codes_1ga56f39c6ca4e9ad0489e0494003e74ab2" kind="define"><name>SDS_REC_PLAY_EVENT_ERROR_IO</name></member>
+    <member refid="group__SDS__Recorder__Player__Event__Codes_1gaf36b00fc03d794ee64a9e3fa2954bf74" kind="define"><name>SDS_REC_EVENT_ERROR_NO_SPACE</name></member>
+    <member refid="group__SDS__Recorder__Player__Event__Codes_1gae663dd7b0ee0a0ff7eb012da3f002dc8" kind="define"><name>SDS_PLAY_EVENT_ERROR_NO_DATA</name></member>
+  </compound>
+  <compound refid="dir_d09908635ef304ba819d3349bcb716bf" kind="dir"><name>sds/include</name>
+  </compound>
+  <compound refid="dir_d8edc0eab7a99ea71a7d0245c268925a" kind="dir"><name>sds</name>
+  </compound>
+</doxygenindex>

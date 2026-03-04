@@ -1,0 +1,35 @@
+.wy-table-responsive table td, .wy-table-responsive table th {
+    white-space: normal !important;
+}
+
+.wy-table-responsive {
+    overflow : visible !important;
+}
+
+.wy-nav-content {
+    max-width: 900px;
+}
+
+.rst-content .section ul li p:last-child {
+    padding: 0px 0px 8px 0px;
+}
+
+/* Do not wrap hyphenated tokens (e.g., system-view:) in first-column code */
+.md-typeset table th:first-child code,
+.md-typeset table td:first-child code {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+    hyphens: none !important;
+    display: inline-block;
+}
+
+/* ReadTheDocs-style responsive tables: prevent first-column code wrapping */
+.wy-table-responsive table th:first-child code,
+.wy-table-responsive table td:first-child code {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: keep-all !important;
+    hyphens: none !important;
+    display: inline-block;
+}
