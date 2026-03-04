@@ -5,7 +5,7 @@ layer:
   for-device: ARM::SSE-320-FVP
 
   connections:
-    - connect: Corstone-320
+    - connect: Corstone-320-U85
       provides:
         - CMSIS_USART
         - CMSIS_VIO
