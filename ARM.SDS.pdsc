@@ -13,28 +13,8 @@
   <repository type="git">https://github.com/ARM-software/SDS-Framework.git</repository>
 
   <releases>
-    <release version="2.1.0-dev">
+    <release version="2.2.0-dev">
       Active development ...
-      SDS-Framework:
-      - Improved SDSIO network layer socket startup operation and messaging
-      - Improved application template
-      - Improved documentation
-      - Corrected SDSIO USB layer configuration for high-speed
-      - Fixed an issue where playback would stop after the first few records with SDSIO using USB interface
-      - Fixed an issue where recording could occasionally get stuck with SDSIO using Ethernet interface
-      SDSIO-Server utility:
-      - Improved user interface
-      - Improved behavior in case of communication errors
-      - Improved behavior for connect/disconnect events
-      - Improved handling of Ctrl + C for shutdown
-      - Fixed USB device plug-in detection on macOS
-      - Fixed playback failure when no .sds file exists
-      SDS-Convert utility:
-      - Added support for conversion to MP4 video format
-      - Fixed a failure when converting to WAV audio format
-      SDS-Check utility:
-      - Added option to set the tick_rate
-      - Fixed a failure when only one record exists in an .sds file
     </release>
   </releases>
 
