@@ -88,7 +88,7 @@ Data = bytearray()
 # 'No limit' for idx-end
 NO_LIMIT = 0x7FFFFFFF
 
-# SDS I/O error/status codes (32-bit two's‑complement, used in the ARGUMENT register)
+# SDS I/O error/status codes (32-bit two's-complement, used in the ARGUMENT register)
 SDSIO_ERROR = (-1 & 0xFFFFFFFF)  # -1
 SDSIO_EOS   = (-6 & 0xFFFFFFFF)  # -6
 

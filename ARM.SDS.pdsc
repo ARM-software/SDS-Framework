@@ -15,6 +15,8 @@
   <releases>
     <release version="2.2.0-dev">
       Active development ...
+      Template:
+      - Corestone-300/320: Fixed SDS I/O VSI driver to return correct error and status codes (SDSIO_ERROR, SDSIO_EOS)
     </release>
   </releases>
 
