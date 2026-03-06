@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Arm Limited. All rights reserved.
+# Copyright (c) 2025-2026 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -87,6 +87,10 @@ Data = bytearray()
 
 # 'No limit' for idx-end
 NO_LIMIT = 0x7FFFFFFF
+
+# SDS I/O error/status codes (32-bit two's‑complement, used in the ARGUMENT register)
+SDSIO_ERROR = (-1 & 0xFFFFFFFF)  # -1
+SDSIO_EOS   = (-6 & 0xFFFFFFFF)  # -6
 
 class IndexAllocator:
     """
@@ -415,12 +419,12 @@ def processCOMMAND(command):
 
     elif command == 3: # Write
         # Return data length or SDSIO_ERROR
-        ARGUMENT = len(Data) if Stream.write(STREAM_ID, Data) else -1
+        ARGUMENT = len(Data) if Stream.write(STREAM_ID, Data) else SDSIO_ERROR
 
     elif command == 4: # Read
         # Return data length or SDSIO_EOS
         Data, eof = Stream.read(STREAM_ID, ARGUMENT)
-        ARGUMENT = len(Data) if not eof else -6
+        ARGUMENT = len(Data) if not eof else SDSIO_EOS
 
     return command
 
@@ -570,4 +574,3 @@ def wrRegs(index, value):
 
 
 ## @}
-
