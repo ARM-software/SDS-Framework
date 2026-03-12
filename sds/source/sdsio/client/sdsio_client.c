@@ -152,6 +152,7 @@ int32_t sdsioInit (void) {
     }
     if (n == SDSIO_CLIENT_PING_RETRY) {
       // SDS I/O Server not active.
+      (void)sdsioClientUninit();
       ret = SDSIO_ERROR_NO_SERVER;
     }
   }

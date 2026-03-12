@@ -15,8 +15,10 @@
   <releases>
     <release version="2.2.0-dev">
       Active development ...
+      SDSIO-Client:
+      - Improved handling of initialization failure caused by ping timeout, preventing misleading "Ping received." SDSIO-Server message
       Template:
-      - Corestone-300/320: Fixed SDS I/O VSI driver to return correct error and status codes (SDSIO_ERROR, SDSIO_EOS)
+      - Fixed an issue in the simulator script (arm_vsi3.py) causing incomplete recorded data to be written to the file (missing data at the end)
     </release>
   </releases>
 

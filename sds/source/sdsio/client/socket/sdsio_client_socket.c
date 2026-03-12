@@ -113,8 +113,10 @@ int32_t sdsioClientInit (void) {
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioClientUninit (void) {
-  iotSocketClose(socket);
-  socket = -1;
+  if (socket != -1) {
+    iotSocketClose(socket);
+    socket = -1;
+  }
   return SDSIO_OK;
 }
 
