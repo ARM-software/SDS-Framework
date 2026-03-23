@@ -127,7 +127,9 @@ static int32_t PingServer (void) {
 
 // SDS I/O functions
 
-/** Initialize I/O interface */
+/**
+  Initialize SDS I/O Interface.
+*/
 int32_t sdsioInit (void) {
   int32_t  ret;
   uint32_t n;
@@ -165,7 +167,9 @@ int32_t sdsioInit (void) {
   return ret;
 }
 
-/** Un-initialize I/O interface */
+/**
+  Un-initialize SDS I/O Interface.
+*/
 int32_t sdsioUninit (void) {
 
   if (sdsio_client_initialized == 0U) {
@@ -180,7 +184,7 @@ int32_t sdsioUninit (void) {
 }
 
 /**
-  Open I/O stream
+  Open I/O stream.
   Send:
     header: command   = SDSIO_CMD_OPEN
             sdsio_id  = not used

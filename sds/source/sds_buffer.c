@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -113,7 +113,9 @@ static void sdsBufferFree (sdsBuffer_t *sds_buffer) {
   }
 }
 
-// Open SDS Buffer stream
+/**
+  Open SDS buffer stream.
+*/
 sdsBufferId_t sdsBufferOpen (void *buf, uint32_t buf_size, uint32_t threshold_low, uint32_t threshold_high) {
   sdsBuffer_t *sds_buffer = NULL;
 
@@ -131,7 +133,9 @@ sdsBufferId_t sdsBufferOpen (void *buf, uint32_t buf_size, uint32_t threshold_lo
   return sds_buffer;
 }
 
-// Close SDS Buffer stream
+/**
+  Close SDS buffer stream.
+*/
 int32_t sdsBufferClose (sdsBufferId_t id) {
   sdsBuffer_t *sds_buffer = id;
   int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;
@@ -143,7 +147,9 @@ int32_t sdsBufferClose (sdsBufferId_t id) {
   return ret;
 }
 
-// Register SDS Buffer stream events
+/**
+  Register SDS buffer stream event callback function.
+*/
 int32_t sdsBufferRegisterEvents (sdsBufferId_t id, sdsBufferEvent_t event_cb, uint32_t event_mask, void *event_arg) {
   sdsBuffer_t *sds_buffer = id;
   int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;
@@ -157,7 +163,9 @@ int32_t sdsBufferRegisterEvents (sdsBufferId_t id, sdsBufferEvent_t event_cb, ui
   return ret;
 }
 
-// Write data to SDS Buffer stream
+/**
+  Write data to SDS buffer stream.
+*/
 int32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size) {
   sdsBuffer_t   *sds_buffer = id;
   uint32_t       num = 0U;
@@ -199,7 +207,9 @@ int32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size) {
   return ret;
 }
 
-// Read data from SDS Buffer stream
+/**
+  Read data from SDS buffer stream.
+*/
 int32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size) {
   sdsBuffer_t *sds_buffer = id;
   uint32_t     num = 0U;
@@ -241,7 +251,9 @@ int32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size) {
   return ret;
 }
 
-// Clear SDS Buffer stream data
+/**
+  Clear SDS buffer stream data.
+*/
 int32_t sdsBufferClear (sdsBufferId_t id) {
   sdsBuffer_t *sds_buffer = id;
   uint32_t     cnt_used, cnt_limit;
@@ -263,7 +275,9 @@ int32_t sdsBufferClear (sdsBufferId_t id) {
   return ret;
 }
 
-// Get data count in SDS Buffer stream
+/**
+  Get data count in SDS buffer stream.
+*/
 int32_t sdsBufferGetCount (sdsBufferId_t id) {
   sdsBuffer_t *sds_buffer = id;
   int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;

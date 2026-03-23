@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -41,7 +41,7 @@ static ARM_DRIVER_USART *pDrvUSART = &CMSIS_USART_DRIVER;
 static osEventFlagsId_t sdsioEventFlagId;
 
 
-// USART Callback
+// USART Callback.
 static void USART_Callback (uint32_t event) {
   if ((event & ARM_USART_EVENT_SEND_COMPLETE) != 0U) {
     osEventFlagsSet(sdsioEventFlagId, ARM_USART_EVENT_SEND_COMPLETE);
@@ -51,9 +51,10 @@ static void USART_Callback (uint32_t event) {
   }
 }
 
+
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDS I/O Client via CMSIS Driver:USART
+  \brief       Initialize SDSIO Client I/O via CMSIS Driver:USART.
   \return      SDSIO_OK on success or
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
@@ -96,7 +97,7 @@ int32_t sdsioClientInit (void) {
 
 /**
   \fn          int32_t sdsioClientUninit (void)
-  \brief       Un-Initialize SDS I/O Client
+  \brief       Un-Initialize SDSIO Client I/O.
   \return      SDSIO_OK on success or
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
@@ -110,7 +111,7 @@ int32_t sdsioClientUninit (void) {
 
 /**
   \fn          int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size)
-  \brief       Send data to SDSIO-Server
+  \brief       Send data to SDSIO-Server.
   \param[in]   buf         pointer to buffer with data to send
   \param[in]   buf_size    buffer size in bytes
   \return      number of bytes successfully sent or
@@ -144,7 +145,7 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
 
 /**
   \fn          int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size)
-  \brief       Receive data from SDSIO-Server
+  \brief       Receive data from SDSIO-Server.
   \param[out]  buf          pointer to buffer for data to read
   \param[in]   buf_size     buffer size in bytes
   \return      number of bytes successfully received or

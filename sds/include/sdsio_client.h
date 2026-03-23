@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -48,7 +48,7 @@ typedef struct {
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDSIO Client and ping SDSIO Server to verify connection
+  \brief       Initialize SDSIO Client I/O and ping SDSIO Server to verify connection.
   \return      SDSIO_OK on success or
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
@@ -56,7 +56,7 @@ int32_t sdsioClientInit (void);
 
 /**
   \fn          int32_t sdsioClientUninit (void)
-  \brief       Un-Initialize SDSIO Client
+  \brief       Un-Initialize SDSIO Client I/O.
   \return      SDSIO_OK on success or
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
@@ -64,7 +64,7 @@ int32_t sdsioClientUninit (void);
 
 /**
   \fn          int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size)
-  \brief       Send data to SDSIO-Server
+  \brief       Send data to SDSIO-Server.
   \param[in]   buf         pointer to buffer with data to send
   \param[in]   buf_size    buffer size in bytes
   \return      number of bytes successfully sent or
@@ -74,7 +74,7 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size);
 
 /**
   \fn          int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size)
-  \brief       Receive data from SDSIO-Server
+  \brief       Receive data from SDSIO-Server.
   \param[out]  buf          pointer to buffer for data to read
   \param[in]   buf_size     buffer size in bytes
   \return      number of bytes successfully received or

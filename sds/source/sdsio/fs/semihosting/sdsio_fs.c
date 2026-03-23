@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2023, 2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -23,6 +23,8 @@
 
 #include "sdsio.h"
 
+
+// Maximum stream name length
 #ifndef SDSIO_MAX_NAME_SIZE
 #define SDSIO_MAX_NAME_SIZE         32U
 #endif
@@ -32,17 +34,23 @@
 
 // SDS I/O functions
 
-/** Initialize I/O interface */
+/**
+  Initialize SDS I/O Interface.
+*/
 int32_t sdsioInit (void) {
   return SDSIO_OK;
 }
 
-/** Un-initialize I/O interface */
+/**
+  Un-initialize SDS I/O Interface.
+*/
 int32_t sdsioUninit (void) {
   return SDSIO_OK;
 }
 
-/** Open I/O stream */
+/**
+  Open I/O stream.
+*/
 sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
   uint32_t   index   = 0U;
   sdsioId_t  sdsioId = NULL;
@@ -105,7 +113,9 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
   return sdsioId;
 }
 
-/** Close I/O stream. */
+/**
+  Close I/O stream.
+*/
 int32_t sdsioClose (sdsioId_t id) {
   int32_t ret  = SDSIO_ERROR_INTERFACE;
   FILE   *file = (FILE *)id;
@@ -116,7 +126,9 @@ int32_t sdsioClose (sdsioId_t id) {
   return ret;
 }
 
-/** Write data to I/O stream. */
+/**
+  Write data to I/O stream.
+*/
 int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
   FILE    *file  = (FILE *)id;
   int32_t  ret   = SDSIO_ERROR;
@@ -132,7 +144,9 @@ int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
   return ret;
 }
 
-/** Read data from I/O stream. */
+/**
+  Read data from I/O stream.
+*/
 int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
   FILE *file  = (FILE *)id;
   int32_t ret = SDSIO_ERROR;

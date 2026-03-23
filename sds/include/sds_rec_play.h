@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -47,7 +47,7 @@ typedef void *sdsRecPlayId_t;                   // Handle to SDS Recorder/Player
 
 /**
   \typedef void (*sdsRecPlayEvent_t) (sdsRecPlayId_t id, uint32_t event)
-  \brief       Callback function for recorder and player events
+  \brief       Callback function for recorder and player events.
   \param[in]   id             \ref sdsRecPlayId_t handle to SDS Recorder/Player stream
   \param[in]   event          event code (see \ref SDS_Recorder_Player_Event_Codes)
 */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2023-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -42,7 +42,9 @@ static osSemaphoreId_t lock_id = NULL;
 
 // SDS I/O functions
 
-/* Initialize I/O interface */
+/**
+  Initialize SDS I/O Interface.
+*/
 int32_t sdsioInit (void) {
 
   /* Initialize SDSIO peripheral */
@@ -57,7 +59,9 @@ int32_t sdsioInit (void) {
   return SDSIO_OK;
 }
 
-/* Un-initialize I/O interface */
+/**
+  Un-initialize SDS I/O Interface.
+*/
 int32_t sdsioUninit (void) {
 
   SDSIO->Timer.Control = 0U;
@@ -69,7 +73,9 @@ int32_t sdsioUninit (void) {
   return SDSIO_OK;
 }
 
-/* Open I/O stream */
+/**
+  Open I/O stream.
+*/
 sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
   sdsioId_t id;
 
@@ -103,7 +109,9 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
   return id;
 }
 
-/* Close I/O stream */
+/**
+  Close I/O stream.
+*/
 int32_t sdsioClose (sdsioId_t id) {
 
   if (id == NULL) {
@@ -122,7 +130,9 @@ int32_t sdsioClose (sdsioId_t id) {
   return SDSIO_OK;
 }
 
-/* Write data to I/O stream */
+/**
+  Write data to I/O stream.
+*/
 int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
   int32_t retv;
 
@@ -159,7 +169,9 @@ int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
   return retv;
 }
 
-/* Read data from I/O stream */
+/**
+  Read data from I/O stream.
+*/
 int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
   int32_t retv;
 

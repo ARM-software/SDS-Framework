@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -41,7 +41,7 @@ typedef void *sdsBufferId_t;                        // Handle to SDS buffer stre
 
 /**
   \typedef void (*sdsBufferEvent_t) (sdsBufferId_t id, uint32_t event, void *arg)
-  \brief       Callback function for SDS circular buffer event handling
+  \brief       Callback function for SDS circular buffer event handling.
   \param[in]   id             \ref sdsBufferId_t handle to SDS buffer stream
   \param[in]   event          event code (see \ref SDS_Buffer_Event_Codes)
   \param[in]   arg            pointer to argument registered with \ref sdsBufferRegisterEvents

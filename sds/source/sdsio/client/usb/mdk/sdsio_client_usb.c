@@ -88,7 +88,7 @@ void CREATE_SYMBOL(USBD_CustomClass, SDSIO_USB_INSTANCE, _EndpointStart) (uint8_
   }
 }
 
-// Callback function called when DATA was sent or received on Endpoint m
+// Callback function called when DATA was sent or received on Endpoint m.
 // void USBD_CustomClassN_EndpointM_Event (uint32_t event)
 void CREATE_SYMBOL(USBD_CustomClass, SDSIO_USB_INSTANCE, _Endpoint1_Event)  (uint32_t event) { USBD_Endpoint_Event(1, event); }
 void CREATE_SYMBOL(USBD_CustomClass, SDSIO_USB_INSTANCE, _Endpoint2_Event)  (uint32_t event) { USBD_Endpoint_Event(2, event); }
@@ -107,7 +107,7 @@ void CREATE_SYMBOL(USBD_CustomClass, SDSIO_USB_INSTANCE, _Endpoint14_Event)  (ui
 void CREATE_SYMBOL(USBD_CustomClass, SDSIO_USB_INSTANCE, _Endpoint15_Event)  (uint32_t event) { USBD_Endpoint_Event(15, event); }
 
 /**
-  \brief       Callback function called when DATA was sent or received on Endpoint 1
+  \brief       Callback function called when DATA was sent or received on Endpoint 1.
   \param[in]   event       event on Endpoint:
                            - ARM_USBD_EVENT_OUT = data OUT received
                            - ARM_USBD_EVENT_IN  = data IN  sent
@@ -134,7 +134,7 @@ static void USBD_Endpoint_Event (uint8_t ep_num, uint32_t event) {
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDS I/O Client via USB
+  \brief       Initialize SDSIO Client I/O via USB.
   \return      SDSIO_OK on success or
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
@@ -168,7 +168,7 @@ int32_t sdsioClientInit (void) {
 
 /**
   \fn          int32_t sdsioClientUninit (void)
-  \brief       Un-Initialize SDS I/O Client
+  \brief       Un-Initialize SDSIO Client I/O.
   \return      SDSIO_OK on success or
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
@@ -180,7 +180,7 @@ int32_t sdsioClientUninit (void) {
 
 /**
   \fn          int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size)
-  \brief       Send data to SDSIO-Server
+  \brief       Send data to SDSIO-Server.
   \param[in]   buf         pointer to buffer with data to send
   \param[in]   buf_size    buffer size in bytes
   \return      number of bytes successfully sent or
@@ -233,7 +233,7 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
 
 /**
   \fn          int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size)
-  \brief       Receive data from SDSIO-Server
+  \brief       Receive data from SDSIO-Server.
   \param[out]  buf          pointer to buffer for data to read
   \param[in]   buf_size     buffer size in bytes
   \return      number of bytes successfully received or

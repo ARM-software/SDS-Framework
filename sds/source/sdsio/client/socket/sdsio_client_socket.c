@@ -10,8 +10,8 @@
  * www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an AS IS BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * distributed under the License is distributed on an AS IS BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -57,7 +57,7 @@ static int32_t sdsioSocketGetIP(uint8_t *ip_buf, uint32_t buf_size) {
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDS I/O Client via IoT Socket
+  \brief       Initialize SDSIO Client I/O via IoT Socket.
   \return      SDSIO_OK on success or
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
@@ -108,7 +108,7 @@ int32_t sdsioClientInit (void) {
 
 /**
   \fn          int32_t sdsioClientUninit (void)
-  \brief       Un-Initialize SDS I/O Client
+  \brief       Un-Initialize SDSIO Client I/O.
   \return      SDSIO_OK on success or
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
@@ -122,7 +122,7 @@ int32_t sdsioClientUninit (void) {
 
 /**
   \fn          int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size)
-  \brief       Send data to SDSIO-Server
+  \brief       Send data to SDSIO-Server.
   \param[in]   buf         pointer to buffer with data to send
   \param[in]   buf_size    buffer size in bytes
   \return      number of bytes successfully sent or
@@ -161,7 +161,7 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
 
 /**
   \fn          int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size)
-  \brief       Receive data from SDSIO-Server
+  \brief       Receive data from SDSIO-Server.
   \param[out]  buf          pointer to buffer for data to read
   \param[in]   buf_size     buffer size in bytes
   \return      number of bytes successfully received or

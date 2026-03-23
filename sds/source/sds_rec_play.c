@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -353,7 +353,7 @@ static void sdsPlayHandler (sdsRecPlay_t *rec_play) {
   }
 }
 
-// Recorder/Player thread
+// Recorder/Player thread.
 static __NO_RETURN void sdsRecPlayThread (void *arg) {
   sdsRecPlay_t *rec_play;
   uint32_t      flags, n;
@@ -393,7 +393,9 @@ static __NO_RETURN void sdsRecPlayThread (void *arg) {
   }
 }
 
-// Initialize recorder and player.
+/**
+  Initialize recorder and player.
+*/
 int32_t sdsRecPlayInit (sdsRecPlayEvent_t event_cb) {
   int32_t ret = SDS_REC_PLAY_OK;
 
@@ -456,7 +458,9 @@ int32_t sdsRecPlayInit (sdsRecPlayEvent_t event_cb) {
   return ret;
 }
 
-// Uninitialize recorder and player.
+/**
+  Uninitialize recorder and player.
+*/
 int32_t sdsRecPlayUninit (void) {
 
   if (sdsRecPlayInitialized == 0U) {
@@ -483,7 +487,9 @@ int32_t sdsRecPlayUninit (void) {
 
 // SDS Recorder functions:
 
-// Open recorder stream.
+/**
+  Open recorder stream (write mode).
+*/
 sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size) {
   sdsRecPlay_t *rec_play = NULL;
   uint32_t      index;
@@ -551,7 +557,9 @@ sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size) {
   return rec_play;
 }
 
-// Close recorder stream.
+/**
+  Close recorder stream.
+*/
 int32_t sdsRecClose (sdsRecPlayId_t id) {
   sdsRecPlay_t *rec_play = id;
   int32_t       ret      = SDS_REC_PLAY_ERROR;
@@ -626,7 +634,9 @@ int32_t sdsRecClose (sdsRecPlayId_t id) {
   return ret;
 }
 
-// Write data to recorder stream.
+/**
+  Write entire data block along with its timestamp to the recorder stream.
+*/
 int32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uint32_t buf_size) {
   sdsRecPlay_t *rec_play = id;
   int32_t       ret      = SDS_REC_PLAY_ERROR;
@@ -688,7 +698,9 @@ int32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uin
 
 // SDS Player functions:
 
-// Open player stream.
+/**
+  Open player stream (read mode).
+*/
 sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size) {
   sdsRecPlay_t *rec_play = NULL;
   int32_t       err      = SDS_REC_PLAY_OK;
@@ -779,7 +791,9 @@ sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size) {
   return rec_play;
 }
 
-// Close player stream.
+/**
+  Close player stream.
+*/
 int32_t sdsPlayClose (sdsRecPlayId_t id) {
   sdsRecPlay_t *rec_play = id;
   int32_t       ret      = SDS_REC_PLAY_ERROR;
@@ -854,7 +868,9 @@ int32_t sdsPlayClose (sdsRecPlayId_t id) {
   return ret;
 }
 
-// Read data from player stream.
+/**
+  Read entire data block along with its timestamp from the player stream.
+*/
 int32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size) {
   sdsRecPlay_t *rec_play = id;
   int32_t       ret      = SDS_REC_PLAY_ERROR;
@@ -950,7 +966,9 @@ int32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t
   return ret;
 }
 
-// Get data block size from Player stream
+/**
+  Get data block size from Player stream.
+*/
 int32_t sdsPlayGetSize (sdsRecPlayId_t id) {
   sdsRecPlay_t *rec_play = id;
   int32_t       ret      = SDS_REC_PLAY_ERROR;

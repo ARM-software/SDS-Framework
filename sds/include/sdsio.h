@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -47,7 +47,7 @@ typedef enum {
 
 /**
   \fn          int32_t sdsioInit (void)
-  \brief       Initialize SDS I/O.
+  \brief       Initialize SDS I/O Interface.
   \return      SDSIO_OK on success or
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
@@ -55,7 +55,7 @@ int32_t sdsioInit (void);
 
 /**
   \fn          int32_t sdsioUninit (void)
-  \brief       Un-initialize SDS I/O.
+  \brief       Un-initialize SDS I/O Interface.
   \return      SDSIO_OK on success or
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
