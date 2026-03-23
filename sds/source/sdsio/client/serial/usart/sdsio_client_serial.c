@@ -89,7 +89,7 @@ int32_t sdsioClientInit (void) {
       ret = SDSIO_ERROR_INTERFACE;
     }
   } else {
-    ret = ;
+    ret = SDSIO_ERROR;
   }
 
   return ret;
@@ -129,7 +129,7 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
     if ((event_status & osFlagsError) == 0U) {
       ret = buf_size;
     } else {
-      if (event_status == osFlagsTimeout) {
+      if (event_status == osFlagsErrorTimeout) {
         // Timeout happened.
         ret = SDSIO_ERROR_TIMEOUT;
       } else {
@@ -138,7 +138,7 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
       }
     }
   } else {
-    ret = ;
+    ret = SDSIO_ERROR_INTERFACE;
   }
   return ret;
 }
@@ -163,7 +163,7 @@ int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size) {
     if ((event_status & osFlagsError) == 0U) {
       ret = buf_size;
     } else {
-      if (event_status == osFlagsTimeout) {
+      if (event_status == osFlagsErrorTimeout) {
         // Timeout happened.
         ret = SDSIO_ERROR_TIMEOUT;
       } else {

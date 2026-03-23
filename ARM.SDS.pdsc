@@ -17,6 +17,7 @@
       Active development ...
       SDSIO-Client:
       - Improved handling of initialization failure caused by ping timeout, preventing misleading "Ping received." SDSIO-Server message
+      - Fixed compilation errors for serial interface
       Template:
       - Fixed an issue in the simulator script (arm_vsi3.py) causing incomplete recorded data to be written to the file (missing data at the end)
     </release>
