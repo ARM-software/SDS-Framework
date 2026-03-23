@@ -62,12 +62,12 @@ static void USBD_Endpoint_Event (uint8_t ep_num, uint32_t event);
 void CREATE_SYMBOL(USBD_CustomClass, SDSIO_USB_INSTANCE, _Initialize) (void) {
 }
 
-// Callback function called during USBD_Uninitialize to de-initialize the USB Custom class instance
+// Callback function called during USBD_Uninitialize to de-initialize the USB Custom class instance.
 // void USBD_CustomClassN_Uninitialize (void)
 void CREATE_SYMBOL(USBD_CustomClass, SDSIO_USB_INSTANCE, _Uninitialize) (void) {
 }
 
-// Callback function called when Endpoint Start was requested (by activating interface or configuration)
+// Callback function called when Endpoint Start was requested (by activating interface or configuration).
 // void USBD_CustomClassN_EndpointStart (uint8_t ep_addr)
 void CREATE_SYMBOL(USBD_CustomClass, SDSIO_USB_INSTANCE, _EndpointStart) (uint8_t ep_addr) {
 

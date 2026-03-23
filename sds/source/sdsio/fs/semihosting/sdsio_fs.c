@@ -171,3 +171,19 @@ int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
 
   return ret;
 }
+
+/**
+  Write control data to Host.
+*/
+int32_t sdsioControlWrite (const void *buf, uint32_t buf_size) {
+  // This command is not supported on semihosted file system.
+  return SDSIO_ERROR_INTERFACE;
+}
+
+/**
+  Read control data from Host.
+*/
+int32_t sdsioControlRead (void *buf, uint32_t buf_size) {
+  // This command is not supported on semihosted file system.
+  return SDSIO_ERROR_INTERFACE;
+}

@@ -13,8 +13,10 @@
   <repository type="git">https://github.com/ARM-software/SDS-Framework.git</repository>
 
   <releases>
-    <release version="2.2.0-dev">
+    <release version="3.0.0-dev">
       Active development ...
+      SDS-Framework:
+      - Added support for control data exchange between the Device and Host, as well as between the SDSIO-Client and SDSIO-Server
       SDSIO-Client:
       - Improved handling of initialization failure caused by ping timeout, preventing misleading "Ping received." SDSIO-Server message
       - Fixed compilation errors for serial interface
@@ -64,7 +66,7 @@
   </taxonomy>
 
   <apis>
-    <api Cclass="SDS" Cgroup="IO" Capiversion="2.0.0">
+    <api Cclass="SDS" Cgroup="IO" Capiversion="3.0.0">
       <description>Blocking I/O interface to read/write SDS files</description>
       <files>
         <file category="header" name="sds/include/sdsio.h" />
@@ -75,7 +77,7 @@
 
   <components>
     <!-- SDS -->
-    <component Cclass="SDS" Cgroup="Buffer" Cversion="2.0.0">
+    <component Cclass="SDS" Cgroup="Buffer" Cversion="3.0.0">
       <description>Non-blocking read/write to a circular buffer</description>
       <RTE_Components_h>
         #define RTE_SDS_BUFFER                          /* Synchronous Data Stream Buffer */
@@ -89,7 +91,7 @@
     </component>
 
     <!-- SDS I/O (VSI) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="VSI" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via VSI">
+    <component Cclass="SDS" Cgroup="IO" Csub="VSI" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via VSI">
       <description>I/O via VSI</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -102,11 +104,12 @@
     </component>
 
     <!-- SDS I/O (Socket) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="Socket" Capiversion="2.0.0" Cversion="2.0.1" condition="SDS IO via Socket">
+    <component Cclass="SDS" Cgroup="IO" Csub="Socket" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via Socket">
       <description>I/O via Socket to SDSIO Server (using component MDK-Packs::IoT Utility:Socket)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
-        #define RTE_SDS_IO_SOCKET                       /* Synchronous Data Stream Input/Output (Socket) */
+        #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
+        #define RTE_SDS_IO_SOCKET                       /* Synchronous Data Stream Input/Output Client via Socket */
       </RTE_Components_h>
       <files>
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
@@ -117,12 +120,13 @@
     </component>
 
     <!-- SDS I/O (USB - MDK_USB) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="USB" Cvariant="MDK USB" Capiversion="2.0.0" Cversion="2.0.1" condition="SDS IO via USB - MDK USB">
+    <component Cclass="SDS" Cgroup="IO" Csub="USB" Cvariant="MDK USB" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via USB - MDK USB">
       <description>I/O via USB Virtual COM Port to SDSIO Server (using component Keil::USB:Device:Custom)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
-        #define RTE_SDS_IO_USB                          /* Synchronous Data Stream Input/Output (USB) */
-        #define RTE_SDS_IO_USB_MDK_USB                  /* Synchronous Data Stream Input/Output (USB - MDK USB) */
+        #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
+        #define RTE_SDS_IO_USB                          /* Synchronous Data Stream Input/Output Client via USB */
+        #define RTE_SDS_IO_USB_MDK_USB                  /* Synchronous Data Stream Input/Output Client via USB - MDK USB */
       </RTE_Components_h>
       <files>
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
@@ -133,12 +137,13 @@
     </component>
 
     <!-- SDS I/O (Serial - CMSIS USART) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="Serial" Cvariant="CMSIS USART" Capiversion="2.0.0" Cversion="2.0.1" condition="SDS IO via Serial Port - CMSIS USART">
+    <component Cclass="SDS" Cgroup="IO" Csub="Serial" Cvariant="CMSIS USART" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via Serial Port - CMSIS USART">
       <description>I/O via Serial Port to SDSIO Server (using component CMSIS Driver:USART)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
-        #define RTE_SDS_IO_SERIAL                       /* Synchronous Data Stream Input/Output (Serial) */
-        #define RTE_SDS_IO_SERIAL_CMSIS_USART           /* Synchronous Data Stream Input/Output (Serial - CMSIS USART) */
+        #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
+        #define RTE_SDS_IO_SERIAL                       /* Synchronous Data Stream Input/Output Client via Serial */
+        #define RTE_SDS_IO_SERIAL_CMSIS_USART           /* Synchronous Data Stream Input/Output Client via Serial - CMSIS USART */
       </RTE_Components_h>
       <files>
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
@@ -149,11 +154,12 @@
     </component>
 
     <!-- SDS I/O (Custom client) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="Custom" Capiversion="2.0.0" Cversion="2.0.1">
+    <component Cclass="SDS" Cgroup="IO" Csub="Custom" Capiversion="3.0.0" Cversion="3.0.0">
       <description>I/O via Custom I/O to SDSIO Server</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
-        #define RTE_SDS_IO_CUSTOM                       /* Synchronous Data Stream Input/Output via Custom I/O */
+        #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
+        #define RTE_SDS_IO_CUSTOM                       /* Synchronous Data Stream Input/Output Client via Custom I/O */
       </RTE_Components_h>
       <files>
         <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
@@ -163,7 +169,7 @@
     </component>
 
     <!-- SDS I/O (File System - MDK FS) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="MDK FS" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via File System - MDK FS">
+    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="MDK FS" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via File System - MDK FS">
       <description>I/O via File System (using component Keil::File System)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -178,7 +184,7 @@
     </component>
 
     <!-- SDS I/O (File System - Semihosting) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="2.0.0" Cversion="2.0.0" condition="SDS IO via File System - Semihosting">
+    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via File System - Semihosting">
       <description>I/O via File System (using Semihosting)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
@@ -192,7 +198,7 @@
     </component>
 
     <!-- SDS Recorder and Player -->
-    <component Cclass="SDS" Cgroup="RecPlay" Cvariant="CMSIS-RTOS2" Cversion="2.0.0" condition="SDS Recorder and Player with CMSIS-RTOS2">
+    <component Cclass="SDS" Cgroup="RecPlay" Cvariant="CMSIS-RTOS2" Cversion="3.0.0" condition="SDS Recorder and Player with CMSIS-RTOS2">
       <description>Recorder/Player interface for data stream</description>
       <RTE_Components_h>
         #define RTE_SDS_REC_PLAY                        /* Synchronous Data Stream Recorder and Player */

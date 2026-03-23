@@ -6,11 +6,11 @@
 # not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     www.apache.org/licenses/LICENSE-2.0
+# www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an AS IS BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# distributed under the License is distributed on an AS IS BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
@@ -32,6 +32,12 @@ from typing import Optional
 
 if os.name == "nt":
     from ctypes import wintypes
+    import msvcrt
+else:
+    import select
+    import termios
+    import tty
+
 
 # ---------------------------------------------------------------------------- #
 #           Byte oriented in memory buffer with per-stream flow control        #
@@ -193,6 +199,95 @@ class StatusBar:
         self._stop.set()
         self._thread.join()
 
+# ---------------------------------------------------------------------------- #
+#                            SDS IO Control UI                                 #
+# ---------------------------------------------------------------------------- #
+class sdsControlUI(threading.Thread):
+    def __init__(self):
+        super().__init__(daemon=True)  # or daemon=False depending on your needs
+        self._sdsControlFlagsSet   = 0  # Host -> Device
+        self._sdsControlFlagsClear = 0  # Host -> Device
+        self._lock = threading.Lock()
+        self._stop = threading.Event()
+
+        # Mapping of flag characters to bit positions
+        self._SET_FLAGS   = { 'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'S':31 }
+        self._CLEAR_FLAGS = { 'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 's':31 }
+
+        # Start the thread
+        self.start()
+    
+    def run(self):
+        while not self._stop.is_set():
+            ch = self._read_key(timeout=0.1)
+            if ch is None:
+                continue
+            if ch in self._SET_FLAGS:
+                self._set_flag(ch)
+            elif ch in self._CLEAR_FLAGS:
+                self._clear_flag(ch)
+
+    def _set_flag(self, ch):
+        bit = self._SET_FLAGS[ch]
+        with self._lock:
+            self._sdsControlFlagsSet |= (1 << bit)
+        printer.info(f"sdsControlFlagsSet = 0x{self._sdsControlFlagsSet:08X} ('{ch}')")
+
+    def _clear_flag(self, ch):
+        bit = self._CLEAR_FLAGS[ch]
+        with self._lock:
+            self._sdsControlFlagsClear |= (1 << bit)
+        printer.info(f"sdsControlFlagsClear = 0x{self._sdsControlFlagsClear:08X} ('{ch}')")
+
+    def get_flags_set(self):
+        with self._lock:
+            flags_set = self._sdsControlFlagsSet
+            self._sdsControlFlagsSet = 0
+            return flags_set
+
+    def get_flags_clear(self):
+        with self._lock:
+            flags_clear = self._sdsControlFlagsClear
+            self._sdsControlFlagsClear = 0
+            return flags_clear
+
+    def stop(self):
+        self._stop.set()
+
+    if os.name == "nt":
+        def _read_key(self, timeout=0.1):
+            end_time = time.time() + timeout
+            while time.time() < end_time and not self._stop.is_set():
+                if msvcrt.kbhit():
+                    ch = msvcrt.getwch()
+
+                    # Ignore special keys like arrows and function keys.
+                    if ch in ("\x00", "\xe0"):
+                        if msvcrt.kbhit():
+                            msvcrt.getwch()
+                        return None
+
+                    return ch
+
+                time.sleep(0.01)
+            return None
+    else:
+        def _read_key(self, timeout=0.1):
+            import select
+            import termios
+            import tty
+
+            fd = sys.stdin.fileno()
+            old_settings = termios.tcgetattr(fd)
+            try:
+                tty.setcbreak(fd)
+                ready, _, _ = select.select([sys.stdin], [], [], timeout)
+                if ready:
+                    return sys.stdin.read(1)
+                return None
+            finally:
+                termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
 
 # ---------------------------------------------------------------------------- #
 #                            SDS IO Manager                                    #
@@ -216,6 +311,18 @@ class sdsio_manager:
         self.time_last_rw = time.time()
         # status bar
         self.status = StatusBar(self)
+        # control data
+        self._sdsStatusFlags = 0    # Device -> Host
+        # SDS Control Flags
+        printer.info("Starting SDS Control Flags thread. Press A-H to set flags, a-h to clear flags.")
+        self.control_flags = sdsControlUI()
+
+    def _shutdown(self):
+        if self.control_flags:
+            self.control_flags.stop()
+            self.control_flags.join(timeout=2.0)
+            self.control_flags = None
+        self.clean()
 
     def _format_stream_path(self, file_obj, base: Optional[str] = None) -> str:
         try:
@@ -478,6 +585,35 @@ class sdsio_manager:
         printer.info("Ping received.")
         return resp
 
+    def __ctrl_write(self, data):
+        # Writes raw bytes to the _sdsStatusFlags variable.
+        # Prints the resulting value and any recorded error information.
+        # Returns b''.
+        if len(data) >= 4:
+            self._sdsStatusFlags = int.from_bytes(data[0:4], byteorder='little')
+            # Print sdsStatusFlags value (Device -> Host (Server))
+            printer.info(f"sdsStatusFlags = 0x{self._sdsStatusFlags:08X}")
+            if len(data) > 8:
+                # Print error info captured at failed SDS_ASSERT (Device -> Host (Server))
+                #            filename                 + ":" + line number                                        + ": error: `SDS_ASSERT` failed\n"
+                printer.info(data[8:].decode('utf-8') + ":" + str(int.from_bytes(data[4:8], byteorder='little')) + ": error: `SDS_ASSERT` failed\n")
+        return b''
+
+    def __ctrl_read(self, size):
+        # Returns 8 bytes, the value of _sdsControlFlagsSet and _sdsControlFlagsClear variables or b``.
+        data = bytearray()
+        if (size >= 8):
+            # Response header
+            cmd = 7
+            data.extend(cmd.to_bytes(4,'little'))
+            data.extend((0).to_bytes(4,'little'))
+            data.extend((0).to_bytes(4,'little'))
+            data.extend((8).to_bytes(4,'little'))
+            # Response data
+            data.extend(self.control_flags.get_flags_set().to_bytes(4,'little'))
+            data.extend(self.control_flags.get_flags_clear().to_bytes(4,'little'))
+        return data
+
     def clean(self):
         # close all open streams
         for sid in list(self.opened_streams.keys()):
@@ -494,6 +630,8 @@ class sdsio_manager:
         elif cmd == 3: return self.__write(sid, data)
         elif cmd == 4: return self.__read(sid, arg)
         elif cmd == 5: return self.__pingServer(sid)
+        elif cmd == 6: return self.__ctrl_write(data)
+        elif cmd == 7: return self.__ctrl_read(arg)
         else:
             printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
             return bytearray()
@@ -533,7 +671,7 @@ class async_sdsio_server_socket:
 
                 # validate command before reading payload
                 cmd = int.from_bytes(hdr[0:4],'little')
-                if cmd not in (1, 2, 3, 4, 5):
+                if cmd not in (1, 2, 3, 4, 5, 6, 7):
                     printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
                     printer.info("Closing SDSIO Client connection...")
                     break
@@ -689,7 +827,7 @@ class sdsio_server_serial:
 
                     # validate command before reading payload
                     cmd = int.from_bytes(header[0:4], 'little')
-                    if cmd not in (1, 2, 3, 4, 5):
+                    if cmd not in (1, 2, 3, 4, 5, 6, 7):
                         printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
                         buffer.clear()
                         return  # Exit start(), finally block will clean up
@@ -939,7 +1077,7 @@ class sdsio_server_usb:
 
                 # validate command before reading payload
                 cmd = int.from_bytes(hdr[0:4],'little')
-                if cmd not in (1, 2, 3, 4, 5):
+                if cmd not in (1, 2, 3, 4, 5, 6, 7):
                     printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
                     self._protocol_error = True
                     self.running = False
@@ -1473,8 +1611,8 @@ async def main():
         pass
 
     finally:
-        # Clean up all SDS streams on exit
-        manager.clean()
+        # Shutdown the UI thread and clean-up all SDS streams on exit
+        manager._shutdown()
 
 if __name__ == "__main__":
     # minimal printer until main() configures it

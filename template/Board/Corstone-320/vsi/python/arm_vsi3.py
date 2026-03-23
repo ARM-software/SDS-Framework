@@ -134,6 +134,9 @@ class StreamManager:
         base_dir = work_dir if work_dir else os.getcwd()
         self._opened_streams = {}           # sid -> (file_obj, name, mode)
         self._stream_indexes = {}           # stream name -> IndexAllocator
+        self._sdsControlFlagsSet   = 0   # VSI -> Device
+        self._sdsControlFlagsClear = 0   # VSI -> Device
+        self._sdsStatusFlags       = 0   # Device -> VSI
 
         # Load SDSIO configuration from sdsio.yml configuration file
         dir_path, idx_start, idx_end, idx_list = self._load_sdsio_config(base_dir)
@@ -389,6 +392,35 @@ class StreamManager:
             logger.app(f"{self._rec_play[mode]} {name} - ERROR. Failed to read.")
             return b'', True
 
+    def ctrl_write(self, data: bytes) -> bool:
+        # Writes raw bytes to the _sdsStatusFlags variable.
+        # Logs the resulting value and any recorded error information.
+        # Returns True on success, False otherwise.
+        if len(data) >= 4:
+            self._sdsStatusFlags = int.from_bytes(data[0:4], byteorder='little')
+            # Log sdsStatusFlags value (Device -> Host (this script))
+            logger.app(f"sdsStatusFlags = 0x{self._sdsStatusFlags:08X}")
+            if len(data) > 8:
+                # Log error info captured at failed SDS_ASSERT (Device -> Host (this script))
+                #          filename                 + ":" + line number                                        + ": error: `SDS_ASSERT` failed\n"
+                logger.app(data[8:].decode('utf-8') + ":" + str(int.from_bytes(data[4:8], byteorder='little')) + ": error: `SDS_ASSERT` failed\n")
+            return True
+        else:
+            logger.app(f"ERROR: Failed to write less than 4 bytes of control data.")
+            return False
+
+    def ctrl_read(self, size: int) -> bytes:
+        # Returns 8 bytes, the value of _sdsControlFlagsSet and _sdsControlFlagsClear variables or b``.
+        data = bytearray()
+        if (size >= 8):
+            data.extend(self._sdsControlFlagsSet.to_bytes(4,'little'))
+            data.extend(self._sdsControlFlagsClear.to_bytes(4,'little'))
+            self._sdsControlFlagsSet = 0
+            self._sdsControlFlagsClear = 0
+        else:
+            logger.app(f"ERROR: Failed to read less than 8 bytes of control data.")
+        return data
+
     def clean(self):
         # Close all open streams.
         for sid in list(self._opened_streams):
@@ -402,7 +434,7 @@ Stream = StreamManager()
 def processCOMMAND(command):
     global Data, Stream, STREAM_ID, ARGUMENT
 
-    cmd = { 1: "CMD_OPEN", 2: "CMD_CLOSE", 3: "CMD_WRITE", 4: "CMD_READ" }
+    cmd = { 1: "CMD_OPEN", 2: "CMD_CLOSE", 3: "CMD_WRITE", 4: "CMD_READ", 6: "CMD_CTRL_WRITE", 7: "CMD_CTRL_READ" }
 
     if not command in cmd:
         logger.app(f"ERROR:    Unknown COMMAND: {command}.")
@@ -425,6 +457,16 @@ def processCOMMAND(command):
         # Return data length or SDSIO_EOS
         Data, eof = Stream.read(STREAM_ID, ARGUMENT)
         ARGUMENT = len(Data) if not eof else SDSIO_EOS
+
+    elif command == 6: # Control Write
+        # Return data length or SDSIO_ERROR
+        ARGUMENT = len(Data) if Stream.ctrl_write(Data) else SDSIO_ERROR
+
+    elif command == 7: # Control Read
+        # Return data length or SDSIO_ERROR
+        logger.info(f"command == 7")
+        Data = Stream.ctrl_read(ARGUMENT)
+        ARGUMENT = len(Data) if Data else SDSIO_ERROR
 
     return command
 

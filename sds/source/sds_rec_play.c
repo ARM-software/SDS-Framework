@@ -1029,3 +1029,59 @@ int32_t sdsPlayGetSize (sdsRecPlayId_t id) {
   sdsRecPlayLockRelease(rec_play);
   return ret;
 }
+
+/**
+  Write control data to Host.
+*/
+int32_t sdsRecPlayControlWrite (const void *buf, uint32_t buf_size) {
+  int32_t ret = SDS_REC_PLAY_ERROR;
+  int32_t sdsio_ret;
+
+  if (sdsRecPlayInitialized == 0U) {
+    // The recorder/player is not initialized. Exiting the function.
+    return SDS_REC_PLAY_ERROR;
+  }
+
+  sdsio_ret = sdsioControlWrite(buf, buf_size);
+
+  if (sdsio_ret >= 0) {
+    // Number of bytes written to the SDS I/O interface
+    ret = sdsio_ret;
+  } else {
+    ret = SDS_REC_PLAY_EVENT_ERROR_IO;
+    if (sdsRecPlayEvent != NULL) {
+      // Notify the application about I/O error.
+      sdsRecPlayEvent(0U, SDS_REC_PLAY_EVENT_ERROR_IO);
+    }
+  }
+
+  return ret;
+}
+
+/**
+  Read control data from Host.
+*/
+int32_t sdsRecPlayControlRead (void *buf, uint32_t buf_size) {
+  int32_t ret = SDS_REC_PLAY_ERROR;
+  int32_t sdsio_ret;
+
+  if (sdsRecPlayInitialized == 0U) {
+    // The recorder/player is not initialized. Exiting the function.
+    return SDS_REC_PLAY_ERROR;
+  }
+
+  sdsio_ret = sdsioControlRead(buf, buf_size);
+
+  if (sdsio_ret >= 0) {
+    // Number of bytes read from the SDS I/O interface
+    ret = sdsio_ret;
+  } else {
+    ret = SDS_REC_PLAY_EVENT_ERROR_IO;
+    if (sdsRecPlayEvent != NULL) {
+      // Notify the application about I/O error.
+      sdsRecPlayEvent(0U, SDS_REC_PLAY_EVENT_ERROR_IO);
+    }
+  }
+
+  return ret;
+}

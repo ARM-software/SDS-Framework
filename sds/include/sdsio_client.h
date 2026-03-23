@@ -43,6 +43,8 @@ typedef struct {
 #define SDSIO_CMD_WRITE         3U
 #define SDSIO_CMD_READ          4U
 #define SDSIO_CMD_PING          5U
+#define SDSIO_CMD_CTRL_WRITE    6U
+#define SDSIO_CMD_CTRL_READ     7U
 
 // Function prototypes
 

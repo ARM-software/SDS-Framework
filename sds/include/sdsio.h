@@ -101,6 +101,26 @@ int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size);
 */
 int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size);
 
+/**
+  \fn          int32_t sdsioControlWrite (const void *buf, uint32_t buf_size)
+  \brief       Write control data to Host.
+  \param[in]   buf            pointer to buffer with data to write
+  \param[in]   buf_size       buffer size in bytes
+  \return      number of bytes successfully written or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
+*/
+int32_t sdsioControlWrite (const void *buf, uint32_t buf_size);
+
+/**
+  \fn          int32_t sdsioControlRead (void *buf, uint32_t buf_size)
+  \brief       Read control data from Host.
+  \param[out]  buf            pointer to buffer for data to read
+  \param[in]   buf_size       buffer size in bytes
+  \return      number of bytes successfully read, or
+               a negative value on error (see \ref SDS_IO_Return_Codes)
+*/
+int32_t sdsioControlRead (void *buf, uint32_t buf_size);
+
 #ifdef  __cplusplus
 }
 #endif

@@ -275,6 +275,8 @@ ID  | Name                 | Description
 3   | SDSIO_CMD_WRITE      | Write to an SDS data file
 4   | SDSIO_CMD_READ       | Read from an SDS data file
 5   | SDSIO_CMD_PING       | Ping Server
+6   | SDSIO_CMD_CTRL_WRITE | Write control data to Host
+7   | SDSIO_CMD_CTRL_READ  | Read control data from Host
 
 Each **Command** starts with a **Header (4 Words = 16 bytes)** and **optional data** with variable length.
 Depending on the Command, the SDSIO Server replies with a **Response** that repeats the **Header** and delivers **additional data**.
@@ -363,6 +365,38 @@ The Response with ID = **5** (SDSIO_CMD_PING) returns the `Status` with nonzero 
 | WORD | WORD |  WORD  | WORD |
 <  5   |  0   | Status |  0   |
 |******|******|********|******|
+```
+
+**SDSIO_CMD_CTRL_WRITE**
+
+The Command with ID = **6** (SDSIO_CMD_CTRL_WRITE) writes control data to a control buffer on the Host computer.
+`Size` specifies the size of `Data` in bytes.
+There is no Response from the SDSIO Server for this Command.
+
+```txt
+| WORD | WORD | WORD | WORD |++++++|
+>  6   |  0   |  0   | Size | Data |
+|******|******|******|******|++++++|
+```
+
+**SDSIO_CMD_CTRL_READ**
+
+The Command with ID = **7** (SDSIO_CMD_CTRL_READ) reads control data from a control buffer on the Host computer.
+`Size` specifies the number of bytes to read.
+
+```txt
+| WORD | WORD | WORD | WORD |
+>  7   |  0   | Size |  0   |
+|******|******|******|******|
+```
+
+The Response with ID = **7** (SDSIO_CMD_CTRL_READ) returns the data read from the control buffer on the Host computer.
+`Size` specifies the size of `Data` in bytes that was read.
+
+```txt
+| WORD | WORD | WORD | WORD |++++++|
+>  7   |  0   |  0   | Size | Data |
+|******|******|******|******|++++++|
 ```
 
 ## SDSIO Message Sequence

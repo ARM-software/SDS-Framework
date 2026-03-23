@@ -141,6 +141,26 @@ int32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t
 */
 int32_t sdsPlayGetSize (sdsRecPlayId_t id);
 
+/**
+  \fn          int32_t sdsRecPlayControlWrite (const void *buf, uint32_t buf_size)
+  \brief       Write control data to Host.
+  \param[in]   buf            pointer to the control data buffer to be written
+  \param[in]   buf_size       size of the control data buffer in bytes
+  \return      number of bytes successfully written or
+               a negative value on error (see \ref SDS_Recorder_Player_Return_Codes)
+*/
+int32_t sdsRecPlayControlWrite (const void *buf, uint32_t buf_size);
+
+/**
+  \fn          int32_t sdsRecPlayControlRead (void *buf, uint32_t buf_size)
+  \brief       Read control data from Host.
+  \param[out]  buf            pointer to the control data buffer to be read
+  \param[in]   buf_size       size of the control data buffer in bytes
+  \return      number of bytes successfully read, or
+               a negative value on error (see \ref SDS_Recorder_Player_Return_Codes)
+*/
+int32_t sdsRecPlayControlRead (void *buf, uint32_t buf_size);
+
 #ifdef  __cplusplus
 }
 #endif
