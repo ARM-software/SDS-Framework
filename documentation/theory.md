@@ -268,21 +268,24 @@ WORD       | 32-bit value (low byte first).
 
 Commands are sent from the embedded target to the Host computer running the SDSIO Server.
 
-ID  | Name               | Description
-:--:|:-------------------|:------------------------
-1   | SDSIO_CMD_OPEN     | Open an SDS data file
-2   | SDSIO_CMD_CLOSE    | Close an SDS data file
-3   | SDSIO_CMD_WRITE    | Write to an SDS data file
-4   | SDSIO_CMD_READ     | Read from an SDS data file
-5   | SDSIO_CMD_PING     | Ping Server
+ID  | Name                 | Description
+:--:|:---------------------|:------------------------
+1   | SDSIO_CMD_OPEN       | Open an SDS data file
+2   | SDSIO_CMD_CLOSE      | Close an SDS data file
+3   | SDSIO_CMD_WRITE      | Write to an SDS data file
+4   | SDSIO_CMD_READ       | Read from an SDS data file
+5   | SDSIO_CMD_PING       | Ping Server
 
-Each Command starts with a Header (4 Words) and optional data with variable length. Depending on the Command, the SDSIO Server replies with a Response that repeats the Header and delivers additional data.
+Each **Command** starts with a **Header (4 Words = 16 bytes)** and **optional data** with variable length.
+Depending on the Command, the SDSIO Server replies with a **Response** that repeats the **Header** and delivers **additional data**.
 
 **SDSIO_CMD_OPEN**
 
-The Command ID=1 **SDSIO_CMD_OPEN** opens an SDS data file on the Host computer. `Mode` defines `read` (value=0) or `write` (value=1) operation. `Len of Name` is the size of the string in bytes.
+The Command with ID = **1** (SDSIO_CMD_OPEN) opens an SDS data file on the Host computer.
+`Mode` defines `read` (value=0) or `write` (value=1) operation. `Len of Name` is the size of the string in bytes.
 
-SDS data filenames use the following file format: `<name>.<file-index>.sds`, where `Name` is the base file name of the SDS data file and `<file-index>` is a sequential number maintained by SDSIO Server (for details see section [Filenames](#filenames)).
+SDS data filenames use the following file format: `<name>.<file-index>.sds`, where `Name` is the base file name
+of the SDS data file and `<file-index>` is a sequential number maintained by SDSIO Server (for details see section [Filenames](#filenames)).
 
 ```txt
 | WORD |  WORD  | WORD | WORD *******|++++++|
@@ -290,7 +293,7 @@ SDS data filenames use the following file format: `<name>.<file-index>.sds`, whe
 |******|********|******|*************|++++++|
 ```
 
-The Response ID=1 **SDSIO_CMD_OPEN** provides a `Handle` that is used to identify the file in subsequent commands.
+The Response with ID = **1** (SDSIO_CMD_OPEN) provides a `Handle` that is used to identify the file in subsequent Commands.
 
 ```txt
 | WORD |  WORD  | WORD | WORD *******|
@@ -300,7 +303,9 @@ The Response ID=1 **SDSIO_CMD_OPEN** provides a `Handle` that is used to identif
 
 **SDSIO_CMD_CLOSE**
 
-The Command ID=2 **SDSIO_CMD_CLOSE** closes an SDS data file on the Host computer. The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**. There is no Response from the SDSIO Server on this command.
+The Command with ID = **2** (SDSIO_CMD_CLOSE) closes an SDS data file on the Host computer.
+The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**.
+There is no Response from the SDSIO Server on this Command.
 
 ```txt
 | WORD |  WORD  | WORD | WORD |
@@ -310,7 +315,10 @@ The Command ID=2 **SDSIO_CMD_CLOSE** closes an SDS data file on the Host compute
 
 **SDSIO_CMD_WRITE**
 
-The Command ID=3 **SDSIO_CMD_WRITE** writes data to an SDS data file on the Host computer. The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**. `Size` is the `Data` size in bytes.  There is no Response from the SDSIO Server on this command.
+The Command with ID = **3** (SDSIO_CMD_WRITE) writes data to an SDS data file on the Host computer.
+The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**.
+`Size` specifies the size of `Data` in bytes.
+There is no Response from the SDSIO Server for this Command.
 
 ```txt
 | WORD |  WORD  | WORD | WORD |++++++|
@@ -320,7 +328,9 @@ The Command ID=3 **SDSIO_CMD_WRITE** writes data to an SDS data file on the Host
 
 **SDSIO_CMD_READ**
 
-The Command ID=4 **SDSIO_CMD_READ** reads data from an SDS data file on the Host computer. The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**. `Size` are the number of bytes that should be read.
+The Command with ID = **4** (SDSIO_CMD_READ) reads data from an SDS data file on the Host computer.
+The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**.
+`Size` specifies the number of bytes to read.
 
 ```txt
 | WORD |  WORD  | WORD | WORD |
@@ -328,8 +338,8 @@ The Command ID=4 **SDSIO_CMD_READ** reads data from an SDS data file on the Host
 |******|********|******|******|
 ```
 
-The Response ID=4 **SDSIO_CMD_READ** provides the data read from an SDS data file on the Host computer.
-`Size` is the `Data` size in bytes that was read and `Status` with nonzero = end of stream, else 0.
+The Response with ID = **4** (SDSIO_CMD_READ) provides the data read from an SDS data file on the Host computer.
+`Size` specifies the size of `Data` in bytes that was read and `Status` with nonzero = end of stream, else 0.
 
 ```txt
 | WORD |  WORD  |  WORD  | WORD |++++++|
@@ -339,7 +349,7 @@ The Response ID=4 **SDSIO_CMD_READ** provides the data read from an SDS data fil
 
 **SDSIO_CMD_PING**
 
-The Command ID=5 **SDSIO_CMD_PING** verifies if the Server is active and reachable on the Host.
+The Command with ID = **5** (SDSIO_CMD_PING) verifies if the Server is active and reachable on the Host.
 
 ```txt
 | WORD | WORD | WORD | WORD |
@@ -347,7 +357,7 @@ The Command ID=5 **SDSIO_CMD_PING** verifies if the Server is active and reachab
 |******|******|******|******|
 ```
 
-The Response ID=5 **SDSIO_CMD_PING** returns the `Status` with nonzero = server active, else 0
+The Response with ID = **5** (SDSIO_CMD_PING) returns the `Status` with nonzero = server active, else 0
 
 ```txt
 | WORD | WORD |  WORD  | WORD |
