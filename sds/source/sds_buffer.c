@@ -24,8 +24,8 @@
 #include <string.h>
 
 #include "cmsis_compiler.h"
+#include "sds_config.h"
 #include "sds_buffer.h"
-#include "sds_buffer_config.h"
 
 // Control block
 typedef struct {
@@ -43,8 +43,8 @@ typedef struct {
 } sdsBuffer_t;
 
 // Allocate memory for the SDS Buffer streams depending on configured maximum number of streams.
-static sdsBuffer_t   SDSBufferStreams[SDS_BUFFER_MAX_STREAMS] = {0};
-static sdsBuffer_t *pSDSBufferStreams[SDS_BUFFER_MAX_STREAMS] = {NULL};
+static sdsBuffer_t   SDSBufferStreams[SDS_MAX_STREAMS] = {0};
+static sdsBuffer_t *pSDSBufferStreams[SDS_MAX_STREAMS] = {NULL};
 
 // Helper functions
 
@@ -91,7 +91,7 @@ static sdsBuffer_t *sdsBufferAlloc (void) {
   sdsBuffer_t *sds_buffer = NULL;
   uint32_t     n;
 
-  for (n = 0U; n < SDS_BUFFER_MAX_STREAMS; n++) {
+  for (n = 0U; n < SDS_MAX_STREAMS; n++) {
     if (atomic_wr32_if_zero((uint32_t *)&pSDSBufferStreams[n], (uint32_t)&SDSBufferStreams[n]) != 0U) {
       sds_buffer = &SDSBufferStreams[n];
       break;
@@ -104,7 +104,7 @@ static void sdsBufferFree (sdsBuffer_t *sds_buffer) {
   uint32_t n;
 
   if (sds_buffer != NULL) {
-    for (n = 0U; n < SDS_BUFFER_MAX_STREAMS; n++) {
+    for (n = 0U; n < SDS_MAX_STREAMS; n++) {
       if (pSDSBufferStreams[n] == sds_buffer) {
         pSDSBufferStreams[n] = NULL;
         break;

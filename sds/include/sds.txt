@@ -175,34 +175,6 @@ or as a transport layer for higher-level components such as the SDS Recorder and
 */
 
 /**
-\defgroup SDS_IO_Return_Codes Function Return Codes
-\brief SDS I/O Function Return Codes
-\details The following values are returned by most `sdsio` functions.
-@{
-\def SDSIO_OK
-\brief SDS I/O function executed successfully.
-
-\def SDSIO_ERROR
-\brief General error during SDS I/O function execution.
-
-\def SDSIO_ERROR_PARAMETER
-\brief Invalid parameter passed to an SDS I/O function.
-
-\def SDSIO_ERROR_TIMEOUT
-\brief SDS I/O function execution timed out.
-
-\def SDSIO_ERROR_INTERFACE
-\brief Error in the SDS I/O interface.
-
-\def SDSIO_ERROR_NO_SERVER
-\brief No response from the SDS I/O server.
-
-\def SDSIO_EOS
-\brief End of stream reached in SDS I/O read operation.
-@}
-*/
-
-/**
 \typedef sdsioId_t
 \brief Handle to SDS I/O data stream
 \details
@@ -261,8 +233,8 @@ the SDS I/O Server, which then writes the data to a file on the Host system.
 The function may return before all data has been written, depending on the available interface bandwidth, buffer capacity, or timeout behavior:
 
 - If the write operation is successful, the function returns the number of bytes actually written. This value may be less than \a buf_size in case of partial write.
-- If no data could be written before the operation times out, the function returns \ref SDSIO_ERROR_TIMEOUT.
-- If an I/O interface or protocol error occurs, the function returns \ref SDSIO_ERROR or \ref SDSIO_ERROR_INTERFACE.
+- If no data could be written before the operation times out, the function returns \ref SDS_ERROR_TIMEOUT.
+- If an I/O interface or protocol error occurs, the function returns \ref SDS_ERROR_IO.
 */
 
 /**
@@ -276,40 +248,29 @@ the file on the Host system and returns the data to the Client.
 The function attempts to read data and may block based on the behavior of the underlying interface and data availability. It returns under the following conditions:
 
 - If data is available, the function reads up to `buf_size` bytes and returns the number of bytes actually read. This value may be less than `buf_size`.
-- If no data becomes available before the timeout expires, the function returns \ref SDSIO_ERROR_TIMEOUT.
+- If no data becomes available before the timeout expires, the function returns \ref SDS_ERROR_TIMEOUT.
 - If data is partially read but the timeout occurs before the full request is satisfied, the function returns the number of bytes read up to that point.
-- If the end of the stream is reached and no more data remains, the function returns \ref SDSIO_EOS to indicate that the end of file has been reached and no additional data is available.
-- If an I/O interface or protocol error occurs, the function returns \ref SDSIO_ERROR or \ref SDSIO_ERROR_INTERFACE.
+- If the end of the stream is reached and no more data remains, the function returns \ref SDS_EOS to indicate that the end of file has been reached and no additional data is available.
+- If an I/O interface or protocol error occurs, the function returns \ref SDS_ERROR_IO.
 */
 
 /**
-\fn          int32_t sdsioControlWrite (const void *buf, uint32_t buf_size)
+\fn          int32_t sdsExchange (void)
 \details
-Attempts to write up to `buf_size` bytes of the control data from the memory pointed to by `buf` to the Host.
-If the interface is a simulator (VSI) the data is written directly to the `sdsio.log` file.
-For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a control write command (SDSIO_CMD_CTRL_WRITE) along with the data to
-the SDS I/O Server. The I/O Server then writes the data to internal memory on the Host system, where it can be interpreted and processed accordingly.
+Exchange state and control information with the Host.
 
-The function blocks until data is written to the Host or an error occurs:
+This function provides the control-plane exchange used by the SDS. A typical implementation synchronizes
+Host-visible state, such as flags, idle information, and optional diagnostic data, using the active SDS I/O backend.
 
-- If the write operation is successful, the function returns the number of bytes actually written. This value may be less than \a buf_size.
-- If an I/O interface or protocol error occurs, the function returns \ref SDSIO_ERROR or \ref SDSIO_ERROR_INTERFACE.
+On success, the function returns \ref SDS_OK. On failure, it returns a negative value from \ref SDS_Return_Codes.
 */
 
 /**
-\fn          int32_t sdsioControlRead (void *buf, uint32_t buf_size)
+\fn          void sdsFlagsModify (uint32_t set_mask, uint32_t clear_mask)
 \details
-Attempts to read up to `buf_size` bytes of control data from the Host into the memory pointed to by `buf`.
-If the interface is a simulator (VSI) the data is read from the internal memory controlled by the `sdsio.yml` steering file.
-For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a control read command (SDSIO_CMD_CTRL_READ) to the SDS I/O Server.
-The I/O Server reads data from the Host system's internal memory and returns it to the Client.
-This memory can be controlled through the user interface provided by the SDS I/O Server or `sdsio.yml` steering file.
-
-The function blocks until data is read from the Host or an error occurs:
-
-- If the read operation is successful, the function returns the number of bytes actually read. This value may be less than \a buf_size.
-- If an I/O interface or protocol error occurs, the function returns \ref SDSIO_ERROR or \ref SDSIO_ERROR_INTERFACE.
+This function atomically updates the flags, ensuring safe concurrent access to the global sdsFlags variable in a multithreaded environment.
 */
+
 
 /**
 @}
@@ -319,29 +280,29 @@ The function blocks until data is read from the Host or an error occurs:
 
 /*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====*/
 /**
-\defgroup SDS_Recorder_Player SDS Recorder and Player
-\brief sds_rec_play.h: SDS Recorder and Player for writing and reading SDS files via communication or file I/O interface.
+\defgroup SDS_Interface SDS Interface
+\brief sds.h: SDS stream interface for writing and reading SDS files via communication or file I/O interface.
 \details
-The **SDS Recorder** and **Player** manage writing to and reading from SDS files through communication or file I/O interfaces.
+The **SDS** system manages writing to and reading from SDS files through communication or file I/O interfaces.
 They support the recording and playback of real-world data for applications such as machine learning and data analysis.
-For details on I/O interfaces, refer to chapter [SDS Interface](../sdsio.md#).
+For details on I/O interfaces, refer to chapter [SDS IO Interface](../sdsio.md#).
 
-The system uses a dedicated worker thread (`sdsRecPlayThread`) to handle file I/O asynchronously. User-facing APIs interact only
+The system uses a dedicated worker thread (`sdsThread`) to handle file I/O asynchronously. User-facing APIs interact only
 with internal circular buffers, allowing efficient, non-blocking data operations.
 
-Each recorder or player stream is identified by a handle of type \ref sdsRecPlayId_t, returned by \ref sdsRecOpen or \ref sdsPlayOpen,
+Each SDS stream is identified by a handle of type \ref sdsId_t, returned by \ref sdsOpen function,
 and is required for all subsequent operations on that stream.
 
 \b Thread \b Safety
 
-The SDS Recorder and Player are **thread-safe** for regular operation:
+The SDS Interface functions are **thread-safe** for regular operation:
 
 - A single thread may read from or write to a specific stream at a time.
 - Multiple streams can be used concurrently by separate threads without conflict.
 
 While operational calls are thread-safe, **improper reuse of closed streams can lead to data corruption**:
 
-- When a stream is closed via \ref sdsRecPlayClose, its internal control block may be **reallocated** if
+- When a stream is closed via \ref sdsClose, its internal control block may be **reallocated** if
 another stream is opened.
 - If a `read` or `write` operation is still pending on a handle after it has been closed, and a new stream is opened
 that causes control block reuse, the pending operation may unexpectedly complete on the **newly opened stream**.
@@ -354,94 +315,115 @@ operations related to the previous stream have been fully completed or canceled.
 */
 
 /**
-\defgroup SDS_Recorder_Player_Return_Codes Function Return Codes
-\brief SDS Recorder and Player Function Return Codes
-\details The following values are returned by most `sdsRec` and `sdsPlay` functions.
+\defgroup SDS_Return_Codes Function Return Codes
+\brief SDS Function Return Codes
+\details The following values are returned by most SDS functions.
 @{
-\def SDS_REC_PLAY_OK
-\brief SDS Recorder or Player function executed successfully.
+\def SDS_OK
+\brief SDS function executed successfully.
 
-\def SDS_REC_PLAY_ERROR
-\brief General error during SDS Recorder or Player function execution.
+\def SDS_ERROR
+\brief General error during SDS function execution.
 
-\def SDS_REC_PLAY_ERROR_PARAMETER
-\brief Invalid parameter passed to an SDS Recorder or Player function.
+\def SDS_ERROR_PARAMETER
+\brief Invalid parameter passed to an SDS function.
 
-\def SDS_REC_PLAY_ERROR_TIMEOUT
-\brief SDS Recorder or Player function execution timed out.
+\def SDS_ERROR_TIMEOUT
+\brief SDS function execution timed out.
 
-\def SDS_REC_PLAY_ERROR_IO
-\brief I/O error during SDS Recorder or Player function execution.
+\def SDS_ERROR_IO
+\brief I/O error during SDS function execution.
 
-\def SDS_REC_ERROR_NO_SPACE
+\def SDS_NO_SPACE
 \brief Insufficient space in SDS circular buffer to write the entire data block.
 
-\def SDS_PLAY_ERROR_NO_DATA
+\def SDS_NO_DATA
 \brief Not whole data block is available in the SDS circular buffer.
 
-\def SDS_PLAY_EOS
-\brief End of stream reached in SDS Player operation.
+\def SDS_EOS
+\brief End of stream reached in SDS read operation.
 @}
 */
 
 /**
-\defgroup SDS_Recorder_Player_Event_Codes Event Codes
-\brief SDS Recorder and Player Event Codes
-\details The following values are passed as event value to \ref sdsRecPlayEvent_t callback function.
+\defgroup SDS_Event_Codes Event Codes
+\brief SDS Event Codes
+\details The following values are passed as event value to the \ref sdsEvent_t callback function.
 @{
-\def SDS_REC_PLAY_EVENT_ERROR_IO
-\brief Event triggered when an I/O error occurs during recording or playback.
+\def SDS_EVENT_ERROR_IO
+\brief Event triggered when an SDS I/O error occurs.
 
-\def SDS_REC_EVENT_ERROR_NO_SPACE
-\brief Event triggered when sdsRecWrite() fails due to insufficient space in the SDS circular buffer.
+\def SDS_EVENT_NO_SPACE
+\brief Event triggered when \ref sdsWrite fails due to insufficient space in the SDS circular buffer.
 
-\def SDS_PLAY_EVENT_ERROR_NO_DATA
-\brief Event triggered when sdsPlayRead() fails due to insufficient data in the SDS circular buffer.
+\def SDS_EVENT_NO_DATA
+\brief Event triggered when \ref sdsRead fails due to insufficient data in the SDS circular buffer.
 @}
 */
 
 /**
-\typedef sdsRecPlayId_t
-\brief Handle to SDS recorder or player stream
+\typedef sdsId_t
+\brief Handle to SDS stream
 \details
-This *pointer* defines the handle to SDS recorder or player stream. It is used to identify a data stream across the different functions for
-the SDS Recorder and Player system.
+This *pointer* defines the handle to an SDS stream. It is used to identify a data stream across the different functions for
+the SDS system.
 */
 
 /**
-\typedef sdsRecPlayEvent_t
+\typedef sdsMode_t
 \details
-This function is registered by passing a pointer to it as a parameter to the \ref sdsRecPlayInit function.
-It is invoked when an error happens during recording or playback.
+This *enum* identifies the opening mode of an SDS stream: read or write.
 */
 
 /**
-\fn          int32_t sdsRecPlayInit (sdsRecPlayEvent_t event_cb)
+\typedef sdsEvent_t
 \details
-Initializes the SDS Recorder and Player system. This function allocates resources, initializes underlying
-SDS I/O interface and creates the `sdsRecPlayThread` worker thread. An optional callback function can be
+This callback function is registered by passing a pointer to it as a parameter to the \ref sdsInit function.
+It is invoked when an error happens during stream operation.
+*/
+
+/**
+\typedef sdsError_t
+\details
+This structure stores SDS diagnostic information, including status code, source file, line number,
+and an occurrence flag.
+*/
+
+/**
+\fn          int32_t sdsInit (sdsEvent_t event_cb)
+\details
+Initializes the SDS system. This function allocates resources, initializes underlying
+SDS I/O interface and creates the `sdsThread` worker thread. An optional callback function can be
 registered to receive notifications (e.g., I/O errors).  This function must be called once before opening
-any recorder or player streams.
+SDS streams.
 */
 
 /**
-\fn          int32_t sdsRecPlayUninit (void)
+\fn          int32_t sdsUninit (void)
 \details
-De-initializes the SDS Recorder and Player system. This function terminates the `sdsRecPlayThread` worker thread,
-and releases the internal resources. All open recorder or player streams must be closed by the user before calling this function.
+De-initializes the SDS system. This function terminates the `sdsThread` worker thread,
+and releases the internal resources. All open SDS streams must be closed by the user before calling this function.
 After de-initialization, the system must be re-initialized before further use.
 */
 
 /**
-\fn          sdsRecPlayId_t sdsRecOpen (const char *name, void *buf, uint32_t buf_size)
+\fn          sdsId_t sdsOpen (const char *name, sdsMode_t mode, void *buf, uint32_t buf_size)
 \details
-Opens a recorder stream for writing timestamps and data blocks to the SDS file. The `buf` parameter specifies
+Opens an SDS stream for reading or writing time slot information and data blocks to or from the SDS file. The `buf` parameter specifies
 a user-allocated memory region that serves as an internal circular buffer. The buffer must be large enough
-to hold at least the largest expected data block plus 8 bytes for the record header.
+to hold at least the largest expected data block plus 8 bytes for header information.
+
+For opening stream in write mode:
 
 The `name` parameter defines the base name for the SDS output file and is used to construct the full file name in the
 format `name.index.sds`. The `index` is an auto-incrementing value that ensures a unique file name is generated.
 If a file with the generated name already exists, the `index` is incremented until an unused name is found.
+
+For opening stream in read mode:
+
+The `name` parameter specifies the base name of the SDS input file. The function attempts to locate and open the file
+`<name>.<index>.sds`, where `<index>` is an auto-incrementing value. If no matching file is found, the function returns an error.
+
 For details, refer to [Filenames section](../theory.md#filenames).
 
 This function returns a handle that uniquely identifies the stream. The handle is used as a reference in
@@ -449,25 +431,34 @@ subsequent function calls to perform operations on the stream.
 */
 
 /**
-\fn          int32_t sdsRecClose (sdsRecPlayId_t id)
+\fn          int32_t sdsClose (sdsId_t id)
 \details
-Closes a recorder stream. Prior to closing, any remaining data in the internal circular buffer is flushed to the SDS file.
-The function blocks until all data transfers are complete or a timeout occurs. Upon successful closure, the stream handle
-becomes invalid.
+Closes an SDS stream and releases any internal resources associated with the stream handle.
+
+For closing a stream used in write mode:
+
+Prior to closing, any remaining data in the internal circular buffer is flushed to the SDS file.
+The function blocks until all data transfers are complete or a timeout occurs.
+
+For closing a stream used in read mode:
+
+The function waits for all pending data transfers to complete or until a timeout occurs.
+
+Upon successful closure, the stream handle becomes invalid.
 */
 
 /**
-\fn          int32_t sdsRecWrite (sdsRecPlayId_t id, uint32_t timestamp, const void *buf, uint32_t buf_size)
+\fn          int32_t sdsWrite (sdsId_t id, uint32_t timeslot, const void *buf, uint32_t buf_size)
 \details
-Writes a data block, including a header containing the timestamp and data block size, to the internal circular buffer.
+Writes a data block, including a header containing the time slot information and data block size, to the internal circular buffer.
 
-The `sdsRecPlayThread` worker thread asynchronously writes the data to the SDS file via the underlying SDS I/O interface.
-For an explanation of how the SDS Recorder selects and names the target SDS file, refer to [Filenames section](../theory.md#filenames).
+The `sdsThread` worker thread asynchronously writes the data to the SDS file via the underlying SDS I/O interface.
+For an explanation of how the SDS system selects and names the target SDS file, refer to [Filenames section](../theory.md#filenames).
 This asynchronous design enables efficient, non-blocking data handling and optimized performance.
 
 Before attempting to write, function verifies that the entire header and the complete data block, provided via the buffer
 pointer `buf` and its size `buf_size`, can fit within the available space in the internal SDS circular buffer.
-If insufficient space is available, the operation is aborted and the function returns \ref SDS_REC_ERROR_NO_SPACE.
+If insufficient space is available, the operation is aborted and the function returns \ref SDS_NO_SPACE.
 
 On success, the function writes the header and data block to the SDS circular buffer and returns the number of data bytes written,
 excluding the header.
@@ -477,90 +468,57 @@ However, multiple threads can concurrently write to different streams, enabling 
 */
 
 /**
-\fn          sdsRecPlayId_t sdsPlayOpen (const char *name, void *buf, uint32_t buf_size)
+\fn          int32_t sdsRead (sdsId_t id, uint32_t *timeslot, void *buf, uint32_t buf_size)
 \details
-Opens a player stream for reading timestamps and data blocks from an SDS file. The `buf` parameter specifies a user-allocated
-memory region used as an internal circular buffer. The buffer must be large enough to accommodate the
-largest expected data block plus 8 bytes for the record header.
+Reads a data block along with its associated time slot from the internal SDS circular buffer.
 
-The `name` parameter specifies the base name of the SDS input file. The function attempts to locate and open the file
-`<name>.<index>.sds`, where `<index>` is an auto-incrementing value. If no matching file is found, the function returns an error.
-For details, refer to [Filenames section](../theory.md#filenames).
-
-This function may block for a period of time while it loads the internal SDS circular buffer with data from the SDS file.
-
-This function returns a handle that uniquely identifies the stream. The handle is used as a reference in subsequent
-function calls to perform operations on the stream.
-*/
-
-/**
-\fn          int32_t sdsPlayClose (sdsRecPlayId_t id)
-\details
-Closes a player stream. The function waits for all pending data transfers to complete or until a timeout occurs.
-Upon successful closure, the stream handle becomes invalid.
-*/
-
-/**
-\fn          int32_t sdsPlayRead (sdsRecPlayId_t id, uint32_t *timestamp, void *buf, uint32_t buf_size)
-\details
-Reads a data block along with its associated timestamp from the internal SDS circular buffer.
-
-The `sdsRecPlayThread` worker thread asynchronously reads the data from the SDS file using the underlying SDS I/O interface.
+The `sdsThread` worker thread asynchronously reads the data from the SDS file using the underlying SDS I/O interface.
 For details on how the specific SDS file is selected, refer to  [Filenames section](../theory.md#filenames).
 The retrieved data is then written to the internal SDS circular buffer. This asynchronous design enables efficient,
 non-blocking data handling and ensures optimal performance.
 
 Before attempting to read, the function verifies that the entire header and the complete data block specified by the header
 are both present in the SDS circular buffer. If either the header is incomplete or the corresponding data block is not yet fully
-available, the function aborts and returns \ref SDS_PLAY_ERROR_NO_DATA.
+available, the function aborts and returns \ref SDS_NO_DATA.
 
 The function verifies that the user-provided buffer `buf`, with size `buf_size`, is large enough to accommodate the entire
-data block. If it is too small, the function aborts and returns \ref SDS_REC_PLAY_ERROR_PARAMETER.
+data block. If it is too small, the function aborts and returns \ref SDS_ERROR_PARAMETER.
 
-If the end of the stream has been reached and no further data is available, the function returns \ref SDS_PLAY_EOS.
+If the end of the stream has been reached and no further data is available, the function returns \ref SDS_EOS.
 
 On success, the function reads the data block from the circular buffer, stores it in the user-provided buffer, and returns
-the the size of the data block in bytes. The associated timestamp is returned via the output parameter `timestamp`.
+the size of the data block in bytes. The associated time slot is returned via the output parameter `timeslot`.
 
 Thread safety is ensured by allowing only a single thread to read from a given stream at a time.
 However, multiple threads can concurrently read from different streams, enabling parallel operations across multiple streams.
 */
 
 /**
-\fn          int32_t sdsPlayGetSize (sdsRecPlayId_t id)
+\fn          int32_t sdsGetSize (sdsId_t id)
 \details
 Function verifies that the entire header and the complete data block specified by the header are both present in the SDS circular buffer.
-It returns the size, in bytes, of the next available data block in the player stream. If either the header is incomplete or the corresponding
-data block is not yet fully available, the function returns \ref  SDS_PLAY_ERROR_NO_DATA. If the end of the stream has been reached and no further
-data is available, the function returns \ref SDS_PLAY_EOS.
+It returns the size, in bytes, of the next available data block in the stream. If either the header is incomplete or the corresponding
+data block is not yet fully available, the function returns \ref  SDS_NO_DATA. If the end of the stream has been reached and no further
+data is available, the function returns \ref SDS_EOS.
 */
 
 /**
-\fn          int32_t sdsRecPlayControlWrite (const void *buf, uint32_t buf_size)
+\fn          int32_t sdsExchange (void)
 \details
-Writes a control data buffer to the Host.
-
-This control buffer is used to write control information to the Host.
-
-It is typically used to signal status or error information to the Host.
-
-On success, the function writes the control data to the Host and returns the number of data bytes written.
+Exchanges SDS control information with the Host.
+Updates `sdsFlags` control flags if requested by the Host, and sends current (updated) control flags
+value along with `sdsIdleRate` and optional error information (`sdsError`) to the Host.
 */
 
 /**
-\fn          int32_t sdsRecPlayControlRead (void *buf, uint32_t buf_size)
+\fn          void sdsFlagsModify (uint32_t set_mask, uint32_t clear_mask)
 \details
-Reads a control data buffer from the Host.
-
-This control buffer is used to read control information from the Host.
-
-It is typically used to get control information, such as start or stop requests, from the Host.
-
-On success, the function reads the control data from the Host and returns the number of data bytes read.
+Atomically sets and clears bits in the global `sdsFlags` control flags.
+Bits present in `set_mask` are set and bits present in `clear_mask` are cleared in the update, applied in that order.
 */
 
 
 /**
 @}
 */
-// end group SDS_Recorder_Player
+// end group SDS_Interface

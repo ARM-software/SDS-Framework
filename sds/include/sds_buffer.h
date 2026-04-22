@@ -98,7 +98,7 @@ int32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size);
   \param[out]  buf            pointer to buffer for data to read
   \param[in]   buf_size       buffer size in bytes
   \return      number of data bytes successfully read or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+               a negative value on error (see \ref SDS_Buffer_Return_Codes)
 */
 int32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size);
 
@@ -116,7 +116,7 @@ int32_t sdsBufferClear (sdsBufferId_t id);
   \brief       Get data count in SDS buffer stream.
   \param[in]   id             \ref sdsBufferId_t handle to SDS buffer stream
   \return      number of data bytes available in buffer stream or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+               a negative value on error (see \ref SDS_Buffer_Return_Codes)
 */
 int32_t sdsBufferGetCount (sdsBufferId_t id);
 

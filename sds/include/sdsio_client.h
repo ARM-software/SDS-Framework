@@ -20,69 +20,59 @@
 #define SDSIO_CLIENT_H
 
 #ifdef  __cplusplus
- extern "C"
+extern "C"
 {
 #endif
 
 #include <stdint.h>
 
+// Receive mode
+typedef enum {
+  sdsioReceiveBlocking    = 0U,         // Receive in blocking mode
+  sdsioReceiveNonBlocking = 1U          // Receive in non-blocking mode
+} sdsioReceiveMode_t;
+
 // SDSIO Client works in a pair with SDSIO Server. Communication protocol is documented in the following link:
 // https://arm-software.github.io/SDS-Framework/main/theory/#sdsio-server-protocol
-
- // SDSIO header
-typedef struct {
-  uint32_t command;
-  uint32_t sdsio_id;
-  uint32_t argument;
-  uint32_t data_size;
-} header_t;
-
-// SDSIO Server Command IDs
-#define SDSIO_CMD_OPEN          1U
-#define SDSIO_CMD_CLOSE         2U
-#define SDSIO_CMD_WRITE         3U
-#define SDSIO_CMD_READ          4U
-#define SDSIO_CMD_PING          5U
-#define SDSIO_CMD_CTRL_WRITE    6U
-#define SDSIO_CMD_CTRL_READ     7U
 
 // Function prototypes
 
 /**
   \fn          int32_t sdsioClientInit (void)
   \brief       Initialize SDSIO Client I/O and ping SDSIO Server to verify connection.
-  \return      SDSIO_OK on success or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+  \return      SDS_OK on success or
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientInit (void);
 
 /**
   \fn          int32_t sdsioClientUninit (void)
   \brief       Un-Initialize SDSIO Client I/O.
-  \return      SDSIO_OK on success or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+  \return      SDS_OK on success or
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientUninit (void);
 
 /**
   \fn          int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size)
-  \brief       Send data to SDSIO-Server.
+  \brief       Send data to SDSIO-Server (blocking).
   \param[in]   buf         pointer to buffer with data to send
   \param[in]   buf_size    buffer size in bytes
   \return      number of bytes successfully sent or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size);
 
 /**
-  \fn          int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size)
-  \brief       Receive data from SDSIO-Server.
-  \param[out]  buf          pointer to buffer for data to read
+  \fn          int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size, sdsioReceiveMode_t mode)
+  \brief       Receive data from SDSIO-Server in blocking or non-blocking mode.
+  \param[out]  buf          pointer to the buffer where received data will be stored
   \param[in]   buf_size     buffer size in bytes
+  \param[in]   mode         blocking or non-blocking mode (see \ref sdsioReceiveMode_t)
   \return      number of bytes successfully received or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+               a negative value on error (see \ref SDS_Return_Codes)
 */
-int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size);
+int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size, sdsioReceiveMode_t mode);
 
 #ifdef  __cplusplus
 }

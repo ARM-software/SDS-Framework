@@ -36,28 +36,19 @@ typedef enum {
   sdsioModeWrite = 1            // Open for write (binary)
 } sdsioMode_t;                  // Open mode (read/write)
 
-// Function return codes
-#define SDSIO_OK                (0)         // Operation completed successfully
-#define SDSIO_ERROR             (-1)        // Operation failed
-#define SDSIO_ERROR_PARAMETER   (-2)        // Operation failed: parameter error
-#define SDSIO_ERROR_TIMEOUT     (-3)        // Operation failed: timeout error
-#define SDSIO_ERROR_INTERFACE   (-4)        // Operation failed: SDS I/O interface error
-#define SDSIO_ERROR_NO_SERVER   (-5)        // Operation failed: no response from server
-#define SDSIO_EOS               (-6)        // End of stream reached
-
 /**
   \fn          int32_t sdsioInit (void)
-  \brief       Initialize SDS I/O Interface.
-  \return      SDSIO_OK on success or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+  \brief       Initialize SDS I/O interface.
+  \return      SDS_OK on success or
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioInit (void);
 
 /**
   \fn          int32_t sdsioUninit (void)
-  \brief       Un-initialize SDS I/O Interface.
-  \return      SDSIO_OK on success or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+  \brief       Un-initialize SDS I/O interface.
+  \return      SDS_OK on success or
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioUninit (void);
 
@@ -74,8 +65,8 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode);
   \fn          int32_t sdsioClose (sdsioId_t id)
   \brief       Close I/O stream.
   \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
-  \return      SDSIO_OK on success or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+  \return      SDS_OK on success or
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClose (sdsioId_t id);
 
@@ -86,7 +77,7 @@ int32_t sdsioClose (sdsioId_t id);
   \param[in]   buf            pointer to buffer with data to write
   \param[in]   buf_size       buffer size in bytes
   \return      number of bytes successfully written or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size);
 
@@ -97,29 +88,9 @@ int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size);
   \param[out]  buf            pointer to buffer for data to read
   \param[in]   buf_size       buffer size in bytes
   \return      number of bytes successfully read, or
-               a negative value on error or EOS (see \ref SDS_IO_Return_Codes)
+               a negative value on error or SDSIO_EOS (see \ref SDS_Return_Codes)
 */
 int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size);
-
-/**
-  \fn          int32_t sdsioControlWrite (const void *buf, uint32_t buf_size)
-  \brief       Write control data to Host.
-  \param[in]   buf            pointer to buffer with data to write
-  \param[in]   buf_size       buffer size in bytes
-  \return      number of bytes successfully written or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
-*/
-int32_t sdsioControlWrite (const void *buf, uint32_t buf_size);
-
-/**
-  \fn          int32_t sdsioControlRead (void *buf, uint32_t buf_size)
-  \brief       Read control data from Host.
-  \param[out]  buf            pointer to buffer for data to read
-  \param[in]   buf_size       buffer size in bytes
-  \return      number of bytes successfully read, or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
-*/
-int32_t sdsioControlRead (void *buf, uint32_t buf_size);
 
 #ifdef  __cplusplus
 }

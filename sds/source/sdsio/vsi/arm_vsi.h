@@ -20,10 +20,10 @@
  * Virtual Streaming Interface (VSI)
  */
 
-#ifndef __ARM_VSI_H
-#define __ARM_VSI_H
+#ifndef ARM_VSI_H
+#define ARM_VSI_H
 
-#ifdef __cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -109,4 +109,4 @@ typedef struct
 }
 #endif
 
-#endif /* __ARM_VSI_H */
+#endif /* ARM_VSI_H */

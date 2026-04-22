@@ -25,12 +25,14 @@
 
 #include <string.h>
 
+#include "sds.h"
 #include "sdsio.h"
 #include "sdsio_client.h"
 #include "sdsio_config_usb_mdk.h"
 
  // SDS IO event flag identifier
-static osEventFlagsId_t sdsioEventFlagId;
+static osEventFlagsId_t sdsioOutEventFlagId;
+static osEventFlagsId_t sdsioInEventFlagId;
 
 // USBD bulk max packet size
 static uint32_t bulkMaxPacketSize;
@@ -85,6 +87,12 @@ void CREATE_SYMBOL(USBD_CustomClass, SDSIO_USB_INSTANCE, _EndpointStart) (uint8_
     bulkOutEpAddr = ep_addr;
     bulkOutCnt = 0U;
     bulkOutIdx = 0U;
+
+    // Start reception of up to maximum packet size on bulk OUT endpoint
+    USBD_EndpointRead(SDSIO_USB_DEVICE_INDEX,
+                      bulkOutEpAddr,
+                      bulkOutBuffer,
+                      bulkMaxPacketSize);
   }
 }
 
@@ -119,14 +127,16 @@ static void USBD_Endpoint_Event (uint8_t ep_num, uint32_t event) {
     // Data received on OUT Endpoint
     ep_addr = ep_num;
     if (ep_addr == bulkOutEpAddr) {
-      osEventFlagsSet(sdsioEventFlagId, SDSIO_CLIENT_EVENT_DATA_RECEIVED);
+      bulkOutIdx = 0U;
+      bulkOutCnt = USBD_EndpointReadGetResult(SDSIO_USB_DEVICE_INDEX, bulkOutEpAddr);
+      osEventFlagsSet(sdsioOutEventFlagId, SDSIO_CLIENT_EVENT_DATA_RECEIVED);
     }
   }
   if (event & ARM_USBD_EVENT_IN) {
     // Data sent on IN Endpoint
     ep_addr = ep_num | 0x80;
     if (ep_addr == bulkInEpAddr) {
-      osEventFlagsSet(sdsioEventFlagId, SDSIO_CLIENT_EVENT_DATA_SENT);
+      osEventFlagsSet(sdsioInEventFlagId, SDSIO_CLIENT_EVENT_DATA_SENT);
     }
   }
 }
@@ -135,23 +145,24 @@ static void USBD_Endpoint_Event (uint8_t ep_num, uint32_t event) {
 /**
   \fn          int32_t sdsioClientInit (void)
   \brief       Initialize SDSIO Client I/O via USB.
-  \return      SDSIO_OK on success or
+  \return      SDS_OK on success or
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioClientInit (void) {
-  int32_t  ret = SDSIO_ERROR;
+  int32_t  ret = SDS_ERROR_IO;
   uint32_t expirationTick;
 
-  sdsioEventFlagId = osEventFlagsNew(NULL);
-  if (sdsioEventFlagId != NULL) {
+  sdsioOutEventFlagId = osEventFlagsNew(NULL);
+  sdsioInEventFlagId  = osEventFlagsNew(NULL);
+  if ((sdsioOutEventFlagId != NULL) && (sdsioInEventFlagId != NULL)) {
     // Initialize USB Device stack.
-    ret = SDSIO_ERROR_INTERFACE;
+    ret = SDS_ERROR_IO;
     expirationTick = osKernelGetTickCount() + SDSIO_USB_TIMEOUT;
     if (USBD_Initialize(SDSIO_USB_DEVICE_INDEX) == usbOK) {
       if (USBD_Connect(SDSIO_USB_DEVICE_INDEX) == usbOK) {
         while (osKernelGetTickCount() < expirationTick) {
           if (USBD_Configured(SDSIO_USB_DEVICE_INDEX) == true) {
-            ret = SDSIO_OK;
+            ret = SDS_OK;
             break;
           } else {
             osDelay(1);
@@ -160,7 +171,14 @@ int32_t sdsioClientInit (void) {
       }
     }
   } else {
-    ret = SDSIO_ERROR;
+    ret = SDS_ERROR_IO;
+  }
+
+  if (ret == SDS_OK) {
+    SDS_PRINTF("SDS I/O USB interface initialized successfully\n");
+  } else {
+    SDS_PRINTF("SDS I/O USB interface initialization failed!\n");
+    SDS_PRINTF("Ensure that device is connected via USB to the host PC running SDSIO-Server, then restart the application!\n");
   }
 
   return ret;
@@ -169,18 +187,28 @@ int32_t sdsioClientInit (void) {
 /**
   \fn          int32_t sdsioClientUninit (void)
   \brief       Un-Initialize SDSIO Client I/O.
-  \return      SDSIO_OK on success or
+  \return      SDS_OK on success or
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
 int32_t sdsioClientUninit (void) {
   USBD_Disconnect(SDSIO_USB_DEVICE_INDEX);
   USBD_Uninitialize(SDSIO_USB_DEVICE_INDEX);
-  return SDSIO_OK;
+  if (sdsioOutEventFlagId != NULL) {
+    if (osEventFlagsDelete(sdsioOutEventFlagId) == osOK) {
+      sdsioOutEventFlagId = NULL;
+    }
+  }
+  if (sdsioInEventFlagId != NULL) {
+    if (osEventFlagsDelete(sdsioInEventFlagId) == osOK) {
+      sdsioInEventFlagId = NULL;
+    }
+  }
+  return SDS_OK;
 }
 
 /**
   \fn          int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size)
-  \brief       Send data to SDSIO-Server.
+  \brief       Send data to SDSIO-Server (blocking).
   \param[in]   buf         pointer to buffer with data to send
   \param[in]   buf_size    buffer size in bytes
   \return      number of bytes successfully sent or
@@ -188,7 +216,7 @@ int32_t sdsioClientUninit (void) {
 */
 int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
   uint32_t  num = 0U;
-  int32_t   ret = SDSIO_ERROR;
+  int32_t   ret = SDS_ERROR_IO;
   int32_t   event_status;
   usbStatus usb_status;
 
@@ -201,25 +229,25 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
       // Error happened.
       if (usb_status == usbTimeout) {
         // Timeout happened.
-        ret = SDSIO_ERROR_TIMEOUT;
+        ret = SDS_ERROR_TIMEOUT;
       } else {
         // Error happened.
-        ret = SDSIO_ERROR_INTERFACE;
+        ret = SDS_ERROR_IO;
       }
       break;
     }
     // Wait for data sent event.
-    event_status = osEventFlagsWait(sdsioEventFlagId,
+    event_status = osEventFlagsWait(sdsioInEventFlagId,
                                     SDSIO_CLIENT_EVENT_DATA_SENT,
                                     osFlagsWaitAll,
                                     SDSIO_USB_TIMEOUT);
     if ((event_status & osFlagsError) != 0U) {
-      if (event_status == osErrorTimeout) {
+      if (event_status == osFlagsErrorTimeout) {
         // Timeout happened.
-        ret = SDSIO_ERROR_TIMEOUT;
+        ret = SDS_ERROR_TIMEOUT;
       } else {
         // Error happened.
-        ret = SDSIO_ERROR;
+        ret = SDS_ERROR_IO;
       }
       break;
     }
@@ -232,23 +260,29 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
 }
 
 /**
-  \fn          int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size)
-  \brief       Receive data from SDSIO-Server.
-  \param[out]  buf          pointer to buffer for data to read
+  \fn          int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size, sdsioReceiveMode_t mode)
+  \brief       Receive data from SDSIO-Server in blocking or non-blocking mode.
+  \param[out]  buf          pointer to the buffer where received data will be stored
   \param[in]   buf_size     buffer size in bytes
+  \param[in]   mode         blocking or non-blocking mode (see \ref sdsioReceiveMode_t)
   \return      number of bytes successfully received or
                a negative value on error (see \ref SDS_IO_Return_Codes)
 */
-int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size) {
+int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size, sdsioReceiveMode_t mode) {
   uint32_t  num = 0U;
-  int32_t   ret = SDSIO_ERROR;
+  int32_t   ret = 0;
   int32_t   event_status;
   uint32_t  cnt, len;
   usbStatus usb_status;
 
   while (num < buf_size) {
     if (bulkOutCnt != 0U) {
-      // Data available in bulk OUT buffer
+      // Clear pending data received flag
+      osEventFlagsWait(sdsioOutEventFlagId,
+                       SDSIO_CLIENT_EVENT_DATA_RECEIVED,
+                       osFlagsWaitAll,
+                       0U);
+      // If data is already present in the bulk OUT buffer, process it.
       if (bulkOutCnt > (buf_size - num)) {
         cnt = buf_size - num;
       } else {
@@ -258,48 +292,63 @@ int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size) {
       num += cnt;
       bulkOutIdx += cnt;
       bulkOutCnt -= cnt;
-    } else {
-      if ((buf_size - num) < sizeof(bulkOutBuffer)) {
-        // Round up to nearest multiple of bulkMaxPacketSize
-        len = (((buf_size - num) + bulkMaxPacketSize - 1U) / bulkMaxPacketSize) * bulkMaxPacketSize;
-        if (len > sizeof(bulkOutBuffer)) {
-          len = sizeof(bulkOutBuffer);
-        }
-      } else {
-        len = sizeof(bulkOutBuffer);
-      }
-      usb_status = USBD_EndpointRead(SDSIO_USB_DEVICE_INDEX,
-                                    bulkOutEpAddr,
-                                    bulkOutBuffer,
-                                    len);
-      if (usb_status != usbOK) {
-        // Error happened.
-        if (usb_status == usbTimeout) {
-          // Timeout happened.
-          ret = SDSIO_ERROR_TIMEOUT;
+      if (bulkOutCnt == 0U) {
+        if (buf_size > num) {
+          // If no more data is available in the bulk OUT buffer and additional data is needed, start reception of the remaining data.
+
+          // Round up to nearest multiple of bulkMaxPacketSize
+          len = (((buf_size - num) + bulkMaxPacketSize - 1U) / bulkMaxPacketSize) * bulkMaxPacketSize;
+          if (len > sizeof(bulkOutBuffer)) {
+            len = sizeof(bulkOutBuffer);
+          }
         } else {
-          // Error happened.
-          ret = SDSIO_ERROR_INTERFACE;
+          // If the bulk OUT buffer is empty and no additional data is needed, start a new maximum packet size reception.
+          len = bulkMaxPacketSize;
         }
+
+        usb_status = USBD_EndpointRead(SDSIO_USB_DEVICE_INDEX,
+                                      bulkOutEpAddr,
+                                      bulkOutBuffer,
+                                      len);
+        if (usb_status != usbOK) {
+          // Error happened.
+          if (usb_status == usbTimeout) {
+            // Timeout happened.
+            ret = SDS_ERROR_TIMEOUT;
+          } else {
+            // Error happened.
+            ret = SDS_ERROR_IO;
+          }
+          break;
+        }
+
+        if (mode == sdsioReceiveNonBlocking) {
+          // If it is non-blocking mode then exit the loop.
+          break;
+        }
+      }
+    } else {
+      // If no data is available in the bulk OUT buffer.
+      if (mode == sdsioReceiveNonBlocking) {
+        // If it is non-blocking mode then exit the loop.
         break;
       }
+
       // Wait for data received event.
-      event_status = osEventFlagsWait(sdsioEventFlagId,
+      event_status = osEventFlagsWait(sdsioOutEventFlagId,
                                       SDSIO_CLIENT_EVENT_DATA_RECEIVED,
                                       osFlagsWaitAll,
                                       SDSIO_USB_TIMEOUT);
       if ((event_status & osFlagsError) != 0U) {
-        if (event_status == osErrorTimeout) {
+        if (event_status == osFlagsErrorTimeout) {
           // Timeout happened.
-          ret = SDSIO_ERROR_TIMEOUT;
+          ret = SDS_ERROR_TIMEOUT;
         } else {
           // Error happened.
-          ret = SDSIO_ERROR;
+          ret = SDS_ERROR_IO;
         }
         break;
       }
-      bulkOutIdx  = 0U;
-      bulkOutCnt += USBD_EndpointReadGetResult(SDSIO_USB_DEVICE_INDEX, bulkOutEpAddr);
     }
   }
 

@@ -22,6 +22,7 @@
 #include <stdio.h>
 
 #include "rl_fs.h"                      // Keil.MDK-Plus::File System:CORE
+#include "sds.h"
 #include "sdsio.h"
 #include "sdsio_config_fs_mdk.h"
 
@@ -40,7 +41,7 @@
   Initialize SDS I/O Interface.
 */
 int32_t sdsioInit (void) {
-  int32_t  ret = SDSIO_ERROR_INTERFACE;
+  int32_t  ret = SDS_ERROR_IO;
   uint32_t stat;
 
   // Initialize and mount file system drive
@@ -55,8 +56,12 @@ int32_t sdsioInit (void) {
   }
 
   if (stat == fsOK) {
-    ret = SDSIO_OK;
+    SDS_PRINTF("SDS I/O File System (MDK-FS) interface initialized successfully\n");
+    ret = SDS_OK;
+  } else {
+    SDS_PRINTF("SDS I/O File System MDK-FS interface initialization failed!\n");
   }
+
   return ret;
 }
 
@@ -66,7 +71,7 @@ int32_t sdsioInit (void) {
 int32_t sdsioUninit (void) {
   funmount(SDSIO_DRIVE);
   funinit(SDSIO_DRIVE);
-  return SDSIO_OK;
+  return SDS_OK;
 }
 
 /**
@@ -138,11 +143,11 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
   Close I/O stream.
 */
 int32_t sdsioClose (sdsioId_t id) {
-  int32_t ret  = SDSIO_ERROR_INTERFACE;
+  int32_t ret  = SDS_ERROR_IO;
   FILE   *file = (FILE *)id;
 
   if (fclose(file) == 0) {
-    ret = SDSIO_OK;
+    ret = SDS_OK;
   }
   return ret;
 }
@@ -152,12 +157,12 @@ int32_t sdsioClose (sdsioId_t id) {
 */
 int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
   FILE    *file  = (FILE *)id;
-  int32_t  ret   = SDSIO_ERROR;
+  int32_t  ret   = SDS_ERROR_IO;
   uint32_t num;
 
   num = fwrite(buf, 1, buf_size, file);
   if (num < buf_size) {
-    ret = SDSIO_ERROR_INTERFACE;
+    ret = SDS_ERROR_IO;
   } else {
     ret = (int32_t)num;
   }
@@ -170,21 +175,21 @@ int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
 */
 int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
   FILE *file  = (FILE *)id;
-  int32_t ret = SDSIO_ERROR;
+  int32_t ret = SDS_ERROR_IO;
   uint32_t num;
 
   num = fread(buf, 1, buf_size, file);
   if (num > 0U) {
     if ((num < buf_size) && (ferror(file) != 0)) {
       // Error happened
-      ret = SDSIO_ERROR_INTERFACE;
+      ret = SDS_ERROR_IO;
     } else {
       ret = (int32_t)num;
     }
   } else {
     if (feof(file) != 0) {
       // End of stream reached
-      ret = SDSIO_EOS;
+      ret = SDS_EOS;
     } else {
       ret = 0;
     }
@@ -194,17 +199,8 @@ int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
 }
 
 /**
-  Write control data to Host.
+  This function cannot be implemented in system using SDS I/O interface via file system.
 */
-int32_t sdsioControlWrite (const void *buf, uint32_t buf_size) {
-  // This command is not supported on local file system.
-  return SDSIO_ERROR_INTERFACE;
-}
-
-/**
-  Read control data from Host.
-*/
-int32_t sdsioControlRead (void *buf, uint32_t buf_size) {
-  // This command is not supported on local file system.
-  return SDSIO_ERROR_INTERFACE;
+int32_t sdsExchange (void) {
+  return SDS_ERROR_IO;
 }

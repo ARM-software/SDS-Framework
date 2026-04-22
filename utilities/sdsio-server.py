@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2026 Arm Limited. All rights reserved.
+﻿# Copyright (c) 2023-2026 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -211,12 +211,12 @@ class sdsControlUI(threading.Thread):
         self._stop = threading.Event()
 
         # Mapping of flag characters to bit positions
-        self._SET_FLAGS   = { 'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'S':31 }
-        self._CLEAR_FLAGS = { 'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 's':31 }
+        self._SET_FLAGS   = { 'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'S':31, 'P': 29, 'p': 29 }
+        self._CLEAR_FLAGS = { 'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 's':31, 'r': 29, 'R': 29 }
 
         # Start the thread
         self.start()
-    
+
     def run(self):
         while not self._stop.is_set():
             ch = self._read_key(timeout=0.1)
@@ -242,6 +242,7 @@ class sdsControlUI(threading.Thread):
     def get_flags_set(self):
         with self._lock:
             flags_set = self._sdsControlFlagsSet
+            flags_set |= (1 << 28)  # Always set Alive bit
             self._sdsControlFlagsSet = 0
             return flags_set
 
@@ -311,11 +312,13 @@ class sdsio_manager:
         self.time_last_rw = time.time()
         # status bar
         self.status = StatusBar(self)
-        # control data
-        self._sdsStatusFlags = 0    # Device -> Host
         # SDS Control Flags
         printer.info("Starting SDS Control Flags thread. Press A-H to set flags, a-h to clear flags.")
         self.control_flags = sdsControlUI()
+
+        self.info_flags: int = 0
+        self.info_IdleRate: int = 0
+        self._last_async_time = time.time()
 
     def _shutdown(self):
         if self.control_flags:
@@ -376,7 +379,7 @@ class sdsio_manager:
         finally:
             file_obj.close()
 
-    def __open(self, mode, name):
+    def _open(self, mode, name):
         cmd = 1
         # prepare error response
         resp_err = bytearray()
@@ -503,7 +506,7 @@ class sdsio_manager:
             printer.info(f"Playback: {stream_name} ({file_path}).")
         return resp
 
-    def __close(self, sid):
+    def _close(self, sid):
         resp = bytearray()
         name = self.opened_streams[sid][1]
 
@@ -531,7 +534,7 @@ class sdsio_manager:
         printer.info(f"Closed:   {name} ({file_path}).")
         return resp
 
-    def __write(self, sid, data):
+    def _write(self, sid, data):
         resp = bytearray()
         buf = self.write_buffers.get(sid)
         if not buf:
@@ -542,7 +545,7 @@ class sdsio_manager:
         self.time_last_rw = time.time()
         return resp
 
-    def __read(self, sid, size):
+    def _read(self, sid, size):
         resp = bytearray()
         cmd = 4
         eof = 0
@@ -575,7 +578,7 @@ class sdsio_manager:
         self.time_last_rw = time.time()
         return resp
 
-    def __pingServer(self, sid):
+    def _pingServer(self, sid):
         resp = bytearray()
         cmd = 5
         resp.extend(cmd.to_bytes(4,'little'))
@@ -585,53 +588,73 @@ class sdsio_manager:
         printer.info("Ping received.")
         return resp
 
-    def __ctrl_write(self, data):
-        # Writes raw bytes to the _sdsStatusFlags variable.
-        # Prints the resulting value and any recorded error information.
-        # Returns b''.
-        if len(data) >= 4:
-            self._sdsStatusFlags = int.from_bytes(data[0:4], byteorder='little')
-            # Print sdsStatusFlags value (Device -> Host (Server))
-            printer.info(f"sdsStatusFlags = 0x{self._sdsStatusFlags:08X}")
-            if len(data) > 8:
-                # Print error info captured at failed SDS_ASSERT (Device -> Host (Server))
-                #            filename                 + ":" + line number                                        + ": error: `SDS_ASSERT` failed\n"
-                printer.info(data[8:].decode('utf-8') + ":" + str(int.from_bytes(data[4:8], byteorder='little')) + ": error: `SDS_ASSERT` failed\n")
-        return b''
-
-    def __ctrl_read(self, size):
-        # Returns 8 bytes, the value of _sdsControlFlagsSet and _sdsControlFlagsClear variables or b``.
-        data = bytearray()
-        if (size >= 8):
-            # Response header
-            cmd = 7
-            data.extend(cmd.to_bytes(4,'little'))
-            data.extend((0).to_bytes(4,'little'))
-            data.extend((0).to_bytes(4,'little'))
-            data.extend((8).to_bytes(4,'little'))
-            # Response data
-            data.extend(self.control_flags.get_flags_set().to_bytes(4,'little'))
-            data.extend(self.control_flags.get_flags_clear().to_bytes(4,'little'))
-        return data
+    def _info(self, flags: int, idle_rate: int, err_data: bytes):
+        # Print info: sdsFlags, sdsIdleRate, Error
+        resp = bytearray()
+        if self.info_flags != flags:
+            printer.info(f"sdsInfoFlags = 0x{flags:08X}")
+            self.info_flags = flags
+        if idle_rate and self.info_IdleRate != idle_rate:
+            printer.info(f"sdsInfoIdleRate = {idle_rate} ms")
+            self.info_IdleRate = idle_rate
+        if err_data:
+            status = int.from_bytes(err_data[0:4],'little')
+            line   = int.from_bytes(err_data[4:8],'little')
+            err_mgs = err_data[8:]
+            printer.info(f"sdsInfoError: status=0x{status:08X}, line={line}, msg={err_mgs.decode('utf-8', errors='replace')}")
+        return resp
 
     def clean(self):
         # close all open streams
         for sid in list(self.opened_streams.keys()):
-            self.__close(sid)
+            self._close(sid)
+
+    def get_async_flags(self):
+        resp = bytearray()
+        cmd = 6
+        set_mask = self.control_flags.get_flags_set()
+        clear_mask = self.control_flags.get_flags_clear()
+        resp.extend(cmd.to_bytes(4,'little'))
+        resp.extend(set_mask.to_bytes(4,'little'))
+        resp.extend(clear_mask.to_bytes(4,'little'))
+        resp.extend((0).to_bytes(4,'little'))
+        return resp
+
+    def get_async_response(self):
+        now = time.time()
+        if now - self._last_async_time >= 0.1:
+            self._last_async_time = now
+            return self.get_async_flags()
+        return None
+
+    def get_shutdown_flags(self):
+        resp = bytearray()
+        cmd = 6
+        resp.extend(cmd.to_bytes(4,'little'))
+        resp.extend((0).to_bytes(4,'little'))
+        resp.extend((1 << 28).to_bytes(4,'little'))
+        resp.extend((0).to_bytes(4,'little'))
+        return resp
 
     def execute_request(self, buf: bytes):
         cmd = int.from_bytes(buf[0:4],'little')
-        sid = int.from_bytes(buf[4:8],'little')
-        arg = int.from_bytes(buf[8:12],'little')
-        sz  = int.from_bytes(buf[12:16],'little')
-        data= buf[16:16+sz]
-        if   cmd == 1: return self.__open(arg, data.decode('utf-8').rstrip('\0'))
-        elif cmd == 2: return self.__close(sid)
-        elif cmd == 3: return self.__write(sid, data)
-        elif cmd == 4: return self.__read(sid, arg)
-        elif cmd == 5: return self.__pingServer(sid)
-        elif cmd == 6: return self.__ctrl_write(data)
-        elif cmd == 7: return self.__ctrl_read(arg)
+        if cmd in (1, 2, 3, 4, 5):
+            sid = int.from_bytes(buf[4:8],'little')
+            arg = int.from_bytes(buf[8:12],'little')
+            sz  = int.from_bytes(buf[12:16],'little')
+            data= buf[16:16+sz]
+            if   cmd == 1: return self._open(arg, data.decode('utf-8').rstrip('\0'))
+            elif cmd == 2: return self._close(sid)
+            elif cmd == 3: return self._write(sid, data)
+            elif cmd == 4: return self._read(sid, arg)
+            elif cmd == 5: return self._pingServer(sid)
+        elif cmd == 7:
+            flags     = int.from_bytes(buf[4:8],'little')
+            idle_rate = int.from_bytes(buf[8:12],'little')
+            err_len   = int.from_bytes(buf[12:16],'little')
+            err_data= buf[16:16+err_len]
+            return self._info(flags, idle_rate, err_data)
+
         else:
             printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
             return bytearray()
@@ -666,8 +689,18 @@ class async_sdsio_server_socket:
         try:
             printer.info(f"SDSIO Client connected.")
             while True:
-                # read fixed-size header, then payload
-                hdr = await reader.readexactly(16)
+                # Send async FLAGS response periodically
+                resp = self.manager.get_async_response()
+                if resp:
+                    writer.write(resp)
+                    await writer.drain()
+
+                try:
+                    # read fixed-size header, then payload, with a timeout
+                    hdr = await asyncio.wait_for(reader.readexactly(16), timeout=0.1)
+                except asyncio.TimeoutError:
+                    continue # No data from client, loop to check for FLAGS send
+
 
                 # validate command before reading payload
                 cmd = int.from_bytes(hdr[0:4],'little')
@@ -689,6 +722,12 @@ class async_sdsio_server_socket:
                 printer.info(f"SDSIO Client disconnected.")
         finally:
             self._handler_tasks.discard(task)
+            # Send shutdown flags (clear alive bit) before closing
+            try:
+                writer.write(self.manager.get_shutdown_flags())
+                await writer.drain()
+            except Exception:
+                pass
             await self._safe_close(reader, writer)
             # Clean up any streams
             self.manager.clean()
@@ -814,6 +853,11 @@ class sdsio_server_serial:
 
         try:
             while True:
+                # Send async FLAGS response periodically
+                resp = self.manager.get_async_response()
+                if resp:
+                    self.write(resp)
+
                 data = self.read(16 * 1024)
                 if data:
                     buffer.extend(data)
@@ -842,6 +886,11 @@ class sdsio_server_serial:
                     if response:
                         self.write(response)
         finally:
+            # Send shutdown flags (clear alive bit) before closing
+            try:
+                self.write(self.manager.get_shutdown_flags())
+            except Exception:
+                pass
             # Clean up all SDS streams on disconnect/error
             self.manager.clean()
             self.ser.close()
@@ -1070,7 +1119,16 @@ class sdsio_server_usb:
 
     async def _consumer(self):
         while self.running:
-            data = await self.in_q.get()
+            # Send async FLAGS response periodically
+            resp = self.mgr.get_async_response()
+            if resp:
+                await self.out_q.put(resp)
+
+            try:
+                data = await asyncio.wait_for(self.in_q.get(), timeout=0.1)
+            except asyncio.TimeoutError:
+                continue  # No data from device, loop to check for FLAGS send
+
             self._rx_buf.extend(data)
             while len(self._rx_buf) >= 16:
                 hdr   = self._rx_buf[:16]
@@ -1203,10 +1261,20 @@ class sdsio_server_usb:
             try:
                 await asyncio.gather(self._consumer(), self._out_sender())
             except asyncio.CancelledError:
-                # Ctrl+C: clean up and exit the reconnect loop
+                # Send shutdown flags (clear alive bit) before cleanup
+                try:
+                    self.handle.bulkWrite(self.out_ep, self.mgr.get_shutdown_flags(), timeout=1000)
+                except Exception:
+                    pass
                 self.mgr.clean()
                 self.close()
                 raise
+
+            # Send shutdown flags (clear alive bit) before cleanup
+            try:
+                self.handle.bulkWrite(self.out_ep, self.mgr.get_shutdown_flags(), timeout=1000)
+            except Exception:
+                pass
 
             # clean up this connection
             protocol_err = self._protocol_error
