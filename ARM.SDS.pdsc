@@ -222,6 +222,7 @@
     <clayer type="SDSIO" path="layer/sdsio/usb"        file="sdsio_usb.clayer.yml"     copy-to="sdsio/usb"/>
     <clayer type="SDSIO" path="layer/sdsio/network"    file="sdsio_network.clayer.yml" copy-to="sdsio/network"/>
     <clayer type="SDSIO" path="layer/sdsio/filesystem" file="sdsio_fs.clayer.yml"      copy-to="sdsio/filesystem"/>
+    <clayer type="SDSIO" path="layer/sdsio/rtt"        file="sdsio_rtt.clayer.yml"     copy-to="sdsio/rtt"/>
   </csolution>
 
   <examples>
