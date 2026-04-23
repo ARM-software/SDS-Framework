@@ -40,8 +40,8 @@
       <require Cclass="CMSIS" Cgroup="RTOS2"/>
       <require Cvendor="Keil" Cclass="USB" Cgroup="Device" Csub="Custom Class"/>
     </condition>
-    <condition id="SDS IO via Serial Port - CMSIS USART">
-      <description>SDS IO via Serial Port (CMSIS Driver USART)</description>
+    <condition id="SDS IO via Serial - CMSIS USART">
+      <description>SDS IO via Serial (CMSIS Driver USART)</description>
       <require Cclass="CMSIS"        Cgroup="RTOS2"/>
       <require Cclass="CMSIS Driver" Cgroup="USART"/>
     </condition>
@@ -66,7 +66,7 @@
 
   <apis>
     <api Cclass="SDS" Cgroup="IO" Capiversion="3.0.0">
-      <description>Blocking I/O interface to read/write SDS files</description>
+      <description>I/O interface to read/write SDS files</description>
       <files>
         <file category="doc"    name="docs/SDS_API/group__SDS__IO__Interface.html"/>
         <file category="header" name="sds/sdsio/include/sdsio.h" />
@@ -105,7 +105,7 @@
 
     <!-- SDS I/O (Socket) -->
     <component Cclass="SDS" Cgroup="IO" Csub="Socket" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via Socket">
-      <description>I/O via Socket to SDSIO Server (using component MDK-Packs::IoT Utility:Socket)</description>
+      <description>I/O via Socket interface to SDSIO Server (using component MDK-Packs::IoT Utility:Socket)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
@@ -121,7 +121,7 @@
 
     <!-- SDS I/O (USB - MDK_USB) -->
     <component Cclass="SDS" Cgroup="IO" Csub="USB" Cvariant="MDK USB" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via USB - MDK USB">
-      <description>I/O via USB Virtual COM Port to SDSIO Server (using component Keil::USB:Device:Custom)</description>
+      <description>I/O via USB interface to SDSIO Server (using component Keil::USB:Device:Custom)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
@@ -137,8 +137,8 @@
     </component>
 
     <!-- SDS I/O (Serial - CMSIS USART) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="Serial" Cvariant="CMSIS USART" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via Serial Port - CMSIS USART">
-      <description>I/O via Serial Port to SDSIO Server (using component CMSIS Driver:USART)</description>
+    <component Cclass="SDS" Cgroup="IO" Csub="Serial" Cvariant="CMSIS USART" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via Serial - CMSIS USART">
+      <description>I/O via USART interface to SDSIO Server (using component CMSIS Driver:USART)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
@@ -155,7 +155,7 @@
 
     <!-- SDS I/O (Custom client) -->
     <component Cclass="SDS" Cgroup="IO" Csub="Custom" Capiversion="3.0.0" Cversion="3.0.0">
-      <description>I/O via Custom I/O to SDSIO Server</description>
+      <description>I/O via Custom interface to SDSIO Server</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
@@ -206,7 +206,7 @@
 
   <examples>
     <example name="SDS" doc="README.md" folder="template">
-      <description>Data streaming test framework for DSP/ML algorithm development</description>
+      <description>Data streaming test framework for DSP, ML, or Edge AI algorithm development</description>
       <project>
         <environment name="csolution" load="SDS.csolution.yml"/>
       </project>
