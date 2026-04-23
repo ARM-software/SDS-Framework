@@ -19,7 +19,6 @@
 // SDS I/O Client: Template for custom implementation
 
 #include "sds.h"
-#include "sdsio.h"
 #include "sdsio_client.h"
 
 /**

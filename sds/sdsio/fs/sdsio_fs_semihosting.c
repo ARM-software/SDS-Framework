@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2026 Arm Limited. All rights reserved.
+ * Copyright (c) 2023, 2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -16,15 +16,13 @@
  * limitations under the License.
  */
 
-// SDS I/O interface via File System (Keil::File System)
+// SDS I/O interface via File System (Semihosting)
 
 #include <string.h>
 #include <stdio.h>
 
-#include "rl_fs.h"                      // Keil.MDK-Plus::File System:CORE
 #include "sds.h"
 #include "sdsio.h"
-#include "sdsio_config_fs_mdk.h"
 
 
 // Maximum stream name length
@@ -41,36 +39,14 @@
   Initialize SDS I/O Interface.
 */
 int32_t sdsioInit (void) {
-  int32_t  ret = SDS_ERROR_IO;
-  uint32_t stat;
-
-  // Initialize and mount file system drive
-  stat = finit(SDSIO_DRIVE);
-  if (stat == fsOK) {
-    stat = fmount(SDSIO_DRIVE);
-#if (SDSIO_FORMATTING_ALLOWED == 1)
-    if (stat == fsNoFileSystem) {
-      stat = fformat(SDSIO_DRIVE, NULL);
-    }
-#endif
-  }
-
-  if (stat == fsOK) {
-    SDS_PRINTF("SDS I/O File System (MDK-FS) interface initialized successfully\n");
-    ret = SDS_OK;
-  } else {
-    SDS_PRINTF("SDS I/O File System MDK-FS interface initialization failed!\n");
-  }
-
-  return ret;
+  SDS_PRINTF("SDS I/O File System (SemiHosting) interface initialized successfully\n");
+  return SDS_OK;
 }
 
 /**
   Un-initialize SDS I/O Interface.
 */
 int32_t sdsioUninit (void) {
-  funmount(SDSIO_DRIVE);
-  funinit(SDSIO_DRIVE);
   return SDS_OK;
 }
 
@@ -81,14 +57,14 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
   uint32_t   index   = 0U;
   sdsioId_t  sdsioId = NULL;
   FILE      *file    = NULL;
-  char       file_name[sizeof(SDSIO_WORK_DIR) + SDSIO_MAX_NAME_SIZE + SDSIO_MAX_EXT_SIZE];
+  char       file_name[SDSIO_MAX_NAME_SIZE + SDSIO_MAX_EXT_SIZE + 1];
   char       line[16];
 
   if (strlen(name) <= SDSIO_MAX_NAME_SIZE) {
     switch (mode) {
       case sdsioModeRead:
 
-        sprintf(file_name, "%s%s.index.txt", SDSIO_WORK_DIR, name);
+        sprintf(file_name, "%s.index.txt", name);
         file = fopen(file_name, "r");
         if (file != NULL) {
           if (fscanf(file, "%i", &index) != 1) {
@@ -97,7 +73,7 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
           fclose(file);
         }
 
-        sprintf(file_name, "%s%s.%i.sds", SDSIO_WORK_DIR, name, index);
+        sprintf(file_name, "%s.%i.sds", name, index);
         file = fopen(file_name, "rb");
         if (file != NULL) {
           // File exists
@@ -110,7 +86,7 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
         }
 
         if ((sdsioId != NULL) || (index == 0U)) {
-          sprintf(file_name, "%s%s.index.txt", SDSIO_WORK_DIR, name);
+          sprintf(file_name, "%s.index.txt", name);
           file = fopen(file_name, "w");
           if (file != NULL) {
             sprintf(line, "%i\r\n", index);
@@ -121,7 +97,7 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
         break;
       case sdsioModeWrite:
         while (sdsioId == NULL) {
-          sprintf(file_name, "%s%s.%i.sds", SDSIO_WORK_DIR, name, index);
+          sprintf(file_name, "%s.%i.sds", name, index);
           file = fopen(file_name, "rb");
           if (file != NULL) {
             // File already exists
@@ -203,4 +179,10 @@ int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
 */
 int32_t sdsExchange (void) {
   return SDS_ERROR_IO;
+}
+
+/**
+  This function cannot be implemented in system using SDS I/O interface via file system.
+*/
+void sdsFlagsModify (uint32_t set_mask, uint32_t clear_mask) {
 }

@@ -224,3 +224,10 @@ int32_t sdsExchange (void) {
   // Not implemented yet
   return SDS_ERROR_IO;
 }
+
+/**
+  Modify SDS control flags (atomic operation).
+*/
+void sdsFlagsModify (uint32_t set_mask, uint32_t clear_mask) {
+  // Not implemented yet
+}

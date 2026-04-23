@@ -216,8 +216,7 @@ static int32_t PingServer (void) {
   Initialize SDS I/O Interface.
 */
 int32_t sdsioInit (void) {
-  int32_t  ret;
-  uint32_t n;
+  int32_t ret;
 
   if (sdsio_client_initialized != 0U) {
     // SDS I/O Client already initialized.
@@ -596,10 +595,7 @@ int32_t sdsExchange (void) {
 }
 
 /**
-  \fn          void sdsFlagsModify (uint32_t set_mask, uint32_t clear_mask)
-  \brief       Modify SDS control flags (atomic operation).
-  \param[in]   set_mask        bits to set in sdsFlags
-  \param[in]   clear_mask      bits to clear in sdsFlags
+  Modify SDS control flags (atomic operation).
 */
 void sdsFlagsModify (uint32_t set_mask, uint32_t clear_mask) {
 

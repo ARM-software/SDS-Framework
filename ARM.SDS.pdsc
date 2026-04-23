@@ -68,8 +68,8 @@
     <api Cclass="SDS" Cgroup="IO" Capiversion="3.0.0">
       <description>Blocking I/O interface to read/write SDS files</description>
       <files>
-        <file category="header" name="sds/include/sdsio.h" />
         <file category="doc"    name="docs/SDS_API/group__SDS__IO__Interface.html"/>
+        <file category="header" name="sds/sdsio/include/sdsio.h" />
       </files>
     </api>
   </apis>
@@ -82,12 +82,11 @@
         #define RTE_SDS                                 /* Synchronous Data Stream */
       </RTE_Components_h>
       <files>
-        <file category="header" name="sds/include/sds.h"/>
-        <file category="header" name="sds/include/sds_buffer.h"/>
-        <file category="source" name="sds/source/sds.c"/>
-        <file category="source" name="sds/source/sds_buffer.c"/>
-        <file category="header" name="sds/config/sds_config.h" attr="config" version="3.0.0"/>
         <file category="doc"    name="docs/SDS_API/group__SDS__Interface.html"/>
+        <file category="header" name="sds/config/sds_config.h" attr="config" version="3.0.0"/>
+        <file category="header" name="sds/include/sds.h"/>
+        <file category="source" name="sds/sds.c"/>
+        <file category="source" name="sds/sds_buffer.c"/>
       </files>
     </component>
 
@@ -99,8 +98,8 @@
         #define RTE_SDS_IO_VSI                          /* Synchronous Data Stream Input/Output (VSI) */
       </RTE_Components_h>
       <files>
-        <file category="source" name="sds/source/sdsio/vsi/sdsio_vsi.c"/>
         <file category="doc"    name="docs/sdsio.html"/>
+        <file category="source" name="sds/sdsio/vsi/sdsio_vsi.c"/>
       </files>
     </component>
 
@@ -110,13 +109,13 @@
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
-        #define RTE_SDS_IO_SOCKET                       /* Synchronous Data Stream Input/Output Client via Socket */
+        #define RTE_SDS_IO_CLIENT_SOCKET                /* Synchronous Data Stream Input/Output Client via Socket */
       </RTE_Components_h>
       <files>
-        <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
-        <file category="source" name="sds/source/sdsio/client/socket/sdsio_client_socket.c"/>
-        <file category="header" name="sds/config/sdsio_config_socket.h" attr="config" version="2.0.0"/>
         <file category="doc"    name="docs/sdsio.html"/>
+        <file category="header" name="sds/sdsio/client/config/sdsio_client_socket_config.h" attr="config" version="3.0.0"/>
+        <file category="source" name="sds/sdsio/client/sdsio_client.c"/>
+        <file category="source" name="sds/sdsio/client/sdsio_client_socket.c"/>
       </files>
     </component>
 
@@ -126,14 +125,14 @@
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
-        #define RTE_SDS_IO_USB                          /* Synchronous Data Stream Input/Output Client via USB */
-        #define RTE_SDS_IO_USB_MDK_USB                  /* Synchronous Data Stream Input/Output Client via USB - MDK USB */
+        #define RTE_SDS_IO_CLIENT_USB                   /* Synchronous Data Stream Input/Output Client via USB */
+        #define RTE_SDS_IO_CLIENT_USB_MDK               /* Synchronous Data Stream Input/Output Client via USB - MDK-Middleware USB */
       </RTE_Components_h>
       <files>
-        <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
-        <file category="source" name="sds/source/sdsio/client/usb/mdk/sdsio_client_usb.c"/>
-        <file category="header" name="sds/config/sdsio_config_usb_mdk.h" attr="config" version="2.0.0"/>
         <file category="doc"    name="docs/index.html"/>
+        <file category="header" name="sds/sdsio/client/config/sdsio_client_usb_mdk_config.h" attr="config" version="3.0.0"/>
+        <file category="source" name="sds/sdsio/client/sdsio_client.c"/>
+        <file category="source" name="sds/sdsio/client/sdsio_client_usb_mdk.c"/>
       </files>
     </component>
 
@@ -143,14 +142,14 @@
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
-        #define RTE_SDS_IO_SERIAL                       /* Synchronous Data Stream Input/Output Client via Serial */
-        #define RTE_SDS_IO_SERIAL_CMSIS_USART           /* Synchronous Data Stream Input/Output Client via Serial - CMSIS USART */
+        #define RTE_SDS_IO_CLIENT_SERIAL                /* Synchronous Data Stream Input/Output Client via Serial */
+        #define RTE_SDS_IO_CLIENT_SERIAL_CMSIS_USART    /* Synchronous Data Stream Input/Output Client via Serial - CMSIS USART */
       </RTE_Components_h>
       <files>
-        <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
-        <file category="source" name="sds/source/sdsio/client/serial/usart/sdsio_client_serial.c"/>
-        <file category="header" name="sds/config/sdsio_config_serial_usart.h" attr="config" version="2.0.0"/>
         <file category="doc"    name="docs/sdsio.html"/>
+        <file category="header" name="sds/sdsio/client/config/sdsio_client_serial_config.h" attr="config" version="3.0.0"/>
+        <file category="source" name="sds/sdsio/client/sdsio_client.c"/>
+        <file category="source" name="sds/sdsio/client/sdsio_client_serial.c"/>
       </files>
     </component>
 
@@ -160,12 +159,12 @@
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
-        #define RTE_SDS_IO_CUSTOM                       /* Synchronous Data Stream Input/Output Client via Custom I/O */
+        #define RTE_SDS_IO_CLIENT_CUSTOM                /* Synchronous Data Stream Input/Output Client via Custom I/O */
       </RTE_Components_h>
       <files>
-        <file category="source" name="sds/source/sdsio/client/sdsio_client.c"/>
-        <file category="source" name="sds/source/sdsio/client/template/sdsio_client_custom.c" attr="template" select="Custom SDS I/O Client Driver"/>
         <file category="doc"    name="docs/sdsio.html"/>
+        <file category="source" name="sds/sdsio/client/sdsio_client.c"/>
+        <file category="source" name="sds/sdsio/client/sdsio_client_custom.c" attr="template" select="Custom SDS I/O Client Driver"/>
       </files>
     </component>
 
@@ -175,12 +174,12 @@
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_FILE_SYSTEM                  /* Synchronous Data Stream Input/Output via File System */
-        #define RTE_SDS_IO_FILE_SYSTEM_MDK_FS           /* Synchronous Data Stream Input/Output via File System (MDK FS) */
+        #define RTE_SDS_IO_FILE_SYSTEM_MDK              /* Synchronous Data Stream Input/Output via File System - MDK-Middleware FS */
       </RTE_Components_h>
       <files>
-        <file category="source" name="sds/source/sdsio/fs/mdk/sdsio_fs.c"/>
-        <file category="header" name="sds/config/sdsio_config_fs_mdk.h" attr="config" version="2.0.0"/>
         <file category="doc"    name="docs/sdsio.html"/>
+        <file category="header" name="sds/sdsio/fs/config/sdsio_fs_mdk_config.h" attr="config" version="3.0.0"/>
+        <file category="source" name="sds/sdsio/fs/sdsio_fs_mdk.c"/>
       </files>
     </component>
 
@@ -193,8 +192,8 @@
         #define RTE_SDS_IO_FILE_SYSTEM_SEMIHOSTING      /* Synchronous Data Stream Input/Output via File System (Semihosting) */
       </RTE_Components_h>
       <files>
-        <file category="source" name="sds/source/sdsio/fs/semihosting/sdsio_fs.c"/>
         <file category="doc"    name="docs/sdsio.html"/>
+        <file category="source" name="sds/sdsio/fs/sdsio_fs_semihosting.c"/>
       </files>
     </component>
   </components>

@@ -21,11 +21,10 @@
 #include "cmsis_os2.h"
 
 #include "sds.h"
-#include "sdsio.h"
 #include "sdsio_client.h"
 
 #include "Driver_USART.h"
-#include "sdsio_config_serial_usart.h"
+#include "sdsio_client_serial_config.h"
 
 // Expansion macro used to create CMSIS Driver references
 #define EXPAND_SYMBOL(name, port)   name##port

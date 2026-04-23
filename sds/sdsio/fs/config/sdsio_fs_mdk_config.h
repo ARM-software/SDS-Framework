@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Arm Limited. All rights reserved.
+ * Copyright (c) 2023, 2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Name:    sdsio_config_fs_mdk.h
+ * Name:    sdsio_fs_mdk_config.h
  * Purpose: SDS IO via File System (Keil::File System) configuration options
- * Rev.:    V2.0.0
+ * Rev.:    V3.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------

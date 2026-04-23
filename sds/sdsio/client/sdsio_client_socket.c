@@ -25,9 +25,8 @@
 #include "iot_socket.h"
 
 #include "sds.h"
-#include "sdsio.h"
 #include "sdsio_client.h"
-#include "sdsio_config_socket.h"
+#include "sdsio_client_socket_config.h"
 
 static int32_t socket = -1;
 
