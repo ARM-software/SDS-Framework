@@ -35,6 +35,10 @@
       <require Cclass="CMSIS"        Cgroup="RTOS2"/>
       <require Cclass="IoT Utility"  Cgroup="Socket"/>
     </condition>
+    <condition id="SDS IO via RTT">
+      <description>SDS IO via RTT (SEGGER RTT)</description>
+      <require Cclass="SEGGER" Cgroup="RTT"/>
+    </condition>
     <condition id="SDS IO via USB - MDK USB">
       <description>SDS IO via USB (MDK USB)</description>
       <require Cclass="CMSIS" Cgroup="RTOS2"/>
@@ -116,6 +120,22 @@
         <file category="header" name="sds/sdsio/client/config/sdsio_client_socket_config.h" attr="config" version="3.0.0"/>
         <file category="source" name="sds/sdsio/client/sdsio_client.c"/>
         <file category="source" name="sds/sdsio/client/sdsio_client_socket.c"/>
+      </files>
+    </component>
+
+    <!-- SDS I/O (RTT) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="RTT" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via RTT">
+      <description>I/O via RTT to SDSIO Server (using component SEGGER:RTT)</description>
+      <RTE_Components_h>
+        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
+        #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
+        #define RTE_SDS_IO_CLIENT_RTT                   /* Synchronous Data Stream Input/Output Client via RTT */
+      </RTE_Components_h>
+      <files>
+        <file category="doc"    name="docs/sdsio.html"/>
+        <file category="header" name="sds/sdsio/client/config/sdsio_client_rtt_config.h" attr="config" version="3.0.0"/>
+        <file category="source" name="sds/sdsio/client/sdsio_client.c"/>
+        <file category="source" name="sds/sdsio/client/sdsio_client_rtt.c"/>
       </files>
     </component>
 
