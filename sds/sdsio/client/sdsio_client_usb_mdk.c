@@ -143,9 +143,9 @@ static void USBD_Endpoint_Event (uint8_t ep_num, uint32_t event) {
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDSIO Client I/O via USB.
+  \brief       Initialize SDSIO Client.
   \return      SDS_OK on success or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientInit (void) {
   int32_t  ret = SDS_ERROR_IO;
@@ -185,9 +185,9 @@ int32_t sdsioClientInit (void) {
 
 /**
   \fn          int32_t sdsioClientUninit (void)
-  \brief       Un-Initialize SDSIO Client I/O.
+  \brief       Un-Initialize SDSIO Client.
   \return      SDS_OK on success or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientUninit (void) {
   USBD_Disconnect(SDSIO_USB_DEVICE_INDEX);
@@ -211,7 +211,7 @@ int32_t sdsioClientUninit (void) {
   \param[in]   buf         pointer to buffer with data to send
   \param[in]   buf_size    buffer size in bytes
   \return      number of bytes successfully sent or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
   uint32_t  num = 0U;
@@ -265,7 +265,7 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
   \param[in]   buf_size     buffer size in bytes
   \param[in]   mode         blocking or non-blocking mode (see \ref sdsioReceiveMode_t)
   \return      number of bytes successfully received or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size, sdsioReceiveMode_t mode) {
   uint32_t  num = 0U;

@@ -213,7 +213,7 @@ static int32_t PingServer (void) {
 // SDS I/O functions
 
 /**
-  Initialize SDS I/O Interface.
+  Initialize SDS I/O interface.
 */
 int32_t sdsioInit (void) {
   int32_t ret;
@@ -238,7 +238,7 @@ int32_t sdsioInit (void) {
 }
 
 /**
-  Un-initialize SDS I/O Interface.
+  Un-initialize SDS I/O interface.
 */
 int32_t sdsioUninit (void) {
 

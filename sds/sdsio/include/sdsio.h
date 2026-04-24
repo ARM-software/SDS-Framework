@@ -88,7 +88,7 @@ int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size);
   \param[out]  buf            pointer to buffer for data to read
   \param[in]   buf_size       buffer size in bytes
   \return      number of bytes successfully read, or
-               a negative value on error or SDSIO_EOS (see \ref SDS_Return_Codes)
+               a negative value on error or SDS_EOS (see \ref SDS_Return_Codes)
 */
 int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size);
 

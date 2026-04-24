@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// SDS I/O Client via Serial Port (CMSIS Driver:USART)
+// SDS I/O Client via Serial (CMSIS Driver:USART)
 
 #include "cmsis_os2.h"
 
@@ -54,9 +54,9 @@ static void USART_Callback (uint32_t event) {
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDSIO Client I/O via CMSIS Driver:USART.
+  \brief       Initialize SDSIO Client.
   \return      SDS_OK on success or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientInit (void) {
   int32_t status = ARM_DRIVER_ERROR;
@@ -104,9 +104,9 @@ int32_t sdsioClientInit (void) {
 
 /**
   \fn          int32_t sdsioClientUninit (void)
-  \brief       Un-Initialize SDSIO Client I/O.
+  \brief       Un-Initialize SDSIO Client.
   \return      SDS_OK on success or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientUninit (void) {
   pDrvUSART->Control(ARM_USART_CONTROL_RX, 0U);
@@ -127,7 +127,7 @@ int32_t sdsioClientUninit (void) {
   \param[in]   buf         pointer to buffer with data to send
   \param[in]   buf_size    buffer size in bytes
   \return      number of bytes successfully sent or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
   int32_t ret = SDS_ERROR_IO;
@@ -162,7 +162,7 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
   \param[in]   buf_size     buffer size in bytes
   \param[in]   mode         blocking or non-blocking mode (see \ref sdsioReceiveMode_t)
   \return      number of bytes successfully received or
-               a negative value on error (see \ref SDS_IO_Return_Codes)
+               a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size, sdsioReceiveMode_t mode) {
   int32_t ret = SDS_ERROR_IO;

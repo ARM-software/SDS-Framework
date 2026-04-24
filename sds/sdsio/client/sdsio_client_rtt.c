@@ -32,7 +32,7 @@ static uint8_t rttUpBuffer  [SDSIO_RTT_UP_BUF_SIZE]   __ALIGNED(SDSIO_RTT_BUF_AL
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDSIO Client via RTT.
+  \brief       Initialize SDSIO Client.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */

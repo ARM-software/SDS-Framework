@@ -39,7 +39,7 @@ typedef enum {
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDSIO Client I/O and ping SDSIO Server to verify connection.
+  \brief       Initialize SDSIO Client.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */
@@ -47,7 +47,7 @@ int32_t sdsioClientInit (void);
 
 /**
   \fn          int32_t sdsioClientUninit (void)
-  \brief       Un-Initialize SDSIO Client I/O.
+  \brief       Un-Initialize SDSIO Client.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */
