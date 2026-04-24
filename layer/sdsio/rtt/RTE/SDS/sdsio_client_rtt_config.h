@@ -24,10 +24,25 @@
 
 // <h>SDS IO via RTT (SEGGER:RTT)
 
-//   <o>SDSIO RTT channel
-//   <i>SDSIO RTT channel number (0..31) to use for communication
+//   <o>RTT channel
+//   <i>RTT channel number (0..31) to use for communication
 //   <i>Default: 1
 #define SDSIO_RTT_CHANNEL       1U
+
+//   <o>RTT down-channel buffer size
+//   <i>Size of the down to target channel buffer in bytes
+//   <i>Default: 8192
+#define SDSIO_RTT_DOWN_BUF_SIZE 8192U
+
+//   <o>RTT up-channel buffer size
+//   <i>Size of the up to host channel buffer in bytes
+//   <i>Default: 8192
+#define SDSIO_RTT_UP_BUF_SIZE   8192U
+
+//   <o>RTT channel buffer alignment
+//   <i>Buffer alignment in bytes (must be a power of 2)
+//   <i>Default: 32
+#define SDSIO_RTT_BUF_ALIGN     32U
 
 //   <o>RTT timeout
 //   <i>RTT transfer timeout in ms

@@ -19,11 +19,16 @@
 // SDS I/O Client via RTT
 
 #include "cmsis_os2.h"
+#include "cmsis_compiler.h"
 #include "SEGGER_RTT.h"
 
 #include "sds.h"
 #include "sdsio_client.h"
 #include "sdsio_client_rtt_config.h"
+
+// RTT channel buffers
+static uint8_t rttDownBuffer[SDSIO_RTT_DOWN_BUF_SIZE] __ALIGNED(SDSIO_RTT_BUF_ALIGN);
+static uint8_t rttUpBuffer  [SDSIO_RTT_UP_BUF_SIZE]   __ALIGNED(SDSIO_RTT_BUF_ALIGN);
 
 /**
   \fn          int32_t sdsioClientInit (void)
@@ -34,6 +39,8 @@
 int32_t sdsioClientInit (void) {
 
   SEGGER_RTT_Init();
+  SEGGER_RTT_ConfigUpBuffer  (SDSIO_RTT_CHANNEL, "SDSIO_Up",   rttUpBuffer,   sizeof(rttUpBuffer),   0U);
+  SEGGER_RTT_ConfigDownBuffer(SDSIO_RTT_CHANNEL, "SDSIO_Down", rttDownBuffer, sizeof(rttDownBuffer), 0U);
 
   return SDS_OK;
 }
