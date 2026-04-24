@@ -1,18 +1,18 @@
 layer:
   type: SDSIO
-  description: SDSIO layer for RTT connection to Host
+  description: Layer with SDS and an I/O interface using RTT connection to the SDSIO Server
 
   packs:
     - pack: ARM::SDS@^3.0.0-0
     - pack: SEGGER::RTT
 
   connections:
-    - connect: SDS RecPlay
+    - connect: SDS
       consumes:
         - CMSIS-RTOS2
       provides:
-        - SDS_STREAM
-        - SDS_IO
+        - SDS
+        - SDSIO
 
   components:
     - component: SDS:Stream&CMSIS-RTOS2

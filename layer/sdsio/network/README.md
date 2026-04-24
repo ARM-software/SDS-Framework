@@ -1,9 +1,11 @@
-# SDS Interface - Network (Ethernet)
+# SDS with SDS I/O Interface via Network (Ethernet)
 
-This SDS Interface uses the Ethernet-based IoT Socket communication implemented with the MDK-Middleware Network component.
+This layer provides SDS with an I/O interface using the Ethernet-based IoT Socket communication.
+It is implemented with the MDK-Middleware Network component.
 It is based on the following components:
 
-- [SDS Recorder and Player](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__Recorder__Player.html) data streaming,
+- [SDS](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__Interface.html) data streaming,
+- [SDS_IO](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__IO__Interface.html) SDS I/O interface,
 - [IoT Socket](https://mdk-packs.github.io/IoT_Socket/latest/index.html) communication interface,
 - [MDK-Middleware Network](https://arm-software.github.io/MDK-Middleware/latest/Network/index.html) protocol stack,
 - [CMSIS-Driver Ethernet](https://arm-software.github.io/CMSIS_6/latest/Driver/group__eth__interface__gr.html) physical interface.
@@ -13,12 +15,11 @@ It is based on the following components:
 The following SDS software components are required:
 
 ```yml
-  - component: SDS:Buffer
+  - component: SDS:Stream&CMSIS-RTOS2
   - component: SDS:IO:Socket
-  - component: SDS:RecPlay&CMSIS-RTOS2
 ```
 
-The IP address of the SDSIO server must be updated in `sdsio_config_socket.h` with the
+The IP address of the SDSIO server must be updated in `sdsio_client_socket_config.h` with the
 address reported by the SDSIO Server at startup:
 
 ```c
@@ -69,7 +70,8 @@ To start the SDSIO Server, run it from the `./utilities` directory with:
 python sdsio-server.py socket
 ```
 
-This activates the Server with the default settings. Further information about the SDSIO Server application
-can be found in the [SDS-Framework documentation](https://github.com/ARM-software/SDS-Framework/tree/main/documentation/utilities.md#sdsio-server).
+This activates the Server with the default settings.
+Further information about the SDSIO Server application can be found in the
+[SDS-Framework documentation](https://github.com/ARM-software/SDS-Framework/tree/main/documentation/utilities.md#sdsio-server).
 
 > ***Important Note***: The evaluation board and the PC must be in the same network in order to establish a connection.

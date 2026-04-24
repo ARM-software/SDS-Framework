@@ -1,21 +1,20 @@
 layer:
   type: SDSIO
-  description: SDSIO layer for Ethernet connection to Host
+  description: Layer with SDS and an I/O interface using Ethernet connection to the SDSIO Server
 
   packs:
-    - pack: ARM::SDS@^2.0.0-0
+    - pack: ARM::SDS@^3.0.0-0
     - pack: MDK-Packs::IoT_Socket@^1.4.0
     - pack: Keil::MDK-Middleware@^8.0.0
 
   connections:
-    - connect: SDS RecPlay
+    - connect: SDS
       consumes:
         - CMSIS_ETH
         - CMSIS-RTOS2
       provides:
-        - SDS_BUFFER
-        - SDS_REC_PLAY
-        - SDS_IO
+        - SDS
+        - SDSIO
 
   groups:
     - group: Socket
@@ -23,9 +22,8 @@ layer:
         - file: ./socket_startup.c
 
   components:
-    - component: SDS:Buffer
+    - component: SDS:Stream&CMSIS-RTOS2
     - component: SDS:IO:Socket
-    - component: SDS:RecPlay&CMSIS-RTOS2
     - component: IoT Utility:Socket:MDK Network
     - component: Network&MDK:CORE
     - component: Network&MDK:Interface:ETH

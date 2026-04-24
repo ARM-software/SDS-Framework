@@ -1,25 +1,23 @@
 layer:
   type: SDSIO
-  description: SDSIO layer for USB Device connection to Host
+  description: Layer with SDS and an I/O interface using USB connection to the SDSIO Server
 
   packs:
-    - pack: ARM::SDS@^2.0.0-0
+    - pack: ARM::SDS@^3.0.0-0
     - pack: Keil::MDK-Middleware@^8.0.0
 
   connections:
-    - connect: SDS RecPlay
+    - connect: SDS
       consumes:
         - CMSIS_USB_Device
         - CMSIS-RTOS2
       provides:
-        - SDS_BUFFER
-        - SDS_REC_PLAY
-        - SDS_IO
+        - SDS
+        - SDSIO
 
   components:
-    - component: SDS:Buffer
+    - component: SDS:Stream&CMSIS-RTOS2
     - component: SDS:IO:USB&MDK USB
-    - component: SDS:RecPlay&CMSIS-RTOS2
     - component: USB&MDK:CORE
     - component: USB&MDK:Device
     - component: USB&MDK:Device:Custom Class

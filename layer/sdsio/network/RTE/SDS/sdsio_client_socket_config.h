@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2023-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,18 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Name:    sds_buffer_config.h
- * Purpose: SDS Buffer configuration options
- * Rev.:    V2.0.0
+ * Name:    sdsio_client_socket_config.h
+ * Purpose: SDS IO via Socket (IoT Utility:Socket) configuration options
+ * Rev.:    V3.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>Synchronous Data Stream (SDS) Buffer
+// <h>SDS IO via Socket (IoT Utility:Socket)
 
-//   <o>Maximum number of SDS Buffer streams
-//   <i>Default: 16
-#define SDS_BUFFER_MAX_STREAMS  16U
+//   <s.16>SDSIO-Server IP
+//   <i>SDSIO socket server IPv4 address
+//   <i>Default: "0.0.0.0"
+#define SDSIO_SOCKET_SERVER_IP          "0.0.0.0"
+
+//   <o>SDSIO-Server port
+//   <i>SDSIO socket server port
+//   <i>Default: 5050
+#define SDSIO_SOCKET_SERVER_PORT        5050U
+
+//   <o>Socket timeout
+//   <i>Socket receive timeout in ms
+//   <i>Default: 5000
+#define SDSIO_SOCKET_RECEIVE_TOUT       5000U
 
 // </h>
 

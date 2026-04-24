@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,9 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Name:    sdsio_config_usb_mdk.h
+ * Name:    sdsio_client_usb_mdk_config.h
  * Purpose: SDS IO via USB (Keil::USB:Device:Custom) configuration options
- * Rev.:    V2.0.0
+ * Rev.:    V3.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------

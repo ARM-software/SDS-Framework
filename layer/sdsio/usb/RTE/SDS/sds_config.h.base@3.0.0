@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -15,43 +15,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Name:    sds_rec_play_config.h
- * Purpose: SDS Recorder and Player configuration options
- * Rev.:    V2.0.0
+ * Name:    sds_config.h
+ * Purpose: SDS configuration options
+ * Rev.:    V3.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>SDS Recorder and Player
+// <h>SDS System Configuration
 
-//   <o>Maximum number of streams <1-31>
+//   <o>Maximum number of concurrent streams <1-31>
 //   <i>Default: 16
-#define SDS_REC_PLAY_MAX_STREAMS        16U
+#define SDS_MAX_STREAMS                 16U
 
-//   <o>Size of a internal working buffer for SDS Recorder and Player
+//   <o>Size of a internal working buffer used for I/O transfers
 //   <i>Default: 8192
-//   <i>Buffer size must be at least as large as
-//   <i>the largest data block size plus 8 bytes for the header.
-#define SDS_REC_PLAY_BUF_SIZE           8192U
+#define SDS_BUF_SIZE                    8192U
 
 // </h>
 
 //------------- <<< end of configuration section >>> ---------------------------
 
-// Thread stack size for SDS Recorder and Player thread
-#define SDS_REC_PLAY_THREAD_STACK_SIZE  1024
+// Thread stack size for SDS system thread
+#define SDS_THREAD_STACK_SIZE           1024
 
-// Thread priority for SDS Recorder and Player thread
-#define SDS_REC_PLAY_THREAD_PRIORITY    osPriorityNormal
+// Thread priority for SDS system thread
+#define SDS_THREAD_PRIORITY             osPriorityNormal
 
-// Timeout value for opening the player stream in kernel ticks
-#define SDS_REC_PLAY_OPEN_TOUT          3000U
+// Timeout value for opening the SDS stream in kernel ticks
+#define SDS_OPEN_TOUT                   3000U
 
-// Timeout value for closing the recorder/player stream in kernel ticks
-#define SDS_REC_PLAY_CLOSE_TOUT         3000U
+// Timeout value for closing the SDS stream in kernel ticks
+#define SDS_CLOSE_TOUT                  3000U
 
 // Efficient transfer size for IO interface read/write operations
 // Default: 8192
 // Optimize this value for the underlying IO interface (e.g., socket, USART, VCOM, file system)
 // to ensure efficient read/write operations and performance
-#define SDS_REC_PLAY_IO_TRANSFER_SIZE   8192U
+#define SDS_IO_TRANSFER_SIZE            8192U

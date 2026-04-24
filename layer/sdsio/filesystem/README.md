@@ -1,9 +1,11 @@
-# SDS Interface - File System (SD Card)
+# SDS with SDS I/O Interface via File System (SD Card)
 
-This SDS Interface uses the SD Card as media and is implemented with the MDK-Middleware File System component.
+This layer provides SDS with an I/O interface using the SD card as storage media.
+It is implemented with the MDK-Middleware File System component.
 It is based on the following components:
 
-- [SDS Recorder and Player](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__Recorder__Player.html) data streaming,
+- [SDS](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__Interface.html) data streaming,
+- [SDS_IO](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__IO__Interface.html) SDS I/O interface,
 - [CMSIS-Compiler](https://arm-software.github.io/CMSIS-Compiler/latest/index.html) retargeting standard C run-time library file operations,
 - [MDK-Middleware File System](https://arm-software.github.io/MDK-Middleware/latest/FileSystem/index.html) file system interface,
 - [CMSIS-Driver MCI](https://arm-software.github.io/CMSIS_6/latest/Driver/group__mci__interface__gr.html) physical interface.
@@ -13,9 +15,8 @@ It is based on the following components:
 The following SDS software components are required:
 
 ```yml
-  - component: SDS:Buffer
+  - component: SDS:Stream&CMSIS-RTOS2
   - component: SDS:IO:File System&MDK FS
-  - component: SDS:RecPlay&CMSIS-RTOS2
 ```
 
 ## File System Configuration
