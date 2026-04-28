@@ -37,7 +37,7 @@
 //   <o>Socket timeout
 //   <i>Socket receive timeout in ms
 //   <i>Default: 5000
-#define SDSIO_SOCKET_RECEIVE_TOUT       5000U
+#define SDSIO_SOCKET_RECEIVE_TIMEOUT    5000U
 
 // </h>
 

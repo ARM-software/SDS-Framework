@@ -500,7 +500,7 @@ sdsId_t sdsOpen (const char *name, sdsMode_t mode, void *buf, uint32_t buf_size)
     return NULL;
   }
 
-  if (sdsLockAcquire(stream, SDS_OPEN_TOUT) == 0U) {
+  if (sdsLockAcquire(stream, SDS_OPEN_TIMEOUT) == 0U) {
     // Timeout occurred while waiting for lock. Free control block and exit the function.
     sdsFree(index);
     return NULL;
@@ -556,7 +556,7 @@ sdsId_t sdsOpen (const char *name, sdsMode_t mode, void *buf, uint32_t buf_size)
       osThreadFlagsSet(sdsThreadId, 1U << index);
 
       // Wait for notification from sdsThread that the stream buffer is filled with the data.
-      flags = osEventFlagsWait(sdsOpenEventFlags, 1U << index, osFlagsWaitAll, SDS_OPEN_TOUT);
+      flags = osEventFlagsWait(sdsOpenEventFlags, 1U << index, osFlagsWaitAll, SDS_OPEN_TIMEOUT);
       if ((flags & osFlagsError) != 0U) {
         // Timeout or any other error occurred.
         err = SDS_ERROR;
@@ -614,7 +614,7 @@ int32_t sdsClose (sdsId_t id) {
     // Invalid stream. Exit the function.
     return SDS_ERROR_PARAMETER;
   }
-  if (sdsLockAcquire(stream, SDS_CLOSE_TOUT) == 0U) {
+  if (sdsLockAcquire(stream, SDS_CLOSE_TIMEOUT) == 0U) {
     // Timeout occurred while waiting for lock.
     return SDS_ERROR_TIMEOUT;
   }
@@ -634,12 +634,12 @@ int32_t sdsClose (sdsId_t id) {
   // Before SDS stream is closed, sdsThread should send all data in SDS Stream Buffer via SDS I/O interface for write mode,
   // for read mode sdsThread should stop reading data from SDS I/O interface.
   // Notify sdsThread to process this stream by setting the corresponding thread flag.
-  event_mask = 1 << stream->index;
+  event_mask = 1U << stream->index;
   osThreadFlagsSet(sdsThreadId, event_mask);
 
   // Wait for notification from sdsThread that thread has transferred all data from SDS Stream Buffer for write mode,
   // for read mode wait for notification from sdsThread that thread has stopped reading data.
-  flags = osEventFlagsWait(sdsCloseEventFlags, event_mask, osFlagsWaitAll, SDS_CLOSE_TOUT);
+  flags = osEventFlagsWait(sdsCloseEventFlags, event_mask, osFlagsWaitAll, SDS_CLOSE_TIMEOUT);
   if ((flags & osFlagsError) != 0U) {
     if (flags == osFlagsErrorTimeout) {
       // Timeout occurred.

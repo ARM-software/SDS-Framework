@@ -43,10 +43,10 @@
 #define SDS_THREAD_PRIORITY             osPriorityNormal
 
 // Timeout value for opening the SDS stream in kernel ticks
-#define SDS_OPEN_TOUT                   3000U
+#define SDS_OPEN_TIMEOUT                3000U
 
 // Timeout value for closing the SDS stream in kernel ticks
-#define SDS_CLOSE_TOUT                  3000U
+#define SDS_CLOSE_TIMEOUT               3000U
 
 // Efficient transfer size for IO interface read/write operations
 // Default: 8192

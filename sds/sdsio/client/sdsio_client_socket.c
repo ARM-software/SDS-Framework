@@ -85,7 +85,7 @@ int32_t sdsioClientInit (void) {
       socket = iotSocketCreate(IOT_SOCKET_AF_INET, IOT_SOCKET_SOCK_STREAM, IOT_SOCKET_IPPROTO_TCP);
     }
     if (socket >= 0) {
-      opt_val = SDSIO_SOCKET_RECEIVE_TOUT;
+      opt_val = SDSIO_SOCKET_RECEIVE_TIMEOUT;
       iotSocketSetOpt(socket, IOT_SOCKET_SO_RCVTIMEO, &opt_val, sizeof(opt_val));
       opt_val = 1;
       iotSocketSetOpt(socket, IOT_SOCKET_SO_KEEPALIVE, &opt_val, sizeof(opt_val));
