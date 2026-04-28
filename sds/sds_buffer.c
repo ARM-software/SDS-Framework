@@ -196,7 +196,7 @@ int32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size) {
     }
     sds_buffer->cnt_in += num;
 
-    if ((sds_buffer->event_cb != NULL) && (sds_buffer->event_mask & SDS_BUFFER_EVENT_DATA_HIGH)) {
+    if ((sds_buffer->event_cb != NULL) && ((sds_buffer->event_mask & SDS_BUFFER_EVENT_DATA_HIGH) != 0U)) {
       cnt_used_new = sds_buffer->cnt_in - sds_buffer->cnt_out;
       if ((cnt_used < sds_buffer->threshold_high) && (cnt_used_new >= sds_buffer->threshold_high)) {
         sds_buffer->event_cb(sds_buffer, SDS_BUFFER_EVENT_DATA_HIGH, sds_buffer->event_arg);
@@ -239,7 +239,7 @@ int32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size) {
     }
     sds_buffer->cnt_out += num;
 
-    if ((sds_buffer->event_cb != NULL) && (sds_buffer->event_mask & SDS_BUFFER_EVENT_DATA_LOW)) {
+    if ((sds_buffer->event_cb != NULL) && ((sds_buffer->event_mask & SDS_BUFFER_EVENT_DATA_LOW) != 0U)) {
       cnt_used_new = sds_buffer->cnt_in - sds_buffer->cnt_out;
       if ((cnt_used > sds_buffer->threshold_low) && (cnt_used_new <= sds_buffer->threshold_low)) {
         sds_buffer->event_cb(sds_buffer, SDS_BUFFER_EVENT_DATA_LOW, sds_buffer->event_arg);
