@@ -162,7 +162,7 @@ extern sdsError_t sdsError;
 // Assert macro
 #define SDS_ASSERT(cond)                        \
   if (!(cond) && (sdsError.occurred == 0U)) {   \
-    sdsError.status = 0U;                       \
+    sdsError.status = SDS_OK;                   \
     sdsError.file = __FILE__;                   \
     sdsError.line = __LINE__;                   \
     sdsError.occurred = 1U;                     \
