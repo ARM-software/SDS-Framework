@@ -595,7 +595,7 @@ class sdsio_manager:
             printer.info(f"sdsFlags = 0x{flags:08X}")
             self.info_flags = flags
         if idle_rate and self.info_IdleRate != idle_rate:
-            if self.info_IdleRate != 0xFFFFFFFF:
+            if idle_rate != 0xFFFFFFFF:
                 printer.info(f"{idle_rate}% idle")
             self.info_IdleRate = idle_rate
         if err_data:
