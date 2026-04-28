@@ -371,7 +371,7 @@ int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
 
   if (sdsio_client_initialized == 0U) {
     // SDS I/O Client not initialized.
-    return SDS_ERROR;
+    return SDS_ERROR_IO;
   }
 
   if ((id != NULL) && (buf != NULL) && (buf_size != 0U)) {
@@ -505,7 +505,7 @@ int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
     data:   error data to be sent
 */
 int32_t sdsExchange (void) {
-  int32_t        ret;
+  int32_t        ret, ret_io;
   uint32_t       set_mask;
   uint32_t       clr_mask;
   uint32_t       ofs = 0U;
@@ -535,8 +535,8 @@ int32_t sdsExchange (void) {
   do {
     // Check if asynchronous response with ID = 6 (SDSIO_CMD_FLAGS) was received
     // and if it was then repeat to drain asynchronous responses if there are multiple
-    ret = sdsioClientReceive((uint8_t *)&header, sizeof(header), sdsioReceiveNonBlocking);
-    if (ret == sizeof(header)) {
+    ret_io = sdsioClientReceive((uint8_t *)&header, sizeof(header), sdsioReceiveNonBlocking);
+    if (ret_io == sizeof(header)) {
       // Process the flags response
       if ((header.command == SDSIO_CMD_FLAGS) && (header.data_size == 0U)) {
         set_mask = header.sdsio_id;
@@ -547,13 +547,13 @@ int32_t sdsExchange (void) {
         // Invalid header received.
         ret = SDS_ERROR_IO;
       }
-    } else if (ret >= 0) {
+    } else if (ret_io > 0) {
       // Incomplete header received.
       ret = SDS_ERROR_IO;
     }
-  } while (ret == sizeof(header));
+  } while (ret_io == sizeof(header));
 
-  if ((sdsFlags & SDS_FLAG_ALIVE) != 0U) {      // Send info only if Server is alive
+  if ((ret == SDS_OK) && ((sdsFlags & SDS_FLAG_ALIVE) != 0U)) { // Send info only if Server is alive
     // Prepare and send Command with ID = 7 (SDSIO_CMD_INFO)
     header.command   = SDSIO_CMD_INFO;
     header.sdsio_id  = sdsFlags;
@@ -573,17 +573,17 @@ int32_t sdsExchange (void) {
     }
   
     // Send header.
-    ret = sdsioClientSend((const uint8_t *)&header, sizeof(header));
-    if (ret == sizeof(header)) {
+    ret_io = sdsioClientSend((const uint8_t *)&header, sizeof(header));
+    if (ret_io == sizeof(header)) {
       if (header.data_size != 0U) {
         // Send data.
-        ret = sdsioClientSend((const uint8_t *)sdsio_client_error_data, header.data_size);
-        if ((ret >= 0) && (ret < header.data_size)) {
+        ret_io = sdsioClientSend((const uint8_t *)sdsio_client_error_data, header.data_size);
+        if ((ret_io >= 0) && (ret_io < header.data_size)) {
           // Incomplete data sent.
           ret = SDS_ERROR_IO;
         }
       }
-    } else if (ret >= 0) {
+    } else if (ret_io >= 0) {
       // Incomplete header sent.
       ret = SDS_ERROR_IO;
     }
