@@ -43,22 +43,6 @@ These functions must not be called concurrently with each other or with sdsBuffe
 */
 
 /**
-\defgroup SDS_Buffer_Return_Codes Function Return Codes
-\brief SDS Buffer Function Return Codes
-\details The following values are returned by most `sdsBuffer` functions.
-@{
-\def SDS_BUFFER_OK
-\brief sdsBuffer function execution completed successfully.
-
-\def SDS_BUFFER_ERROR
-\brief Error during sdsBuffer function execution.
-
-\def SDS_BUFFER_ERROR_PARAMETER
-\brief Error due to invalid parameter passed to an sdsBuffer function.
-@}
-*/
-
-/**
 \defgroup SDS_Buffer_Event_Codes Event Codes
 \brief SDS Buffer Event Codes
 \details The following values are passed as event value to \ref sdsBufferEvent_t callback function.

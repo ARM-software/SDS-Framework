@@ -25,6 +25,7 @@
 
 #include "cmsis_compiler.h"
 #include "sds_config.h"
+#include "sds.h"
 #include "sds_buffer.h"
 
 // Control block
@@ -138,11 +139,11 @@ sdsBufferId_t sdsBufferOpen (void *buf, uint32_t buf_size, uint32_t threshold_lo
 */
 int32_t sdsBufferClose (sdsBufferId_t id) {
   sdsBuffer_t *sds_buffer = id;
-  int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;
+  int32_t      ret = SDS_ERROR_PARAMETER;
 
   if (sds_buffer != NULL) {
     sdsBufferFree(sds_buffer);
-    ret = SDS_BUFFER_OK;
+    ret = SDS_OK;
   }
   return ret;
 }
@@ -152,13 +153,13 @@ int32_t sdsBufferClose (sdsBufferId_t id) {
 */
 int32_t sdsBufferRegisterEvents (sdsBufferId_t id, sdsBufferEvent_t event_cb, uint32_t event_mask, void *event_arg) {
   sdsBuffer_t *sds_buffer = id;
-  int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;
+  int32_t      ret = SDS_ERROR_PARAMETER;
 
   if (sds_buffer != NULL) {
     sds_buffer->event_cb   = event_cb;
     sds_buffer->event_mask = event_mask;
     sds_buffer->event_arg  = event_arg;
-    ret = SDS_BUFFER_OK;
+    ret = SDS_OK;
   }
   return ret;
 }
@@ -170,7 +171,7 @@ int32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size) {
   sdsBuffer_t   *sds_buffer = id;
   uint32_t       num = 0U;
   uint32_t       cnt_free, cnt_used, cnt_used_new, cnt_limit;
-  int32_t        ret = SDS_BUFFER_ERROR_PARAMETER;
+  int32_t        ret = SDS_ERROR_PARAMETER;
 
   if ((sds_buffer != NULL) && (buf != NULL) && (buf_size != 0U)) {
 
@@ -214,7 +215,7 @@ int32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size) {
   sdsBuffer_t *sds_buffer = id;
   uint32_t     num = 0U;
   uint32_t     cnt_used, cnt_used_new, cnt_limit;
-  int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;
+  int32_t      ret = SDS_ERROR_PARAMETER;
 
   if ((sds_buffer != NULL) && (buf != NULL) && (buf_size != 0U)) {
 
@@ -257,7 +258,7 @@ int32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size) {
 int32_t sdsBufferClear (sdsBufferId_t id) {
   sdsBuffer_t *sds_buffer = id;
   uint32_t     cnt_used, cnt_limit;
-  int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;
+  int32_t      ret = SDS_ERROR_PARAMETER;
 
   if (sds_buffer != NULL) {
     cnt_used = sds_buffer->cnt_in - sds_buffer->cnt_out;
@@ -270,7 +271,7 @@ int32_t sdsBufferClear (sdsBufferId_t id) {
     }
     sds_buffer->cnt_out += cnt_used;
 
-    ret = SDS_BUFFER_OK;
+    ret = SDS_OK;
   }
   return ret;
 }
@@ -280,7 +281,7 @@ int32_t sdsBufferClear (sdsBufferId_t id) {
 */
 int32_t sdsBufferGetCount (sdsBufferId_t id) {
   sdsBuffer_t *sds_buffer = id;
-  int32_t      ret = SDS_BUFFER_ERROR_PARAMETER;
+  int32_t      ret = SDS_ERROR_PARAMETER;
 
   if (sds_buffer != NULL) {
     ret = (int32_t)(sds_buffer->cnt_in - sds_buffer->cnt_out);
