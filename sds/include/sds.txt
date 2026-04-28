@@ -181,7 +181,6 @@ the SDS I/O Client is used to interact with the SDS I/O Server running on a Host
 The initialization process includes setting up the communication interface and verifying that
 the I/O Server is active on the Host.
 */
-int32_t sdsioInit (void);
 
 /**
 \fn          int32_t sdsioUninit (void)
@@ -236,23 +235,6 @@ The function attempts to read data and may block based on the behavior of the un
 - If data is partially read but the timeout occurs before the full request is satisfied, the function returns the number of bytes read up to that point.
 - If the end of the stream is reached and no more data remains, the function returns \ref SDS_EOS to indicate that the end of file has been reached and no additional data is available.
 - If an I/O interface or protocol error occurs, the function returns \ref SDS_ERROR_IO.
-*/
-
-/**
-\fn          int32_t sdsExchange (void)
-\details
-Exchange state and control information with the Host.
-
-This function provides the control-plane exchange used by the SDS. A typical implementation synchronizes
-Host-visible state, such as flags, idle information, and optional diagnostic data, using the active SDS I/O backend.
-
-On success, the function returns \ref SDS_OK. On failure, it returns a negative value from \ref SDS_Return_Codes.
-*/
-
-/**
-\fn          void sdsFlagsModify (uint32_t set_mask, uint32_t clear_mask)
-\details
-This function atomically updates the flags, ensuring safe concurrent access to the global sdsFlags variable in a multithreaded environment.
 */
 
 
