@@ -231,13 +231,13 @@ class sdsControlUI(threading.Thread):
         bit = self._SET_FLAGS[ch]
         with self._lock:
             self._sdsControlFlagsSet |= (1 << bit)
-        printer.info(f"sdsControlFlagsSet = 0x{self._sdsControlFlagsSet:08X} ('{ch}')")
+        printer.info(f"sdsFlags set mask = 0x{self._sdsControlFlagsSet:08X} ('{ch}')")
 
     def _clear_flag(self, ch):
         bit = self._CLEAR_FLAGS[ch]
         with self._lock:
             self._sdsControlFlagsClear |= (1 << bit)
-        printer.info(f"sdsControlFlagsClear = 0x{self._sdsControlFlagsClear:08X} ('{ch}')")
+        printer.info(f"sdsFlags clear mask = 0x{self._sdsControlFlagsClear:08X} ('{ch}')")
 
     def get_flags_set(self):
         with self._lock:
@@ -592,10 +592,11 @@ class sdsio_manager:
         # Print info: sdsFlags, sdsIdleRate, Error
         resp = bytearray()
         if self.info_flags != flags:
-            printer.info(f"sdsInfoFlags = 0x{flags:08X}")
+            printer.info(f"sdsFlags = 0x{flags:08X}")
             self.info_flags = flags
         if idle_rate and self.info_IdleRate != idle_rate:
-            printer.info(f"sdsInfoIdleRate = {idle_rate} ms")
+            if self.info_IdleRate != 0xFFFFFFFF:
+                printer.info(f"{idle_rate}% idle")
             self.info_IdleRate = idle_rate
         if err_data:
             status = int.from_bytes(err_data[0:4],'little')
