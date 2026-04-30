@@ -206,9 +206,3 @@ int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
 int32_t sdsExchange (void) {
   return SDS_ERROR_IO;
 }
-
-/**
-  This function cannot be implemented in system using SDS I/O interface via file system.
-*/
-void sdsFlagsModify (uint32_t set_mask, uint32_t clear_mask) {
-}

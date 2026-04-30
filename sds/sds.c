@@ -119,9 +119,10 @@ static osEventFlagsId_t sdsOpenEventFlags;
 
 // Helper functions:
 
+#if defined(__STDC_NO_ATOMICS__) || !defined(ATOMIC_CHAR32_T_LOCK_FREE) || (ATOMIC_CHAR32_T_LOCK_FREE < 2)
+
 // Atomic Operation: Write 32-bit value to memory if existing value in memory is zero.
 //  Return: 1 when new value is written or 0 otherwise.
-#if defined(__STDC_NO_ATOMICS__) || !defined(ATOMIC_CHAR32_T_LOCK_FREE) || (ATOMIC_CHAR32_T_LOCK_FREE < 2)
 __STATIC_INLINE uint32_t atomic_wr32_if_zero (uint32_t *mem, uint32_t val) {
   uint32_t primask = __get_PRIMASK();
   uint32_t ret = 0U;
@@ -137,7 +138,22 @@ __STATIC_INLINE uint32_t atomic_wr32_if_zero (uint32_t *mem, uint32_t val) {
 
   return ret;
 }
+
+// Atomic Operation: Read-modify-write 32-bit value by applying set and clear masks.
+__STATIC_INLINE void atomic_rmw32 (uint32_t *mem, uint32_t set_mask, uint32_t clear_mask) {
+  uint32_t primask = __get_PRIMASK();
+
+  __disable_irq();
+  *mem = (*mem | set_mask) & ~clear_mask;
+  if (primask == 0U) {
+    __enable_irq();
+  }
+}
+
 #else
+
+// Atomic Operation: Write 32-bit value to memory if existing value in memory is zero.
+//  Return: 1 when new value is written or 0 otherwise.
 __STATIC_INLINE uint32_t atomic_wr32_if_zero (uint32_t *mem, uint32_t val) {
   uint32_t expected;
   uint32_t ret = 1U;
@@ -156,13 +172,28 @@ __STATIC_INLINE uint32_t atomic_wr32_if_zero (uint32_t *mem, uint32_t val) {
 
   return ret;
 }
+
+// Atomic Operation: Read-modify-write 32-bit value by applying set and clear masks.
+__STATIC_INLINE void atomic_rmw32 (uint32_t *mem, uint32_t set_mask, uint32_t clear_mask) {
+  uint32_t old_val;
+  uint32_t new_val;
+
+  old_val = *mem;
+  do {
+    new_val = (old_val | set_mask) & ~clear_mask;
+  } while (!atomic_compare_exchange_weak_explicit((_Atomic uint32_t *)mem,
+                                                  &old_val,
+                                                  new_val,
+                                                  memory_order_acq_rel,
+                                                  memory_order_relaxed));
+}
+
 #endif
 
 static uint32_t sdsLockAcquire (sdsStream_t *stream, uint32_t timeout) {
   uint32_t *pLock = (uint32_t *)&stream->lock;
   uint32_t  lock  = 0U;
   uint32_t  expirationTick;
-
 
   expirationTick = osKernelGetTickCount() + timeout;
   do {
@@ -901,4 +932,12 @@ int32_t sdsGetSize (sdsId_t id) {
   // Release Lock.
   sdsLockRelease(stream);
   return ret;
+}
+
+/**
+  Modify SDS control flags (atomic operation).
+*/
+void sdsFlagsModify (uint32_t set_mask, uint32_t clear_mask) {
+
+  atomic_rmw32((uint32_t *)&sdsFlags, set_mask, clear_mask);
 }

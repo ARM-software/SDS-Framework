@@ -106,18 +106,6 @@ static inline int32_t sdsioUnlock     (void) { return SDS_OK; }
 // Internal helper functions
 
 /**
-  \fn          void sdsioFlagsModify (uint32_t set_mask, uint32_t clear_mask)
-  \brief       Modify SDS control flags.
-  \param[in]   set_mask        bits to set in sdsFlags
-  \param[in]   clear_mask      bits to clear in sdsFlags
-*/
-void sdsioFlagsModify (uint32_t set_mask, uint32_t clear_mask) {
-
-  sdsFlags |=  set_mask;
-  sdsFlags &= ~clear_mask;
-}
-
-/**
   \fn          int32_t sdsioClientReceiveHeader (uint8_t *buf, uint32_t buf_size)
   \brief       Receive header from SDSIO-Server.
   \param[out]  buf          pointer to the buffer where received header will be stored
@@ -144,7 +132,7 @@ int32_t sdsioClientReceiveHeader (uint8_t *buf, uint32_t buf_size) {
         if (header.data_size == 0U) {
           set_mask = header.sdsio_id;
           clr_mask = header.argument;
-          sdsioFlagsModify (set_mask, clr_mask);
+          sdsFlagsModify(set_mask, clr_mask);
           sdsio_client_inactive_rx_cnt = 0U;
         }
       } else {
@@ -528,7 +516,7 @@ int32_t sdsExchange (void) {
   if (sdsio_client_inactive_rx_cnt < 10U) {
     sdsio_client_inactive_rx_cnt++;
     if (sdsio_client_inactive_rx_cnt == 10U) {
-      sdsioFlagsModify(0U, SDS_FLAG_ALIVE);
+      sdsFlagsModify(0U, SDS_FLAG_ALIVE);
     }
   }
 
@@ -541,7 +529,7 @@ int32_t sdsExchange (void) {
       if ((header.command == SDSIO_CMD_FLAGS) && (header.data_size == 0U)) {
         set_mask = header.sdsio_id;
         clr_mask = header.argument;
-        sdsioFlagsModify(set_mask, clr_mask);
+        sdsFlagsModify(set_mask, clr_mask);
         sdsio_client_inactive_rx_cnt = 0U;
       } else {
         // Invalid header received.
@@ -592,15 +580,4 @@ int32_t sdsExchange (void) {
   sdsioUnlock();
 
   return ret;
-}
-
-/**
-  Modify SDS control flags (atomic operation).
-*/
-void sdsFlagsModify (uint32_t set_mask, uint32_t clear_mask) {
-
-  if (sdsioLock() == SDS_OK) {
-    sdsioFlagsModify(set_mask, clear_mask);
-    sdsioUnlock();
-  }
 }
