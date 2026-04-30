@@ -1,256 +1,10 @@
 /*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====*/
 /**
-\defgroup SDS_Buffer SDS Circular Buffer
-\brief sds_buffer.h: SDS circular buffer handling for data streams
-\details
-The **SDS** circular **Buffer** provides an interface for managing circular buffer streams used for efficient
-data transfer between software components. It includes functions for opening, closing, reading, writing, clearing,
-and monitoring buffer states using event callbacks.
-
-Each buffer stream is represented by an identifier of type sdsBufferId_t, which is obtained via sdsBufferOpen()
-and used in subsequent API calls to refer to the corresponding buffer instance.
-
-The buffer operates as a circular FIFO (first-in, first-out) queue. Data written to the buffer via sdsBufferWrite()
-is stored until read by sdsBufferRead() or until the buffer is cleared or closed. The buffer supports thresholds
-(threshold_low and threshold_high) for monitoring usage levels and triggering user-defined events.
-
-\b Thread \b Safety
-
-The SDS Buffer API is partially thread-safe, with the following constraints:
-
-Thread-safe operations:
-
-- sdsBufferRead()
-
-- sdsBufferWrite()
-
-- sdsBufferGetCount()
-
-These functions may be safely called concurrently, provided they operate on the same buffer instance (sdsBufferId_t). This allows safe producer-consumer models where one thread writes and another reads from the same buffer.
-
-Non-thread-safe operations:
-
-- sdsBufferOpen()
-
-- sdsBufferClose()
-
-- sdsBufferClear()
-
-- sdsBufferRegisterEvents()
-
-These functions must not be called concurrently with each other or with sdsBufferRead() or sdsBufferWrite() for the same buffer. Doing so can lead to undefined behavior or data corruption.
-@{
-*/
-
-/**
-\defgroup SDS_Buffer_Event_Codes Event Codes
-\brief SDS Buffer Event Codes
-\details The following values are passed as event value to \ref sdsBufferEvent_t callback function.
-@{
-\def SDS_BUFFER_EVENT_DATA_LOW
-\brief Event signaled when data in circular buffer falls to or below low threshold value.
-
-\def SDS_BUFFER_EVENT_DATA_HIGH
-\brief Event signaled when data in circular buffer reaches or exceeds high threshold value.
-@}
-*/
-
-/**
-\typedef sdsBufferId_t
-\brief Handle to SDS circular buffer
-\details
-This *pointer* defines the handle to SDS circular buffer. It is used to identify a circular buffer across the different functions.
-*/
-
-/**
-\typedef sdsBufferEvent_t
-\details
-This function is registered by passing a pointer to it as a parameter to the \ref sdsBufferRegisterEvents function. It is invoked when the circular buffer either reaches or exceeds the high data threshold or falls to or below the low data threshold.
-The high and low data thresholds are configured using the \ref sdsBufferOpen function.
-*/
-
-/**
-\fn          sdsBufferId_t sdsBufferOpen (void *buf, uint32_t buf_size, uint32_t threshold_low, uint32_t threshold_high)
-\details
-Opens the SDS circular buffer for read or write operations.
-The function returns the handle to the SDS buffer stream; if the buffer could not be opened, it returns NULL.
-*/
-
-/**
-\fn          int32_t sdsBufferClose (sdsBufferId_t id)
-\details
-Closes the SDS circular buffer when read or write operations are no longer required.
-*/
-
-/**
-\fn          int32_t sdsBufferRegisterEvents (sdsBufferId_t id, sdsBufferEvent_t event_cb, uint32_t event_mask, void *event_arg)
-\details
-Registers a \ref sdsBufferEvent_t callback function to handle threshold events for the specified SDS buffer.
-
-The `event_mask` parameter specifies which buffer events should trigger the callback. It is a bitmask composed of values from the
-\ref SDS_Buffer_Event_Codes enumeration:
-
-  - \ref SDS_BUFFER_EVENT_DATA_LOW
-  - \ref SDS_BUFFER_EVENT_DATA_HIGH
-
-When an event matching the mask occurs, the registered `event_cb` function is invoked with `event_arg` as its context.
-
-If `event_cb` is NULL, any previously registered callback for the specified buffer is unregistered.
-*/
-
-/**
-\fn          int32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size)
-\details
-Attempts to write up to `buf_size` bytes of data from `buf` to the SDS circular buffer.
-If sufficient space is available in the buffer, all data will be written. If only partial space is available,
-only the number of bytes that fit will be written. No data is overwritten.
-On success, the function returns the number of bytes actually written.
-*/
-
-/**
-\fn          int32_t sdsBufferRead (sdsBufferId_t id, void *buf, uint32_t buf_size)
-\details
-Attempts to read up to `buf_size` bytes of data from the SDS circular buffer into a `buf`.
-If sufficient data is available, the requested number of bytes will be read. If only partial data is available,
-only the available bytes will be read. On success, the function returns the number of bytes actually read or 0 if SDS circular buffer is empty.
-*/
-
-/**
-\fn          int32_t sdsBufferClear (sdsBufferId_t id)
-\details
-Clears any data from the SDS circular buffer and resets the circular buffer to empty state.
-*/
-
-/**
-\fn          int32_t sdsBufferGetCount (sdsBufferId_t id)
-\details
-Retrieves the number of data bytes currently available in the SDS circular buffer.
-*/
-
-
-/**
-@}
-*/
-
-// end group SDS_Buffer
-
-
-/*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====*/
-/**
-\defgroup SDS_IO_Interface SDS I/O Interface
-\brief sdsio.h: SDS I/O Interface for data streams
-\details
-The SDS I/O interface provides a generic mechanism for reading from and writing to `SDS file`s using several I/O backends.
-
-Interface can operate over:
-
-- A local file system, such as an SD card or semihosting, where files are accessed directly.
-- A communication channel such as Ethernet, USB, or UART, where access to files is performed remotely via an SDS I/O Server.
-
-When using a communication channel, the embedded device runs an SDS I/O Client, which communicates with the SDS I/O Server
-running on the Host machine. This interaction is command-based (e.g., `SDSIO_CMD_OPEN`, `SDSIO_CMD_READ`, `SDSIO_CMD_WRITE`) and enables
-the embedded system to remotely open, read, write, and close files located on the Host. For more details, refer to
-[SDSIO Server Protocol](../theory.md#sdsio-server-protocol).
-
-The interface is lightweight and backend-agnostic, making it suitable for embedded data logging, host-interactive tools,
-or as a transport layer for higher-level components such as the SDS Recorder and Player.
-
-@{
-*/
-
-/**
-\typedef sdsioId_t
-\brief Handle to SDS I/O data stream
-\details
-This *pointer* defines the handle to SDS I/O data stream. It is used to identify a data stream across the different functions.
-*/
-
-/**
-\typedef sdsioMode_t
-\details
-This *enum* identifies the *read* or *write* mode to SDS I/O data streams.
-It is a parameter of the \ref sdsioOpen function.
-*/
-
-/**
-\fn          int32_t sdsioInit (void)
-\details
-Initializes the SDS I/O interface. The interface may be a local file system (e.g., an SD card) or semihosting,
-or a communication channel such as Ethernet, USB or UART. In the case of a communication channel,
-the SDS I/O Client is used to interact with the SDS I/O Server running on a Host machine.
-The initialization process includes setting up the communication interface and verifying that
-the I/O Server is active on the Host.
-*/
-
-/**
-\fn          int32_t sdsioUninit (void)
-\details
-De-initializes the SDS I/O interface. If a communication channel such as Ethernet, USB or USART is used,
-the corresponding communication interface is also de-initialized.
-*/
-
-/**
-\fn          sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode)
-\details
-Opens an SDS I/O stream for reading or writing. If the interface is a local file system or semihosting, the file is opened directly.
-For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends an open command (SDSIO_CMD_OPEN) to the SDS I/O Server to open
-the file on the Host system. The function returns the handle to the SDS I/O stream; if the I/O stream could not be opened, it returns NULL.
-*/
-
-/**
-\fn          int32_t sdsioClose (sdsioId_t id)
-\details
-Closes an SDS I/O stream. If the interface is a local file system or semihosting, the file is closed directly.
-For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a close command (SDSIO_CMD_CLOSE)
-to the SDS I/O Server to close the file on the Host system.
-*/
-
-/**
-\fn          int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size)
-\details
-Attempts to write up to `buf_size` bytes from the memory pointed to `buf` to the SDS I/O stream identified by `id`.
-If the interface is a local file system or semihosting, data is written directly to the file.
-For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a write command (SDSIO_CMD_WRITE) along with the data to
-the SDS I/O Server, which then writes the data to a file on the Host system.
-
-The function may return before all data has been written, depending on the available interface bandwidth, buffer capacity, or timeout behavior:
-
-- If the write operation is successful, the function returns the number of bytes actually written. This value may be less than \a buf_size in case of partial write.
-- If no data could be written before the operation times out, the function returns \ref SDS_ERROR_TIMEOUT.
-- If an I/O interface or protocol error occurs, the function returns \ref SDS_ERROR_IO.
-*/
-
-/**
-\fn          int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size)
-\details
-Attempts to read up to `buf_size` bytes of data from the SDS I/O stream identified by `id` into the memory pointed to `buf`.
-If the interface is a local file system or semihosting, data is read directly from the file.
-For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO_CMD_READ) to the SDS I/O Server, which reads
-the file on the Host system and returns the data to the Client.
-
-The function attempts to read data and may block based on the behavior of the underlying interface and data availability. It returns under the following conditions:
-
-- If data is available, the function reads up to `buf_size` bytes and returns the number of bytes actually read. This value may be less than `buf_size`.
-- If no data becomes available before the timeout expires, the function returns \ref SDS_ERROR_TIMEOUT.
-- If data is partially read but the timeout occurs before the full request is satisfied, the function returns the number of bytes read up to that point.
-- If the end of the stream is reached and no more data remains, the function returns \ref SDS_EOS to indicate that the end of file has been reached and no additional data is available.
-- If an I/O interface or protocol error occurs, the function returns \ref SDS_ERROR_IO.
-*/
-
-
-/**
-@}
-*/
-// end group SDS_IO_Interface
-
-
-/*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====*/
-/**
 \defgroup SDS_Interface SDS Interface
-\brief sds.h: SDS stream interface for writing and reading SDS files via communication or file I/O interface.
+\brief sds.h: Synchronous Data Stream Interface for writing and reading SDS files via communication or file I/O interface.
 \details
 The **SDS** system manages writing to and reading from SDS files through communication or file I/O interfaces.
-They support the recording and playback of real-world data for applications such as machine learning and data analysis.
+It supports recording and playback of real-world data for applications such as machine learning and data analysis.
 For details on I/O interfaces, refer to chapter [SDS IO Interface](../sdsio.md#).
 
 The system uses a dedicated worker thread (`sdsThread`) to handle file I/O asynchronously. User-facing APIs interact only
@@ -286,28 +40,13 @@ operations related to the previous stream have been fully completed or canceled.
 \details The following values are returned by most SDS functions.
 @{
 \def SDS_OK
-\brief SDS function executed successfully.
-
 \def SDS_ERROR
-\brief General error during SDS function execution.
-
 \def SDS_ERROR_PARAMETER
-\brief Invalid parameter passed to an SDS function.
-
 \def SDS_ERROR_TIMEOUT
-\brief SDS function execution timed out.
-
 \def SDS_ERROR_IO
-\brief I/O error during SDS function execution.
-
 \def SDS_NO_SPACE
-\brief Insufficient space in SDS circular buffer to write the entire data block.
-
 \def SDS_NO_DATA
-\brief Not whole data block is available in the SDS circular buffer.
-
 \def SDS_EOS
-\brief End of stream reached in SDS read operation.
 @}
 */
 
@@ -317,13 +56,38 @@ operations related to the previous stream have been fully completed or canceled.
 \details The following values are passed as event value to the \ref sdsEvent_t callback function.
 @{
 \def SDS_EVENT_ERROR_IO
-\brief Event triggered when an SDS I/O error occurs.
-
 \def SDS_EVENT_NO_SPACE
-\brief Event triggered when \ref sdsWrite fails due to insufficient space in the SDS circular buffer.
-
 \def SDS_EVENT_NO_DATA
-\brief Event triggered when \ref sdsRead fails due to insufficient data in the SDS circular buffer.
+@}
+*/
+
+/**
+\defgroup SDS_Flag_Masks sdsFlags Bitmasks
+\brief SDS Flag Bitmasks
+\details The following values are used by function \ref sdsFlagsModify and global variable \ref sdsFlags.
+@{
+\def SDS_FLAG_START
+\def SDS_FLAG_TERMINATE
+\def SDS_FLAG_PLAYBACK
+\def SDS_FLAG_ALIVE
+\def SDS_FLAG_RESET
+@}
+*/
+
+/**
+\defgroup SDS_State_Codes sdsState Codes
+\brief SDS State Codes
+\details The following values are used by global variable \ref sdsState.
+@{
+\def SDS_STATE_INACTIVE
+\def SDS_STATE_CONNECTED
+\def SDS_STATE_START
+\def SDS_STATE_ACTIVE
+\def SDS_STATE_STOP_REQ
+\def SDS_STATE_STOP_DONE
+\def SDS_STATE_END
+\def SDS_STATE_RESET
+\def SDS_STATE_TERMINATE
 @}
 */
 
@@ -337,22 +101,57 @@ the SDS system.
 
 /**
 \typedef sdsMode_t
+\brief SDS stream open mode
 \details
 This *enum* identifies the opening mode of an SDS stream: read or write.
+It is a parameter of the \ref sdsOpen function.
 */
 
 /**
 \typedef sdsEvent_t
 \details
 This callback function is registered by passing a pointer to it as a parameter to the \ref sdsInit function.
-It is invoked when an error happens during stream operation.
+It is triggered when an event such as insufficient data or space, or an error, occurs during the stream operation.
 */
 
 /**
-\typedef sdsError_t
+\var sdsFlags
+\brief Configuration options and control information
 \details
-This structure stores SDS diagnostic information, including status code, source file, line number,
+This 32-bit *global variable* contains a set of bits used for control of and feedback from the firmware.
+Highest 8 bits are used by the SDS system (see \ref SDS_Flag_Masks) for control, and lower 24 bits are available to the user.
+
+The host can send requests to update the sdsFlags on demand.
+Value of the sdsFlags is relayed back to the host in real time periodically (see \ref sdsExchange).
+*/
+
+/**
+\var sdsState
+\brief State information
+\details
+This *global variable* contains current state code (see \ref SDS_State_Codes) of the firmware application.
+
+This information is not relayed to the host; it is available only in the firmware.
+*/
+
+/**
+\typedef sdsError
+\brief Error information
+\details
+This *global structure* stores SDS diagnostic information, including status code, source file, line number,
 and an occurrence flag.
+
+This information is relayed to the host in real time as it occurs (see \ref sdsExchange).
+*/
+
+/**
+\typedef sdsIdleRate
+\brief Idle rate information
+\details
+This *global variable* stores current value of idle rate in percents, value 0xFFFFFFFF is reserved for unknown value
+in case that idle time measurement is not available.
+
+This information is relayed to the host in real time periodically (see \ref sdsExchange).
 */
 
 /**
@@ -379,16 +178,19 @@ Opens an SDS stream for reading or writing time slot information and data blocks
 a user-allocated memory region that serves as an internal circular buffer. The buffer must be large enough
 to hold at least the largest expected data block plus 8 bytes for header information.
 
-For opening stream in write mode:
+For opening stream in **write mode**:
 
-The `name` parameter defines the base name for the SDS output file and is used to construct the full file name in the
-format `name.index.sds`. The `index` is an auto-incrementing value that ensures a unique file name is generated.
-If a file with the generated name already exists, the `index` is incremented until an unused name is found.
+- The `name` parameter defines the base name for the SDS output file and is used to construct the full file name in the
+  format `name.index.sds`. The `index` is an auto-incrementing value that ensures a unique file name is generated.
+  If a file with the generated name already exists, the `index` is incremented until an unused name is found.
 
-For opening stream in read mode:
+For opening stream in **read mode**:
 
-The `name` parameter specifies the base name of the SDS input file. The function attempts to locate and open the file
-`<name>.<index>.sds`, where `<index>` is an auto-incrementing value. If no matching file is found, the function returns an error.
+- The `name` parameter specifies the base name of the SDS input file.
+  When SDS I/O is a file system then the function attempts to locate and open the file in the format
+  `name.index.sds`, where `index` is an auto-incrementing value. If no matching file is found, the function returns an error.
+  When SDS I/O uses SDS I/O Client in conjunction with the SDS I/O Server, the file name is constructed by the SDS I/O Server
+  according to configuration specified in the `sdsio.yml` steering file.
 
 For details, refer to [Filenames section](../theory.md#filenames).
 
@@ -401,14 +203,14 @@ subsequent function calls to perform operations on the stream.
 \details
 Closes an SDS stream and releases any internal resources associated with the stream handle.
 
-For closing a stream used in write mode:
+For closing a stream used in **write mode**:
 
-Prior to closing, any remaining data in the internal circular buffer is flushed to the SDS file.
-The function blocks until all data transfers are complete or a timeout occurs.
+- Prior to closing, any remaining data in the internal circular buffer is flushed to the SDS file.
+  The function blocks until all data transfers are complete or a timeout occurs.
 
-For closing a stream used in read mode:
+For closing a stream used in **read mode**:
 
-The function waits for all pending data transfers to complete or until a timeout occurs.
+- The function waits for all pending data transfers to complete or until a timeout occurs.
 
 Upon successful closure, the stream handle becomes invalid.
 */
@@ -471,9 +273,9 @@ data is available, the function returns \ref SDS_EOS.
 /**
 \fn          int32_t sdsExchange (void)
 \details
-Exchanges SDS control information with the Host.
-Updates `sdsFlags` control flags if requested by the Host, and sends current (updated) control flags
-value along with `sdsIdleRate` and optional error information (`sdsError`) to the Host.
+Exchanges SDS control information with the host.
+Update \ref sdsFlags if requested by the host, and send current sdsFlags
+value along with \ref sdsIdleRate and optional error information \ref sdsError to the host.
 */
 
 /**
@@ -488,3 +290,113 @@ Bits present in `set_mask` are set and bits present in `clear_mask` are cleared 
 @}
 */
 // end group SDS_Interface
+
+
+/*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====*/
+/**
+\defgroup SDS_IO_Interface SDS I/O Interface
+\brief sdsio.h: Synchronous Data Stream I/O Interface for data streams.
+\details
+The SDS I/O interface provides a generic mechanism for reading from and writing to `SDS file`s using several I/O backends.
+
+Interface can operate over:
+
+- A local file system, such as an SD card or semihosting, where files are accessed directly.
+- A communication channel such as Ethernet, USB, or UART, where access to files is performed remotely via an SDS I/O Server.
+
+When using a communication channel, the embedded device runs an SDS I/O Client, which communicates with the SDS I/O Server
+running on the host machine. This interaction is command-based (e.g., `SDSIO_CMD_OPEN`, `SDSIO_CMD_READ`, `SDSIO_CMD_WRITE`) and enables
+the embedded system to remotely open, read, write, and close files located on the host. For more details, refer to
+[SDSIO Server Protocol](../theory.md#sdsio-server-protocol).
+
+The interface is lightweight and backend-agnostic, making it suitable for embedded data logging, host-interactive tools,
+or as a transport layer for higher-level components.
+
+@{
+*/
+
+/**
+\typedef sdsioId_t
+\brief Handle to SDS I/O data stream
+\details
+This *pointer* defines the handle to SDS I/O data stream. It is used to identify a data stream across the different functions.
+*/
+
+/**
+\typedef sdsioMode_t
+\brief SDS I/O stream open mode
+\details
+This *enum* identifies the opening mode of an SDS I/O stream: read or write.
+It is a parameter of the \ref sdsioOpen function.
+*/
+
+/**
+\fn          int32_t sdsioInit (void)
+\details
+Initializes the SDS I/O interface. The interface may be a local file system (e.g., an SD card) or semihosting,
+or a communication channel such as Ethernet, USB or UART. In the case of a communication channel,
+the SDS I/O Client is used to interact with the SDS I/O Server running on a host machine.
+The initialization process includes setting up the communication interface and verifying that
+the I/O Server is active on the host.
+*/
+
+/**
+\fn          int32_t sdsioUninit (void)
+\details
+De-initializes the SDS I/O interface. If a communication channel such as Ethernet, USB or USART is used,
+the corresponding communication interface is also de-initialized.
+*/
+
+/**
+\fn          sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode)
+\details
+Opens an SDS I/O stream for reading or writing. If the interface is a local file system or semihosting, the file is opened directly.
+For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends an open command (SDSIO_CMD_OPEN) to the SDS I/O Server to open
+the file on the host system. The function returns the handle to the SDS I/O stream; if the I/O stream could not be opened, it returns NULL.
+*/
+
+/**
+\fn          int32_t sdsioClose (sdsioId_t id)
+\details
+Closes an SDS I/O stream. If the interface is a local file system or semihosting, the file is closed directly.
+For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a close command (SDSIO_CMD_CLOSE)
+to the SDS I/O Server to close the file on the host system.
+*/
+
+/**
+\fn          int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size)
+\details
+Attempts to write up to `buf_size` bytes from the memory pointed to `buf` to the SDS I/O stream identified by `id`.
+If the interface is a local file system or semihosting, data is written directly to the file.
+For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a write command (SDSIO_CMD_WRITE) along with the data to
+the SDS I/O Server, which then writes the data to a file on the host system.
+
+The function may return before all data has been written, depending on the available interface bandwidth, buffer capacity, or timeout behavior:
+
+- If the write operation is successful, the function returns the number of bytes actually written. This value may be less than \a buf_size in case of partial write.
+- If no data could be written before the operation times out, the function returns \ref SDS_ERROR_TIMEOUT.
+- If an I/O interface or protocol error occurs, the function returns \ref SDS_ERROR_IO.
+*/
+
+/**
+\fn          int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size)
+\details
+Attempts to read up to `buf_size` bytes of data from the SDS I/O stream identified by `id` into the memory pointed to `buf`.
+If the interface is a local file system or semihosting, data is read directly from the file.
+For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO_CMD_READ) to the SDS I/O Server, which reads
+the file on the host system and returns the data to the Client.
+
+The function attempts to read data and may block based on the behavior of the underlying interface and data availability. It returns under the following conditions:
+
+- If data is available, the function reads up to `buf_size` bytes and returns the number of bytes actually read. This value may be less than `buf_size`.
+- If no data becomes available before the timeout expires, the function returns \ref SDS_ERROR_TIMEOUT.
+- If data is partially read but the timeout occurs before the full request is satisfied, the function returns the number of bytes read up to that point.
+- If the end of the stream is reached and no more data remains, the function returns \ref SDS_EOS to indicate that the end of file has been reached and no additional data is available.
+- If an I/O interface or protocol error occurs, the function returns \ref SDS_ERROR_IO.
+*/
+
+
+/**
+@}
+*/
+// end group SDS_IO_Interface

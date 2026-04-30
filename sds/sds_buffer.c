@@ -49,8 +49,8 @@ static sdsBuffer_t *pSDSBufferStreams[SDS_MAX_STREAMS] = {NULL};
 
 // Helper functions
 
-// Atomic Operation: Write 32-bit value to memory, if existing value in memory is zero
-//  Return: 1 when new value is written or 0 otherwise
+// Atomic Operation: Write 32-bit value to memory, if existing value in memory is zero.
+//  Return: 1 when new value is written or 0 otherwise.
 #if defined(__STDC_NO_ATOMICS__) || !defined(ATOMIC_CHAR32_T_LOCK_FREE) || (ATOMIC_CHAR32_T_LOCK_FREE < 2)
 __STATIC_INLINE uint32_t atomic_wr32_if_zero (uint32_t *mem, uint32_t val) {
   uint32_t primask = __get_PRIMASK();

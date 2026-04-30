@@ -32,19 +32,19 @@ extern "C"
 typedef void *sdsId_t;                  // Handle to SDS stream
 
 // Function return codes
-#define SDS_OK                  (0)     // Operation completed successfully
-#define SDS_ERROR               (-1)    // Operation failed
-#define SDS_ERROR_PARAMETER     (-2)    // Operation failed: parameter error
-#define SDS_ERROR_TIMEOUT       (-3)    // Operation failed: timeout error
-#define SDS_ERROR_IO            (-4)    // Operation failed: SDS I/O interface error
-#define SDS_NO_SPACE            (-5)    // Operation failed: insufficient space in SDS stream buffer
-#define SDS_NO_DATA             (-6)    // Operation failed: insufficient data in SDS stream buffer
-#define SDS_EOS                 (-7)    // End of SDS stream reached
+#define SDS_OK                  (0)     ///< Function completed successfully.
+#define SDS_ERROR               (-1)    ///< Unspecified error.
+#define SDS_ERROR_PARAMETER     (-2)    ///< Invalid parameter passed to a function.
+#define SDS_ERROR_TIMEOUT       (-3)    ///< Function execution timed out.
+#define SDS_ERROR_IO            (-4)    ///< I/O error during function execution.
+#define SDS_NO_SPACE            (-5)    ///< Insufficient space in SDS circular buffer to write the entire data block.
+#define SDS_NO_DATA             (-6)    ///< Insufficient data in SDS stream buffer.
+#define SDS_EOS                 (-7)    ///< End of stream reached in read operation.
 
 // Event codes for sdsEvent callback function
-#define SDS_EVENT_ERROR_IO      (1UL)   // SDS I/O interface error
-#define SDS_EVENT_NO_SPACE      (2UL)   // sdsWrite() failed: insufficient space in SDS stream buffer
-#define SDS_EVENT_NO_DATA       (4UL)   // sdsRead() failed: insufficient data in SDS stream buffer
+#define SDS_EVENT_ERROR_IO      (1UL)   ///< Event triggered when an SDS I/O error occurs.
+#define SDS_EVENT_NO_SPACE      (2UL)   ///< Event triggered when \ref sdsWrite fails due to insufficient space in the SDS circular buffer.
+#define SDS_EVENT_NO_DATA       (4UL)   ///< Event triggered when \ref sdsRead fails due to insufficient data in the SDS circular buffer.
 
 // SDS stream open mode
 typedef enum {
@@ -135,10 +135,10 @@ int32_t sdsGetSize (sdsId_t id);
 
 // Error information structure
 typedef struct {                    
-  int32_t status;                       // Error status code (see \ref SDS_Return_Codes)
-  const char *file;                     // File name where error occurred
-  uint32_t line;                        // Line number where error occurred
-  uint8_t occurred;                     // Flag indicating that an error has occurred
+  int32_t status;                       ///< The error status code (see \ref SDS_Return_Codes).
+  const char *file;                     ///< Pointer to the file name in which the error occurred.
+  uint32_t line;                        ///< Line number at which the error occurred.
+  uint8_t occurred;                     ///< Flag indicating that an error has occurred.
 } sdsError_t;
 
 // Global error information
@@ -179,39 +179,37 @@ extern sdsError_t sdsError;
 #endif
 
 // sdsFlags bitmask definitions
-#define SDS_FLAG_START     (1U << 31)   // sdsFlags.31 = 1 for start of the SDS recording/playback
-#define SDS_FLAG_TERMINATE (1U << 30)   // sdsFlags.30 = 1 for terminating CI run (on FVP simulation or pyOCD)
-#define SDS_FLAG_PLAYBACK  (1U << 29)   // sdsFlags.29 = 1 for playback mode
-#define SDS_FLAG_ALIVE     (1U << 28)   // sdsFlags.28 = 1 Host is alive
-#define SDS_FLAG_RESET     (1U << 27)   // sdsFlags.27 = 1 for resetting application
-                                        // sdsFlags.24..26 reserved for future enhancements
-                                        // sdsFlags.0..23 for user options (i.e. bypassing filter, etc.)
+#define SDS_FLAG_START     (0x80000000UL)   ///< Flag controlling streaming (set to start, cleared to stop).
+#define SDS_FLAG_TERMINATE (0x40000000UL)   ///< Flag for terminating CI run (on FVP simulation or pyOCD).
+#define SDS_FLAG_PLAYBACK  (0x20000000UL)   ///< Flag for switching between recording and playback mode (set for playback; unset for recording).
+#define SDS_FLAG_ALIVE     (0x10000000UL)   ///< Flag used by host to signal it is alive (set when the host is alive; unset when the host is not alive).
+#define SDS_FLAG_RESET     (0x08000000UL)   ///< Flag used to request firmware reset (set to reset the firmware).
+                                            // Bits 24..26 are reserved for future enhancements
+                                            // Bits 0..23 for used for user options (i.e. bypassing filter, etc.)
 
-// Global configuration options and diagnostic storage information (flags)
-extern volatile uint32_t sdsFlags;      // SDS control flags (see \ref SDS_Flags)
+// Configuration options and control information
+extern volatile uint32_t sdsFlags;
 
 // sdsState value definitions
-#define SDS_STATE_INACTIVE          0   // Streaming is not active and Device is not connected to Host
-#define SDS_STATE_CONNECTED         1   // Device is connected to Host
-#define SDS_STATE_START             2   // Request to start streaming, open streams and get ready for read/write operations
-#define SDS_STATE_ACTIVE            3   // Streaming is active
-#define SDS_STATE_STOP_REQ          4   // Request to stop streaming and close streams
-#define SDS_STATE_STOP_DONE         5   // Streaming stopped
-#define SDS_STATE_END               6   // Request to end streaming (no more data)
-#define SDS_STATE_RESET             7   // Request to reset application
-#define SDS_STATE_TERMINATE         8   // Request to terminate application
+#define SDS_STATE_INACTIVE      (0UL)   ///< Device is not connected to the host and streaming is not active.
+#define SDS_STATE_CONNECTED     (1UL)   ///< Device is connected to the host, but streaming is not active.
+#define SDS_STATE_START         (2UL)   ///< Request to start streaming; open streams and get ready for read/write operations.
+#define SDS_STATE_ACTIVE        (3UL)   ///< Streaming is active.
+#define SDS_STATE_STOP_REQ      (4UL)   ///< Request to stop streaming and close all open streams.
+#define SDS_STATE_STOP_DONE     (5UL)   ///< Streaming has stopped.
+#define SDS_STATE_END           (6UL)   ///< Request to end streaming (e.g., no more playback data is available).
+#define SDS_STATE_RESET         (7UL)   ///< Request to reset the device.
+#define SDS_STATE_TERMINATE     (8UL)   ///< Request to terminate the active session.
 
-// Global state information
-extern volatile uint32_t sdsState;      // SDS states (see \ref SDS_States)
+// State information
+extern volatile uint32_t sdsState;
 
-// Global idle rate information
+// Idle rate information
 extern volatile uint32_t sdsIdleRate;
 
 /**
   \fn          int32_t sdsExchange (void)
-  \brief       Exchange information with the Host.
-               Update sdsFlags if requested by the Host, and send current sdsFlags
-               value along with sdsIdleRate and optional error information (sdsError) to the Host.
+  \brief       Exchange information with the host.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */
@@ -219,9 +217,9 @@ int32_t sdsExchange (void);
 
 /**
   \fn          void sdsFlagsModify (uint32_t set_mask, uint32_t clear_mask)
-  \brief       Modify SDS control flags (atomic operation).
-  \param[in]   set_mask        bits to set in sdsFlags
-  \param[in]   clear_mask      bits to clear in sdsFlags
+  \brief       Modify \ref sdsFlags control flags (atomic operation).
+  \param[in]   set_mask        bits to set in sdsFlags (see \ref SDS_Flag_Masks)
+  \param[in]   clear_mask      bits to clear in sdsFlags (see \ref SDS_Flag_Masks)
 */
 void sdsFlagsModify (uint32_t set_mask, uint32_t clear_mask);
 
