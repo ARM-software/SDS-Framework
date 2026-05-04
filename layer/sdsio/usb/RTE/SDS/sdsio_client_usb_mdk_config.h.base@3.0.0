@@ -34,12 +34,12 @@
 //   <i>Default: 0
 #define SDSIO_USB_INSTANCE              0
 
-//   <o>Transfer timeout
-//   <i>Send and receive timeout in kernel ticks
+//   <o>USB transfer timeout
+//   <i>USB transfer timeout in kernel ticks
 //   <i>Default: 3000
 #define SDSIO_USB_TIMEOUT               3000U
 
-//   <o>USB Bulk OUT Buffer Size
+//   <o>USB Bulk OUT buffer size
 //   <i>Size of the temporary USB Bulk OUT buffer in bytes
 //   <i>Must be a multiple of MAX_PACKET size (n * 64 for FS, n * 512 for HS)
 //   <i>Default: 8192

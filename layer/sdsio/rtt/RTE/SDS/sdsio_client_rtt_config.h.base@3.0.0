@@ -44,8 +44,8 @@
 //   <i>Default: 32
 #define SDSIO_RTT_BUF_ALIGN     32U
 
-//   <o>RTT timeout
-//   <i>RTT transfer timeout in ms
+//   <o>RTT transfer timeout
+//   <i>RTT transfer timeout in kernel ticks
 //   <i>Default: 5000
 #define SDSIO_RTT_TIMEOUT       5000U
 

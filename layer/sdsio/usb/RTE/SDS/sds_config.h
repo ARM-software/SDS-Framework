@@ -24,11 +24,11 @@
 
 // <h>SDS System Configuration
 
-//   <o>Maximum number of concurrent streams <1-31>
+//   <o>Maximum concurrent streams <1-31>
 //   <i>Default: 16
 #define SDS_MAX_STREAMS                 16U
 
-//   <o>Size of a internal working buffer used for I/O transfers
+//   <o>Internal buffer size for I/O transfers
 //   <i>Default: 8192
 #define SDS_BUF_SIZE                    8192U
 
@@ -36,20 +36,20 @@
 
 //------------- <<< end of configuration section >>> ---------------------------
 
-// Thread stack size for SDS system thread
+// SDS system thread stack size
 #define SDS_THREAD_STACK_SIZE           1024
 
-// Thread priority for SDS system thread
+// SDS system thread priority
 #define SDS_THREAD_PRIORITY             osPriorityNormal
 
-// Timeout value for opening the SDS stream in kernel ticks
+// SDS stream open timeout in kernel ticks
 #define SDS_OPEN_TIMEOUT                3000U
 
-// Timeout value for closing the SDS stream in kernel ticks
+// SDS stream close timeout in kernel ticks
 #define SDS_CLOSE_TIMEOUT               3000U
 
-// Efficient transfer size for IO interface read/write operations
+// Optimal I/O transfer size (read/write)
 // Default: 8192
-// Optimize this value for the underlying IO interface (e.g., socket, USART, VCOM, file system)
-// to ensure efficient read/write operations and performance
+// Select a value appropriate for the underlying I/O interface (e.g., socket, USART, VCOM, file system)
+// to ensure efficient read/write performance
 #define SDS_IO_TRANSFER_SIZE            8192U
