@@ -56,8 +56,8 @@
 #define SDSIO_USART_STOP_BITS     0U
 // </h>
 
-//   <o>USART timeout
-//   <i>Send and receive timeout in ms
+//   <o>USART transfer timeout
+//   <i>USART transfer timeout in kernel ticks
 //   <i>Default: 3000
 #define SDSIO_USART_TIMEOUT       3000U
 
