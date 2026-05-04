@@ -1,0 +1,73 @@
+name: Build sdsio-server
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - published
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest, ubuntu-24.04-arm]
+        include:
+          - os: windows-latest
+            artifact_name: sdsio-server-windows
+          - os: ubuntu-latest
+            artifact_name: sdsio-server-linux
+          - os: macos-latest
+            artifact_name: sdsio-server-macos
+          - os: ubuntu-24.04-arm
+            artifact_name: sdsio-server-linux-arm64
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      - name: Install dependencies
+        run: pip install -r ./utilities/requirements.txt
+
+      - name: Extract SDSIO Server version
+        shell: bash
+        run: |
+          SDSIO_SERVER_VERSION=$(sed -nE "s/^SDSIO_SERVER_VERSION[[:space:]]*=[[:space:]]*['\"]([^'\"]+)['\"].*/\1/p" utilities/sdsio-server.py | head -n 1)
+          test -n "$SDSIO_SERVER_VERSION" || { echo "Failed to extract SDSIO_SERVER_VERSION from utilities/sdsio-server.py"; exit 1; }
+          echo "SDSIO_SERVER_VERSION=$SDSIO_SERVER_VERSION" >> "$GITHUB_ENV"
+
+      - name: Build executable
+        run: |
+          pyinstaller --clean --noconfirm --onefile --name sdsio-server utilities/sdsio-server.py
+
+      - name: Check executable version
+        shell: bash
+        run: |
+          EXECUTABLE_OUTPUT=$(dist/sdsio-server --version 2>&1 | tr -d '\r')
+          echo "$EXECUTABLE_OUTPUT"
+          EXECUTABLE_VERSION=$(echo "$EXECUTABLE_OUTPUT" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z]+)?' | head -n 1)
+
+          [[ "$EXECUTABLE_VERSION" == "$SDSIO_SERVER_VERSION" ]] || {
+            echo "Version mismatch: expected $SDSIO_SERVER_VERSION, got $EXECUTABLE_VERSION"
+            exit 1
+          }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.artifact_name }}-${{ env.SDSIO_SERVER_VERSION }}
+          path: dist/sdsio-server*
+          retention-days: 7
