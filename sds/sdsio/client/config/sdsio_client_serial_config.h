@@ -61,6 +61,12 @@
 //   <i>Default: 3000
 #define SDSIO_USART_TIMEOUT       3000U
 
+//   <o>USART receive buffer size
+//   <i>Size of the internal USART receive buffer in bytes
+//   <i>Must be a power of 2 (1024, 2048, 4096, 8192, ... )
+//   <i>Default: 8192
+#define SDSIO_USART_RX_BUF_SIZE   8192U
+
 // </h>
 
 //------------- <<< end of configuration section >>> ---------------------------

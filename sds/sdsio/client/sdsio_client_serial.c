@@ -18,13 +18,20 @@
 
 // SDS I/O Client via Serial (CMSIS Driver:USART)
 
+#include <string.h>
 #include "cmsis_os2.h"
+#include "cmsis_compiler.h"
 
 #include "sds.h"
 #include "sdsio_client.h"
 
 #include "Driver_USART.h"
 #include "sdsio_client_serial_config.h"
+
+// Check configuration
+#if   ((SDSIO_USART_RX_BUF_SIZE & (SDSIO_USART_RX_BUF_SIZE - 1)) != 0)
+#error "SDSIO_USART_RX_BUF_SIZE must be a power of 2."
+#endif
 
 // Expansion macro used to create CMSIS Driver references
 #define EXPAND_SYMBOL(name, port)   name##port
@@ -38,16 +45,22 @@ extern ARM_DRIVER_USART             CMSIS_USART_DRIVER;
 
 static ARM_DRIVER_USART *pDrvUSART = &CMSIS_USART_DRIVER;
 
-static osEventFlagsId_t sdsioEventFlagId;
+static osEventFlagsId_t sdsioSendEventFlagId;
 
+// USART internal receive buffer and variables
+static          uint8_t  rx_buf[SDSIO_USART_RX_BUF_SIZE] __ALIGNED(32);
+static volatile uint32_t rx_cnt_in;
+static          uint32_t rx_cnt_out;
 
-// USART Callback.
+// USART Callback
 static void USART_Callback (uint32_t event) {
   if ((event & ARM_USART_EVENT_SEND_COMPLETE) != 0U) {
-    osEventFlagsSet(sdsioEventFlagId, ARM_USART_EVENT_SEND_COMPLETE);
+    osEventFlagsSet(sdsioSendEventFlagId, ARM_USART_EVENT_SEND_COMPLETE);
   }
   if ((event & ARM_USART_EVENT_RECEIVE_COMPLETE) != 0U) {
-    osEventFlagsSet(sdsioEventFlagId, ARM_USART_EVENT_RECEIVE_COMPLETE);
+    rx_cnt_in += sizeof(rx_buf);
+    // Start receiving data into internal receive buffer
+    pDrvUSART->Receive(rx_buf, sizeof(rx_buf));
   }
 }
 
@@ -62,20 +75,20 @@ int32_t sdsioClientInit (void) {
   int32_t status = ARM_DRIVER_ERROR;
   int32_t ret    = SDS_ERROR_IO;
 
-  sdsioEventFlagId = osEventFlagsNew(NULL);
-  if (sdsioEventFlagId != NULL) {
-    // Initialize and Configure USART driver.
+  sdsioSendEventFlagId = osEventFlagsNew(NULL);
+  if (sdsioSendEventFlagId != NULL) {
+    // Initialize and Configure USART driver
     status = pDrvUSART->Initialize(USART_Callback);
 
     if (status == ARM_DRIVER_OK) {
       status = pDrvUSART->PowerControl(ARM_POWER_FULL);
     }
     if (status == ARM_DRIVER_OK) {
-      pDrvUSART->Control(ARM_USART_MODE_ASYNCHRONOUS |
-                        SDSIO_USART_DATA_BITS        |
-                        SDSIO_USART_PARITY           |
-                        SDSIO_USART_STOP_BITS,
-                        SDSIO_USART_BAUDRATE);
+      status = pDrvUSART->Control(ARM_USART_MODE_ASYNCHRONOUS |
+                                  SDSIO_USART_DATA_BITS       |
+                                  SDSIO_USART_PARITY          |
+                                  SDSIO_USART_STOP_BITS,
+                                  SDSIO_USART_BAUDRATE);
     }
     if (status == ARM_DRIVER_OK) {
       status = pDrvUSART->Control(ARM_USART_CONTROL_RX, 1U);
@@ -83,6 +96,13 @@ int32_t sdsioClientInit (void) {
     if (status == ARM_DRIVER_OK) {
       status = pDrvUSART->Control(ARM_USART_CONTROL_TX, 1U);
     }
+    if (status == ARM_DRIVER_OK) {
+      rx_cnt_in  = 0U;
+      rx_cnt_out = 0U;
+      // Start reception to internal receive buffer
+      status = pDrvUSART->Receive(rx_buf, sizeof(rx_buf));
+    }
+
     if (status == ARM_DRIVER_OK) {
       ret = SDS_OK;
     } else {
@@ -113,9 +133,9 @@ int32_t sdsioClientUninit (void) {
   pDrvUSART->Control(ARM_USART_CONTROL_TX, 0U);
   pDrvUSART->PowerControl(ARM_POWER_OFF);
   pDrvUSART->Uninitialize();
-  if (sdsioEventFlagId != NULL) {
-    if (osEventFlagsDelete(sdsioEventFlagId) == osOK) {
-      sdsioEventFlagId = NULL;
+  if (sdsioSendEventFlagId != NULL) {
+    if (osEventFlagsDelete(sdsioSendEventFlagId) == osOK) {
+      sdsioSendEventFlagId = NULL;
     }
   }
   return SDS_OK;
@@ -130,11 +150,15 @@ int32_t sdsioClientUninit (void) {
                a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
-  int32_t ret = SDS_ERROR_IO;
-  int32_t event_status;
+  int32_t  ret = SDS_ERROR_IO;
+  uint32_t event_status;
+
+  if ((buf == NULL) || (buf_size == 0U)) {
+    return SDS_ERROR_PARAMETER;
+  }
 
   if (pDrvUSART->Send(buf, buf_size) == ARM_DRIVER_OK) {
-    event_status = osEventFlagsWait(sdsioEventFlagId,
+    event_status = osEventFlagsWait(sdsioSendEventFlagId,
                                     ARM_USART_EVENT_SEND_COMPLETE,
                                     osFlagsWaitAll,
                                     SDSIO_USART_TIMEOUT);
@@ -142,16 +166,17 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
       ret = buf_size;
     } else {
       if (event_status == osFlagsErrorTimeout) {
-        // Timeout happened.
+        // Timeout happened
         ret = SDS_ERROR_TIMEOUT;
       } else {
-        // Error happened.
+        // Error happened
         ret = SDS_ERROR_IO;
       }
     }
   } else {
     ret = SDS_ERROR_IO;
   }
+
   return ret;
 }
 
@@ -165,32 +190,84 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
                a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size, sdsioReceiveMode_t mode) {
-  int32_t ret = SDS_ERROR_IO;
-  int32_t event_status;
+  uint32_t rx_cnt_in_curr;
+  uint32_t rx_buf_pos;
+  uint32_t rx_cnt_avail;
+  uint32_t num = 0U;
+  uint32_t cnt;
+  uint32_t cnt_wrap;
+  uint32_t tick;
+  int32_t  ret = 0;
 
-  if (mode == sdsioReceiveNonBlocking) {
-    // Not supported yet
-    return SDS_ERROR_IO;
+  if ((buf == NULL) || (buf_size == 0U)) {
+    return SDS_ERROR_PARAMETER;
   }
 
-  if (pDrvUSART->Receive(buf, buf_size) == ARM_DRIVER_OK) {
-    event_status = osEventFlagsWait(sdsioEventFlagId,
-                                    ARM_USART_EVENT_RECEIVE_COMPLETE,
-                                    osFlagsWaitAll,
-                                    SDSIO_USART_TIMEOUT);
-    if ((event_status & osFlagsError) == 0U) {
-      ret = buf_size;
+  tick = osKernelGetTickCount();
+  while (num < buf_size) {
+    // Calculate currently available unread length of received data
+    do {
+      rx_cnt_in_curr = rx_cnt_in + pDrvUSART->GetRxCount();
+    } while (rx_cnt_in_curr != (rx_cnt_in + pDrvUSART->GetRxCount()));
+    if (rx_cnt_in_curr != rx_cnt_out) {
+      rx_cnt_avail = rx_cnt_in_curr - rx_cnt_out;
     } else {
-      if (event_status == osFlagsErrorTimeout) {
-        // Timeout happened.
-        ret = SDS_ERROR_TIMEOUT;
-      } else {
-        // Error happened.
-        ret = SDS_ERROR_IO;
-      }
+      rx_cnt_avail = 0U;
     }
-  } else {
-    ret = SDS_ERROR_IO;
+
+    if ((mode == sdsioReceiveNonBlocking) && (rx_cnt_avail < buf_size)) {
+      // For non-blocking mode: do not return partial data
+      // Return exactly the requested number of bytes, and only if they are available
+      break;
+    }
+
+    // Process received data up to requested size
+    if (rx_cnt_avail != 0U) {
+      // Calculate memory location of unread received data in rx_buf
+      rx_buf_pos = rx_cnt_out & (sizeof(rx_buf)-1);
+
+      cnt = rx_cnt_avail;
+      if (rx_cnt_avail > (buf_size - num)) {
+        cnt = (buf_size - num);
+      }
+
+      if ((rx_buf_pos + cnt) > sizeof(rx_buf)) {
+        // If data wraps around the end of internal receive buffer
+        cnt_wrap = (rx_buf_pos + cnt) - sizeof(rx_buf);
+        cnt     -= cnt_wrap;
+      } else {
+        cnt_wrap = 0U;
+      }
+      memcpy(buf + num, &rx_buf[rx_buf_pos], cnt);
+      if (cnt_wrap != 0U) {
+        // Copy data after wrap
+        memcpy(buf + num + cnt, &rx_buf[0], cnt_wrap);
+        rx_cnt_out += cnt_wrap;
+      }
+      rx_cnt_out += cnt;
+      num += cnt + cnt_wrap;
+    }
+
+    if (mode == sdsioReceiveNonBlocking) {
+      // If it is non-blocking mode then exit the loop
+      break;
+    }
+
+    if (rx_cnt_avail == 0U) {
+      // Allow other threads to execute while no received data is available
+      osDelay(1U);
+    }
+
+    if ((osKernelGetTickCount() - tick) >= SDSIO_USART_TIMEOUT) {
+      // Timeout happened
+      ret = SDS_ERROR_TIMEOUT;
+      break;
+    }
   }
+
+  if ((ret != SDS_ERROR_TIMEOUT) && (num != 0U)) {
+    ret = (int32_t)num;
+  }
+
   return ret;
 }
