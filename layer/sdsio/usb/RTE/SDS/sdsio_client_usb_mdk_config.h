@@ -40,8 +40,8 @@
 #define SDSIO_USB_TIMEOUT               3000U
 
 //   <o>USB Bulk OUT buffer size
-//   <i>Size of the temporary USB Bulk OUT buffer in bytes
-//   <i>Must be a multiple of MAX_PACKET size (n * 64 for FS, n * 512 for HS)
+//   <i>Size of the internal USB Bulk OUT buffer in bytes
+//   <i>Must be a multiple of endpoint maximum packet size (64 bytes for full speed, 512 bytes for high speed)
 //   <i>Default: 8192
 #define SDSIO_USB_BULK_OUT_BUF_SIZE     8192U
 

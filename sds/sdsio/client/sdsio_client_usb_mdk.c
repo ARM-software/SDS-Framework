@@ -29,7 +29,7 @@
 #include "sdsio_client.h"
 #include "sdsio_client_usb_mdk_config.h"
 
- // SDS IO event flag identifier
+// SDS IO event flag identifiers
 static osEventFlagsId_t sdsioOutEventFlagId;
 static osEventFlagsId_t sdsioInEventFlagId;
 
