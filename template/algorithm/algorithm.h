@@ -16,11 +16,10 @@
  * limitations under the License.
  */
 
-#ifndef SDS_MAIN_H_
-#define SDS_MAIN_H_
+#ifndef ALGORITHM_H_
+#define ALGORITHM_H_
 
 #include <stdint.h>
-#include "cmsis_compiler.h"
 
 #ifdef  __cplusplus
 extern "C"
@@ -28,21 +27,22 @@ extern "C"
 #endif
 
 /**
-  \fn           int32_t OpenStreams (void)
-  \brief        Open streams used by the application.
+  \fn           int32_t InitAlgorithm (void)
+  \brief        Initialize algorithm under test.
   \return       0 on success; -1 on error
 */
-extern int32_t OpenStreams (void);
+extern int32_t InitAlgorithm (void);
 
 /**
-  \fn           int32_t CloseStreams (void)
-  \brief        Close streams used by the application.
+  \fn           int32_t ExecuteAlgorithm (uint8_t *in_buf, uint32_t in_num, uint8_t *out_buf, uint32_t out_num)
+  \brief        Execute algorithm under test.
+  \param[in]    in_buf          pointer to memory buffer containing input data for algorithm
+  \param[in]    in_num          number of data bytes in input data buffer (in bytes)
+  \param[out]   out_buf         pointer to memory buffer for returning algorithm output
+  \param[in]    out_num         maximum number of data bytes returned as algorithm output (in bytes)
   \return       0 on success; -1 on error
 */
-extern int32_t CloseStreams (void);
-
-// Algorithm Thread function
-extern __NO_RETURN void AlgorithmThread (void *argument);
+extern int32_t ExecuteAlgorithm (uint8_t *in_buf, uint32_t in_num, uint8_t *out_buf, uint32_t out_num);
 
 #ifdef  __cplusplus
 }

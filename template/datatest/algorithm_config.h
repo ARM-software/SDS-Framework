@@ -16,36 +16,27 @@
  * limitations under the License.
  */
 
-#ifndef SDS_MAIN_H_
-#define SDS_MAIN_H_
+#ifndef ALGORITHM_CONFIG_H_
+#define ALGORITHM_CONFIG_H_
 
-#include <stdint.h>
-#include "cmsis_compiler.h"
-
-#ifdef  __cplusplus
-extern "C"
-{
+// User configured test bandwidth in bytes/sec
+#ifndef ALGO_TEST_BANDWIDTH
+#define ALGO_TEST_BANDWIDTH             100000U
 #endif
 
-/**
-  \fn           int32_t OpenStreams (void)
-  \brief        Open streams used by the application.
-  \return       0 on success; -1 on error
-*/
-extern int32_t OpenStreams (void);
+// User configured test interval in ms
+#ifndef ALGO_TEST_INTERVAL
+#define ALGO_TEST_INTERVAL              10U
+#endif
 
-/**
-  \fn           int32_t CloseStreams (void)
-  \brief        Close streams used by the application.
-  \return       0 on success; -1 on error
-*/
-extern int32_t CloseStreams (void);
+// Input Data block size, in bytes
+#ifndef ALGO_DATA_IN_BLOCK_SIZE
+#define ALGO_DATA_IN_BLOCK_SIZE         ((((ALGO_TEST_BANDWIDTH * ALGO_TEST_INTERVAL) / 1000) / 6) * 6)
+#endif
 
-// Algorithm Thread function
-extern __NO_RETURN void AlgorithmThread (void *argument);
-
-#ifdef  __cplusplus
-}
+// Output Data block size, in bytes
+#ifndef ALGO_DATA_OUT_BLOCK_SIZE
+#define ALGO_DATA_OUT_BLOCK_SIZE        (40)
 #endif
 
 #endif
