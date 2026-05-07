@@ -170,11 +170,19 @@ extern sdsError_t sdsError;
 
 #endif
 
+#ifndef SDS_STDIO
+#define SDS_STDIO               1
+#endif
+
 #ifndef SDS_PRINTF
 
+#if     SDS_STDIO == 1
 // Print messages to STDIO
-#define SDS_PRINTF(...)                                         \
+#define SDS_PRINTF(...)                         \
   printf(__VA_ARGS__)
+#else
+#define SDS_PRINTF(...)
+#endif
 
 #endif
 
