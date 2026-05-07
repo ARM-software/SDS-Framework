@@ -27,6 +27,8 @@ solution:
     - type: Release
       debug: off
       optimize: balanced
+      define:
+        - SDS_STDIO: 0
 
   # List related projects.
   projects:
