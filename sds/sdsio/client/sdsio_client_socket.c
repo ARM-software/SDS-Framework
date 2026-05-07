@@ -29,6 +29,7 @@
 #include "sdsio_client_socket_config.h"
 
 static int32_t socket = -1;
+static uint32_t nonblocking = 0U;
 
 // Socket startup function must be provided by a user application.
 // Typically it is part of IoT Socket layer.
@@ -39,7 +40,7 @@ static int32_t sdsioSocketGetIP(uint8_t *ip_buf, uint32_t buf_size) {
   int32_t i;
   char   *p, *end;
 
-  if ((ip_buf == NULL) || (buf_size < 4)) {
+  if ((ip_buf == NULL) || (buf_size < 4U)) {
     return -1;
   }
 
@@ -85,12 +86,13 @@ int32_t sdsioClientInit (void) {
       socket = iotSocketCreate(IOT_SOCKET_AF_INET, IOT_SOCKET_SOCK_STREAM, IOT_SOCKET_IPPROTO_TCP);
     }
     if (socket >= 0) {
-      opt_val = SDSIO_SOCKET_RECEIVE_TIMEOUT;
+      opt_val = SDSIO_SOCKET_TIMEOUT / 10U;
       iotSocketSetOpt(socket, IOT_SOCKET_SO_RCVTIMEO, &opt_val, sizeof(opt_val));
-      opt_val = 1;
+      opt_val = 1U;
       iotSocketSetOpt(socket, IOT_SOCKET_SO_KEEPALIVE, &opt_val, sizeof(opt_val));
-
-      if (iotSocketConnect(socket, (const uint8_t *)ip, 4, SDSIO_SOCKET_SERVER_PORT) != 0) {
+      nonblocking = 0U;
+      if (iotSocketConnect(socket, (const uint8_t *)ip, 4U, SDSIO_SOCKET_SERVER_PORT) != 0) {
+        // If socket connect has failed
         iotSocketClose(socket);
         socket = -1;
         err = -1;
@@ -99,7 +101,7 @@ int32_t sdsioClientInit (void) {
   }
 
   if ((err == 0) && (socket >= 0)) {
-    SDS_PRINTF("SDS I/O socket interface initialized successfully.\n")
+    SDS_PRINTF("SDS I/O socket interface initialized successfully.\n");
     SDS_PRINTF("Connection to SDSIO-Server established at %s:%d\n", SDSIO_SOCKET_SERVER_IP, SDSIO_SOCKET_SERVER_PORT);
     ret = SDS_OK;
   } else {
@@ -139,16 +141,20 @@ int32_t sdsioClientUninit (void) {
 */
 int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
   int32_t num = 0U;
-  int32_t ret = SDS_ERROR_IO;
+  int32_t ret = SDS_ERROR;
   int32_t sock_status;
   uint32_t retry = 0U;
 
+  if (nonblocking != 0U) {
+    nonblocking = 0U;
+    iotSocketSetOpt(socket, IOT_SOCKET_IO_FIONBIO, &nonblocking, sizeof(nonblocking));
+  }
   while (num < buf_size) {
     sock_status = iotSocketSend(socket, buf + num, buf_size - num);
     if (sock_status >= 0) {
       num += sock_status;
       retry = 0U;
-    } else if ((sock_status == IOT_SOCKET_ENOMEM) && (retry < 5)) {
+    } else if ((sock_status == IOT_SOCKET_ENOMEM) && (retry < 5U)) {
       osDelay(retry + 2U);
       retry++;
     } else {
@@ -162,9 +168,11 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
       break;
     }
   }
+
   if (num != 0U) {
     ret = num;
   }
+
   return ret;
 }
 
@@ -178,32 +186,56 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
                a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size, sdsioReceiveMode_t mode) {
-  int32_t num = 0U;
-  int32_t ret = SDS_ERROR_IO;
-  int32_t sock_status;
+  uint32_t num = 0U;
+  int32_t  ret = SDS_OK;
+  int32_t  sock_status;
+  uint32_t tick;
 
-  if (mode == sdsioReceiveNonBlocking) {
-    // Not supported yet
-    return SDS_ERROR_IO;
+  if ((buf == NULL) || (buf_size == 0U)) {
+    return SDS_ERROR_PARAMETER;
   }
 
-  while (num < buf_size) {
+  if (mode == sdsioReceiveNonBlocking) { // Non-blocking mode
+    if (nonblocking == 0U) {
+      nonblocking = 1U;
+      iotSocketSetOpt(socket, IOT_SOCKET_IO_FIONBIO, &nonblocking, sizeof(nonblocking));
+    } 
+    sock_status = iotSocketRecv(socket, buf, buf_size);
+    if (sock_status >= 0) {
+      ret = sock_status;
+    } else {
+      ret = 0;
+    }
+    return ret;
+  }
+
+  if (nonblocking != 0U) {               // Blocking mode
+    nonblocking = 0U;
+    iotSocketSetOpt(socket, IOT_SOCKET_IO_FIONBIO, &nonblocking, sizeof(nonblocking));
+  } 
+  tick = osKernelGetTickCount();
+  do {
     sock_status = iotSocketRecv(socket, buf + num, buf_size - num);
     if (sock_status >= 0) {
-      num += sock_status;
-    } else {
-      if (sock_status == IOT_SOCKET_EAGAIN) {
-        // Timeout happened.
-        ret = SDS_ERROR_TIMEOUT;
-      } else {
-        // Error happened.
-        ret = SDS_ERROR_IO;
-      }
+      num += (uint32_t)sock_status;
+      if (num >= buf_size) {
+        // All data received.
+        break;
+      } 
+    } else if (sock_status != IOT_SOCKET_ETIMEDOUT) {
+      // Error happened.
+      ret = SDS_ERROR_IO;
       break;
     }
+  } while ((osKernelGetTickCount() - tick) < SDSIO_SOCKET_TIMEOUT);
+
+  if (ret == SDS_OK) {
+    if (num < buf_size) {
+      ret = SDS_ERROR_TIMEOUT;
+    } else {
+      ret = (int32_t)num;
+    }
   }
-  if (num != 0U) {
-    ret = num;
-  }
+
   return ret;
 }
