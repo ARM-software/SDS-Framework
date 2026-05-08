@@ -54,35 +54,25 @@ Each data stream is stored in a separate SDS data file. In the diagram below `SC
 
 ### Filenames
 
-SDS data files use the naming format `<stream>.<label>.sds`. `<stream>` is the user-defined stream name, and `<label>` is usually a sequential number. For recording, the label starts at 0. For playback, the label is either specified in the `sdsio.yml` file or defaults to the most recently opened file for playback.
+The `sdsOpen` function takes `<name>` and the stream opening mode as input parameters.
+Opening a stream in `sdsModeRead` mode is used for playback and opening stream in `sdsModeWrite` is used for recording.
 
-**Recording (sdsRecOpen):**
+The file name used when opening a stream depends on the presence of the `sdsio.yml` steering file and its `play` node.
 
-The `sdsRecOpen` function takes `<name>` as input. When connected to a file system (e.g., the [SDSIO-Server](utilities.md#sdsio-server)), it scans for existing files with names matching the pattern `<name>.<file-index>.sds`, starting at index 0. It uses the first available index that does not **yet** exist to create a new file for recording.
+If the steering file exists and contains `play` node, the file name follows the pattern `<name>.<label>.sds`, where `<label>` is specified in the corresponding
+`step` node in the `play` node. After playback or recording completes, processing continues with the next `step` node, if available, and the process repeats.
 
-Example:
+If the steering file does not exist or does not contain `play` node, the file name follows the pattern `<name>.<label>.sds`, where:
 
-If files `SensorX.0.sds` through `SensorX.10.sds` exist, the next file created will be `SensorX.11.sds`.
+**Recording:**
 
-**Playback (sdsPlayOpen):**
+`<label>` is a sequential number starting at 0 and incremented by 1. The first value for which no corresponding file exists is used to create a new file.
+After recording completes, the process continues from the last `<label>` value.
 
-The `sdsPlayOpen` function also takes `<name>` as input and determines which file to play based on the contents of a corresponding index file, `<name>.index.txt`. The following procedure outlines how sdsPlayOpen determines the playback file:
+**Playback:**
 
-1. The function checks if `<name>.index.txt` exists and contains a valid number.
-     - If it exists and contains a valid index (e.g., 3), that number is used as the `<file-index>`.
-     - If the file does not exist or contains an invalid value, the index defaults to `0`.
-2. The file `<name>.<file-index>.sds` is then opened for playback.
-    - If the file exists, it is opened for playback. The index file `<name>.index.txt` is updated to` <file-index> + 1` for the next call to sdsPlayOpen.
-    - If the file does not exist, playback fails and the index file is created or reset to 0.
-
-This mechanism enables automatic sequential playback, while still allowing the user to select the initial playback index by editing the index file.
-
-Example:
-
-If `SensorX.index.txt` contains the value 2, the `sdsPlayOpen` function will attempt to open the file `SensorX.2.sds`.
-
-- If the file exists, it is played and the index file is updated to 3 for the next playback.
-- If the file does not exist, playback fails and the index file is reset to 0.
+`<label>` is a sequential number starting at 0. If the corresponding file does not exist, the open operation fails.
+After playback completes, the process repeats with the `<label>` incremented by one.
 
 ### Timestamp
 
