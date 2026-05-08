@@ -13,48 +13,48 @@ The DSP or ML algorithms that are tested operate on blocks and are executed peri
 
 ![SDSIO Interface for Player and Recorder](images/SDS-InOut.png)
 
-The core of the SDS-Framework is a circular buffer handling (`sds_buffer.c/h`) that is controlled by the Recorder/Player interface functions (`sds_rec_play.c/h`). This circular buffer is the queue for the file I/O communication (`sdsio_x.c / sdsio.h`). Using the Recorder/Player functions, the data stream under development may read and write data streams as shown in the diagram above.
+The core of the SDS-Framework is a circular buffer handling (`sds_buffer.c/h`) that is controlled by the Stream interface functions (`sds.c/h`). This circular buffer is the queue for the file I/O communication (`sdsio_x.c / sdsio.h`). Using the Stream functions, the data stream under development may read and write data streams as shown in the diagram above.
 
 ![Implementation Files of SDS](images/Theory_of_Operation.png)
 
 ## Usage
 
-The following diagram shows the usage of the SDS Recorder and Player functions (executed in `sdsRecPlayThread`).  The `sdsControlThread` controls the overall execution. `AlgorithmThread` is the thread that executes Signal Conditioning (SC) and ML Model.
+The following diagram shows the usage of the SDS functions (executed in `sdsThread`).  The `sdsControlThread` controls the overall execution. `AlgorithmThread` is the thread that executes Signal Conditioning (SC) and ML Model.
 
 ```mermaid
 sequenceDiagram
     participant sdsControlThread
-    participant sdsRecPlayThread
+    participant sdsThread
     participant AlgorithmThread
-    Note over sdsControlThread: sdsRecPlayInit
-    activate sdsRecPlayThread
+    Note over sdsControlThread: sdsInit
+    activate sdsThread
     Note over sdsControlThread: Open data streams
-    Note over sdsRecPlayThread: Read content for<br/>'play' data streams
+    Note over sdsThread: Read content for<br/>'play' data streams
     activate AlgorithmThread
     loop periodic
-        Note over AlgorithmThread: GetInputData<br/>(physical input or sdsPlayRead)
+        Note over AlgorithmThread: GetInputData<br/>(physical input or sdsRead)
         Note over AlgorithmThread: Execute algorithm
-        Note over AlgorithmThread: sdsRecWrite data streams
-        Note over sdsRecPlayThread: Read/write data streams.
+        Note over AlgorithmThread: sdsWrite data streams
+        Note over sdsThread: Read/write data streams.
     end
     sdsControlThread-->>AlgorithmThread: Stop Algorithm
     AlgorithmThread-->>sdsControlThread: Stopped
     Note over sdsControlThread: Close data streams
-    Note over sdsRecPlayThread: Flush and close<br/> data streams
+    Note over sdsThread: Flush and close<br/> data streams
 ```
 
 ## SDS Data Files
 
-Each data stream is stored in a separate SDS data file. In the diagram below `SCinput.0.sds` is the input to Signal Conditioning, `SCoutput.0.sds` is the output of Signal Conditioning, and `MLoutput.0.sds` is the output of the ML Model. Each execution of the algorithm is represented in a data block with a `timestamp`. The `timestamp` allows to correlate the blocks of different streams. In the above example, all blocks of one algorithm execution have the same timestamp value.
+Each data stream is stored in a separate SDS data file. In the diagram below `SCinput.0.sds` is the input to Signal Conditioning, `SCoutput.0.sds` is the output of Signal Conditioning, and `MLoutput.0.sds` is the output of the ML Model. Each execution of the algorithm is represented in a data block with a `timeslot`. The `timeslot` allows to correlate the blocks of different streams. In the above example, all blocks of one algorithm execution have the same time slot value.
 
 ![SDS Files](images/SDS-Files.png)
 
-- Each call to the function `sdsRecWrite` writes one data block.
-- Each call to the function `sdsPlayRead` reads one data block.
+- Each call to the function `sdsWrite` writes one complete data block.
+- Each call to the function `sdsRead` reads one complete data block.
 
 ### Filenames
 
-SDS data files use the naming format `<name>.<file-index>.sds`. `<name>` is the base name specified by the user, and `<file-index>` is a sequential number that starts at 0.
+SDS data files use the naming format `<stream>.<label>.sds`. `<stream>` is the user-defined stream name, and `<label>` is usually a sequential number. For recording, the label starts at 0. For playback, the label is either specified in the `sdsio.yml` file or defaults to the most recently opened file for playback.
 
 **Recording (sdsRecOpen):**
 
