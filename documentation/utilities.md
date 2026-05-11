@@ -15,7 +15,7 @@ Install **Python 3.9** or later and packages listed in file `/utilities/requirem
 ## Setup
 
 !!! Note
-    - The example below uses version 2.1.0 of the SDS pack. Adapt the version to match the installed SDS pack on your computer.
+    - The example below uses version 3.0.0 of the SDS pack. Adapt the version to match the installed SDS pack on your computer.
 
 Perform the following steps to setup the Python environment for using the SDS utilities.
 
@@ -28,11 +28,11 @@ Perform the following steps to setup the Python environment for using the SDS ut
 - Navigate in the folder SDS/\<version\>/utilities and install the required Python packages with `pip`:
 
 ```bash
->cd %CMSIS_PACK_ROOT%/ARM/SDS/2.1.0/utilities
+>cd %CMSIS_PACK_ROOT%/ARM/SDS/3.0.0/utilities
 >pip install -r requirements.txt
 ```
 
-- Add to the system **Path** environment variable the path to the `%CMSIS_PACK_ROOT%/ARM/SDS/2.1.0/utilities` folder.
+- Add to the system **Path** environment variable the path to the `%CMSIS_PACK_ROOT%/ARM/SDS/3.0.0/utilities` folder.
 
 !!! Notes
     - `%CMSIS_PACK_ROOT%` is just a placeholder for the Pack location on your local PC. The **Path** variable must be extended by the absolute path to the `utilities` folder.
@@ -56,11 +56,11 @@ Perform the following steps to setup the Python environment for using the SDS ut
 ## SDSIO-Server
 
 The Python utility [**SDSIO-Server**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer), or serial (UART) connection.
-It communicates with the target using these [SDSIO Client interfaces](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client):
+It communicates with the target using these [SDSIO Client interfaces](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client):
 
-- [serial/usart](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/serial/usart) for serial communication via CMSIS-Driver USART.
-- [socket](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/socket) for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.
-- [usb/bulk](https://github.com/ARM-software/SDS-Framework/tree/main/sds/source/sdsio/client/usb/mdk) for communication via USB Bulk transfer using MDK-Middleware.
+- [serial/usart](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_serial.c) for serial communication via CMSIS-Driver USART.
+- [socket](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_socket.c) for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.
+- [usb/bulk](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_usb_mdk.c) for communication via USB Bulk transfer using MDK-Middleware.
 
 The SDS data stream is recorded to files with the following naming convention:
 
