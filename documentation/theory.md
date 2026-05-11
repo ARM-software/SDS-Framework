@@ -62,7 +62,9 @@ The file name used when opening a stream depends on the presence of the `sdsio.y
 If the steering file exists and contains `play` node, the file name follows the pattern `<name>.<label>.sds`, where `<label>` is specified in the corresponding
 `step` node in the `play` node. After playback or recording completes, processing continues with the next `step` node, if available, and the process repeats.
 
-If the steering file does not exist or does not contain `play` node, the file name follows the pattern `<name>.<label>.sds`, where:
+The previous explanation applies only to playback; for recording, the file naming pattern is determined as follows.
+
+If the steering file does not exist or does not contain `play` node, the file name follows the pattern `<name>.<label>.sds`, where for:
 
 **Recording:**
 
@@ -74,25 +76,31 @@ After recording completes, the process continues from the last `<label>` value.
 `<label>` is a sequential number starting at 0. If the corresponding file does not exist, the open operation fails.
 After playback completes, the process repeats with the `<label>` incremented by one.
 
-### Timestamp
+!!! Note
+    - Files recorded during playback include an additional `.p` before the `.sds` extension to
+      distinguish them from originally recorded files (e.g., `ML_Out.0.p.sds`).
+    - If a recording file name already exists, any existing `.bak` file with the same name is deleted,
+      the current file is renamed by appending `.bak`, and the new recording uses the original file name.
 
-The timestamp is a 32-bit unsigned value and is used for:
+### Time slot
 
-- Alignment of different data streams that have the same timestamp value.
+The time slot is a 32-bit unsigned value and is used for:
+
+- Alignment of different data streams that have the same time slot value.
 - Order of the SDS data files captured during execution.
-- Combining multiple SDS file records with the same timestamp value.
+- Combining multiple SDS file records with the same time slot value.
 
-The same timestamp connects different SDS file records. It is therefore useful to
-use the same timestamp for the recording of one iteration of a DSP or ML algorithm.
-In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timestamp resolution.
+The same time slot connects different SDS file records. It is therefore useful to
+use the same time slot for the recording of one iteration of a DSP or ML algorithm.
+In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a time slot resolution.
 
 ### File Format
 
-The **SDS Framework** uses a binary data file format to store the individual data streams. It supports the recording and playback of multiple data streams that may have jitters.  Therefore each stream contains timestamp information that allows to correlate the data streams as it is for example required in a sensor fusion application.
+The **SDS Framework** uses a binary data file format to store the individual data streams. It supports the recording and playback of multiple data streams that may have jitters.  Therefore each stream contains time slot information that allows to correlate the data streams as it is for example required in a sensor fusion application.
 
-The binary data format (stored in `*.<n>.sds` data files) has a record structure with a variable size. Each record has the following format:
+The binary data format (stored in `*.sds` data files) has a record structure with a variable size. Each record has the following format:
 
-1. **timestamp**: record timestamp in tick-frequency (32-bit unsigned integer, little endian)
+1. **time slot**: record time slot in tick-frequency (32-bit unsigned integer, little endian)
 2. **data size**: number of data bytes in the record (32-bit unsigned integer, little endian)
 3. **binary data**: SDS stream (little endian, no padding) as described with the `*.sds.yml` file.
 
@@ -105,7 +113,7 @@ The content of each data stream may be described in a [YAML](https://en.wikipedi
 &nbsp;&nbsp;&nbsp; `name:`           | Name of the Synchronous Data Stream (required)
 &nbsp;&nbsp;&nbsp; `description:`    | Additional descriptive text (optional)
 &nbsp;&nbsp;&nbsp; `frequency:`      | Capture frequency of the SDS (required)
-&nbsp;&nbsp;&nbsp; `tick-frequency:` | Tick frequency of the timestamp value (optional); default: 1000
+&nbsp;&nbsp;&nbsp; `tick-frequency:` | Tick frequency of the time slot value (optional); default: 1000
 &nbsp;&nbsp;&nbsp; `content:`        | List of values captured (required, see below)
 
 `content:`                           | List of values captured (in the order of the data file)
@@ -137,7 +145,7 @@ This example defines a data stream with the name "sensorX" that contains the val
 
 ![image](./images/SDS-Metainfo.png)
 
-The binary data that are coming form these sensors are stored in data files with the following file format: `<sensor-name>.<file-index>.sds`. In this example the files names could be:
+The binary data that are coming form these sensors are stored in data files with the following file format: `<sensor-name>.<index>.sds`. In this example the files names could be:
 
 ```yml
    sensorX.0.sds   # capture 0
@@ -198,36 +206,37 @@ The `pixel_format` values listed in `sds.schema.json` map to the following templ
 
 ## Code Example
 
-The following code snippets show the usage of the **Recorder Interface**. In this case an accelerometer data stream is recorded.
+The following code snippets show the usage of the **SDS** for recording of sensor data. In this case an accelerometer data stream is recorded.
 
 ```c
-#include "sds_rec_play.h"
+#include "sds.h"
 
 // variable definitions
-struct {                          // sensor data stream format
+struct {                        // sensor data stream format
   uint16_t x;
   uint16_t y;
   uint16_t z;
-} accelerometer [30];             // number of samples in one data stream record
+} accelerometer [30];           // number of samples in one data stream record
 
-sdsRecPlayId_t *accel_id;         // data stream id
-uint8_t accel_buf[(sizeof(accelerometer)*2)+0x800];      // data stream buffer for circular buffer handling
-int32_t n;                        // number of bytes written to data stream
+sdsId_t *accel_id;              // data stream id
+uint8_t  accel_buf[(sizeof(accelerometer)*2)+2048];     // data stream buffer for circular buffer handling
+uint32_t timeslot;
+int32_t  n;                     // number of bytes written to data stream
      :
 // *** function calls ***
-   sdsRecPlayInit(NULL);          // init SDS Recorder/Player  
+   sdsInit(NULL);               // init SDS
      :
-   // open data stream for recording
-   accel_id = sdsRecOpen("Accel", accel_buf, sizeof(accel_buf));
+   // open data stream for writing (recording)
+   accel_id = sdsOpen("Accel", sdsModeWrite, accel_buf, sizeof(accel_buf));
      :
-   // write data in accelerometer buffer with timestamp from RTOS kernel.
-   timestamp = osKernelGetTickCount();
-   n = sdsRecWrite(accel_id, timestamp, accelerometer, sizeof(accelerometer));
+   // write data in accelerometer buffer with time slot from RTOS kernel.
+   timeslot = osKernelGetTickCount();
+   n = sdsWrite(accel_id, timeslot, accelerometer, sizeof(accelerometer));
    if (n != sizeof(accelerometer)) {
      ... // unexpected size returned, error handling
    }
      :
-  sdsRecClose (accel_id);         // close data stream
+  sdsClose(accel_id);           // close data stream
 ```
 
 ## Buffer Size
@@ -242,21 +251,21 @@ The minimum recommended buffer size is **0x1000 (4 KB)**.
 
 ## SDSIO Server Firmware Protocol
 
-The SDSIO Server uses a simple protocol for data exchange between a Host computer and the embedded target that integrates an [SDSIO Interface](sdsio.md). The protocol assumes that the correct communication to the server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.
+The [SDSIO Server](utilities.md#sdsio-server) uses a simple protocol for data exchange between a host computer and the embedded target that integrates an [SDSIO Interface](sdsio.md). The protocol assumes that the correct communication to the server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.
 
 The following conventions describe the **command semantic** used in the following documentation:
 
 Symbol     | Description
 :----------|:----------------------
-\>         | Prefix indicating the direction: Command from target firmware to SDSIO-Server on the host computer.
-<          | Prefix indicating the direction: Response from SDSIO-Server to target firmware.
+\>         | Prefix indicating the direction: Command from target firmware to SDSIO Server on the host computer.
+<          | Prefix indicating the direction: Response from SDSIO Server to target firmware.
 WORD       | 32-bit value (low byte first).
 ****       | The field above has exactly one occurrence.
 ++++       | The field above has a variable length.
 
 **Commands:**
 
-Commands are sent from the embedded target to the Host computer running the SDSIO Server.
+Commands are sent from the embedded target to the host computer running the SDSIO Server.
 
 ID  | Name            | Description
 :--:|:----------------|:------------------------
@@ -265,23 +274,23 @@ ID  | Name            | Description
 3   | SDSIO_CMD_WRITE | Write to an SDS data file
 4   | SDSIO_CMD_READ  | Read from an SDS data file
 5   | SDSIO_CMD_PING  | Ping Server
-6   | SDSIO_CMD_FLAGS | SDS control flags update request from Host
-7   | SDSIO_CMD_INFO  | Send control information to Host
+6   | SDSIO_CMD_FLAGS | SDS control flags update request from host
+7   | SDSIO_CMD_INFO  | Send control information to host
 
 Each **Command** starts with a **Header (4 Words = 16 bytes)** followed by **optional data** of variable length.
 Depending on the Command, the SDSIO Server replies with a **Response** that includes a **Header** with the same ID
 as the Command and may contain **additional data**.
 
 !!! Note
-    - The SDSIO_CMD_FLAGS Response is not a reply to the SDSIO_CMD_FLAGS Command; rather, it is an asynchronous Response sent by the Host.
+    - The SDSIO_CMD_FLAGS Response is not a reply to the SDSIO_CMD_FLAGS Command; rather, it is an asynchronous Response sent by the host.
 
 **SDSIO_CMD_OPEN**
 
-The Command with ID = **1** (SDSIO_CMD_OPEN) opens an SDS data file on the Host computer.
-`Mode` defines `read` (value=0) or `write` (value=1) operation. `Len of Stream Name` is the size of the string in bytes.
+The Command with ID = **1** (SDSIO_CMD_OPEN) opens an SDS data file on the host computer.
+`Mode` defines `read` (value = 0) or `write` (value = 1) operation. `Len of Stream Name` is the size of the string in bytes.
 
-SDS data filenames use the following file format: `<stream-name>.<label-name>.sds`, where `stream-name` is the base file name
-of the SDS data file and `<label-name>` is a sequential number during recording maintained by SDSIO Server (for details see section [Filenames](#filenames)).
+SDS data file names use the following file format: `<name>.<label>.sds`, where `<name>` is the stream name used as base file name
+of the SDS data file and `<label>` is a user label or index depending on usage (for details see section [Filenames](#filenames)).
 
 ```txt
 | WORD |  WORD  | WORD | WORD **************|+++++++++++++|
@@ -299,7 +308,7 @@ The Response with ID = **1** (SDSIO_CMD_OPEN) provides a `Handle` that is used t
 
 **SDSIO_CMD_CLOSE**
 
-The Command with ID = **2** (SDSIO_CMD_CLOSE) closes an SDS data file on the Host computer.
+The Command with ID = **2** (SDSIO_CMD_CLOSE) closes an SDS data file on the host computer.
 The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**.
 There is no Response from the SDSIO Server to this Command.
 
@@ -311,7 +320,7 @@ There is no Response from the SDSIO Server to this Command.
 
 **SDSIO_CMD_WRITE**
 
-The Command with ID = **3** (SDSIO_CMD_WRITE) writes data to an SDS data file on the Host computer.
+The Command with ID = **3** (SDSIO_CMD_WRITE) writes data to an SDS data file on the host computer.
 The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**.
 `Size` specifies the size of `Data` in bytes.
 There is no Response from the SDSIO Server to this Command.
@@ -324,7 +333,7 @@ There is no Response from the SDSIO Server to this Command.
 
 **SDSIO_CMD_READ**
 
-The Command with ID = **4** (SDSIO_CMD_READ) reads data from an SDS data file on the Host computer.
+The Command with ID = **4** (SDSIO_CMD_READ) reads data from an SDS data file on the host computer.
 The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**.
 `Size` specifies the number of bytes to read.
 
@@ -334,7 +343,7 @@ The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**.
 |******|********|******|******|
 ```
 
-The Response with ID = **4** (SDSIO_CMD_READ) provides the data read from an SDS data file on the Host computer.
+The Response with ID = **4** (SDSIO_CMD_READ) provides the data read from an SDS data file on the host computer.
 `Size` specifies the size of `Data` in bytes that was read and `Status` with nonzero = end of stream, else 0.
 
 ```txt
@@ -345,7 +354,7 @@ The Response with ID = **4** (SDSIO_CMD_READ) provides the data read from an SDS
 
 **SDSIO_CMD_PING**
 
-The Command with ID = **5** (SDSIO_CMD_PING) verifies if the Server is active and reachable on the Host.
+The Command with ID = **5** (SDSIO_CMD_PING) verifies if the Server is active and reachable on the host.
 
 ```txt
 | WORD | WORD | WORD | WORD |
@@ -353,7 +362,7 @@ The Command with ID = **5** (SDSIO_CMD_PING) verifies if the Server is active an
 |******|******|******|******|
 ```
 
-The Response with ID = **5** (SDSIO_CMD_PING) returns the Status with nonzero = server active, else 0
+The Response with ID = **5** (SDSIO_CMD_PING) returns the `Status` with nonzero = server active, else 0.
 
 ```txt
 | WORD | WORD |  WORD  | WORD |
@@ -363,12 +372,11 @@ The Response with ID = **5** (SDSIO_CMD_PING) returns the Status with nonzero = 
 
 **SDSIO_CMD_FLAGS**
 
-The asynchronous Response with ID = **6** (SDSIO_CMD_FLAGS) contains the SDS control flags update information from the Host.
-This Response can arrive at any time when the Host wants to update the SDS control flags.
-It can also precede a Response to any other command (e.g., SDSIO_CMD_OPEN or SDSIO_CMD_READ), but it cannot be sent by the Host
+The asynchronous Response with ID = **6** (SDSIO_CMD_FLAGS) contains the SDS control flags update information from the host.
+This Response can arrive at any time when the host wants to update the SDS control flags.
+It can also precede a Response to any other command (e.g., SDSIO_CMD_OPEN or SDSIO_CMD_READ), but it cannot be sent by the host
 while a Response to another Command is in progress.
-`Set Mask` bits to set in sdsFlags.
-`Clear Mask` bits to clear in sdsFlags.
+The `Set Mask` specifies the bits to set in the `sdsFlags` and the `Clear Mask` specifies the bits to clear in the `sdsFlags`.
 
 ```txt
 | WORD | WORD     | WORD       | WORD |
@@ -378,10 +386,10 @@ while a Response to another Command is in progress.
 
 **SDSIO_CMD_INFO**
 
-The Command with ID = **7** (SDSIO_CMD_INFO) sends control information (sdsFlags, sdsIdleRate and error information) to the Host. There is no Response from the SDSIO Server to this Command.
+The Command with ID = **7** (SDSIO_CMD_INFO) sends control information (sdsFlags, sdsIdleRate and error information) to the host. There is no Response from the SDSIO Server to this Command.
 
 - `sdsFlags` is the current value of that global variable.
-- `sdsIdleRate` is the current value of that global variable, value 0xFFFFFFFFF indicates that there is no idle rate information.
+- `sdsIdleRate` is the current value of that global variable, value 0xFFFFFFFF indicates that idle rate information is not valid.
 - `Error Len` specifies the size of the `Error Data`, value 0 indicates that no error occurred.
 
 ```txt
@@ -400,15 +408,16 @@ The Command with ID = **7** (SDSIO_CMD_INFO) sends control information (sdsFlags
 
 ## SDSIO Server Monitor Interface
 
-The SDSIO Server provides an additional TCP socket that maybe used by a Monitor program to observe SDS file activity and control sdsFlags.
+The [SDSIO Server](utilities.md#sdsio-server) provides an additional TCP socket that maybe used by a Monitor program to observe
+SDS file activity and control sdsFlags.
 The monitor interface is enabled with command line option `--mon-port <port>`.
 
 The following conventions describe the **command and message semantic** used in the following documentation:
 
 Symbol     | Description
 :----------|:----------------------
-\>         | Prefix indicating the direction: Command to SDSIO-Server from Monitor program.
-<          | Prefix indicating the direction: Response or asynchronous message from SDSIO-Server.
+\>         | Prefix indicating the direction: Command to SDSIO Server from Monitor program.
+<          | Prefix indicating the direction: Response or asynchronous message from SDSIO Server.
 WORD       | 32-bit value (low byte first).
 ****       | The field above has exactly one occurrence.
 ++++       | The field above has a variable length.
@@ -423,7 +432,7 @@ ID  | Name            | Description
 1   | SDSIO_MON_OPEN  | SDS data file was opened (message)
 2   | SDSIO_MON_CLOSE | SDS data file was closed (message)
 6   | SDSIO_MON_FLAGS | Send an SDS control flags update from the Monitor
-7   | SDSIO_MON_INFO  | Information update from the SDSIO-Server (message)
+7   | SDSIO_MON_INFO  | Information update from the SDSIO Server (message)
 
 Each **Command or Message** starts with a **Header (4 Words = 16 bytes)** followed by **optional data** of variable length.
 Depending on the Command, the SDSIO Server replies with a **Response** that includes a **Header** with the same ID
@@ -432,7 +441,7 @@ as the Command and may contain **additional data**.
 **SDSIO_MON_OPEN**
 
 The Message with ID = **1** (SDSIO_MON_OPEN) is sent whenever an SDS data file is opened by the SDSIO Server.
-`Mode` defines `read` (value=0) or `write` (value=1) operation. `Filename Len` is the size of the string in bytes and `Filename` is the name of the file (including path).
+`Mode` defines `read` (value = 0) or `write` (value = 1) operation. `Filename Len` is the size of the string in bytes and `Filename` is the name of the file (including path).
 
 ```txt
 | WORD | WORD | WORD | WORD | WORD ********|++++++++++|
@@ -453,7 +462,7 @@ The Message with ID = **2** (SDSIO_MON_CLOSE) is sent whenever an SDS data file 
 
 **SDSIO_MON_FLAGS**
 
-The Command with ID = **6** (SDSIO_MON_FLAGS) is used to update the SDS control flags in the SDSIO Server. The `Set Mask` specifies the bits to set in `sdsFlags` and the `Clear Mask` specifies the bits to clear in `sdsFlags`. There is no response from the SDSIO Server to this Command.
+The Command with ID = **6** (SDSIO_MON_FLAGS) is used to update the SDS control flags in the SDSIO Server. The `Set Mask` specifies the bits to set in the `sdsFlags` and the `Clear Mask` specifies the bits to clear in the `sdsFlags`. There is no response from the SDSIO Server to this Command.
 
 ```txt
 | WORD | WORD     | WORD       | WORD |
@@ -466,7 +475,7 @@ The Command with ID = **6** (SDSIO_MON_FLAGS) is used to update the SDS control 
 The Message with ID = **7** (SDSIO_MON_INFO) contains information (sdsFlags, sdsIdleRate and error information) from the SDSIO Server. It is send whenever there is an update of this information in the SDSIO Server and on initial connection to the monitor interface.
 
 - `sdsFlags` is the current value of that global variable.
-- `sdsIdleRate` is the current value of that global variable, value 0xFFFFFFFFF indicates that there is no idle rate information.
+- `sdsIdleRate` is the current value of that global variable, value 0xFFFFFFFF indicates that idle rate information is not valid.
 - `Error Len` specifies the size of the `Error Data`, value 0 indicates that no error occurred.
 
 ```txt
@@ -485,28 +494,32 @@ The Message with ID = **7** (SDSIO_MON_INFO) contains information (sdsFlags, sds
 
 ## SDSIO Message Sequence
 
-This section describes the states and the message sequence of the SDS framework when using the `SDSIO-Server`.
+This section describes the states and the message sequence of the SDS framework when using the [SDSIO Server](utilities.md#sdsio-server).
 It contains the following threads that execute on the target.
 
 - **sdsControlThread**: Control thread that organizes the overall execution.
 - **AlgorithmThread**: Executes the algorithm under test.
-- **sdsRecPlayThread**: Recorder/Playback interface to SDSIO-Server.
-- **SDSIO-Server**: SDSIO-Server running on host computer.
+- **sdsThread**: SDS worker thread.
+- **SDSIO Server**: SDSIO Server running on the host computer.
 
 !!! Note
-    - The command `SDS_CMD_FLAGS` is sent asynchronous by the SDSIO-Server.
+    - The command `SDSIO_CMD_FLAGS` is sent asynchronous by the SDSIO Server.
+
+The `sdsControlThread` handles a state machine with the following states:
 
 States                   | Description
 :------------------------|:------------
-SDS_STATE_INACTIVE       | Streaming is not active; initiate connection to SDSIO-Server
-SDS_STATE_CONNECTED      | Device (client) is connected to SDSIO-Server (host)
+SDS_STATE_INACTIVE       | Streaming is not active; waiting for flag info from SDSIO Server
+SDS_STATE_CONNECTED      | Device (client) is connected to SDSIO Server (host), but streaming is not active
 SDS_STATE_START          | Request to start streaming, open streams and get ready for read/write operations
 SDS_STATE_ACTIVE         | Streaming is active
-SDS_STATE_STOP_REQ       | Request to stop streaming and close streams
-SDS_STATE_STOP_DONE      | Streaming is stopped
-SDS_STATE_END            | Request to end streaming (no more data to send to SDSIO-Server)
+SDS_STATE_STOP_REQ       | Request to stop streaming and close open streams
+SDS_STATE_STOP_DONE      | Streaming has stopped
+SDS_STATE_END            | Request to end streaming (e.g., no more playback data is available)
+SDS_STATE_RESET          | Request to reset the device
+SDS_STATE_END            | Request to terminate the active session
 
-The following flowcharts show the state transition in context with the messages that are exchanged with the `SDSIO-Server`.
+The following flowcharts show the state transition in context with the messages that are exchanged with the `SDSIO Server`.
 
 **Connect flowchart**
 
@@ -515,25 +528,70 @@ sequenceDiagram
     participant sdsControlThread
     activate sdsControlThread
 
-    participant AlgorithmThread
-    participant SDSIO as sdsRecPlayThread
-    participant Server as SDSIO-Server<br/>(host)
+    participant Server as SDSIO Server<br/>(host)
 
-    activate Server
-    Note right of sdsControlThread: SDS_STATE_INACTIVE 
     Note over sdsControlThread: sdsInit
-    Note over sdsControlThread: sdsExchange
-    sdsControlThread->>Server: SDSIO_CMD_INFO
-    Server-->>sdsControlThread: SDSIO_CMD_FLAGS: set SDS_FLAG_ALIVE
+    Note right of sdsControlThread: SDS_STATE_INACTIVE 
+    loop every 100 ms
+      Note over sdsControlThread: sdsExchange
+      activate Server
+      Server-->>sdsControlThread: SDSIO_CMD_FLAGS: set SDS_FLAG_ALIVE
+      sdsControlThread-->>Server: SDSIO_CMD_INFO
+    end
     Note right of sdsControlThread: SDS_STATE_CONNECTED 
     deactivate sdsControlThread
+    deactivate Server
 ```
 
 !!! Note
     - When the command `SDS_CMD_FLAGS` sets SDS_FLAG_ALIVE the sdsControlThread transitions into the SDS_STATE_CONNECTED.
-    - When `SDSIO_CMD_INFO` is send more than 10 times without a `SDS_CMD_FLAGS` response the sdsControlThread transitions into the SDS_STATE_INACTIVE.
+    - When `SDSIO_CMD_INFO` is sent more than 10 times without a `SDSIO_CMD_FLAGS` response the sdsControlThread transitions into the SDS_STATE_INACTIVE.
 
-**Recording flowchart**
+**Recording start flowchart**
+
+```mermaid
+sequenceDiagram
+    participant sdsControlThread
+    activate sdsControlThread
+    participant AlgorithmThread
+    activate AlgorithmThread
+    participant SDSIO as sdsThread
+    activate SDSIO
+    participant Server as SDSIO Server<br/>(host)
+    activate Server
+
+    Note right of sdsControlThread: SDS_STATE_CONNECTED 
+
+    loop every 100 ms
+      Note over sdsControlThread: sdsExchange
+      Server->>sdsControlThread: SDSIO_CMD_FLAGS
+      sdsControlThread->>Server: SDSIO_CMD_INFO
+    end
+
+    Server-->>sdsControlThread: SDSIO_CMD_FLAGS: set SDS_FLAG_START
+    Note right of sdsControlThread: SDS_STATE_START
+
+    Note over sdsControlThread: sdsOpen<br/>(all streams)
+    sdsControlThread->>Server: SDSIO_CMD_OPEN
+    Server->>sdsControlThread: Response
+
+    Note right of sdsControlThread: SDS_STATE_ACTIVE
+
+    loop periodic
+        Note over AlgorithmThread: sdsWrite
+        AlgorithmThread->>SDSIO: Buffered data reached or crossed threshold
+        loop send all data from buffer
+            SDSIO->>Server: SDSIO_CMD_WRITE
+        end
+    end
+
+    deactivate sdsControlThread
+    deactivate AlgorithmThread
+    deactivate SDSIO
+    deactivate Server
+```
+
+**Recording stop flowchart**
 
 ```mermaid
 sequenceDiagram
@@ -541,48 +599,22 @@ sequenceDiagram
     activate sdsControlThread
 
     participant AlgorithmThread
-    participant SDSIO as sdsRecPlayThread
-    participant Server as SDSIO-Server<br/>(host)
-
-    Note right of sdsControlThread: SDS_STATE_CONNECTED 
-
-    loop every 100ms
-      Note over sdsControlThread: sdsExchange
-      sdsControlThread->>Server: SDSIO_CMD_INFO
-      Note over sdsControlThread: sdsioClientReceiveGetCount<br/>(header available) 
-    activate Server
-      Server-->>sdsControlThread: SDSIO_CMD_FLAGS: set SDS_FLAG_START
-    end
-
-    Note right of sdsControlThread: SDS_STATE_START
-
-    activate SDSIO
- 
-    Note over sdsControlThread: sdsOpen<br/>(all streams)
-    sdsControlThread->>Server: SDSIO_CMD_OPEN
-    Server->>sdsControlThread: Response
-
     activate AlgorithmThread
+    participant SDSIO as sdsThread
+    activate SDSIO
+    participant Server as SDSIO Server<br/>(host)
+    activate Server
 
-    Note right of sdsControlThread: SDS_STATE_ACTIVE
+    Note right of sdsControlThread: SDS_STATE_ACTIVE 
 
-    loop periodic
-        Note over AlgorithmThread: sdsRecWrite
-        AlgorithmThread->>SDSIO: Buffered data reached or crossed threshold
-        loop send all data from buffer
-            SDSIO->>Server: SDSIO_CMD_WRITE
-        end
-    end
-
-    loop every 100ms
+    loop every 100 ms
       Note over sdsControlThread: sdsExchange
+      Server->>sdsControlThread: SDSIO_CMD_FLAGS
       sdsControlThread->>Server: SDSIO_CMD_INFO
-      Note over sdsControlThread: sdsioClientReceiveGetCount<br/>(header available) 
-      Server-->>sdsControlThread: SDSIO_CMD_FLAGS: clear SDS_FLAG_START
     end
 
+    Server-->>sdsControlThread: SDSIO_CMD_FLAGS: clear SDS_FLAG_START
     Note right of sdsControlThread: SDS_STATE_STOP_REQ
-    deactivate AlgorithmThread
     loop send all data from buffer
         SDSIO->>Server: SDSIO_CMD_WRITE
     end
@@ -591,9 +623,11 @@ sequenceDiagram
     Note over sdsControlThread: sdsClose<br/>(all streams)
     sdsControlThread->>Server: SDSIO_CMD_CLOSE
     Server->>sdsControlThread: Response
+    Note right of sdsControlThread: SDS_STATE_CONNECTED
+
+    deactivate AlgorithmThread
     deactivate SDSIO
     deactivate Server
-    Note right of sdsControlThread: SDS_STATE_CONNECTED
     deactivate sdsControlThread
 ```
 
@@ -603,24 +637,23 @@ sequenceDiagram
 sequenceDiagram
     participant sdsControlThread
     activate sdsControlThread
-
     participant AlgorithmThread
-    participant SDSIO as sdsRecPlayThread
-    participant Server as SDSIO-Server<br/>(host)
+    activate AlgorithmThread
+    participant SDSIO as sdsThread
+    activate SDSIO
+    participant Server as SDSIO Server<br/>(host)
+    activate Server
 
     Note right of sdsControlThread: SDS_STATE_CONNECTED 
 
-    loop every 100ms
+    loop every 100 ms
       Note over sdsControlThread: sdsExchange
+      Server->>sdsControlThread: SDSIO_CMD_FLAGS
       sdsControlThread->>Server: SDSIO_CMD_INFO
-      Note over sdsControlThread: sdsioClientReceiveGetCount<br/>(header available) 
-    activate Server
-      Server-->>sdsControlThread: SDSIO_CMD_FLAGS: set SDS_FLAG_START, set SDS_FLAG_PLAYBACK  
     end
 
+    Server-->>sdsControlThread: SDSIO_CMD_FLAGS: set SDS_FLAG_START and SDS_FLAG_PLAYBACK
     Note right of sdsControlThread: SDS_STATE_START
-
-    activate SDSIO
 
     Note over sdsControlThread: sdsOpen<br/>(all streams)
     sdsControlThread->>Server: SDSIO_CMD_OPEN
@@ -631,8 +664,6 @@ sequenceDiagram
         Server->>sdsControlThread: Data
     end
   
-    activate AlgorithmThread
-
     Note right of sdsControlThread: SDS_STATE_ACTIVE
 
     loop periodic
@@ -644,24 +675,22 @@ sequenceDiagram
         end
     end
 
-    loop every 100ms
-      Note over sdsControlThread: sdsExchange
-      sdsControlThread->>Server: SDSIO_CMD_INFO
-      Note over sdsControlThread: sdsioClientReceiveGetCount<br/>(header available) 
-      Server-->>sdsControlThread: SDSIO_CMD_FLAGS: clear SDS_FLAG_START
-    end
+    Server-->>SDSIO: No more data
 
+    Server->>AlgorithmThread: End of Stream (EOS)
+    Note over AlgorithmThread: sdsRead = SDS_EOS
+
+    AlgorithmThread->>sdsControlThread: End of Stream (EOS)
     Note right of sdsControlThread: SDS_STATE_STOP_REQ
-
-    deactivate AlgorithmThread
     Note right of sdsControlThread: SDS_STATE_STOP_DONE
 
     Note over sdsControlThread: sdsClose<br/>(all streams)
     sdsControlThread->>Server: SDSIO_CMD_CLOSE
     Server->>sdsControlThread: Response
+    Note right of sdsControlThread: SDS_STATE_CONNECTED
+
+    deactivate sdsControlThread
+    deactivate AlgorithmThread
     deactivate SDSIO
     deactivate Server
-
-    Note right of sdsControlThread: SDS_STATE_CONNECTED
-    deactivate sdsControlThread
 ```
