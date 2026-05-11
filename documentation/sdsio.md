@@ -32,20 +32,6 @@ Socket server listening on 172.20.10.2:5050
 
 This is the IP address that the target hardware needs to connect to and it is required to configure this IP address in the file `./layer/sdsio/network/RTE/SDS/sdsio_client_socket_config.h` with  the define `SDSIO_SOCKET_SERVER_IP`.
 
-!!! Note
-    - The firewall of the Host computer must be configured so that it can be reached from the target device under its IP address.
-
-### Usage on Windows
-
-The easier way to connect the Host computer to the target board via Ethernet is to use a local network switch. With a standard network installation, the target hardware and the Host computer should be connected to the same LAN, and the DHCP server should assign a dynamic IP address automatically.
-
-A firewall may restrict Ethernet access. The instructions below are for the Windows Defender Firewall.
-
-- Open **Windows Security - Firewall & network protection - Allow an app through firewall**.
-- Click **Change settings**, then allow your Python runtime (`python.exe`) on the network profile you use (usually Private).
-
-If this is a managed corporate PC, Group Policy or endpoint security may still block it, so your IT may need to whitelist the IP address and port.
-
 ## Layer: sdsio_usb
 
 The [`layer/sdsio/usb/sdsio_usb.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/usb) is configured for recording and playback via the USB Device interface. It uses the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) USB Device component and connects via a USB interface to a Host computer.

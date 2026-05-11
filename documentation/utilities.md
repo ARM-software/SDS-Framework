@@ -45,14 +45,6 @@ Perform the following steps to setup the Python environment for using the SDS ut
 !!! Tip
     - When the **Path** environment variable is configured, you may simply start the utilities by using its name. For example entering `>sdsio-server` starts the utility.
 
-### MacOS
-
-- On macOS, the **libusb** system library is required. If not already installed, you can install it using with [Homebrew](https://brew.sh/):
-
-```bash
->brew install libusb
-```
-
 ## SDSIO-Server
 
 The Python utility [**SDSIO-Server**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer), or serial (UART) connection.
@@ -62,45 +54,72 @@ It communicates with the target using these [SDSIO Client interfaces](https://gi
 - [socket](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_socket.c) for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.
 - [usb/bulk](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_usb_mdk.c) for communication via USB Bulk transfer using MDK-Middleware.
 
-The SDS data stream is recorded to files with the following naming convention:
+The SDS data stream is recorded to played back from `*.sds` files with the following naming convention:
 
-`<name>.<index>.sds`
+`<name>.<label>[.p].sds`  (where `[.p]` is optional and present only for recorded files in playback mode)
 
-- `<name>` is the name of the I/O stream specified with the function `sdsRecOpen` or `sdsPlayOpen` on the target.
-- `<index>` is the zero-based index which is incremented for each subsequent recording.
-- For more details see [Filenames section](theory.md#filenames)
+For more details see [Filenames section](theory.md#filenames)
 
-The data content of the `<name>.<index>.sds` is described with metadata file `<name>.sds.yml` in [YAML format](https://github.com/ARM-software/SDS-Framework/tree/main/schema).
+The data content of the `<name>.<label>[.p].sds` is described with metadata file `<name>.sds.yml` in [YAML format](https://github.com/ARM-software/SDS-Framework/tree/main/schema).
 
 ### Usage
 
 - [Setup](#setup) the Python environment.
-- Depending on the SDS interface used on the target use either [Serial Mode](#serial-mode), [Socket Mode](#socket-mode) or [USB Mode](#usb-mode) as described below.
-- The SDSIO_Server terminates with `Ctrl+C`.
+- Configure via a YAML control file (`-c *.sdsio.yml`) or specify the interface directly on the command line.
+- Terminate the server with `Ctrl+C` or by pressing `X`.
+
+```txt
+usage: sdsio-server.py [-h] [-c sdsio.yml | {socket | serial | usb} [server-opts]] [options]
+
+SDSIO-Server: record and playback SDS data stream files over USB, socket, or serial interface.
+Configure via *.sdsio.yml file or specify the interface parameters directly on the command line.
+
+options:
+  --help, -h                   Show this help message and exit
+  --version, -V                Show program's version number and exit
+
+configuration:
+  --control, -c <*.sdsio.yml>  Configure interface, SDS file directories, and playback steps
+
+interface (optional, default: usb; overrides interface in *.sdsio.yml):
+  {socket | serial | usb}
+    socket                     Run TCP socket server
+    serial                     Run serial server
+    usb                        Run USB bulk server
+
+general options:
+  --playback, -p               Start SDSIO-Server in playback mode (used in CI tests)
+  --workdir <path>             Directory for SDS files (overrides *.sdsio.yml; default: current directory)
+  --mon-port, -m <port>        Monitor control interface port
+  --log, -l <file>             Redirect console output to a log file (for CI use)
+  --verbose, -v                Enable debug messages
+  --high-priority, -P          Increase process priority for USB server (requires elevated privileges)
+```
+
+**Keyboard input (while running):**
+
+| Key | Action           | Key | Action               |
+|-----|------------------|-----|----------------------|
+| R/r | Start recording  | P/p | Start playback       |
+| S/s | Stop             | A-H | Set user flags 0-7   |
+| X/x | Terminate server | a-h | Clear user flags 0-7 |
 
 #### Serial Mode
 
 ```txt
-usage: sdsio-server.py serial [-h]  
-                              -p <Serial Port>  
-                              [--baudrate <Baudrate>]  
-                              [--parity <Parity>]  
-                              [--stopbits <Stop bits>]  
-                              [--connect-timeout <Timeout>]  
-                              [--workdir <Work dir>]
+usage: sdsio-server.py serial -p <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>]
 
-optional arguments:
+options:
   -h, --help                   show this help message and exit
 
-required:
-  -p <Serial Port>             Serial port
+serial arguments (required):
+  -p <Serial Port>             Serial port (required)
 
-optional:
+serial arguments (optional):
   --baudrate <Baudrate>        Baudrate (default: 115200)
-  --parity <Parity>            Parity: N=None, E=Even, O=Odd, M=Mark, S=Space (default: N)
+  --parity <Parity>            Parity: none, even, odd, mark, space (default: none)
   --stopbits <Stop bits>       Stop bits: 1, 1.5, 2 (default: 1)
   --connect-timeout <Timeout>  Serial port connection timeout in seconds (default: no timeout)
-  --workdir <Work dir>         Directory for SDS files (default: current directory)
 ```
 
 **Example:**
@@ -112,24 +131,28 @@ python sdsio-server.py serial -p COM0 --baudrate 115200 --workdir ./work_dir
 #### Socket Mode
 
 ```txt
-usage: sdsio-server.py socket [-h]  
-                              [--ipaddr <IP> | --interface <Interface>]  
-                              [--port <TCP Port>]  
-                              [--workdir <Work dir>]
+usage: sdsio-server.py socket [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>]
 
-optional arguments:
-  -h, --help               show this help message and exit
+options:
+  -h, --help           show this help message and exit
 
-optional:
-  --ipaddr <IP>            Server IP address (cannot be used with --interface)
-  --interface <Interface>  Network interface (cannot be used with --ipaddr)
-  --port <TCP Port>        TCP port (default: 5050)
-  --workdir <Work dir>     Directory for SDS files (default: current directory)
+socket arguments (optional):
+  --ipaddr <IP>        Server IP address (example: 192.168.0.100), cannot be used with 'netif'
+  --netif <Interface>  Network interface (example: eth0), cannot be used with 'ipaddr'
+  --port <TCP Port>    TCP port number (default: 5050)
 ```
 
 !!! Note
-    - The `--ipaddr` and `--interface` options are mutually exclusive.
+    - The `--ipaddr` and `--netif` options are mutually exclusive.
     - SDSIO Server only supports IPv4 addresses.
+
+
+!!! Note
+    - The target device and the Host computer must be connected to the same network. With a standard network installation, the DHCP server assigns IP addresses automatically.
+    - On **Windows**, a firewall may restrict socket connections. To allow the SDSIO-Server through the Windows Defender Firewall:
+        - Open **Windows Security - Firewall & network protection - Allow an app through firewall**.
+        - Click **Change settings**, then allow your Python runtime (`python.exe`) on the network profile you use (usually Private).
+        - On a managed corporate PC, Group Policy or endpoint security may still block connections. Your IT administrator may need to whitelist the IP address and port.
 
 **Example:**
 
@@ -142,34 +165,67 @@ python sdsio-server.py socket --workdir ./work_dir
 For Linux:
 
 ```bash
-python sdsio-server.py socket --interface eth0 --workdir ./work_dir
+python sdsio-server.py socket --netif eth0 --workdir ./work_dir
 ```
 
 #### USB Mode
 
 ```txt
-usage: sdsio-server.py usb [-h]  
-                           [--workdir <Work dir>]  
-                           [--high-priority]
+usage: sdsio-server.py usb [--high-priority]
 
-optional arguments:
-  -h, --help            show this help message and exit
-
-optional:
-  --workdir <Work dir>  Directory for SDS files (default: current directory)
-  --high-priority       Enable high-priority threading for USB server (default: off)
+options:
+  -h, --help  show this help message and exit
 ```
 
 !!! Note
-    - For more reliable operation at higher data transfer rates, it is recommended to enable the `--high-priority` option. This increases the thread priority of the SDSIO-Server process.
+    - For more reliable operation at higher data transfer rates, it is recommended to enable the `--high-priority` general option. This increases the thread priority of the SDSIO-Server process.
     - When using `--high-priority`, elevated privileges are required depending on your operating system:
         - **Windows**: Run the Python script as an administrator.
         - **macOS/Linux**: Execute the script with `sudo` or ensure the user has sufficient permissions.
+
+!!! Note
+    - On **macOS**, the **libusb** system library is required. If not already installed, you can install it using with [Homebrew](https://brew.sh/):
+
+    ```bash
+    >brew install libusb
+    ```
+
+!!! Note
+    - On **Linux**, access to USB devices from user space requires a udev rule by default.
+      Create a udev rule file (e.g. `/etc/udev/rules.d/99-sdsio.rules`) with the
+      vendor and product ID of the SDSIO Client device:
+
+      `SUBSYSTEM=="usb", ATTRS{idVendor}=="XXXX", ATTRS{idProduct}=="XXXX", MODE="0666"`
+
+      Then reload rules with `sudo udevadm control --reload && sudo udevadm trigger`.
+      Use `dmesg` before and after plugging in the device to find the vendor/product IDs.
 
 **Example:**
 
 ```bash
 python sdsio-server.py usb --workdir ./work_dir
+```
+
+#### Examples
+
+```bash
+# Recommended: all config in YAML
+python sdsio-server.py -c sdsio.yml
+
+# Playback mode
+python sdsio-server.py -c sdsio.yml --playback
+
+# With VS Code SDS extension monitor
+python sdsio-server.py -c sdsio.yml --mon-port 6060
+
+# USB server with explicit work directory
+python sdsio-server.py usb --workdir ./data
+
+# TCP socket server
+python sdsio-server.py socket --port 5050
+
+# Serial server
+python sdsio-server.py serial -p COM3 --baudrate 115200
 ```
 
 ## SDS-View
@@ -190,9 +246,9 @@ If there are 3 values described in the metadata file, an optional 3D view may be
 - Invoke the tool as explained below.
 
 ```txt
-usage: sds-view.py [-h]  
-                   -y <yaml_file>  
-                   -s <sds_file> [<sds_file> ...]  
+usage: sds-view.py [-h]
+                   -y <yaml_file>
+                   -s <sds_file> [<sds_file> ...]
                    [--3D]
 
 View SDS data
@@ -236,9 +292,9 @@ essential audio parameters such as channel configuration (mono or stereo), sampl
 width (bit depth).
 
 ```txt
-usage: sds-convert.py audio_wav [-h]  
-                                -i <input_file>  
-                                -o <output_file>  
+usage: sds-convert.py audio_wav [-h]
+                                -i <input_file>
+                                -o <output_file>
                                 -y <yaml_file>
 
 Convert SDS files to audio WAV format
@@ -302,12 +358,12 @@ Users may specify a time range selection of the input data to be processed using
 - `--stop-timestamp <timestamp>`: Stopping input data timestamp in floating-point format, in seconds.
 
 ```txt
-usage: sds-convert.py simple_csv [-h]  
-                                 -i <input_file>  
-                                 -o <output_file>  
-                                 -y <yaml_file>  
-                                 [--normalize]  
-                                 [--start-timestamp <timestamp>]  
+usage: sds-convert.py simple_csv [-h]
+                                 -i <input_file>
+                                 -o <output_file>
+                                 -y <yaml_file>
+                                 [--normalize]
+                                 [--start-timestamp <timestamp>]
                                  [--stop-timestamp <timestamp>]
 
 Convert SDS files to CSV format with timestamps and data columns
@@ -379,14 +435,14 @@ An optional label can be added to the output by providing a string argument to t
 This `<text>` will populate the label column in the output file.
 
 ```txt
-usage: sds-convert.py qeexo_v2_csv [-h] -i <input_file> [<input_file> ...]  
-                                   -o <output_file>  
-                                   [-y <yaml_file> [<yaml_file> ...]]  
-                                   [--normalize]  
-                                   [--start-timestamp <timestamp>]  
-                                   [--stop-timestamp <timestamp>]  
-                                   [--label 'label']  
-                                   [--interval <interval>]  
+usage: sds-convert.py qeexo_v2_csv [-h] -i <input_file> [<input_file> ...]
+                                   -o <output_file>
+                                   [-y <yaml_file> [<yaml_file> ...]]
+                                   [--normalize]
+                                   [--start-timestamp <timestamp>]
+                                   [--stop-timestamp <timestamp>]
+                                   [--label 'label']
+                                   [--interval <interval>]
                                    [--sds_index <sds_index>]
 
 Convert SDS files to Qeexo AutoML V2 CSV format (supports multiple sensors)

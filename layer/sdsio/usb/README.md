@@ -28,6 +28,18 @@ The following MDK-Middleware USB software components are required:
   - component: USB&MDK:Device:Custom Class
 ```
 
+### USB Vendor ID and Product ID
+
+The default `USBD_Config_0.h` contains placeholder Vendor ID (VID) and Product ID (PID) values that **must** be replaced before deployment:
+
+```c
+#define USBD0_DEV_DESC_IDVENDOR         0xC251   // replace with your own VID
+#define USBD0_DEV_DESC_IDPRODUCT        0x8007   // replace with your own PID
+```
+
+- **VID**: Must be a VID assigned to your organization by [USB-IF](https://www.usb.org/getting-vendor-id). Do not use the Keil VID (`0xC251`) in a product.
+- **PID**: Assign a product-specific value within your VID namespace.
+
 ## Starting SDSIO Server
 
 The **SDSIO Server** is a Python-based utility for PC, which is included in the
