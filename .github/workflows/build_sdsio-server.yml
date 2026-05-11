@@ -4,6 +4,8 @@ on:
   release:
     types:
       - published
+  schedule:
+    - cron: '0 0 * * *'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
