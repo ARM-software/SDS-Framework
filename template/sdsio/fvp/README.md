@@ -1,9 +1,10 @@
-# SDS Interface - Simulator (FVP)
+# SDS with SDS I/O Interface via VSI (Simulator)
 
-This SDS Interface uses the VSI Simulation interface on the Arm Virtual Hardware FVP model.
+This layer provides SDS with an I/O interface using the VSI Simulation interface on the Arm Virtual Hardware FVP model.
 It is based on the following components:
 
-- [SDS Recorder and Player](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__Recorder__Player.html) data streaming,
+- [SDS](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__Interface.html) data streaming,
+- [SDS_IO](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__IO__Interface.html) SDS I/O interface,
 - [VSI interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html) for simulation.
 
 ## SDS Configuration
@@ -11,9 +12,8 @@ It is based on the following components:
 The following SDS software components are required:
 
 ```yml
-  - component: SDS:Buffer
+  - component: SDS:Stream&CMSIS-RTOS2
   - component: SDS:IO:VSI
-  - component: SDS:RecPlay&CMSIS-RTOS2
 ```
 
 ## FVP Configuration
@@ -31,32 +31,4 @@ mps3_board.v_path=Board/Corstone-300/vsi/python/
 During the simulation, the SDS files are saved on or read from the Host computer. The following steps are required to configure the project for execution on the AVH-FVP simulator:
 
 - create a [New Solution](https://arm-software.github.io/SDS-Framework/main/template.html#create-new-solution) named `SDS` in an empty folder with VS Code IDE.
-- select the active target `AVH-SSE-300` and build the application.
-- open a [vcpkg-configuration.json](https://learn.arm.com/learning-paths/embedded-and-microcontrollers/vcpkg-tool-installation/config_creation/)
-  file and add the following line to the **"requires"** section:
-
-  ```json
-  "arm:models/arm/avh-fvp": "~11.29.27"
-  ```
-
-- open a file `tasks.json` and add a simulation task `AVH-FVP`:
-
-  ```json
-  {
-      "label": "AVH-FVP",
-      "type": "shell",
-      "command": "FVP_Corstone_SSE-300_Ethos-U55",
-      "args": [
-          "-f",
-          "Board/Corstone-300/fvp_config.txt",
-          "${command:cmsis-csolution.getBinaryFile}"
-      ],
-      "problemMatcher": []
-  }
-  ```
-
-- run the task `AVH-FVP` from the VS Code.
-
-**Note**
-
-- The installation of a stable Python version 3.9 is required.
+- select the active target `AVH-SSE-300` build and run the application.

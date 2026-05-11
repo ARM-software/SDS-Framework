@@ -15,25 +15,37 @@ The following [SDSIO interfaces](sdsio.md) are pre-configured:
 
 - [Ethernet Interface](sdsio.md#layer-sdsio_network) using the MDK-Middleware Network component.
 - [USB Bulk Interface](sdsio.md#layer-sdsio_usb) using the MDK-Middleware USB component.
+- [RTT (Real-Time Transfer)](sdsio.md#layer-sdsio_rtt) using the SEGGER RTT component for I/O via the debug adapter.
 - [Memory Card Interface](sdsio.md#layer-sdsio_fs) using the MDK-Middleware File System component.
-
-With a custom SDSIO interface alternative file I/O configurations are possible.
+With a custom SDSIO interface, alternative I/O configurations are possible.
 
 ## SDS Template Structure
 
-The structure of the SDS template application is shown below. Two projects select between data communication test and user algorithm test. Two target-types allow to deploy the test application on hardware (evaluation board) or AVH FVP (simulation model).
+The structure of the SDS template application is shown below. Two projects let you choose between a data communication test and a user algorithm test. Two target types let you deploy the test application either on hardware (evaluation board) or on an AVH FVP (simulation model).
 
-A standard board layer that is provided in several BSP provides the hardware interface. The SDSIO layer uses for communication the MDK-Middleware or on AVH FVP target a virtual simulation interface (VSI).
+A standard board layer, provided by several BSPs, implements the hardware interface. For communication, the SDSIO layer uses the MDK-Middleware or (for the AVH FVP target) a virtual simulation interface (VSI).
 
 ![SDS Template Structure](images/Template_Structure.png)
 
-The build-types `DebugRec` or `ReleaseRec` configure the template to record SDS data files. This allows recording of the input data stream and the algorithm data stream using physical input peripherals on hardware.
+The `Debug` and `Release` build types differ only in the optimization level and the amount of debug information printed.
+Both build types support recording and playback, controlled via `sdsFlags`. The `sdsFlags` value can be modified by the SDS application (using the function `sdsFlagsModify`) or by the SDSIO-Server, making it easy to switch between Record Mode and Playback Mode.
 
-![Build-Type: Rec](images/Example_Record.png)
+!!! Note
+    Implementations using file system support only recording mode.
 
-The build-types `DebugPlay` or `ReleasePlay` configure the template to playback SDS data files. This allows playback of the input data stream while also recording the algorithm data stream. The test application can run on hardware (evaluation board) or AVH FVP (simulation model). As the input data stream can be repeated it allows to verify and optimize the algorithm while capturing the output data stream.
+### Record Mode
 
-![Build-Type: Play](images/Example_Playback.png)
+Record mode captures the input data stream and the algorithm output data stream simultaneously.
+
+![Record Mode](images/Example_Record.png "Record Mode")
+
+### Playback Mode
+
+Playback mode replays the input data stream while recording the algorithm output data stream at the same time.
+The test application can run either on hardware (evaluation board) or on an AVH FVP (simulation model).
+Because the input data stream can be repeated, it enables consistent verification and optimization of the algorithm while capturing the resulting output data stream.
+
+![Playback Mode](images/Example_Playback.png "Playback Mode")
 
 ## Working with the SDS Template
 
@@ -89,7 +101,7 @@ Once the *csolution project* is loaded the VS Code IDE presents you with a dialo
 
 The SDS template applications contains two targets (evaluation board, AVH FVP simulation model) and two projects:
 
-- **DataTest** is a data communication test between target and SDSIO server or filesystem.
+- **DataTest** is a data communication test between target and SDSIO Server or file system.
 - **AlgorithmTest** allows to add the DSP or ML algorithm that should be tested.
 
 Use the command `CMSIS:Manage Solution Settings` to choose a one project that you want to explore.  Start with the **DataTest** first that should work "out-of-the box" on target hardware.
@@ -123,60 +135,81 @@ The steps to add a custom hardware configuration are:
 
 The **DataTest** project validates the communication channel.
 
-### Recording on Simulation Model
+### Recording/playback on Simulation Model
 
-1. Select the target `AVH-SSE-300` (or `AVH-SSE-320`) with Project `DataTest` and Build Type `DebugRec` to record SDS data files.
-2. [Build and Run](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp/README.md) the application.
-3. Use [SDS-Check](utilities.md#sds-check) to verify correctness of the recording:
+1. Select the target `AVH-SSE-300` (or `AVH-SSE-320`) with Project `DataTest` and Build Type `Debug` to record/playback SDS data files.
+2. Start the [SDSIO Server](utilities.md#sdsio-server) for selected SDSIO communication interface.
+3. [Build and Run](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp/README.md) the application.
+4. Use [SDS-Check](utilities.md#sds-check) to verify correctness of the recording.
 
+**Recording**
+
+Activate the recording from the SDSIO Server by pressing `R` key. To stop the recording press the `S` key.
+
+This run should generate the files `Test_In.0.sds` and `Test_Out.0.sds` in the solution folder. The `DataTest` project is configured to record 1000 data records at an interval of 10 ms.
+
+To verify correctness of the recording using SDS-Check utility use the following commands:
 ```bash
-python sds-check.py -s DataInput.0.sds
-python sds-check.py -s DataOutput.0.sds
+python sds-check.py -s Test_In.0.sds
+python sds-check.py -s Test_Out.0.sds
 ```
 
-This run should generate the files `DataInput.0.sds` and `DataOutput.0.sds` in the solution folder. The `DataTest` recorder project is configured to record 1000 data records at an interval of 10ms.
+When the project is restarted, new files with different names are created: `Test_In.1.sds` and `Test_Out.1.sds`.
 
-When the project is restarted, new files with different names are created: `DataInput.1.sds` and `DataOutput.1.sds`. Therefore, delete the generated SDS files before restarting the application.
+**Playback**
 
-### Playback on Simulation Model
+Activate the playback from the SDSIO Server by pressing the `P` key.
 
-1. Change to Build Type `DebugPlay` (target `AVH-SSE-300` with Project `DataTest`).
-2. Build and Run the application.
+This run should read the `Test_In.0.sds` file and generate the `Test_Out.0.p.sds` file.
 
-This run should read the `DataInput.0.sds` file and generate the `DataOutput.1.sds` file.
-
-Compare the output files `DataOutput.0.sds` and `DataOutput.1.sds` with any program that can compare binary files. If the communication is correct, the files should be identical.
-
-### Recording on Hardware Target
-
-1. Select the `STM32F746G-DISCO` target with Project `DataTest` and Build Type `DebugRec` to record SDS data files.
-2. Build and Run the application.
-3. Start and stop the recording with the user button on the evaluation board.
-4. Use [SDS-Check](utilities.md#sds-check) to verify correctness of the recording:
-
+To verify correctness of the recording using SDS-Check utility use the following command:
 ```bash
-python sds-check.py -s DataInput.0.sds
-python sds-check.py -s DataOutput.0.sds
+python sds-check.py -s Test_Out.0.p.sds
 ```
 
-This run should generate the files `DataInput.0.sds` and `DataOutput.0.sds` in the solution folder. When the project is restarted, new files with different names are created: `DataInput.1.sds` and `DataOutput.1.sds`.
+Compare the output files `Test_Out.0.sds` and `Test_Out.0.p.sds` with any program that can compare binary files. If the communication is correct, the files should be identical.
+
+### Recording/playback on Hardware Target
+
+1. Select the `STM32F746G-DISCO` target with Project `DataTest` and Build Type `Debug` to record/playback SDS data files.
+2. Start the [SDSIO Server](utilities.md#sdsio-server) for selected SDSIO communication interface.
+3. Build and Run the application.
+4. Use [SDS-Check](utilities.md#sds-check) to verify correctness of the recording.
+
+**Recording**
+
+Activate the recording from the SDSIO Server by pressing `R` key. To stop the recording press the `S` key.
+Alternatively the recording can be started or stopped by pressing the user button on the board.
+
+This run should generate the files `Test_In.0.sds` and `Test_Out.0.sds` in the solution folder. The `DataTest` project is configured to record 1000 data records at an interval of 10 ms.
+
+To verify correctness of the recording using SDS-Check utility use the following commands:
+```bash
+python sds-check.py -s Test_In.0.sds
+python sds-check.py -s Test_Out.0.sds
+```
+
+When the project is restarted, new files with different names are created: `Test_In.1.sds` and `Test_Out.1.sds`.
 
 !!! Note
     - The [algorithm for naming](https://arm-software.github.io/SDS-Framework/main/theory.html#filenames) the SDS files determines the names of the subsequent data files.
 
-### Playback on Hardware Target
+**Playback**
 
-1. Change to Build Type `DebugPlay` (target `STM32F746G-DISCO` with Project `DataTest`).
-2. Build and Run the application.
-3. Start the playback with the user button on the evaluation board.
+Activate the playback from the SDSIO Server by pressing the `P` key.
 
-This run should read the `DataInput.0.sds` file and generate the `DataOutput.1.sds` file. The playback stops automatically at the end of a stream.
+This run should read the `Test_In.0.sds` file and generate the `Test_Out.0.p.sds` file.
 
-Compare the output files `DataOutput.0.sds` and `DataOutput.1.sds` with any program that can compare binary files. If the communication is correct, the files should be identical.
+To verify correctness of the recording using SDS-Check utility use the following command:
+```bash
+python sds-check.py -s Test_Out.0.p.sds
+```
+
+Compare the output files `Test_Out.0.sds` and `Test_Out.0.p.sds` with any program that can compare binary files. If the communication is correct, the files should be identical.
 
 ### Configure Bandwidth for DataTest
 
-The **DataTest** project uses a fixed algorithm to verify the communication interface. With the file `datatest/sds_algorithm_config.h` it is possible to configure bandwidth and interval to match the requirements of the algorithm that should be tested.
+The **DataTest** project uses a fixed algorithm to verify the communication interface. With the file `datatest/algorithm_config.h` it is possible to configure bandwidth and interval to match the requirements of the algorithm that should be tested.
 
 ## Using AlgorithmTest
 
@@ -186,9 +219,9 @@ The project **AlgorithmTest** allows to add custom algorithms for testing. It is
 
 In the SDS template application these files require changes to interface with the DSP and ML algorithm that is tested:
 
-- `algorithm/sds_algorithm_config.h` configures the block size of data streams.
-- `algorithm/sds_algorithm_user.c` is the interface to the DSP/ML algorithm under test.
-- `algorithm/sds_data_in_user.c` is the interface to the physical data source.
+- `algorithm/algorithm_config.h` configures the block size of data streams.
+- `algorithm/algorithm_user.c` is the interface to the DSP/ML algorithm under test.
+- `algorithm/data_in_user.c` is the interface to the physical data source.
 
 ## Example Projects
 

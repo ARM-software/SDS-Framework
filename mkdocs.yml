@@ -18,7 +18,7 @@ plugins:
     - mkdoxy:     # pip install mkdoxy
         projects:
           SDS_API:
-            src-dirs: ./sds/include
+            src-dirs: ./sds/include ./sds/sdsio/include
             full-doc: true
             doxy-cfg:
               FILE_PATTERNS: "*.h *.txt"

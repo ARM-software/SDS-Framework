@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2025-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -21,18 +21,11 @@
 
 #include <stdint.h>
 #include "cmsis_compiler.h"
-#include "sds_rec_play.h"
 
 #ifdef  __cplusplus
 extern "C"
 {
 #endif
-
-#ifdef SDS_PLAY
-// SDS identifiers
-extern sdsRecPlayId_t playIdDataInput;
-#endif
-
 
 /**
   \fn           int32_t OpenStreams (void)

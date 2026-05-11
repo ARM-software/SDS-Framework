@@ -1,9 +1,9 @@
 # SDSIO Interface
 
-The SDSIO components offer flexible recorder and playback interfaces. You may choose between these interface components that are stored in the folder `./sds/source/sdsio`. These interfaces can be accessed as CMSIS software components for integration into the target system:
+The SDSIO components offer flexible SDS communication interfaces. You may choose between these interface components that are stored in the folders: `./sds/sdsio/client`, `./sds/sdsio/fs` or `./sds/sdsio/vsi`. These interfaces can be accessed as CMSIS software components for integration into the target system:
 
 ```yml
-  - component: SDS:IO:Socket                     # Socket Interface (Ethernet or WiFi)
+  - component: SDS:IO:Socket                     # IoT Socket Interface (Ethernet or WiFi)
   - component: SDS:IO:USB&MDK USB                # USB Interface
   - component: SDS:IO:Serial&CMSIS USART         # USART Interface
   - component: SDS:IO:File System&MDK FS         # Memory card
@@ -20,7 +20,7 @@ To simplify usage further, the following pre-configured SDS interface layers in 
 
 ## Layer: sdsio_network
 
-The [`layer/network/sdsio_network.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/network) is configured for recording and playback via Ethernet interface. It uses the  [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) Network component.
+The [`layer/sdsio/network/sdsio_network.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/network) is configured for recording and playback via the Ethernet interface. It uses the  [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) Network component.
 
 For [SDS data file](theory.md#sds-data-files) access the [SDSIO-Server](utilities.md#sdsio-server) is started on the Host computer as shown below.  This output an IP address as shown below:
 
@@ -30,7 +30,7 @@ Press Ctrl+C to exit.
 Socket server listening on 172.20.10.2:5050
 ```
 
-This is the IP address that the target hardware needs to connect and it is require to configure this IP address in the file `./layer/network/RTE/SDS/sdsio_config_socket.h` with  the define `SDSIO_SOCKET_SERVER_IP`.
+This is the IP address that the target hardware needs to connect to and it is required to configure this IP address in the file `./layer/sdsio/network/RTE/SDS/sdsio_client_socket_config.h` with  the define `SDSIO_SOCKET_SERVER_IP`.
 
 !!! Note
     - The firewall of the Host computer must be configured so that it can be reached from the target device under its IP address.
@@ -48,7 +48,7 @@ If this is a managed corporate PC, Group Policy or endpoint security may still b
 
 ## Layer: sdsio_usb
 
-The [`layer/usb/sdsio_usb.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/usb) is configured for recording and playback via USB Device interface. It uses the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) USB Device component and connects via a USB interface to a Host computer.
+The [`layer/sdsio/usb/sdsio_usb.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/usb) is configured for recording and playback via the USB Device interface. It uses the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) USB Device component and connects via a USB interface to a Host computer.
 
 For [SDS data file](theory.md#sds-data-files) access start the [SDSIO-Server](utilities.md#sdsio-server) on the Host computer with:
 
@@ -63,57 +63,54 @@ Once the SDSIO-Server is running start the application. The SDSIO-Server outputs
 
 ```bash
 SDSIO Client USB device connected.
-Ping received.
 ```
 
 For recording, the SDSIO-Server outputs:
 
 ```bash
-Record:   DataInput (.\DataInput.0.sds).
-Record:   DataOutput (.\DataOutput.0.sds).
+Record:   ML_In (.\ML_In.0.sds).
+Record:   ML_Out (.\ML_Out.0.sds).
 ..
-Closed:   DataInput (.\DataInput.0.sds).
-Closed:   DataOutput (.\DataOutput.0.sds).
+Closed:   ML_In (.\ML_In.0.sds).
+Closed:   ML_Out (.\ML_Out.0.sds).
 ```
 
 For playback, the SDSIO-Server outputs:
 
 ```bash
-Playback: DataInput (.\DataInput.0.sds).
-Record:   DataOutput (.\DataOutput.1.sds).
-Closed:   DataInput (.\DataInput.0.sds).
-Closed:   DataOutput (.\DataOutput.1.sds).
+Playback: ML_In (.\ML_In.0.sds).
+Record:   ML_Out (.\ML_Out.0.p.sds).
+Closed:   ML_In (.\ML_In.0.sds).
+Closed:   ML_Out (.\ML_Out.0.p.sds).
 ```
+
+## Layer: sdsio_rtt
+
+The [`layer/sdsio/rtt/sdsio_rtt.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/rtt) is configured for recording and playback using the SEGGER RTT component for I/O via a debug adapter.
 
 ## Layer: sdsio_fs
 
-The [`layer/filesystem/sdsio_fs.clayer`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem) is configured for recording and playback to/from the Memory Card. It uses the MDK-Middleware File System component.
+The [`layer/sdsio/filesystem/sdsio_fs.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem) is configured for recording to a Memory Card. It uses the MDK-Middleware File System component.
 
 ## Layer: sdsio_fvp
 
-The [`template/sdsio/fvp/sdsio_fvp.clayer`](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp) targets AVH FVP simulation and is configured for recording and playback to/from the Host computer. It uses the [SDSIO VSI interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html) implemented by the file `vsi/python/arm_vsi3.py`, which is loaded by the FVP simulation model. As the SDSIO server is implemented in `arm_vsi3.py` there is no separate SDSIO server needed.
+The [`template/sdsio/fvp/sdsio_fvp.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp) targets AVH FVP simulation and is configured for recording and playback to/from the Host computer. It uses the [SDSIO VSI interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html) implemented by the file `vsi/python/arm_vsi3.py`, which is loaded by the FVP simulation model. As the SDSIO server is implemented in `arm_vsi3.py` there is no separate SDSIO server needed.
 
 ### Configuration File: sdsio.yml
 
 The SDSIO VSI interface can be configured using the `sdsio.yml` file in the current working folder that is used to start the FVP simulator. This configuration settings define the [SDS data file](theory.md#sds-data-files) access during FVP simulation.
 
-Node                 | Description
-:--------------------|:------------------------------------
-`dir:`               | Directory that contains the [SDS data files](theory.md#sds-data-files).
-`idx-start:`         | First index of the [SDS data file](theory.md#sds-data-files) that are accessed; default: 0.
-`idx-end:`           | Last index of the [SDS data file](theory.md#sds-data-files) that are accessed; default no upper limit.
-`idx-list:`          | Index lists of [SDS data files](theory.md#sds-data-files) that are accessed; if given `index-start:` and `index-end:` are not used.
+**Description:**
+
+```yml
+```
 
 **Example:**
 
 ```yml
-dir: ./algorithm/SDS Recordings
-idx-start: 0
-idx-end: 11
-#idx-list: [1, 3]             # list of index to check (when applied, idx-start/end is ignored)
 ```
 
-### Protocol File: sdsio.log
+### Log File: sdsio.log
 
 During the FVP simulation a log file is generated that lists the [SDS data file](theory.md#sds-data-files) access.
 
@@ -122,19 +119,18 @@ During the FVP simulation a log file is generated that lists the [SDS data file]
 ```txt
 Created by ...\Board\Corstone-300\vsi\python\arm_vsi3.py
 
-Playback:  DataInput (.\algorithm\SDS Recordings\DataInput.0.sds).
-Record:    DataOutput (.\algorithm\SDS Recordings\DataOutput.0.sds).
-Closed:    DataInput.
-Closed:    DataOutput.
-Playback:  DataInput (.\algorithm\SDS Recordings\DataInput.1.sds).
-Record:    DataOutput (.\algorithm\SDS Recordings\DataOutput.1.sds).
-Closed:    DataInput.
-Closed:    DataOutput.
+Playback:  ML_In (.\algorithm\SDS Recordings\ML_In.0.sds).
+Record:    ML_Out (.\algorithm\SDS Recordings\ML_Out.0.p.sds).
+Closed:    ML_In.
+Closed:    ML_Out.
+Playback:  ML_In (.\algorithm\SDS Recordings\ML_In.1.sds).
+Record:    ML_Out (.\algorithm\SDS Recordings\ML_Out.1.p.sds).
+Closed:    ML_In.
+Closed:    ML_Out.
    :
    :
-Playback:  DataInput (.\algorithm\SDS Recordings\DataInput.11.sds).
-Record:    DataOutput (.\algorithm\SDS Recordings\DataOutput.11.sds).
-Closed:    DataInput.
-Closed:    DataOutput.
-Playback:  DataInput - ACCESS REJECTED. Index excluded in sdsio.yml
+Playback:  ML_In (.\algorithm\SDS Recordings\ML_In.11.sds).
+Record:    ML_Out (.\algorithm\SDS Recordings\ML_Out.11.p.sds).
+Closed:    ML_In.
+Closed:    ML_Out.
 ```

@@ -20,13 +20,13 @@ The following diagram shows the data capturing in a microcontroller system using
 
 ![Workflow for simulation](images/Workflow.png)
 
-The [**SDS Recorder or Playback Interface**](sdsio.md) is integrated into the target application and runs on the microcontroller. It enables data streaming into SDS data files via various interfaces such as Ethernet, UART, USB, or File System. The I/O implementation included in SDS utilizes the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil/overview/), however custom interfaces to other middleware or different communication channels can also be used.
+The [**SDS Interface**](sdsio.md) is integrated into the target application and runs on the microcontroller. It enables data streaming into SDS data files via various interfaces such as Ethernet, RTT, UART, USB, or File System. The I/O implementation included in SDS utilizes the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil/overview/), however custom interfaces to other middleware or different communication channels can also be used.
 
 The [**SDSIO Server**](utilities.md#sdsio-server) running on a host computer captures the recorded data stream and stores it in SDS data files. Each recording creates one set of SDS data files that are indicated by a sequential number. The SDS data files are in binary format and may be described using a [YAML metadata file](https://github.com/ARM-software/SDS-Framework/tree/main/schema). With this information, other tools can utilize the content of the SDS data files as shown in the picture below.
 
 ![Analysis of SDS data files](images/Analyse.png)
 
-In a simulation environment, the **SDS Playback Interface** streams the SDS data files back to the algorithm under test. With this interface, the algorithm receives the same data stream as in the physical hardware. The setup can therefore be used for validation, performance optimizations, and runs even in CI environments for test automation.
+In a simulation environment, the **SDS Interface** streams the SDS data files back to the algorithm under test. With this interface, the algorithm receives the same data stream as in the physical hardware. The setup can therefore be used for validation, performance optimizations, and runs even in CI environments for test automation.
 
 ## SDS Performance Measurements
 
@@ -35,8 +35,8 @@ In a simulation environment, the **SDS Playback Interface** streams the SDS data
 | CPU speed             | 160 MHz                              | 400 Mhz                        | 400 MHz                        |
 | I/O Interface         | USB Full-speed                       | USB High-speed                 | Ethernet 10/100                |
 | Bandwidth             | 1.1 MB/s                             | 15 MB/s                        | 6 MB/s                         |
-| Idle time             | 86 %                                 | 63 %                           | 65 %                           |
+| Idle rate             | 86 %                                 | 63 %                           | 65 %                           |
 
 Performance measurements were obtained using the [DataTest](https://arm-software.github.io/SDS-Framework/main/template.html#using-datatest) project, which validates captured data streams on the available board interfaces (Ethernet and USB Bulk).
 SDS data files were verified using the [SDS-Check](https://arm-software.github.io/SDS-Framework/main/utilities.html#sds-check) utility.
-With user configurable parameters (Bandwidth and Internal buffers size), the Idle time (when CPU is not executing the application code) was measured.
+With user configurable parameters (Bandwidth and Internal buffers size), the Idle rate (when CPU is not executing the application code) was measured.

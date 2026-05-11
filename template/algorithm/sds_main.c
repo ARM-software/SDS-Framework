@@ -16,43 +16,28 @@
  * limitations under the License.
  */
 
-#include <stdio.h>
-#include "RTE_Components.h"
 #include "cmsis_os2.h"
+#include "sds.h"
 #include "sds_main.h"
-#include "sds_control.h"
-#include "sds_algorithm_config.h"
-#include "sds_algorithm.h"
-#include "sds_data_in.h"
+#include "algorithm_config.h"
+#include "algorithm.h"
+#include "data_in.h"
 
-
-#ifdef SDS_PLAY
-// Playback record timestamp
-extern uint32_t playTimestamp;
-#endif
 
 // Algorithm input/output data buffer
-static uint8_t sds_algo_data_in_buf [SDS_ALGO_DATA_IN_BLOCK_SIZE]  __ALIGNED(4);
-static uint8_t sds_algo_data_out_buf[SDS_ALGO_DATA_OUT_BLOCK_SIZE] __ALIGNED(4);
+static uint8_t algo_data_in_buf [ALGO_DATA_IN_BLOCK_SIZE]  __ALIGNED(4);
+static uint8_t algo_data_out_buf[ALGO_DATA_OUT_BLOCK_SIZE] __ALIGNED(4);
 
 // SDS buffers
-#ifdef SDS_PLAY
-static uint8_t sds_play_buf_data_in[((SDS_ALGO_DATA_IN_BLOCK_SIZE  * 2) + 2048)] __ALIGNED(4);
-#else
-static uint8_t sds_rec_buf_data_in [((SDS_ALGO_DATA_IN_BLOCK_SIZE  * 2) + 2048)] __ALIGNED(4);
-#endif
-static uint8_t sds_rec_buf_data_out[((SDS_ALGO_DATA_OUT_BLOCK_SIZE * 2) + 2048)] __ALIGNED(4);
+static uint8_t sds_data_in_buf [((ALGO_DATA_IN_BLOCK_SIZE  * 2) + 2048)] __ALIGNED(4);
+static uint8_t sds_data_out_buf[((ALGO_DATA_OUT_BLOCK_SIZE * 2) + 2048)] __ALIGNED(4);
 
 // SDS identifiers
-#ifdef SDS_PLAY
-       sdsRecPlayId_t playIdDataInput = NULL;
-#else
-static sdsRecPlayId_t recIdDataInput  = NULL;
-#endif
-static sdsRecPlayId_t recIdDataOutput = NULL;
+static sdsId_t sds_data_in_id  = NULL;
+static sdsId_t sds_data_out_id = NULL;
 
-// SDS file sequence number
-static uint32_t sequence_num = 0;
+// Recording/playback mode text
+static const char *SDS_MODE[] = { "recording", "playback" };
 
 // Public functions
 
@@ -63,60 +48,34 @@ static uint32_t sequence_num = 0;
 */
 int32_t OpenStreams (void) {
   int32_t status = 0;
+  uint8_t play = 0U;
 
-#ifdef SDS_PLAY
-  // Open stream for playback of input data
-  // Check https://arm-software.github.io/SDS-Framework/main/theory.html#filenames for details on playback filename
-  playIdDataInput = sdsPlayOpen("DataInput", sds_play_buf_data_in, sizeof(sds_play_buf_data_in));
-  SDS_ASSERT(playIdDataInput != NULL);
-  if (playIdDataInput == NULL) {
-    sdsStreamingState = SDS_STREAMING_END;      // end simulation
-    printf("No more SDS data files for playback of input data!\n");
-    status = -1;
-  }
-#else
-  // Open stream for recording of input data
-  recIdDataInput = sdsRecOpen("DataInput", sds_rec_buf_data_in, sizeof(sds_rec_buf_data_in));
-  SDS_ASSERT(recIdDataInput != NULL);
-  if (recIdDataInput == NULL) {
-    printf("Failed to open SDS stream for recording of input data!\n");
-    status = -1;
-  }
-#endif
-
-  if (status == 0) {
-    // Open stream for recording of output data
-    recIdDataOutput = sdsRecOpen("DataOutput", sds_rec_buf_data_out, sizeof(sds_rec_buf_data_out));
-    SDS_ASSERT(recIdDataOutput != NULL);
-    if (recIdDataOutput == NULL) {
-      printf("ERROR: Failed to open SDS stream for recording of output data!\n");
-      status = -1;
-    }
+  if ((sdsFlags & SDS_FLAG_PLAYBACK) != 0U) {   // If open for playback requested
+    play = 1U;
   }
 
-#ifdef SDS_PLAY
-  if (status == 0) {
-    printf("SDS playback and recording (#%d) started\n", sequence_num);
+  // Open stream for playback or recording of input data, depending on the mode
+  if (play != 0U) {                             // -- Playback
+    // Check https://arm-software.github.io/SDS-Framework/main/theory.html#filenames for details on playback filename
+    sds_data_in_id = sdsOpen("ML_In", sdsModeRead, sds_data_in_buf, sizeof(sds_data_in_buf));
+  } else {                                      // -- Recording
+    sds_data_in_id = sdsOpen("ML_In", sdsModeWrite, sds_data_in_buf, sizeof(sds_data_in_buf));
+  }
+  // Open stream for recording of output data
+  if (sds_data_in_id != NULL) {
+    sds_data_out_id = sdsOpen("ML_Out", sdsModeWrite, sds_data_out_buf, sizeof(sds_data_out_buf));
+  }
+
+  SDS_ASSERT(sds_data_in_id  != NULL);
+  SDS_ASSERT(sds_data_out_id != NULL);
+
+  if ((sds_data_in_id != NULL) && (sds_data_out_id != NULL)) {
+    SDS_PRINTF("==== SDS %s started\n", SDS_MODE[play]);
   } else {
-    if (sequence_num == 0) {
-      printf("ERROR: SDS playback and recording start failed!\n");
-#if defined(RTE_SDS_IO_SOCKET) || defined(RTE_SDS_IO_USB) || defined(RTE_SDS_IO_SERIAL) || defined(RTE_SDS_IO_CUSTOM)
-      printf("Ensure that SDSIO Server is running and restart the application!\n");
-#endif
-    }
+    sdsState = SDS_STATE_END;       // If files could not be opened then request streaming end
+    status = -1;
+    SDS_PRINTF("==== SDS %s start failed\n", SDS_MODE[play]);
   }
-#else
-  if (status == 0) {
-    printf("SDS recording (#%d) started\n", sequence_num);
-  } else {
-    if (sequence_num == 0) {
-      printf("ERROR: SDS recording start failed!\n");
-#if defined(RTE_SDS_IO_SOCKET) || defined(RTE_SDS_IO_USB) || defined(RTE_SDS_IO_SERIAL) || defined(RTE_SDS_IO_CUSTOM)
-      printf("Ensure that SDSIO Server is running and restart the application!\n");
-#endif
-    }
-  }
-#endif
 
   return status;
 }
@@ -127,48 +86,27 @@ int32_t OpenStreams (void) {
   \return       0 on success; -1 on error
 */
 int32_t CloseStreams (void) {
+  int32_t close_status;
   int32_t status = 0;
+  uint8_t play = 0U;
 
-#ifdef SDS_PLAY
-  // Close stream for playback of input data
-  status = sdsPlayClose(playIdDataInput);
-  SDS_ASSERT(status == SDS_REC_PLAY_OK);
-  if (status != 0) {
-    printf("ERROR: Failed to close SDS stream for playback of input data!\n");
-    status = -1;
-  }
-#else
-  // Close stream for recording of input data
-  status = sdsRecClose(recIdDataInput);
-  SDS_ASSERT(status == SDS_REC_PLAY_OK);
-  if (status != 0) {
-    printf("ERROR: Failed to close SDS stream for recording of input data!\n");
-    status = -1;
-  }
-#endif
-
-  // Close stream for recording of output data
-  status = sdsRecClose(recIdDataOutput);
-  SDS_ASSERT(status == SDS_REC_PLAY_OK);
-  if (status != 0) {
-    printf("ERROR: Failed to close SDS stream for recording of output data!\n");
-    status = -1;
+  if ((sdsFlags & SDS_FLAG_PLAYBACK) != 0U) {   // If open for playback requested
+    play = 1U;
   }
 
-#ifdef SDS_PLAY
-  if (status == 0) {
-    printf("SDS playback and recording (#%d) stopped\n====\n\n", sequence_num);
+  close_status = sdsClose(sds_data_in_id);
+  SDS_ERROR_CHECK(close_status);
+  if (close_status == SDS_OK) {
+    close_status = sdsClose(sds_data_out_id);
+    SDS_ERROR_CHECK(close_status);
+  }
+
+  if (close_status == SDS_OK) {
+    SDS_PRINTF("==== SDS %s stopped\n", SDS_MODE[play]);
   } else {
-    printf("ERROR: SDS playback and recording stop failed!\n====\n\n");
+    status = -1;
+    SDS_PRINTF("==== SDS %s stop failed\n", SDS_MODE[play]);
   }
-#else
-  if (status == 0) {
-    printf("SDS recording (#%d) stopped\n====\n\n", sequence_num);
-  } else {
-    printf("ERROR: SDS recording stop failed!\n====\n\n");
-  }
-#endif
-  sequence_num++;
 
   return status;
 }
@@ -176,8 +114,9 @@ int32_t CloseStreams (void) {
 
 // Algorithm Thread function
 __NO_RETURN void AlgorithmThread (void *argument) {
-  uint32_t timestamp;
-  int32_t  retv;
+  uint32_t sds_state, sds_flags;
+  uint32_t timeslot;
+  int32_t  ret;
   (void)argument;
 
   // Initialize data acquisition
@@ -187,47 +126,73 @@ __NO_RETURN void AlgorithmThread (void *argument) {
   InitAlgorithm();
 
   for (;;) {
-    if (sdsStreamingState == SDS_STREAMING_START) {
-      // Request to start streaming, transit to active state (synchronus to main loop)
-      sdsStreamingState = SDS_STREAMING_ACTIVE;
-    }
-    if (sdsStreamingState == SDS_STREAMING_STOP) {
-      // Request to stop streaming, transit to state safe for stopping (synchronus to main loop)
-      sdsStreamingState = SDS_STREAMING_STOP_SAFE;
-    }
+    sds_state = sdsState;
+    sds_flags = sdsFlags;
 
-    // Get a block of input data as required by algorithm under test
-    if (GetInputData(sds_algo_data_in_buf, sizeof(sds_algo_data_in_buf)) != sizeof(sds_algo_data_in_buf)) {
-      // If there was an error retrieving data skip algorithm execution
+    if ((sds_state == SDS_STATE_ACTIVE) && ((sds_flags & SDS_FLAG_START) == 0U)) {
+      // If start flag was cleared during active streaming, request streaming stop
+      sdsState = SDS_STATE_STOP_REQ;
       continue;
     }
 
-#ifndef SDS_PLAY
-    if ((sdsStreamingState == SDS_STREAMING_ACTIVE) || (sdsStreamingState == SDS_STREAMING_STOP)) {
-      timestamp = osKernelGetTickCount();
+    if ((sds_flags & SDS_FLAG_PLAYBACK) != 0U) {        // -- Playback
+      // Discard input data during playback
+      DiscardInputData();
 
-      // Record algorithm input data
-      retv = sdsRecWrite(recIdDataInput, timestamp, sds_algo_data_in_buf, sizeof(sds_algo_data_in_buf));
-      SDS_ASSERT(retv == sizeof(sds_algo_data_in_buf));
+      // Wait for playback activation
+      if (sds_state != SDS_STATE_ACTIVE) {
+        osDelay(100U);
+        DiscardInputData();
+        continue;
+      }
+
+      // Read input data from playback stream
+      do {
+        ret = sdsRead(sds_data_in_id, &timeslot, algo_data_in_buf, sizeof(algo_data_in_buf));
+        if (ret == SDS_NO_DATA) {
+          osDelay(10U);
+          DiscardInputData();
+        }
+      } while (ret == SDS_NO_DATA);
+    
+      if (ret > 0) {
+        SDS_ASSERT(ret == sizeof(algo_data_in_buf));
+      } else {
+        // If there is no more data for playback, request streaming stop
+        sdsState = SDS_STATE_STOP_REQ;
+        continue;
+      }
+    } else {                                            // -- Recording
+      // Get a block of input data as required by algorithm under test
+      if (GetInputData(algo_data_in_buf, sizeof(algo_data_in_buf)) != sizeof(algo_data_in_buf)) {
+        // If there was an error retrieving data skip algorithm execution
+        continue;
+      }
+
+      if (sds_state == SDS_STATE_ACTIVE) {
+        timeslot = osKernelGetTickCount();
+
+        // Record algorithm input data
+        do {
+          ret = sdsWrite(sds_data_in_id, timeslot, algo_data_in_buf, sizeof(algo_data_in_buf));
+          if (ret == SDS_NO_DATA) {
+            osDelay(10U);
+          }
+        } while (ret == SDS_NO_SPACE);
+        SDS_ASSERT(ret == sizeof(algo_data_in_buf));
+      }
     }
-#endif
 
     // Execute algorithm under test
-    if (ExecuteAlgorithm(sds_algo_data_in_buf, sizeof(sds_algo_data_in_buf), sds_algo_data_out_buf, sizeof(sds_algo_data_out_buf)) != 0) {
+    if (ExecuteAlgorithm(algo_data_in_buf, sizeof(algo_data_in_buf), algo_data_out_buf, sizeof(algo_data_out_buf)) != 0) {
       // If there was an error executing algorithm skip recording
       continue;
     }
 
-    if ((sdsStreamingState == SDS_STREAMING_ACTIVE) || (sdsStreamingState == SDS_STREAMING_STOP)) {
-#ifdef SDS_PLAY
-      // During playback, use the recorded timestamps for output data so that the output data timestamps
-      // exactly match those from the original recording
-      timestamp = playTimestamp;
-#endif
-
+    if (sds_state == SDS_STATE_ACTIVE) {
       // Record algorithm output data
-      retv = sdsRecWrite(recIdDataOutput, timestamp, sds_algo_data_out_buf, sizeof(sds_algo_data_out_buf));
-      SDS_ASSERT(retv == sizeof(sds_algo_data_out_buf));
+      ret = sdsWrite(sds_data_out_id, timeslot, algo_data_out_buf, sizeof(algo_data_out_buf));
+      SDS_ASSERT(ret == sizeof(algo_data_out_buf));
     }
   }
 }

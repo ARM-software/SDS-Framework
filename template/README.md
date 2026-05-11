@@ -1,11 +1,15 @@
 # SDS Template Application
 
-The SDS template application is a test framework for DSP and ML algorithms. It allows recording and playback of real-world data streams using physical hardware or on simulation models using (Arm Virtual Hardware - FVP) to an user algorithm under test. The real-world data streams are captured in SDS data files.
+The SDS template application is a test framework for DSP and ML algorithms. It allows recording and playback of real-world data streams
+using physical hardware or on simulation models using (Arm Virtual Hardware - FVP) to an user algorithm under test.
+The real-world data streams are captured in SDS data files.
 
-The SDSIO-Layer connects the SDS template application to a communication interface with the SDSIO-Server for SDS file I/O operations. The following SDSIO interfaces are pre-configured:
+The SDSIO-Layer connects the SDS template application to a communication interface with the SDSIO-Server for SDS file I/O operations.
+The following SDSIO interfaces are pre-configured:
 
 - Ethernet Interface using the MDK-Middleware Network component.
 - USB Bulk Interface using the MDK-Middleware USB component.
+- RTT (Real-Time Transfer using the SEGGER RTT component for I/O via the debug adapter.
 - Memory Card Interface using the MDK-Middleware File System component.
 - For AVH-FVP target VSI communication to SDSIO-Server.
 
@@ -13,7 +17,7 @@ Note: With a custom SDSIO interface alternative file I/O configurations are poss
 
 The template contains two projects:
 
-- **DataTest.cproject.yml** check the SDSIO interface with SDS test data files. Use `sds_algorithm_config.h` to configure parameters.
+- **DataTest.cproject.yml** check the SDSIO interface with SDS test data files. Use `algorithm_config.h` to configure parameters.
 - **AlgorithmTest.cproject.yml** verify an user algorithm with recording and playback of SDS data files.
 
 For more information refer to [SDS Template Application](https://arm-software.github.io/SDS-Framework/main/template.html) in the documentation.
@@ -24,8 +28,8 @@ Both projects measure the CPU utilization and output this information. This info
 indication of how much CPU time is available for the user application while the SDS is running.
 
 The idle time is the time during which the CPU is not executing the application code. During this time it executes
-the idle thread, incrementing the `idle_cnt` counter. The code for incrementing the idle counter is located
-in the `osRtxIdle_Thread`:
+the idle thread, incrementing the `idle_cnt` counter. The code for incrementing the idle counter when the application
+is using CMSIS-RTX RTOS is located in the `osRtxIdleThread`:
 
 ```c
 __NO_RETURN void osRtxIdleThread(void *argument) {

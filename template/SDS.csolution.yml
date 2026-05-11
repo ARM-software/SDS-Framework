@@ -28,7 +28,7 @@ solution:
       target-set:
         - set:
           images:
-            - project-context: DataTest.DebugRec
+            - project-context: DataTest.Debug
           debugger:
             name: Arm-FVP
             model: FVP_Corstone_SSE-300
@@ -45,7 +45,7 @@ solution:
       target-set:
         - set:
           images:
-            - project-context: DataTest.DebugRec
+            - project-context: DataTest.Debug
           debugger:
             name: Arm-FVP
             model: FVP_Corstone_SSE-320
@@ -53,30 +53,17 @@ solution:
 
   # List of different build configurations.
   build-types:
-    - type: DebugRec
+    - type: Debug
       debug: on
       optimize: debug
 
-    - type: DebugPlay
-      debug: on
-      optimize: debug
-      define:
-        - SDS_PLAY: 1
-
-    - type: ReleaseRec
-      debug: off
-      optimize: balanced
-
-    - type: ReleasePlay
+    - type: Release
       debug: off
       optimize: balanced
       define:
-        - SDS_PLAY: 1
+        - SDS_STDIO: 0
 
   # List related projects.
   projects:
     - project: datatest/DataTest.cproject.yml
     - project: algorithm/AlgorithmTest.cproject.yml
-      not-for-context:
-        - .DebugRec+AVH-SSE-300
-        - .ReleaseRec+AVH-SSE-300
