@@ -2,14 +2,14 @@
 
 # File sdsio.h
 
-[**File List**](files.md) **>** [**include**](dir_d09908635ef304ba819d3349bcb716bf.md) **>** [**sdsio.h**](sdsio_8h.md)
+[**File List**](files.md) **>** [**include**](dir_3b29f9c6a44e933bcd0b782bd8b86dc3.md) **>** [**sdsio.h**](sdsio_8h.md)
 
 [Go to the documentation of this file](sdsio_8h.md)
 
 
 ```C++
 /*
- * Copyright (c) 2022-2025 Arm Limited. All rights reserved.
+ * Copyright (c) 2022-2026 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -45,15 +45,6 @@ typedef enum {
   sdsioModeRead  = 0,           // Open for read (binary)
   sdsioModeWrite = 1            // Open for write (binary)
 } sdsioMode_t;                  // Open mode (read/write)
-
-// Function return codes
-#define SDSIO_OK                (0)         // Operation completed successfully
-#define SDSIO_ERROR             (-1)        // Operation failed
-#define SDSIO_ERROR_PARAMETER   (-2)        // Operation failed: parameter error
-#define SDSIO_ERROR_TIMEOUT     (-3)        // Operation failed: timeout error
-#define SDSIO_ERROR_INTERFACE   (-4)        // Operation failed: SDS I/O interface error
-#define SDSIO_ERROR_NO_SERVER   (-5)        // Operation failed: no response from server
-#define SDSIO_EOS               (-6)        // End of stream reached
 
 int32_t sdsioInit (void);
 

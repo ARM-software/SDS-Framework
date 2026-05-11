@@ -3,6 +3,7 @@
   <compounddef id="dir_d8edc0eab7a99ea71a7d0245c268925a" kind="dir">
     <compoundname>sds</compoundname>
     <innerdir refid="dir_d09908635ef304ba819d3349bcb716bf">sds/include</innerdir>
+    <innerdir refid="dir_1d44a5f7f14d92ad6a9ebe4f79918185">sds/sdsio</innerdir>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

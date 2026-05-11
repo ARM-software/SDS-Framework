@@ -3,24 +3,24 @@
 
 
 
-## a
+## f
 
-* **argument** ([**header\_t**](structheader__t.md))
-
-
-## c
-
-* **command** ([**header\_t**](structheader__t.md))
+* **file** ([**sdsError\_t**](structsdsError__t.md))
 
 
-## d
+## l
 
-* **data\_size** ([**header\_t**](structheader__t.md))
+* **line** ([**sdsError\_t**](structsdsError__t.md))
+
+
+## o
+
+* **occurred** ([**sdsError\_t**](structsdsError__t.md))
 
 
 ## s
 
-* **sdsio\_id** ([**header\_t**](structheader__t.md))
+* **status** ([**sdsError\_t**](structsdsError__t.md))
 
 
 
