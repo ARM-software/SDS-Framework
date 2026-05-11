@@ -9,6 +9,7 @@ The following SDSIO interfaces are pre-configured:
 
 - Ethernet Interface using the MDK-Middleware Network component.
 - USB Bulk Interface using the MDK-Middleware USB component.
+- RTT (Real-Time Transfer using the SEGGER RTT component for I/O via the debug adapter.
 - Memory Card Interface using the MDK-Middleware File System component.
 - For AVH-FVP target VSI communication to SDSIO-Server.
 

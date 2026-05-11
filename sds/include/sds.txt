@@ -118,11 +118,17 @@ It is triggered when an event such as insufficient data or space, or an error, o
 \var sdsFlags
 \brief Configuration options and control information
 \details
-This 32-bit *global variable* contains a set of bits used for control of and feedback from the firmware.
-Highest 8 bits are used by the SDS system (see \ref SDS_Flag_Masks) for control, and lower 24 bits are available to the user.
+The sdsFlags are used to store configuration and diagnostic information in a single word.
+The sdsFlags value can be modified by the SDS application (using the function \ref sdsFlagsModify) or by the SDSIO-Server.
 
-The host can send requests to update the sdsFlags on demand.
-Value of the sdsFlags is relayed back to the host in real time periodically (see \ref sdsExchange).
+The sdsFlags are a 32-bit *global variable* that contains a set of bits used for firmware control and feedback.
+The highest 8 bits are used by the SDS system (see \ref SDS_Flag_Masks) for control, and the lower 24 bits are available to the user.
+The user bits are useful for configuring algorithms in A/B tests (i.e. bypass a filter), but 
+can be also used to communicate status information to the host.
+
+
+The host that runs the SDSIO-Server can update the sdsFlags on demand.
+The sdsFlags value is also sent to the host periodically (see \ref sdsExchange).
 */
 
 /**

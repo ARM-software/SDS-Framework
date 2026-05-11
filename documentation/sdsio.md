@@ -84,9 +84,13 @@ Closed:   ML_In (.\ML_In.0.sds).
 Closed:   ML_Out (.\ML_Out.0.p.sds).
 ```
 
+## Layer: sdsio_rtt
+
+The [`layer/sdsio/rtt/sdsio_rtt.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/rtt) is configured for recording and playback using the SEGGER RTT component for I/O via a debug adapter.
+
 ## Layer: sdsio_fs
 
-The [`layer/sdsio/filesystem/sdsio_fs.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem) is configured for recording and playback to/from the Memory Card. It uses the MDK-Middleware File System component.
+The [`layer/sdsio/filesystem/sdsio_fs.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem) is configured for recording to a Memory Card. It uses the MDK-Middleware File System component.
 
 ## Layer: sdsio_fvp
 

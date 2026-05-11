@@ -2,7 +2,7 @@
 
 The **Synchronous Data Stream (SDS) Framework** streamlines the development of DSP algorithms, ML models, and Edge AI applications that process periodic data streams, typically fixed-size data blocks captured at regular time intervals. SDS also supports variable-sized data blocks and irregular timing required for applications with sensor fusion. These data streams are stored in [SDS data files](https://arm-software.github.io/SDS-Framework/main/theory.html#sds-data-files).
 
-By deploying the [SDS template application](https://arm-software.github.io/SDS-Framework/main/template.html) to hardware (e.g., evaluation boards or custom products), you can record and playback multiple data streams during application development. This enables real-time capture of sensor, audio, and video inputs, alongside algorithm outputs, directly on target hardware. Ready-to-use SDSIO implementations use the MDK-Middleware for SDS data file storage on a development host computer or on a memory card in the embedded target.
+By deploying the [SDS template application](https://arm-software.github.io/SDS-Framework/main/template.html) to hardware (e.g., evaluation boards or custom products), you can record and playback multiple data streams during application development. This enables real-time capture of sensor, audio, and video inputs, alongside algorithm outputs, directly on target hardware. Ready-to-use SDSIO implementations connect to the development host computer (via USB, Ethernet, or RTT) or on a memory card in the embedded target.
 
 The [SDS template application](https://arm-software.github.io/SDS-Framework/main/template.html) supports two deployment targets: physical hardware or simulation via [Arm Virtual Hardware - FVP](https://github.com/ARM-software/AVH). Simulation enables cost-effective, automated regression testing on desktops or in cloud-based CI/MLOps pipelines.
 
@@ -31,7 +31,13 @@ The content of SDS data files may be described with a [YAML metadata file](https
 - Input for ML training, testing, and optimization.
 - Offline validation of DSP/ML models.
 
-[Python-based utilities](https://arm-software.github.io/SDS-Framework/main/utilities.html) are provided for recording, playback, visualization, data conversion, and verification of the SDSIO communication.
+SDS version 3 adds a control interface in the SDSIO-Server that enables:
+
+- Record or playback switch using the same firmware image.
+- User flags to configure algorithms or for A/B tests.
+- Managed playback data streams for regression tests.
+
+[Python-based utilities](https://arm-software.github.io/SDS-Framework/main/utilities.html) are provided for recording, playback, visualization, data conversion, and verification of the SDSIO communication. The [CMSIS SDS VS Code extension](https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-sds) implements a graphical interface for the SDSIO-Server.
 
 ## Links
 
