@@ -15,13 +15,25 @@
   <releases>
     <release version="3.0.0-dev">
       Active development ...
-      SDS-Framework:
-      - Simplified API
-      SDSIO-Client:
-      - Improved handling of initialization failure caused by ping timeout, preventing misleading "Ping received." SDSIO-Server message
-      - Fixed compilation errors for serial interface
+      SDS Framework:
+      - Simplified API to improve usability and developer experience (breaking change)
+      - Added support for control data exchange between firmware and host (SDSIO Server)
+      - Reorganized source directory structure for better clarity and maintainability
+      - Standardized configuration file naming conventions
+      - Moved the Buffer component under the Stream component
+      - Updated SDSIO layers
+      - Enhanced and updated documentation
+      SDSIO Server:
+      - Added support for control data exchange with the SDSIO Client
+      - Introduced a keyboard-based user interface for controlling firmware application flags
+      - Added monitor data exchange support for the SDS VS Code extension
+      - Introduced configuration via the sdsio.yml file
+      - Enhanced playback capabilities through the sdsio.yml configuration
+      SDSIO Client:
+      - Updated all interface implementations to support non-blocking receive operations
+      - Added RTT-based implementation
       Template:
-      - Fixed an issue in the simulator script (arm_vsi3.py) causing incomplete recorded data to be written to the file (missing data at the end)
+      - Simplified template to improve usability and developer experience
     </release>
   </releases>
 
