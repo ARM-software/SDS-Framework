@@ -18,6 +18,7 @@ import argparse
 import sys
 import os
 import os.path as path
+from pandas import options
 import serial
 import usb1
 import ipaddress
@@ -28,6 +29,8 @@ import time
 import logging
 import asyncio
 import ctypes
+import signal
+import yaml
 from typing import Optional
 
 if os.name == "nt":
@@ -38,6 +41,38 @@ else:
     import termios
     import tty
 
+SDSIO_SERVER_VERSION = "0.9.6"
+
+# SDSIO protocol command IDs
+CMD_OPEN        = 1
+CMD_CLOSE       = 2
+CMD_WRITE       = 3
+CMD_READ        = 4
+CMD_PING        = 5
+CMD_FLAGS       = 6
+CMD_INFO        = 7
+CMD_SYNC        = set(range(CMD_OPEN, CMD_PING + 1))    # commands with sid/arg/sz/data layout
+CMD_ALL         = set(range(CMD_OPEN, CMD_INFO + 1))    # all valid command IDs
+
+# SDSIO monitor commands and  messages
+SDSIO_MON_OPEN        = 1
+SDSIO_MON_CLOSE       = 2
+SDSIO_MON_FLAGS       = 6
+SDSIO_MON_INFO        = 7
+
+# SDS Flags bit positions
+SDS_FLAG_MASK_START        = (1 << 31)
+SDS_FLAG_MASK_CI_TERMINATE = (1 << 30)
+SDS_FLAG_MASK_PLAYBACK_MODE= (1 << 29)
+SDS_FLAG_MASK_ALIVE        = (1 << 28)
+# Mapping of human-readable parity names to pyserial constants
+PARITY_NAME_MAP = {
+    'none':  serial.PARITY_NONE,
+    'even':  serial.PARITY_EVEN,
+    'odd':   serial.PARITY_ODD,
+    'mark':  serial.PARITY_MARK,
+    'space': serial.PARITY_SPACE,
+}
 
 # ---------------------------------------------------------------------------- #
 #           Byte oriented in memory buffer with per-stream flow control        #
@@ -176,7 +211,6 @@ class safe_print:
 # Global printer object for logging
 printer = safe_print(level=logging.INFO, formatter="%(message)s")
 
-
 # ---------------------------------------------------------------------------- #
 #                            Print status bar                                  #
 # ---------------------------------------------------------------------------- #
@@ -200,65 +234,252 @@ class StatusBar:
         self._thread.join()
 
 # ---------------------------------------------------------------------------- #
-#                            SDS IO Control UI                                 #
+#                          SDS IO Monitor interface                            #
 # ---------------------------------------------------------------------------- #
-class sdsControlUI(threading.Thread):
-    def __init__(self):
-        super().__init__(daemon=True)  # or daemon=False depending on your needs
-        self._sdsControlFlagsSet   = 0  # Host -> Device
-        self._sdsControlFlagsClear = 0  # Host -> Device
-        self._lock = threading.Lock()
-        self._stop = threading.Event()
+class sdsMonitorInterface():
+    def __init__(self, port, flags: Optional['sdsFlags'] = None):
+        self._port = port
+        self._flags = flags
+        self._lock = threading.Lock()     # guards self._socket
+        self._recv_buf = bytearray()      # only accessed from handle_commands thread
+        self._last_info = (0, 0, b'')     # cached (flags, idle_rate, err_data) for new clients
+        if self._port:
+            printer.info(f"Starting monitor server on port {self._port}.")
+            self._listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self._listening_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self._listening_socket.bind(('127.0.0.1', self._port))
+            self._listening_socket.listen(1)
+            self._listening_socket.settimeout(0.01)
+        else:
+            self._listening_socket = None
+        self._socket = None
 
-        # Mapping of flag characters to bit positions
-        self._SET_FLAGS   = { 'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'S':31, 'P': 29, 'p': 29 }
-        self._CLEAR_FLAGS = { 'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 's':31, 'r': 29, 'R': 29 }
+    def _accept_client(self):
+        try:
+            soc, _ = self._listening_socket.accept()
+            soc.setblocking(False)
+            with self._lock:
+                self._socket = soc
+            self._recv_buf.clear()
+            printer.info("Monitor client connected.")
+            # Send current info immediately on connection
+            self.send_info_msg(*self._last_info)
+        except socket.timeout:
+            pass
+        except Exception:
+            pass
 
-        # Start the thread
+    def handle_commands(self):
+        if self._listening_socket is None:
+            return
+
+        if self._socket is None:
+            self._accept_client()
+
+        if self._socket is None:
+            return
+
+        # Receive available bytes into the buffer
+        soc = self._socket
+        try:
+            chunk = soc.recv(256)
+            if chunk:
+                self._recv_buf.extend(chunk)
+            else:
+                # Peer closed connection gracefully
+                printer.info("Monitor client disconnected.")
+                with self._lock:
+                    if self._socket is soc:
+                        try:
+                            self._socket.close()
+                        except Exception:
+                            pass
+                        self._socket = None
+                self._recv_buf.clear()
+                return
+        except BlockingIOError:
+            pass  # No data available right now
+        except Exception:
+            printer.info("Monitor client disconnected.")
+            with self._lock:
+                if self._socket is soc:
+                    try:
+                        self._socket.close()
+                    except Exception:
+                        pass
+                    self._socket = None
+            self._recv_buf.clear()
+            return
+
+        # Process all complete 16-byte commands in the buffer
+        # Currently only SDSIO_MON_FLAGS is expected from the client. It doesn't have any response.
+        while len(self._recv_buf) >= 16:
+            cmd = int.from_bytes(self._recv_buf[0:4], 'little')
+            if cmd == SDSIO_MON_FLAGS:
+                set_flags  = int.from_bytes(self._recv_buf[4:8],  'little')
+                clear_flags = int.from_bytes(self._recv_buf[8:12], 'little')
+                printer.info(f"Monitor command received: SDSIO_MON_FLAGS (set=0x{set_flags:08X}, clear=0x{clear_flags:08X})")
+                if self._flags:
+                    self._flags.apply(set_flags, clear_flags)
+            else:
+                printer.warning(f"Unknown monitor command received: {cmd}")
+            del self._recv_buf[:16]
+
+    def _send(self, msg: bytearray):
+        """Send msg to the monitor client under the lock."""
+        with self._lock:
+            if self._socket:
+                try:
+                    self._socket.sendall(msg)
+                except Exception:
+                    pass
+
+    def send_open_msg(self, filename: str, mode: int):
+        filename_bytes = filename.encode('utf-8')
+        msg = bytearray()
+        msg.extend(SDSIO_MON_OPEN.to_bytes(4, 'little'))
+        msg.extend((0).to_bytes(4, 'little'))
+        msg.extend(mode.to_bytes(4, 'little'))
+        msg.extend((0).to_bytes(4, 'little'))
+        msg.extend(len(filename_bytes).to_bytes(4, 'little'))
+        msg.extend(filename_bytes)
+        self._send(msg)
+
+    def send_close_msg(self, filename: str):
+        filename_bytes = filename.encode('utf-8')
+        msg = bytearray()
+        msg.extend(SDSIO_MON_CLOSE.to_bytes(4, 'little'))
+        msg.extend((0).to_bytes(4, 'little'))
+        msg.extend((0).to_bytes(4, 'little'))
+        msg.extend((0).to_bytes(4, 'little'))
+        msg.extend(len(filename_bytes).to_bytes(4, 'little'))
+        msg.extend(filename_bytes)
+        self._send(msg)
+
+    def send_info_msg(self, flags: int, idle_rate: int, err_data: bytes):
+        self._last_info = (flags, idle_rate, err_data)
+        msg = bytearray()
+        msg.extend(SDSIO_MON_INFO.to_bytes(4, 'little'))
+        msg.extend(flags.to_bytes(4, 'little'))
+        msg.extend(idle_rate.to_bytes(4, 'little'))
+        msg.extend(len(err_data).to_bytes(4, 'little'))
+        msg.extend(err_data)
+        self._send(msg)
+
+    def close(self):
+        with self._lock:
+            if self._socket:
+                try:
+                    self._socket.close()
+                except Exception:
+                    pass
+                self._socket = None
+        if self._listening_socket:
+            try:
+                self._listening_socket.close()
+            except Exception:
+                pass
+            self._listening_socket = None
+
+
+# ---------------------------------------------------------------------------- #
+#                               SDS IO Flags                                   #
+# ---------------------------------------------------------------------------- #
+class sdsFlags:
+    def __init__(self, auto_playback=False):
+        self._set   = 0
+        self._clear = 0
+        self._lock  = threading.Lock()
+        self._auto_playback = auto_playback
+        self._playback_mode = auto_playback
+
+    def apply(self, set_mask: int, clear_mask: int):
+        with self._lock:
+            self._set   |= set_mask
+            self._clear |= clear_mask
+
+    def consume_set(self) -> int:
+        with self._lock:
+            val = self._set | SDS_FLAG_MASK_ALIVE
+            if self._auto_playback:
+                val |= SDS_FLAG_MASK_PLAYBACK_MODE
+            if val & SDS_FLAG_MASK_PLAYBACK_MODE:
+                self._playback_mode = True
+            self._set = 0
+            return val
+
+    def consume_clear(self) -> int:
+        with self._lock:
+            val = self._clear
+            if not self._auto_playback and (val & SDS_FLAG_MASK_PLAYBACK_MODE):
+                self._playback_mode = False
+            self._clear = 0
+            return val
+
+    @property
+    def playback_mode(self):
+        return self._playback_mode
+
+
+# ---------------------------------------------------------------------------- #
+#                            SDS IO Control Input                              #
+# ---------------------------------------------------------------------------- #
+class sdsControlInput(threading.Thread):
+
+    def __init__(self, flags: sdsFlags, monitor: Optional[sdsMonitorInterface] = None):
+        super().__init__(daemon=True)
+        self._flags   = flags
+        self._monitor = monitor
+        self._quit    = threading.Event()
+
+        # Mapping of key characters to (set_mask, clear_mask, description)
+        self._KEY_ACTIONS = {
+            'R': (SDS_FLAG_MASK_START,                              SDS_FLAG_MASK_PLAYBACK_MODE, "start recording"),
+            'r': (SDS_FLAG_MASK_START,                              SDS_FLAG_MASK_PLAYBACK_MODE, "start recording"),
+            'P': (SDS_FLAG_MASK_START | SDS_FLAG_MASK_PLAYBACK_MODE, 0,                         "start playback"),
+            'p': (SDS_FLAG_MASK_START | SDS_FLAG_MASK_PLAYBACK_MODE, 0,                         "start playback"),
+            'S': (0,                                                SDS_FLAG_MASK_START,         "stop"),
+            's': (0,                                                SDS_FLAG_MASK_START,         "stop"),
+            'A': (1 << 0, 0,       "set flag 0"),   'a': (0, 1 << 0, "clear flag 0"),
+            'B': (1 << 1, 0,       "set flag 1"),   'b': (0, 1 << 1, "clear flag 1"),
+            'C': (1 << 2, 0,       "set flag 2"),   'c': (0, 1 << 2, "clear flag 2"),
+            'D': (1 << 3, 0,       "set flag 3"),   'd': (0, 1 << 3, "clear flag 3"),
+            'E': (1 << 4, 0,       "set flag 4"),   'e': (0, 1 << 4, "clear flag 4"),
+            'F': (1 << 5, 0,       "set flag 5"),   'f': (0, 1 << 5, "clear flag 5"),
+            'G': (1 << 6, 0,       "set flag 6"),   'g': (0, 1 << 6, "clear flag 6"),
+            'H': (1 << 7, 0,       "set flag 7"),   'h': (0, 1 << 7, "clear flag 7"),
+        }
+
         self.start()
 
     def run(self):
-        while not self._stop.is_set():
-            ch = self._read_key(timeout=0.1)
+        while not self._quit.is_set():
+
+            # Poll monitor for incoming commands
+            if self._monitor:
+                self._monitor.handle_commands()
+
+            # Read from keyboard
+            ch = self._read_key(timeout=0.01)
             if ch is None:
                 continue
-            if ch in self._SET_FLAGS:
-                self._set_flag(ch)
-            elif ch in self._CLEAR_FLAGS:
-                self._clear_flag(ch)
-
-    def _set_flag(self, ch):
-        bit = self._SET_FLAGS[ch]
-        with self._lock:
-            self._sdsControlFlagsSet |= (1 << bit)
-        printer.info(f"sdsFlags set mask = 0x{self._sdsControlFlagsSet:08X} ('{ch}')")
-
-    def _clear_flag(self, ch):
-        bit = self._CLEAR_FLAGS[ch]
-        with self._lock:
-            self._sdsControlFlagsClear |= (1 << bit)
-        printer.info(f"sdsFlags clear mask = 0x{self._sdsControlFlagsClear:08X} ('{ch}')")
-
-    def get_flags_set(self):
-        with self._lock:
-            flags_set = self._sdsControlFlagsSet
-            flags_set |= (1 << 28)  # Always set Alive bit
-            self._sdsControlFlagsSet = 0
-            return flags_set
-
-    def get_flags_clear(self):
-        with self._lock:
-            flags_clear = self._sdsControlFlagsClear
-            self._sdsControlFlagsClear = 0
-            return flags_clear
+            if ch in ('x', 'X'):
+                printer.info(f"sdsControl: terminate ('{ch}')")
+                os.kill(os.getpid(), signal.SIGINT)
+                return
+            action = self._KEY_ACTIONS.get(ch)
+            if action:
+                set_mask, clear_mask, desc = action
+                self._flags.apply(set_mask, clear_mask)
+                printer.info(f"sdsControl: {desc} ('{ch}')")
 
     def stop(self):
-        self._stop.set()
+        self._quit.set()
 
     if os.name == "nt":
         def _read_key(self, timeout=0.1):
             end_time = time.time() + timeout
-            while time.time() < end_time and not self._stop.is_set():
+            while time.time() < end_time and not self._quit.is_set():
                 if msvcrt.kbhit():
                     ch = msvcrt.getwch()
 
@@ -294,10 +515,14 @@ class sdsControlUI(threading.Thread):
 #                            SDS IO Manager                                    #
 # ---------------------------------------------------------------------------- #
 class sdsio_manager:
-    def __init__(self, work_dir):
+    def __init__(self, work_dir, auto_playback=False, play_list: Optional[list] = None, mon_port: Optional[int] = None):
         self.stream_id = 0
-        self.work_dir = path.normpath(work_dir)
-        self.opened_streams = {}    # sid -> (file_obj, name, mode)
+        self.play_step_index = 0
+        self.default_work_dir = path.normpath(work_dir)
+        self.work_dir = self.default_work_dir
+        self.opened_streams = {}    # sid -> (name, mode)
+        self.label_list = []
+        self.timestamp_list = []
         # write side
         self.write_buffers = {}     # sid -> ByteStreamBuffer
         self.write_threads = {}     # sid -> Thread
@@ -312,75 +537,185 @@ class sdsio_manager:
         self.time_last_rw = time.time()
         # status bar
         self.status = StatusBar(self)
+
+        self.playback_mode = False
+        self.play_list = play_list
+        self.mon_port = mon_port
         # SDS Control Flags
-        printer.info("Starting SDS Control Flags thread. Press A-H to set flags, a-h to clear flags.")
-        self.control_flags = sdsControlUI()
+        printer.info("Starting SDS Control Flags thread. R=record, P=playback, S/s=stop, X/x=terminate, A-H=set flags 0-7, a-h=clear flags 0-7.")
+        self.flags      = sdsFlags(auto_playback)
+        self.monitor    = sdsMonitorInterface(self.mon_port, self.flags) if self.mon_port else None
+        self.ctrl_input = sdsControlInput(self.flags, self.monitor)
 
         self.info_flags: int = 0
         self.info_IdleRate: int = 0
         self._last_async_time = time.time()
 
     def _shutdown(self):
-        if self.control_flags:
-            self.control_flags.stop()
-            self.control_flags.join(timeout=2.0)
-            self.control_flags = None
+        if self.ctrl_input:
+            self.ctrl_input.stop()
+            self.ctrl_input.join(timeout=2.0)
+            self.ctrl_input = None
+        if self.monitor:
+            self.monitor.close()
+            self.monitor = None
         self.clean()
 
-    def _format_stream_path(self, file_obj, base: Optional[str] = None) -> str:
-        try:
-            base_dir = self.work_dir if base is None else base
-            p = os.path.relpath(file_obj.name, base_dir)
-            # If file is outside base_dir, relpath starts with '..' (e.g., '../foo' or '..\foo')
-            if p == os.pardir or p.startswith(os.pardir + os.sep):
-                return os.path.abspath(file_obj.name)
-        except Exception:
-            # Different drives on Windows or other relpath issues → use absolute
-            return file_obj.name
+    def _build_timestamp_boundaries(self, name: str) -> list[int]:
+        timestampes = []
+        for label in self.label_list:
+            # Open playback sds file and read timestamop of first packet
+            sds_file_path = path.join(self.work_dir, f"{name}.{label}.sds")
+            with open(sds_file_path, "rb") as f:
+                header = f.read(8)
+                if len(header) == 8:
+                    ts = int.from_bytes(header[0:4], 'little')
+                    timestampes.append(ts)
+                else:
+                    # Error: cant get timestamp
+                    timestampes.append(0xFFFFFFFF)
+        return timestampes
 
-        # p is relative here; add ./ or .\ for clarity if not already present
-        if p.startswith("./") or p.startswith(".\\"):
-            return p
-        return (".\\" if os.sep == "\\" else "./") + p
-
-    def _file_write_worker(self, sid, file_obj, buf: ByteStreamBuffer, stop_evt):
-        chunk_size = 64 * 1024
+    def _file_write_worker(self, sid, name, buf: ByteStreamBuffer, stop_evt):
+        data = bytearray()
         try:
-            while True:
-                data = buf.read(chunk_size, timeout=0.1)
-                if data:
-                    file_obj.write(data)
-                    continue
-                # on EOF, drain any remaining data then exit
-                if buf.eof:
-                    while True:
-                        data = buf.read(chunk_size, timeout=0)
-                        if not data:
-                            break
-                        file_obj.write(data)
+            if self.playback_mode:
+                # In playback mode, wait until label_list and timestamp_list are populated
+                # timestamp_list is generted when playback file is opened
+                while not self.label_list or not self.timestamp_list:
+                    if stop_evt.is_set():
+                        return
+                    time.sleep(0.1)
+
+            for index in range(len(self.label_list)):
+                if stop_evt.is_set():
                     break
-        except Exception as e:
-            printer.exception(f"Writer {sid} error")
-        finally:
-            file_obj.close()
 
-    def _file_read_worker(self, sid, file_obj, buf: ByteStreamBuffer, stop_evt):
+                label = self.label_list[index]
+                sds_file_name = f"{name}.{label}.p.sds" if self.playback_mode else f"{name}.{label}.sds"
+                sds_file_path = path.join(self.work_dir, sds_file_name)
+
+                # Check if sds file exsist. If so, rename it to *.bak
+                if path.exists(sds_file_path):
+                    if path.exists(sds_file_path + ".bak"):
+                        try:
+                            os.remove(sds_file_path + ".bak")
+                        except Exception:
+                            printer.warning(f"Could not delete backup file '{sds_file_path}.bak'")
+                    try:
+                        os.rename(sds_file_path, sds_file_path + ".bak")
+                    except Exception:
+                        printer.warning(f"Could not create backup for existing file '{sds_file_path}'")
+
+                eof_reached = False
+                with open(sds_file_path, "wb") as file_obj:
+                    stream_name, _ = self.opened_streams[sid]
+                    printer.info(f"Record:   {stream_name} ({sds_file_path})")
+                    if self.monitor:
+                        self.monitor.send_open_msg(sds_file_path, 1)
+                    while True:
+                        data_sz = len(data)
+
+                        if data_sz < 8:
+                            # Accumulate header bytes
+                            chunk = buf.read(8 - data_sz, timeout=0.1)
+                            if chunk:
+                                data += chunk
+                            elif buf.eof:
+                                # Incomplete header at EOF — discard fragment and stop
+                                data = bytearray()
+                                eof_reached = True
+                                break
+                            elif stop_evt.is_set():
+                                # Read timed out and stream was closed — no more data expected
+                                data = bytearray()
+                                eof_reached = True
+                                break
+                            # else: timeout, try again
+
+                        else:
+                            # Full 8-byte header available
+                            timestamp = int.from_bytes(data[0:4], 'little')
+                            data_block_size = int.from_bytes(data[4:8], 'little')
+
+                            # Check if this record marks the boundary of the next label
+                            if self.timestamp_list and index + 1 < len(self.timestamp_list):
+                                if timestamp == self.timestamp_list[index + 1]:
+                                    break  # keep data — it will be written to the next label file
+
+                            needed = 8 + data_block_size
+                            if data_sz < needed:
+                                # Accumulate payload bytes
+                                chunk = buf.read(needed - data_sz, timeout=0.1)
+                                if chunk:
+                                    data += chunk
+                                elif buf.eof:
+                                    # Incomplete record at EOF — discard and stop
+                                    data = bytearray()
+                                    eof_reached = True
+                                    break
+                                elif stop_evt.is_set():
+                                    # Read timed out and stream was closed — no more data expected
+                                    data = bytearray()
+                                    eof_reached = True
+                                    break
+                                # else: timeout, try again
+                            else:
+                                # Complete record: write and reset for next record
+                                file_obj.write(data)
+                                data = bytearray()
+                printer.info(f"Closed: {name} ({sds_file_path})")
+                if self.monitor:
+                    self.monitor.send_close_msg(sds_file_path)
+                if eof_reached:
+                    break
+        except Exception:
+            printer.exception(f"Writer {sid} error")
+
+    def _file_read_worker(self, sid, name, buf: ByteStreamBuffer, stop_evt):
         chunk_size = 128 * 1024
         try:
-            while not stop_evt.is_set():
-                data = file_obj.read(chunk_size)
-                if data:
-                    buf.write(data)
-                else:
-                    buf.set_eof()
+            for label in self.label_list:
+                if stop_evt.is_set():
                     break
-        except Exception as e:
+                sds_file_path = path.join(self.work_dir, f"{name}.{label}.sds")
+                with open(sds_file_path, "rb") as file_obj:
+                    printer.info(f"Playback: {name} ({sds_file_path})")
+                    if self.monitor:
+                        self.monitor.send_open_msg(sds_file_path, 0)
+                    while not stop_evt.is_set():
+                        data = file_obj.read(chunk_size)
+                        if data:
+                            buf.write(data)
+                        else:
+                            break  # EOF on this file, move to next label
+                printer.info(f"Closed: {name} ({sds_file_path})")
+                if self.monitor:
+                    self.monitor.send_close_msg(sds_file_path)
+        except Exception:
             printer.exception(f"Reader {sid} error")
         finally:
-            file_obj.close()
+            buf.set_eof()
+
+    def _create_play_label_list(self, name) -> list[str]:
+        labels = []
+        if self.play_list and self.play_step_index < len(self.play_list):
+            step = self.play_list[self.play_step_index]
+            labels = list(step.get('labels', []))
+        else:
+            # No playlist: auto-discover numeric labels
+            idx = 0
+            while True:
+                candidate = path.join(self.work_dir, f"{name}.{idx}.sds")
+                if path.exists(candidate):
+                    labels.append(str(idx))
+                    idx += 1
+                else:
+                    break
+        return labels
 
     def _open(self, mode, name):
-        cmd = 1
+        cmd = CMD_OPEN
         # prepare error response
         resp_err = bytearray()
         resp_err.extend(cmd.to_bytes(4,'little'))
@@ -398,34 +733,72 @@ class sdsio_manager:
             return resp_err
 
         # ensure not already open
-        if any(n == name for (_, n, _) in self.opened_streams.values()):
+        if any(n == name for (n, _) in self.opened_streams.values()):
             printer.info(f"Stream '{name}' is already opened, cannot open again.")
             return resp_err
 
+        # update playback mode from flags only when new session is started
+        if not self.opened_streams:
+            self.playback_mode = self.flags.playback_mode
+
+        # check if new rec/play session
+        if self.playback_mode:
+            if not self.label_list:
+                # Get flags, Set working dir
+                if self.play_list:
+                    if self.play_step_index < len(self.play_list):
+                        step = self.play_list[self.play_step_index]
+                        set_flags = step.get('setflags', 0)
+                        clear_flags = step.get('clearflags', 0)
+                        recdir = step.get('recdir', None)
+                        self.work_dir = path.normpath(path.join(self.default_work_dir, recdir)) if recdir else self.default_work_dir
+                    else:
+                        printer.info(f"End of playlist. No more steps available for playback stream '{name}'.")
+                        return resp_err
+                else:
+                    self.work_dir = self.default_work_dir
+                    set_flags = 0
+                    clear_flags = 0
+
+                if set_flags or clear_flags:
+                    printer.debug(f"Applying flags for playback stream '{name}': set=0x{set_flags:08X}, clear=0x{clear_flags:08X}")
+                    self.flags.apply(set_flags, clear_flags)
+
+                # Create label list
+                play_label_list = self._create_play_label_list(name)
+                if not play_label_list:
+                    printer.info(f"No files found for playback stream '{name}'.")
+                    return resp_err
+                self.label_list = play_label_list
+
+        else:
+            if mode == 0:
+                printer.info(f"Cannot open stream '{name}' for playback. Playback mode is not enabled.")
+                return resp_err
+            self.work_dir = self.default_work_dir
+
         # mode 1 = write, 0 = read
         if mode == 1:
-            # write mode: find next filename and start writer thread
-            idx = 0
-            fname = path.join(self.work_dir, f"{name}.{idx}.sds")
-            while path.exists(fname):
-                idx += 1
-                fname = path.join(self.work_dir, f"{name}.{idx}.sds")
-            try:
-                f = open(fname, "wb")  # Attempt to open the file in write mode
-            except:
-                printer.error(f"Failed to open file '{fname}'")
-                return resp_err  # Return an error response if the file cannot be opened
+            if not self.label_list:
+                if not self.playback_mode:
+                    # find first available numeric label for new recording
+                    idx = 0
+                    sds_file_path = path.join(self.work_dir, f"{name}.{idx}.sds")
+                    while path.exists(sds_file_path):
+                        idx += 1
+                        sds_file_path = path.join(self.work_dir, f"{name}.{idx}.sds")
+                    self.label_list.append(str(idx))
 
             # allocate new sid
             with self.manager_lock:
                 self.stream_id += 1
                 sid = self.stream_id
-            self.opened_streams[sid] = (f, name, mode)
+            self.opened_streams[sid] = (name, mode)
             buf = ByteStreamBuffer()
             stop_evt = threading.Event()
             thr = threading.Thread(
                 target=self._file_write_worker,
-                args=(sid, f, buf, stop_evt),
+                args=(sid, name, buf, stop_evt),
                 daemon=True
             )
             thr.start()
@@ -434,62 +807,34 @@ class sdsio_manager:
             self.write_stop[sid]   = stop_evt
 
         else:
-            # read mode: determine file, update index, start reader thread
-            idx = 0
-            index_file = path.join(self.work_dir, f"{name}.index.txt")
-            if path.exists(index_file):
-                try:
-                    with open(index_file, "r") as ix:
-                        line = ix.readline().strip()
-                        if line.isdigit():
-                            idx = int(line)
-                except:
-                    pass
+            # Validate that files for all labels exist
+            for label in self.label_list:
+                sds_file_path = path.join(self.work_dir, f"{name}.{label}.sds")
+                if not path.exists(sds_file_path):
+                    printer.error(f"Missing file for playback stream '{name}': {sds_file_path}")
+                    return resp_err
 
-            fname = path.join(self.work_dir, f"{name}.{idx}.sds")
-
-            # Check if file exists
-            if not path.exists(fname):
-                # Update index to 0 on failure
-                try:
-                    with open(index_file, 'w') as ix:
-                        ix.write('0')
-                except Exception:
-                    printer.warning(f"Could not update index file for {name}")
-                printer.info(f"Stream open failed: '{name}'. File `{fname}` does not exist.")
-                return resp_err
-
-            # file exists, try to open it
-            try:
-                f = open(fname, "rb")  # Attempt to open the file in read mode
-            except:
-                printer.error(f"Failed to open file '{fname}'")
-                return resp_err  # Return an error response if the file cannot be opened
+            if not self.timestamp_list:
+                self.timestamp_list = self._build_timestamp_boundaries(name)
 
             # allocate new sid
             with self.manager_lock:
                 self.stream_id += 1
                 sid = self.stream_id
-            self.opened_streams[sid] = (f, name, mode)
+
+            self.opened_streams[sid] = (name, mode)
 
             buf = ByteStreamBuffer()
             stop_evt = threading.Event()
             thr = threading.Thread(
                 target=self._file_read_worker,
-                args=(sid, f, buf, stop_evt),
+                args=(sid, name, buf, stop_evt),
                 daemon=True
             )
             thr.start()
             self.read_buffers[sid] = buf
             self.read_threads[sid] = thr
             self.read_stop[sid]  = stop_evt
-
-            # update index for next read
-            try:
-                with open(index_file, 'w') as ix:
-                    ix.write(str(idx + 1))
-            except Exception:
-                printer.warning(f"Could not update index file for {name}")
 
         # build success response
         resp = bytearray()
@@ -498,20 +843,11 @@ class sdsio_manager:
         resp.extend(mode.to_bytes(4,'little'))
         resp.extend((0).to_bytes(4,'little'))
 
-        file_obj, stream_name, mode = self.opened_streams[sid]
-        file_path = self._format_stream_path(file_obj, base=os.getcwd())
-        if mode == 1:
-            printer.info(f"Record:   {stream_name} ({file_path}).")
-        else:
-            printer.info(f"Playback: {stream_name} ({file_path}).")
         return resp
 
     def _close(self, sid):
         resp = bytearray()
-        name = self.opened_streams[sid][1]
-
-        file_obj, stream_name, mode = self.opened_streams[sid]
-        file_path = self._format_stream_path(file_obj, base=os.getcwd())
+        name = self.opened_streams[sid][0]
 
         # clean up writer side
         if sid in self.write_buffers:
@@ -531,7 +867,12 @@ class sdsio_manager:
         # unregister stream
         self.opened_streams.pop(sid, None)
 
-        printer.info(f"Closed:   {name} ({file_path}).")
+        if not self.opened_streams:
+            if self.playback_mode:
+                self.play_step_index += 1
+            self.label_list.clear()
+            self.timestamp_list.clear()
+
         return resp
 
     def _write(self, sid, data):
@@ -547,12 +888,12 @@ class sdsio_manager:
 
     def _read(self, sid, size):
         resp = bytearray()
-        cmd = 4
+        cmd = CMD_READ
         eof = 0
         data = bytearray()
         entry = self.opened_streams.get(sid)
         # invalid read
-        if not entry or entry[2] != 0:
+        if not entry or entry[1] != 0:
             resp.extend(cmd.to_bytes(4,'little'))
             resp.extend(sid.to_bytes(4,'little'))
             resp.extend((0).to_bytes(4,'little'))
@@ -580,7 +921,7 @@ class sdsio_manager:
 
     def _pingServer(self, sid):
         resp = bytearray()
-        cmd = 5
+        cmd = CMD_PING
         resp.extend(cmd.to_bytes(4,'little'))
         resp.extend(sid.to_bytes(4,'little'))
         resp.extend((1).to_bytes(4,'little'))
@@ -603,6 +944,10 @@ class sdsio_manager:
             line   = int.from_bytes(err_data[4:8],'little')
             err_mgs = err_data[8:]
             printer.info(f"sdsInfoError: status=0x{status:08X}, line={line}, msg={err_mgs.decode('utf-8', errors='replace')}")
+
+        if self.monitor:
+            self.monitor.send_info_msg(flags, idle_rate, err_data)
+
         return resp
 
     def clean(self):
@@ -612,9 +957,9 @@ class sdsio_manager:
 
     def get_async_flags(self):
         resp = bytearray()
-        cmd = 6
-        set_mask = self.control_flags.get_flags_set()
-        clear_mask = self.control_flags.get_flags_clear()
+        cmd = CMD_FLAGS
+        set_mask   = self.flags.consume_set()
+        clear_mask = self.flags.consume_clear()
         resp.extend(cmd.to_bytes(4,'little'))
         resp.extend(set_mask.to_bytes(4,'little'))
         resp.extend(clear_mask.to_bytes(4,'little'))
@@ -630,7 +975,7 @@ class sdsio_manager:
 
     def get_shutdown_flags(self):
         resp = bytearray()
-        cmd = 6
+        cmd = CMD_FLAGS
         resp.extend(cmd.to_bytes(4,'little'))
         resp.extend((0).to_bytes(4,'little'))
         resp.extend((1 << 28).to_bytes(4,'little'))
@@ -639,17 +984,17 @@ class sdsio_manager:
 
     def execute_request(self, buf: bytes):
         cmd = int.from_bytes(buf[0:4],'little')
-        if cmd in (1, 2, 3, 4, 5):
+        if cmd in CMD_SYNC:
             sid = int.from_bytes(buf[4:8],'little')
             arg = int.from_bytes(buf[8:12],'little')
             sz  = int.from_bytes(buf[12:16],'little')
             data= buf[16:16+sz]
-            if   cmd == 1: return self._open(arg, data.decode('utf-8').rstrip('\0'))
-            elif cmd == 2: return self._close(sid)
-            elif cmd == 3: return self._write(sid, data)
-            elif cmd == 4: return self._read(sid, arg)
-            elif cmd == 5: return self._pingServer(sid)
-        elif cmd == 7:
+            if   cmd == CMD_OPEN:  return self._open(arg, data.decode('utf-8').rstrip('\0'))
+            elif cmd == CMD_CLOSE: return self._close(sid)
+            elif cmd == CMD_WRITE: return self._write(sid, data)
+            elif cmd == CMD_READ:  return self._read(sid, arg)
+            elif cmd == CMD_PING:  return self._pingServer(sid)
+        elif cmd == CMD_INFO:
             flags     = int.from_bytes(buf[4:8],'little')
             idle_rate = int.from_bytes(buf[8:12],'little')
             err_len   = int.from_bytes(buf[12:16],'little')
@@ -702,10 +1047,9 @@ class async_sdsio_server_socket:
                 except asyncio.TimeoutError:
                     continue # No data from client, loop to check for FLAGS send
 
-
                 # validate command before reading payload
                 cmd = int.from_bytes(hdr[0:4],'little')
-                if cmd not in (1, 2, 3, 4, 5, 6, 7):
+                if cmd not in CMD_ALL:
                     printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
                     printer.info("Closing SDSIO Client connection...")
                     break
@@ -872,7 +1216,7 @@ class sdsio_server_serial:
 
                     # validate command before reading payload
                     cmd = int.from_bytes(header[0:4], 'little')
-                    if cmd not in (1, 2, 3, 4, 5, 6, 7):
+                    if cmd not in CMD_ALL:
                         printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
                         buffer.clear()
                         return  # Exit start(), finally block will clean up
@@ -1136,7 +1480,7 @@ class sdsio_server_usb:
 
                 # validate command before reading payload
                 cmd = int.from_bytes(hdr[0:4],'little')
-                if cmd not in (1, 2, 3, 4, 5, 6, 7):
+                if cmd not in CMD_ALL:
                     printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
                     self._protocol_error = True
                     self.running = False
@@ -1488,13 +1832,34 @@ def parse_arguments():
             self._ms_show_epilog_once = True
             self.error(message)
 
-    formatter = lambda prog: argparse.RawTextHelpFormatter(prog, max_help_position=41)
+    class SdsFormatter(argparse.RawTextHelpFormatter):
+        def __init__(self, prog, **kwargs):
+            super().__init__(prog, max_help_position=41, **kwargs)
+        def _format_action_invocation(self, action):
+            if not action.option_strings or action.nargs == 0:
+                return super()._format_action_invocation(action)
+            opts = ', '.join(action.option_strings)
+            if action.metavar:
+                return f"{opts} {action.metavar}"
+            return opts
+    formatter = lambda prog: SdsFormatter(prog)
 
-    # Top-level footer (only for the "missing server type" error)
+    # Top-level epilog shown with -h (keyboard input, examples, server type help)
     top_epilog = (
-        "Get help for a server type:\n"
-        "  %(prog)s <server-type> -h\n"
-        "Examples:\n"
+        "keyboard input (while running):\n"
+        "  R/r  start recording      P/p  start playback\n"
+        "  S/s  stop                 A-H  set user flags 0-7\n"
+        "  X/x  terminate server     a-h  clear user flags 0-7\n"
+        "\n"
+        "examples:\n"
+        "  %(prog)s -c sdsio.yml                     # Recommended: all config in YAML\n"
+        "  %(prog)s -c sdsio.yml --playback          # Playback mode\n"
+        "  %(prog)s -c sdsio.yml --mon-port 6060     # With VS Code SDS extension monitor\n"
+        "  %(prog)s usb --workdir ./data             # USB server, explicit work dir\n"
+        "  %(prog)s socket --port 5050               # TCP socket server\n"
+        "  %(prog)s serial -p COM3 --baudrate 115200\n"
+        "\n"
+        "server type help:\n"
         "  %(prog)s socket -h\n"
         "  %(prog)s serial -h\n"
         "  %(prog)s usb -h\n"
@@ -1503,17 +1868,29 @@ def parse_arguments():
     # top-level parser
     parser = MSStyleArgumentParser(
         formatter_class=formatter,
-        description="SDS I/O server",
+        add_help=False,
+        description=(
+            "SDSIO-Server: record and playback SDS data stream files over USB, socket, or serial interface.\n"
+            "Configure via *.sdsio.yml file or specify the interface parameters directly on the command line."
+        ),
         epilog=top_epilog,
     )
     parser._is_top_level = True
-    parser.usage = "%(prog)s [-h] [--verbose] {socket | serial | usb} [options]"
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable debug logging")
+    parser.usage = "%(prog)s [-h] [-c sdsio.yml | {socket | serial | usb} [server-opts]] [options]"
+
+    options = parser.add_argument_group("options")
+    options.add_argument("--help", "-h", help="Show this help message and exit", action="help")
+    options.add_argument("--version", "-V", action="version",
+                         help="Show program's version number and exit", version=f"%(prog)s {SDSIO_SERVER_VERSION}")
+
+    configuration = parser.add_argument_group("configuration")
+    configuration.add_argument("--control", "-c", dest="ctrl_yml", metavar="<*.sdsio.yml>",
+                        help="Configure interface, SDS file directories, and playback steps", required=False)
 
     # Subparsers
     subparsers = parser.add_subparsers(
         dest="server_type",
-        title="server type",
+        title="interface (optional, default: usb; overrides interface in *.sdsio.yml)",
         metavar="{socket | serial | usb}",
         parser_class=MSStyleArgumentParser
     )
@@ -1528,19 +1905,17 @@ def parse_arguments():
     )
     parser_socket._is_subparser = True
     parser_socket._error_hint = "For help on how to use the socket server and its arguments, run: %(prog)s -h"
-    parser_socket.usage = "%(prog)s [--ipaddr <IP> | --interface <Interface>] [--port <TCP Port>] [--workdir <Work dir>]"
+    parser_socket.usage = "%(prog)s [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>]"
 
     socket_group = parser_socket.add_argument_group("socket arguments (optional)")
     socket_group.add_argument("--ipaddr", dest="ip", metavar="<IP>",
-                              help="Server IP address (cannot be used with --interface)",
+                              help="Server IP address (example: 192.168.0.100), cannot be used with 'netif'",
                               type=ip_validator, default=None)
-    socket_group.add_argument("--interface", dest="interface", metavar="<Interface>",
-                              help="Network interface (cannot be used with --ipaddr)",
+    socket_group.add_argument("--netif", dest="interface", metavar="<Interface>",
+                              help="Network interface (example: eth0), cannot be used with 'ipaddr'",
                               type=interface_validator, default=None)
     socket_group.add_argument("--port", dest="port", metavar="<TCP Port>",
-                              help="TCP port (default: 5050)", type=int, default=5050)
-    socket_group.add_argument("--workdir", dest="work_dir", metavar="<Work dir>",
-                              help="Directory for SDS files (default: current directory)", type=dir_path, default=".")
+                              help="TCP port number (default: 5050)", type=int, default=5050)
 
     # serial
     parser_serial = subparsers.add_parser(
@@ -1552,7 +1927,7 @@ def parse_arguments():
     )
     parser_serial._is_subparser = True
     parser_serial._error_hint = "For help on how to use the serial server and its arguments, run: %(prog)s -h"
-    parser_serial.usage = "%(prog)s -p <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>] [--workdir <Work dir>]"
+    parser_serial.usage = "%(prog)s -p <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>]"
 
     serial_required = parser_serial.add_argument_group("serial arguments (required)")
     serial_required.add_argument("-p", dest="port", metavar="<Serial Port>",
@@ -1561,9 +1936,9 @@ def parse_arguments():
     serial_optional = parser_serial.add_argument_group("serial arguments (optional)")
     serial_optional.add_argument("--baudrate", dest="baudrate", metavar="<Baudrate>",
                                  help="Baudrate (default: 115200)", type=int, default=115200)
-    parity_help = "Parity: " + ", ".join([f"{k}={v}" for k, v in serial.PARITY_NAMES.items()]) + f" (default: {serial.PARITY_NONE})"
+    parity_help = "Parity: none, even, odd, mark, space (default: none)"
     serial_optional.add_argument("--parity", dest="parity", metavar="<Parity>",
-                                 choices=serial.PARITY_NAMES.keys(), help=parity_help, default=serial.PARITY_NONE)
+                                 choices=list(PARITY_NAME_MAP.keys()), help=parity_help, default='none')
     stopbits_help = (f"Stop bits: {serial.STOPBITS_ONE}, {serial.STOPBITS_ONE_POINT_FIVE}, "
                      f"{serial.STOPBITS_TWO} (default: {serial.STOPBITS_ONE})")
     serial_optional.add_argument("--stopbits", dest="stop_bits", metavar="<Stop bits>",
@@ -1573,8 +1948,6 @@ def parse_arguments():
     serial_optional.add_argument("--connect-timeout", dest="connect_timeout", metavar="<Timeout>",
                                  help="Serial port connection timeout in seconds (default: no timeout)",
                                  type=float, default=None)
-    serial_optional.add_argument("--workdir", dest="work_dir", metavar="<Work dir>",
-                                 help="Directory for SDS files (default: current directory)", type=dir_path, default=".")
 
     # usb
     parser_usb = subparsers.add_parser(
@@ -1586,13 +1959,23 @@ def parse_arguments():
     )
     parser_usb._is_subparser = True
     parser_usb._error_hint = "For help on how to use the usb server and its arguments, run: %(prog)s -h"
-    parser_usb.usage = "%(prog)s [--workdir <Work dir>] [--high-priority]"
+    parser_usb.usage = "%(prog)s [--high-priority]"
 
     usb_group = parser_usb.add_argument_group("usb arguments (optional)")
-    usb_group.add_argument("--workdir", dest="work_dir", metavar="<Work dir>",
-                           help="Directory for SDS files (default: current directory)", type=dir_path, default=".")
-    usb_group.add_argument("--high-priority", dest="high_priority", action="store_true",
-                           help="Enable high-priority threading for USB Server (default: off)")
+
+    general = parser.add_argument_group("general options")
+    general.add_argument("--playback", "-p", dest="auto_playback", action="store_true",
+                         help="Start SDSIO-Server in playback mode (used in CI tests)", default=None)
+    general.add_argument("--workdir", dest="work_dir", metavar="<path>",
+                        help="Directory for SDS files (overrides *.sdsio.yml; default: current directory)", type=dir_path, default=None)
+    general.add_argument("--mon-port", "-m", dest="monitor_port", metavar="<port>",
+                        help="Monitor control interface port", type=int, default=None)
+    general.add_argument("--log",     "-l", dest="log_file", metavar="<file>",
+                        help="Redirect console output to a log file (for CI use)", default=None)
+    general.add_argument("--verbose", "-v", action="store_true", help="Enable debug messages")
+    general.add_argument("--high-priority", "-P", dest="high_priority",
+                        help="Increase process priority for USB server (requires elevated privileges)", action="store_true", default=False)
+
 
     # two-phase parse
     argv = sys.argv[1:]
@@ -1604,30 +1987,31 @@ def parse_arguments():
         # top-level parse errors like "invalid choice" -> no epilog (as desired)
         raise
 
-    # Missing server type -> show top-level epilog ONCE
+    # Missing server type
     if top_ns.server_type is None:
-        choices = " | ".join(subparsers.choices.keys())
-        parser.error_with_epilog(f"server-type specification is required: {{{choices}}}")
+        if top_ns.ctrl_yml is None:
+            # Set default server type to "usb" if not specified in CLI or YAML
+            top_ns.server_type = "usb"
+    else:
+        # 2) Hand EXACT user tokens to the chosen subparser (everything after the server type token)
+        try:
+            i = argv.index(top_ns.server_type)
+        except ValueError:
+            # Fallback: if not found for some reason, let subparser try the remainder
+            i = 0
+        sub_args = argv[i + 1:]
+        subparser = subparsers.choices[top_ns.server_type]
 
-    # 2) Hand EXACT user tokens to the chosen subparser (everything after the server type token)
-    try:
-        i = argv.index(top_ns.server_type)
-    except ValueError:
-        # Fallback: if not found for some reason, let subparser try the remainder
-        i = 0
-    sub_args = argv[i + 1:]
-    subparser = subparsers.choices[top_ns.server_type]
+        # This will raise with subparser usage + our per-server hint on error
+        sub_ns = subparser.parse_args(sub_args)
 
-    # This will raise with subparser usage + our per-server hint on error
-    sub_ns = subparser.parse_args(sub_args)
+        # Manual mutual-exclusion for socket so both options appear in one group
+        if top_ns.server_type == "socket" and sub_ns.ip is not None and sub_ns.interface is not None:
+            subparser.error("options --ipaddr and --interface are mutually exclusive.")
 
-    # Manual mutual-exclusion for socket so both options appear in one group
-    if top_ns.server_type == "socket" and sub_ns.ip is not None and sub_ns.interface is not None:
-        subparser.error("options --ipaddr and --interface are mutually exclusive.")
-
-    # Merge namespaces (global + subcommand) for downstream use
-    for k, v in vars(sub_ns).items():
-        setattr(top_ns, k, v)
+        # Merge namespaces (global + subcommand) for downstream use
+        for k, v in vars(sub_ns).items():
+            setattr(top_ns, k, v)
     return top_ns
 
 async def main():
@@ -1644,15 +2028,85 @@ async def main():
     global printer
     printer = log
 
-    manager = sdsio_manager(args.work_dir)
+    # Open and parse the control YAML if provided, and apply any configuration
+    # CLI arguments will override YAML settings where applicable (e.g. server type)
+    ctrl_data = {}
+    if args.ctrl_yml:
+        ctrl_yml_path = os.path.abspath(args.ctrl_yml)
+        try:
+            with open(ctrl_yml_path, 'r') as yml_file:
+                yml_data = yaml.safe_load(yml_file)
+            if 'sdsio' in yml_data:
+                ctrl_data = yml_data['sdsio']
+            else:
+                raise ValueError("Invalid control YAML.")
+        except Exception as e:
+            printer.error(f"Failed to load control YAML: {e}")
+
+    # Server type
+    if args.server_type is not None:
+        # Server configuration from CLI arguments (overrides YAML)
+        server_type = args.server_type
+        if server_type == "socket":
+            interface = args.interface
+            ip = args.ip
+            port = args.port
+        elif server_type == "serial":
+            port = args.port
+            baudrate = args.baudrate
+            parity = PARITY_NAME_MAP[args.parity]
+            stop_bits = args.stop_bits
+            connect_timeout = args.connect_timeout
+        elif server_type == "usb":
+            high_priority = args.high_priority
+    else:
+        # Server type from YAML (fallback if not specified in CLI)
+        # The interface type is determined by which subnode is present: usb, serial, or socket
+        iface_node = ctrl_data.get('interface', None)
+        if iface_node and 'serial' in iface_node:
+            server_type = 'serial'
+            iface_cfg = iface_node['serial'] or {}
+        elif iface_node and 'socket' in iface_node:
+            server_type = 'socket'
+            iface_cfg = iface_node['socket'] or {}
+        else:
+            server_type = 'usb'  # default
+            iface_cfg = (iface_node.get('usb') or {}) if iface_node else {}
+        if server_type == "socket":
+            socket_iface = iface_cfg.get('netif', None)
+            ip = iface_cfg.get('ipaddr', None)
+            port = iface_cfg.get('port', 5050)
+        elif server_type == "serial":
+            port = iface_cfg.get('port')
+            baudrate = iface_cfg.get('baudrate', 115200)
+            parity = PARITY_NAME_MAP.get(str(iface_cfg.get('parity', 'none')).lower(), serial.PARITY_NONE)
+            stop_bits = iface_cfg.get('stopbits', serial.STOPBITS_ONE)
+            connect_timeout = None  # YAML config does not support connect timeout
+        elif server_type == "usb":
+            high_priority = iface_cfg.get('high_priority', False)
+
+    # Working directory
+    if args.work_dir:
+        work_dir = args.work_dir
+    else:
+        work_dir = ctrl_data.get('workdir', os.getcwd()) if ctrl_data else os.getcwd()
+    if not path.isdir(work_dir):
+        raise ValueError("Working directory does not exist!")
+
+    # Auto playback
+    auto_playback = args.auto_playback if args.auto_playback else False
+
+    # Playback list
+    play_list: Optional[list] = ctrl_data.get('play', None) if ctrl_data else None
+
+    manager = sdsio_manager(work_dir=work_dir, auto_playback=auto_playback, play_list=play_list, mon_port = args.monitor_port)
 
     try:
-        if args.server_type == "socket":
-            ip = args.ip
-            if not ip and args.interface:
+        if server_type == "socket":
+            if not ip and socket_iface:
                 adapters = ifaddr.get_adapters()
                 for adapter in adapters:
-                    if adapter.name == args.interface or adapter.nice_name == args.interface:
+                    if adapter.name == socket_iface or adapter.nice_name == socket_iface:
                         for ip_info in adapter.ips:
                             try:
                                 socket.inet_pton(socket.AF_INET, ip_info.ip)
@@ -1664,15 +2118,15 @@ async def main():
                         break
             if not ip:
                 ip = socket.gethostbyname(socket.gethostname())
-            await sdsio_server_socket_run_supervised(ip, args.port, manager)
+            await sdsio_server_socket_run_supervised(ip, port, manager)
 
-        elif args.server_type == "serial":
-            sdsio_server_serial_run_supervised(args.port, args.baudrate, args.parity,
-                                               args.stop_bits, args.connect_timeout, manager)
+        elif server_type == "serial":
+            sdsio_server_serial_run_supervised(port, baudrate, parity,
+                                               stop_bits, connect_timeout, manager)
 
-        elif args.server_type == "usb":
+        elif server_type == "usb":
             loop = asyncio.get_running_loop()
-            srv = sdsio_server_usb(manager, loop, high_priority=args.high_priority)
+            srv = sdsio_server_usb(manager, loop, high_priority=high_priority)
             printer.info("Starting USB Server...")
             await srv.start()
 
