@@ -19,8 +19,8 @@ This user's guide assumes basic knowledge about Cortex-M software development. I
 
 Version            | Description
 :------------------|:-------------------------
-3.0.0              | [Major updated release of the SDS-Framework](https://github.com/ARM-software/SDS-Framework/releases/tag/v3.0.0)
-2.1.0              | [Minor updated release of the SDS-Framework](https://github.com/ARM-software/SDS-Framework/releases/tag/v2.1.0)
-2.0.0              | [Major updated release of the SDS-Framework](https://github.com/ARM-software/SDS-Framework/releases/tag/v2.0.0)
-1.1.0              | [Minor updated version of the SDS-Framework](https://github.com/ARM-software/SDS-Framework/releases/tag/v1.1.0)
+3.0.0              | [Major rework of the SDS-Framework and SDSIO-Server](https://github.com/ARM-software/SDS-Framework/releases/v3.0.0). A single firmware image enables record/play control and user status exchange (using sdsFlags variable). The monitor interface connects the SDSIO-Server [SDS extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-sds) with an intuitive user interface.
+2.1.0              | [Minor update of the SDS-Framework](https://github.com/ARM-software/SDS-Framework/releases/v2.1.0)
+2.0.0              | [Major update of the SDS-Framework](https://github.com/ARM-software/SDS-Framework/releases/v2.0.0)
+1.1.0              | [Minor update of the SDS-Framework](https://github.com/ARM-software/SDS-Framework/releases/v1.1.0)
 1.0.0              | Initial release of the SDS-Framework

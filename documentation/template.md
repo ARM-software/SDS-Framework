@@ -15,37 +15,37 @@ The following [SDSIO interfaces](sdsio.md) are pre-configured:
 
 - [Ethernet Interface](sdsio.md#layer-sdsio_network) using the MDK-Middleware Network component.
 - [USB Bulk Interface](sdsio.md#layer-sdsio_usb) using the MDK-Middleware USB component.
+- [RTT (Real-Time Transfer)](sdsio.md#layer-sdsio_rtt) using the SEGGER RTT component for I/O via the debug adapter.
 - [Memory Card Interface](sdsio.md#layer-sdsio_fs) using the MDK-Middleware File System component.
-
 With a custom SDSIO interface, alternative I/O configurations are possible.
 
 ## SDS Template Structure
 
-The structure of the SDS template application is shown below. Two projects select between data communication test and user algorithm test. Two target-types allow to deploy the test application on hardware (evaluation board) or AVH FVP (simulation model).
+The structure of the SDS template application is shown below. Two projects let you choose between a data communication test and a user algorithm test. Two target types let you deploy the test application either on hardware (evaluation board) or on an AVH FVP (simulation model).
 
-A standard board layer that is provided in several BSP provides the hardware interface. The SDSIO layer uses for communication the MDK-Middleware or on AVH FVP target a virtual simulation interface (VSI).
+A standard board layer, provided by several BSPs, implements the hardware interface. For communication, the SDSIO layer uses the MDK-Middleware or (for the AVH FVP target) a virtual simulation interface (VSI).
 
 ![SDS Template Structure](images/Template_Structure.png)
 
-The `Debug` and `Release` build types differ only in optimization level and the amount of debug information output to the STDIO channel.
-Both build types support recording and playback, which are controlled via the SDSIO Server control interface.
+The `Debug` and `Release` build types differ only in the optimization level and the amount of debug information printed.
+Both build types support recording and playback, controlled via `sdsFlags`. The `sdsFlags` value can be modified by the SDS application (using the function `sdsFlagsModify`) or by the SDSIO-Server, making it easy to switch between Record Mode and Playback Mode.
 
 !!! Note
     Implementations using file system support only recording mode.
 
-The recording mode captures both the input data stream and the algorithm’s output data stream simultaneously.
+### Record Mode
 
-SDS recording diagram:
+Record mode captures the input data stream and the algorithm output data stream simultaneously.
 
-![Build-Type: Rec](images/Example_Record.png)
+![Record Mode](images/Example_Record.png "Record Mode")
 
-The playback mode allows replaying the input data stream while simultaneously recording the algorithm’s output data stream.
+### Playback Mode
+
+Playback mode replays the input data stream while recording the algorithm output data stream at the same time.
 The test application can run either on hardware (evaluation board) or on an AVH FVP (simulation model).
 Because the input data stream can be repeated, it enables consistent verification and optimization of the algorithm while capturing the resulting output data stream.
 
-SDS playback diagram:
-
-![Build-Type: Play](images/Example_Playback.png)
+![Playback Mode](images/Example_Playback.png "Playback Mode")
 
 ## Working with the SDS Template
 
