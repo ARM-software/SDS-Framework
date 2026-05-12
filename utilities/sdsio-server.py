@@ -41,7 +41,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.6"
+SDSIO_SERVER_VERSION = "0.9.7"
 
 # SDSIO protocol command IDs
 CMD_OPEN        = 1
@@ -664,7 +664,7 @@ class sdsio_manager:
                                 # Complete record: write and reset for next record
                                 file_obj.write(data)
                                 data = bytearray()
-                printer.info(f"Closed: {name} ({sds_file_path})")
+                printer.info(f"Closed:   {name} ({sds_file_path})")
                 if self.monitor:
                     self.monitor.send_close_msg(sds_file_path)
                 if eof_reached:
@@ -689,7 +689,7 @@ class sdsio_manager:
                             buf.write(data)
                         else:
                             break  # EOF on this file, move to next label
-                printer.info(f"Closed: {name} ({sds_file_path})")
+                printer.info(f"Closed:   {name} ({sds_file_path})")
                 if self.monitor:
                     self.monitor.send_close_msg(sds_file_path)
         except Exception:
@@ -703,15 +703,10 @@ class sdsio_manager:
             step = self.play_list[self.play_step_index]
             labels = list(step.get('labels', []))
         else:
-            # No playlist: auto-discover numeric labels
-            idx = 0
-            while True:
-                candidate = path.join(self.work_dir, f"{name}.{idx}.sds")
-                if path.exists(candidate):
-                    labels.append(str(idx))
-                    idx += 1
-                else:
-                    break
+            # No playlist: one file per open, indexed by play_step_index
+            candidate = path.join(self.work_dir, f"{name}.{self.play_step_index}.sds")
+            if path.exists(candidate):
+                labels.append(str(self.play_step_index))
         return labels
 
     def _open(self, mode, name):
@@ -753,7 +748,7 @@ class sdsio_manager:
                         recdir = step.get('recdir', None)
                         self.work_dir = path.normpath(path.join(self.default_work_dir, recdir)) if recdir else self.default_work_dir
                     else:
-                        printer.info(f"End of playlist. No more steps available for playback stream '{name}'.")
+                        printer.error(f"Open Failed. End of playlist. No more steps available for playback stream '{name}'.")
                         return resp_err
                 else:
                     self.work_dir = self.default_work_dir
@@ -767,7 +762,10 @@ class sdsio_manager:
                 # Create label list
                 play_label_list = self._create_play_label_list(name)
                 if not play_label_list:
-                    printer.info(f"No files found for playback stream '{name}'.")
+                    if not self.play_list and self.play_step_index > 0:
+                        printer.error(f"Open Failed. No more files available for playback stream '{name}'.")
+                    else:
+                        printer.error(f"Open Failed. No files found for playback stream '{name}'.")
                     return resp_err
                 self.label_list = play_label_list
 
