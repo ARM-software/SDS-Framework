@@ -41,7 +41,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.8"
+SDSIO_SERVER_VERSION = "0.9.9"
 
 # SDSIO protocol command IDs
 CMD_OPEN        = 1
@@ -1844,8 +1844,8 @@ def parse_arguments():
     top_epilog = (
         "keyboard input (while running):\n"
         "  R/r  start recording      P/p  start playback\n"
-        "  S/s  stop                 A-H  set user flags 0-7\n"
-        "  X/x  terminate server     a-h  clear user flags 0-7\n"
+        "  S/s  stop rec/play        X/x  terminate server\n"
+        "  A-H  set user flags 0-7   a-h  clear user flags 0-7\n"
         "\n"
         "examples:\n"
         "  %(prog)s -c sdsio.yml                     # Recommended: all config in YAML\n"
@@ -1853,7 +1853,7 @@ def parse_arguments():
         "  %(prog)s -c sdsio.yml --mon-port 6060     # With VS Code SDS extension monitor\n"
         "  %(prog)s usb --workdir ./data             # USB server, explicit work dir\n"
         "  %(prog)s socket --port 5050               # TCP socket server\n"
-        "  %(prog)s serial -p COM3 --baudrate 115200\n"
+        "  %(prog)s serial --port COM3 --baudrate 115200\n"
         "\n"
         "server type help:\n"
         "  %(prog)s socket -h\n"
@@ -1872,16 +1872,12 @@ def parse_arguments():
         epilog=top_epilog,
     )
     parser._is_top_level = True
-    parser.usage = "%(prog)s [-h] [-c sdsio.yml | {socket | serial | usb} [server-opts]] [options]"
+    parser.usage = "%(prog)s [-h] [-V] [{socket | serial | usb} [if-opts]] [-c sdsio.yml] [general-opts]"
 
     options = parser.add_argument_group("options")
-    options.add_argument("--help", "-h", help="Show this help message and exit", action="help")
+    options.add_argument("--help", "-h", help="Show this help message", action="help")
     options.add_argument("--version", "-V", action="version",
-                         help="Show program's version number and exit", version=f"%(prog)s {SDSIO_SERVER_VERSION}")
-
-    configuration = parser.add_argument_group("configuration")
-    configuration.add_argument("--control", "-c", dest="ctrl_yml", metavar="<*.sdsio.yml>",
-                        help="Configure interface, SDS file directories, and playback steps", required=False)
+                         help="Show program's version number", version=f"%(prog)s {SDSIO_SERVER_VERSION}")
 
     # Subparsers
     subparsers = parser.add_subparsers(
@@ -1890,6 +1886,30 @@ def parse_arguments():
         metavar="{socket | serial | usb}",
         parser_class=MSStyleArgumentParser
     )
+
+    configuration = parser.add_argument_group("configuration")
+    configuration.add_argument("--control", "-c", dest="ctrl_yml", metavar="<*.sdsio.yml>",
+                        help="Configure interface, SDS file directories, and playback steps", required=False)
+
+    def _add_general_opts(p):
+        """Append a general-opts group to subparser p (called after server-specific groups)."""
+        g = p.add_argument_group("general-opts")
+        g.add_argument("--playback", "-p", dest="auto_playback", action="store_true",
+                       help="Start SDSIO-Server in playback mode (used in CI tests)",
+                       default=argparse.SUPPRESS)
+        g.add_argument("--workdir", dest="work_dir", metavar="<path>",
+                       help="Directory for SDS files (overrides *.sdsio.yml; default: current directory)",
+                       type=dir_path, default=argparse.SUPPRESS)
+        g.add_argument("--mon-port", "-m", dest="monitor_port", metavar="<port>",
+                       help="Monitor control interface port", type=int, default=argparse.SUPPRESS)
+        g.add_argument("--log", "-l", dest="log_file", metavar="<file>",
+                       help="Redirect console output to a log file (for CI use)",
+                       default=argparse.SUPPRESS)
+        g.add_argument("--verbose", "-v", action="store_true",
+                       help="Enable debug messages", default=argparse.SUPPRESS)
+        g.add_argument("--high-priority", dest="high_priority",
+                       help="Increase process priority for USB server (requires elevated privileges)",
+                       action="store_true", default=argparse.SUPPRESS)
 
     # socket
     parser_socket = subparsers.add_parser(
@@ -1901,9 +1921,9 @@ def parse_arguments():
     )
     parser_socket._is_subparser = True
     parser_socket._error_hint = "For help on how to use the socket server and its arguments, run: %(prog)s -h"
-    parser_socket.usage = "%(prog)s [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>]"
+    parser_socket.usage = "%(prog)s [-h] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [general-opts]"
 
-    socket_group = parser_socket.add_argument_group("socket arguments (optional)")
+    socket_group = parser_socket.add_argument_group("if-opts (optional)")
     socket_group.add_argument("--ipaddr", dest="ip", metavar="<IP>",
                               help="Server IP address (example: 192.168.0.100), cannot be used with 'netif'",
                               type=ip_validator, default=None)
@@ -1912,6 +1932,7 @@ def parse_arguments():
                               type=interface_validator, default=None)
     socket_group.add_argument("--port", dest="port", metavar="<TCP Port>",
                               help="TCP port number (default: 5050)", type=int, default=5050)
+    _add_general_opts(parser_socket)
 
     # serial
     parser_serial = subparsers.add_parser(
@@ -1923,13 +1944,13 @@ def parse_arguments():
     )
     parser_serial._is_subparser = True
     parser_serial._error_hint = "For help on how to use the serial server and its arguments, run: %(prog)s -h"
-    parser_serial.usage = "%(prog)s -p <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>]"
+    parser_serial.usage = "%(prog)s [-h] --port <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>] [general-opts]"
 
-    serial_required = parser_serial.add_argument_group("serial arguments (required)")
-    serial_required.add_argument("-p", dest="port", metavar="<Serial Port>",
+    serial_required = parser_serial.add_argument_group("if-opts (required)")
+    serial_required.add_argument("--port", dest="port", metavar="<Serial Port>",
                                  help="Serial port (required)", required=True)
 
-    serial_optional = parser_serial.add_argument_group("serial arguments (optional)")
+    serial_optional = parser_serial.add_argument_group("if-opts (optional)")
     serial_optional.add_argument("--baudrate", dest="baudrate", metavar="<Baudrate>",
                                  help="Baudrate (default: 115200)", type=int, default=115200)
     parity_help = "Parity: none, even, odd, mark, space (default: none)"
@@ -1944,6 +1965,7 @@ def parse_arguments():
     serial_optional.add_argument("--connect-timeout", dest="connect_timeout", metavar="<Timeout>",
                                  help="Serial port connection timeout in seconds (default: no timeout)",
                                  type=float, default=None)
+    _add_general_opts(parser_serial)
 
     # usb
     parser_usb = subparsers.add_parser(
@@ -1955,11 +1977,10 @@ def parse_arguments():
     )
     parser_usb._is_subparser = True
     parser_usb._error_hint = "For help on how to use the usb server and its arguments, run: %(prog)s -h"
-    parser_usb.usage = "%(prog)s [--high-priority]"
+    parser_usb.usage = "%(prog)s [-h] [general-opts]"
+    _add_general_opts(parser_usb)
 
-    usb_group = parser_usb.add_argument_group("usb arguments (optional)")
-
-    general = parser.add_argument_group("general options")
+    general = parser.add_argument_group("general-opts")
     general.add_argument("--playback", "-p", dest="auto_playback", action="store_true",
                          help="Start SDSIO-Server in playback mode (used in CI tests)", default=None)
     general.add_argument("--workdir", dest="work_dir", metavar="<path>",
@@ -1969,7 +1990,7 @@ def parse_arguments():
     general.add_argument("--log",     "-l", dest="log_file", metavar="<file>",
                         help="Redirect console output to a log file (for CI use)", default=None)
     general.add_argument("--verbose", "-v", action="store_true", help="Enable debug messages")
-    general.add_argument("--high-priority", "-P", dest="high_priority",
+    general.add_argument("--high-priority", dest="high_priority",
                         help="Increase process priority for USB server (requires elevated privileges)", action="store_true", default=False)
 
 
@@ -1998,8 +2019,9 @@ def parse_arguments():
         sub_args = argv[i + 1:]
         subparser = subparsers.choices[top_ns.server_type]
 
-        # This will raise with subparser usage + our per-server hint on error
-        sub_ns = subparser.parse_args(sub_args)
+        # parse_known_args so opts already handled by the top-level parser
+        # (e.g. -c) placed before the server type token are silently ignored
+        sub_ns, _ = subparser.parse_known_args(sub_args)
 
         # Manual mutual-exclusion for socket so both options appear in one group
         if top_ns.server_type == "socket" and sub_ns.ip is not None and sub_ns.interface is not None:
