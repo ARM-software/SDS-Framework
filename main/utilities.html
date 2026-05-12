@@ -221,7 +221,7 @@ It communicates with the target using these <a href="https://github.com/ARM-soft
 <li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_socket.c">socket</a> for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.</li>
 <li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_usb_mdk.c">usb/bulk</a> for communication via USB Bulk transfer using MDK-Middleware.</li>
 </ul>
-<p>The SDS data stream is recorded to played back from <code>*.sds</code> files with the following naming convention:</p>
+<p>The SDS data stream is recorded to and played back from <code>*.sds</code> files with the following naming convention:</p>
 <p><code>&lt;name&gt;.&lt;label&gt;[.p].sds</code>  (where <code>[.p]</code> is optional and present only for recorded files in playback mode)</p>
 <p>For more details see <a href="theory.html#filenames">Filenames section</a></p>
 <p>The data content of the <code>&lt;name&gt;.&lt;label&gt;[.p].sds</code> is described with metadata file <code>&lt;name&gt;.sds.yml</code> in <a href="https://github.com/ARM-software/SDS-Framework/tree/main/schema">YAML format</a>.</p>
@@ -231,17 +231,14 @@ It communicates with the target using these <a href="https://github.com/ARM-soft
 <li>Configure via a YAML control file (<code>-c *.sdsio.yml</code>) or specify the interface directly on the command line.</li>
 <li>Terminate the server with <code>Ctrl+C</code> or by pressing <code>X</code>.</li>
 </ul>
-<pre><code class="language-txt">usage: sdsio-server.py [-h] [-c sdsio.yml | {socket | serial | usb} [server-opts]] [options]
+<pre><code class="language-txt">usage: sdsio-server.py [-h] [-V] [{socket | serial | usb} [if-opts]] [-c sdsio.yml] [general-opts]
 
 SDSIO-Server: record and playback SDS data stream files over USB, socket, or serial interface.
 Configure via *.sdsio.yml file or specify the interface parameters directly on the command line.
 
 options:
-  --help, -h                   Show this help message and exit
-  --version, -V                Show program's version number and exit
-
-configuration:
-  --control, -c &lt;*.sdsio.yml&gt;  Configure interface, SDS file directories, and playback steps
+  --help, -h                   Show this help message
+  --version, -V                Show program's version number
 
 interface (optional, default: usb; overrides interface in *.sdsio.yml):
   {socket | serial | usb}
@@ -249,20 +246,21 @@ interface (optional, default: usb; overrides interface in *.sdsio.yml):
     serial                     Run serial server
     usb                        Run USB bulk server
 
-general options:
+configuration:
+  --control, -c &lt;*.sdsio.yml&gt;  Configure interface, SDS file directories, and playback steps
+
+general-opts:
   --playback, -p               Start SDSIO-Server in playback mode (used in CI tests)
   --workdir &lt;path&gt;             Directory for SDS files (overrides *.sdsio.yml; default: current directory)
   --mon-port, -m &lt;port&gt;        Monitor control interface port
   --log, -l &lt;file&gt;             Redirect console output to a log file (for CI use)
   --verbose, -v                Enable debug messages
-  --high-priority, -P          Increase process priority for USB server (requires elevated privileges)
+  --high-priority              Increase process priority for USB server (requires elevated privileges)
 </code></pre>
 <p><strong>Keyboard input (while running):</strong></p>
 <table>
 <thead>
 <tr>
-<th>Key</th>
-<th>Action</th>
 <th>Key</th>
 <th>Action</th>
 </tr>
@@ -271,51 +269,57 @@ general options:
 <tr>
 <td>R/r</td>
 <td>Start recording</td>
+</tr>
+<tr>
 <td>P/p</td>
 <td>Start playback</td>
 </tr>
 <tr>
 <td>S/s</td>
-<td>Stop</td>
+<td>Stop  recording/playback</td>
+</tr>
+<tr>
 <td>A-H</td>
 <td>Set user flags 0-7</td>
 </tr>
 <tr>
-<td>X/x</td>
-<td>Terminate server</td>
 <td>a-h</td>
 <td>Clear user flags 0-7</td>
+</tr>
+<tr>
+<td>X/x</td>
+<td>Terminate server</td>
 </tr>
 </tbody>
 </table>
 <h4 id="serial-mode">Serial Mode</h4>
-<pre><code class="language-txt">usage: sdsio-server.py serial -p &lt;Serial Port&gt; [--baudrate &lt;Baudrate&gt;] [--parity &lt;Parity&gt;] [--stopbits &lt;Stop bits&gt;] [--connect-timeout &lt;Timeout&gt;]
+<pre><code class="language-txt">usage: sdsio-server.py serial [-h] --port &lt;Serial Port&gt; [--baudrate &lt;Baudrate&gt;] [--parity &lt;Parity&gt;] [--stopbits &lt;Stop bits&gt;] [--connect-timeout &lt;Timeout&gt;] [general-opts]
 
 options:
   -h, --help                   show this help message and exit
 
-serial arguments (required):
-  -p &lt;Serial Port&gt;             Serial port (required)
+if-opts (required):
+  --port &lt;Serial Port&gt;         Serial port (required)
 
-serial arguments (optional):
+if-opts (optional):
   --baudrate &lt;Baudrate&gt;        Baudrate (default: 115200)
   --parity &lt;Parity&gt;            Parity: none, even, odd, mark, space (default: none)
   --stopbits &lt;Stop bits&gt;       Stop bits: 1, 1.5, 2 (default: 1)
   --connect-timeout &lt;Timeout&gt;  Serial port connection timeout in seconds (default: no timeout)
 </code></pre>
 <p><strong>Example:</strong></p>
-<pre><code class="language-bash">python sdsio-server.py serial -p COM0 --baudrate 115200 --workdir ./work_dir
+<pre><code class="language-bash">python sdsio-server.py serial --port COM0 --baudrate 115200 --workdir ./work_dir
 </code></pre>
 <h4 id="socket-mode">Socket Mode</h4>
-<pre><code class="language-txt">usage: sdsio-server.py socket [--ipaddr &lt;IP&gt; | --netif &lt;Interface&gt;] [--port &lt;TCP Port&gt;]
+<pre><code class="language-txt">usage: sdsio-server.py socket [-h] [--ipaddr &lt;IP&gt; | --netif &lt;Interface&gt;] [--port &lt;TCP Port&gt;] [general-opts]
 
 options:
-  -h, --help           show this help message and exit
+  -h, --help             show this help message and exit
 
-socket arguments (optional):
-  --ipaddr &lt;IP&gt;        Server IP address (example: 192.168.0.100), cannot be used with 'netif'
-  --netif &lt;Interface&gt;  Network interface (example: eth0), cannot be used with 'ipaddr'
-  --port &lt;TCP Port&gt;    TCP port number (default: 5050)
+if-opts (optional):
+  --ipaddr &lt;IP&gt;          Server IP address (example: 192.168.0.100), cannot be used with 'netif'
+  --netif &lt;Interface&gt;    Network interface (example: eth0), cannot be used with 'ipaddr'
+  --port &lt;TCP Port&gt;      TCP port number (default: 5050)
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -344,10 +348,10 @@ socket arguments (optional):
 <pre><code class="language-bash">python sdsio-server.py socket --netif eth0 --workdir ./work_dir
 </code></pre>
 <h4 id="usb-mode">USB Mode</h4>
-<pre><code class="language-txt">usage: sdsio-server.py usb [--high-priority]
+<pre><code class="language-txt">usage: sdsio-server.py usb [-h] [general-opts]
 
 options:
-  -h, --help  show this help message and exit
+  -h, --help             show this help message and exit
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -365,11 +369,7 @@ options:
 <ul>
 <li>On <strong>macOS</strong>, the <strong>libusb</strong> system library is required. If not already installed, you can install it using with <a href="https://brew.sh/">Homebrew</a>:</li>
 </ul>
-<p>```bash</p>
-<blockquote>
-<p>brew install libusb
-```</p>
-</blockquote>
+<p><code>&gt;brew install libusb</code></p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -402,7 +402,7 @@ python sdsio-server.py usb --workdir ./data
 python sdsio-server.py socket --port 5050
 
 # Serial server
-python sdsio-server.py serial -p COM3 --baudrate 115200
+python sdsio-server.py serial --port COM3 --baudrate 115200
 </code></pre>
 <h2 id="sds-view">SDS-View</h2>
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-View</strong></a> outputs a time-based plot of SDS data files (<code>&lt;name&gt;.&lt;index&gt;.sds</code>) based on the meta-data file (<code>&lt;name&gt;.sds.yml</code>).</p>
