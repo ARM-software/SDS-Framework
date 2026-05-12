@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="dir_1d44a5f7f14d92ad6a9ebe4f79918185" kind="dir">
+    <compoundname>sds/sdsio</compoundname>
+    <innerdir refid="dir_3b29f9c6a44e933bcd0b782bd8b86dc3">sds/sdsio/include</innerdir>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="sds/sdsio/"/>
+  </compounddef>
+</doxygen>

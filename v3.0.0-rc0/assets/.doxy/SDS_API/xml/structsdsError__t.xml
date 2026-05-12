@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="structsdsError__t" kind="struct" language="C++" prot="public">
+    <compoundname>sdsError_t</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structsdsError__t_1a20d203ba1c418d9e8c1af7d394b90215" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t sdsError_t::status</definition>
+        <argsstring></argsstring>
+        <name>status</name>
+        <qualifiedname>sdsError_t::status</qualifiedname>
+        <briefdescription>
+<para>The error status code (see <ref refid="group__SDS__Return__Codes" kindref="compound">Function Return Codes</ref>). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="138" column="11" bodyfile="sds/include/sds.h" bodystart="138" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structsdsError__t_1a855d0a5dc827f2142765345545a9d4d2" prot="public" static="no" mutable="no">
+        <type>const char *</type>
+        <definition>const char* sdsError_t::file</definition>
+        <argsstring></argsstring>
+        <name>file</name>
+        <qualifiedname>sdsError_t::file</qualifiedname>
+        <briefdescription>
+<para>Pointer to the file name in which the error occurred. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="139" column="14" bodyfile="sds/include/sds.h" bodystart="139" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structsdsError__t_1aabe87ecb25a1fbef68a3fb263b848acd" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t sdsError_t::line</definition>
+        <argsstring></argsstring>
+        <name>line</name>
+        <qualifiedname>sdsError_t::line</qualifiedname>
+        <briefdescription>
+<para>Line number at which the error occurred. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="140" column="12" bodyfile="sds/include/sds.h" bodystart="140" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structsdsError__t_1aa12bcf3aa1d6c2cfb0b269f6ce68070b" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t sdsError_t::occurred</definition>
+        <argsstring></argsstring>
+        <name>occurred</name>
+        <qualifiedname>sdsError_t::occurred</qualifiedname>
+        <briefdescription>
+<para>Flag indicating that an error has occurred. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="141" column="11" bodyfile="sds/include/sds.h" bodystart="141" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="sds/include/sds.h" line="137" column="1" bodyfile="sds/include/sds.h" bodystart="137" bodyend="142"/>
+    <listofallmembers>
+      <member refid="structsdsError__t_1a855d0a5dc827f2142765345545a9d4d2" prot="public" virt="non-virtual"><scope>sdsError_t</scope><name>file</name></member>
+      <member refid="structsdsError__t_1aabe87ecb25a1fbef68a3fb263b848acd" prot="public" virt="non-virtual"><scope>sdsError_t</scope><name>line</name></member>
+      <member refid="structsdsError__t_1aa12bcf3aa1d6c2cfb0b269f6ce68070b" prot="public" virt="non-virtual"><scope>sdsError_t</scope><name>occurred</name></member>
+      <member refid="structsdsError__t_1a20d203ba1c418d9e8c1af7d394b90215" prot="public" virt="non-virtual"><scope>sdsError_t</scope><name>status</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="group__SDS__Event__Codes" kind="group">
+    <compoundname>SDS_Event_Codes</compoundname>
+    <title>Event Codes</title>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="group__SDS__Event__Codes_1ga7c2482f9b5c93e6a51f3b13c8621963b" prot="public" static="no">
+        <name>SDS_EVENT_ERROR_IO</name>
+        <initializer>(1UL)</initializer>
+        <briefdescription>
+<para>Event triggered when an SDS I/O error occurs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="45" column="9" bodyfile="sds/include/sds.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Event__Codes_1ga88867f7d5275af88378fd59c4790603a" prot="public" static="no">
+        <name>SDS_EVENT_NO_SPACE</name>
+        <initializer>(2UL)</initializer>
+        <briefdescription>
+<para>Event triggered when <ref refid="group__SDS__Interface_1ga08ace9f59d5d5dcf5f671ec2738a174a" kindref="member">sdsWrite</ref> fails due to insufficient space in the SDS circular buffer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="46" column="9" bodyfile="sds/include/sds.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Event__Codes_1gacd2820b46a0b739dcdf507a144bcbf20" prot="public" static="no">
+        <name>SDS_EVENT_NO_DATA</name>
+        <initializer>(4UL)</initializer>
+        <briefdescription>
+<para>Event triggered when <ref refid="group__SDS__Interface_1gacb7b42f9087f9de9fe5021db3318751e" kindref="member">sdsRead</ref> fails due to insufficient data in the SDS circular buffer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="47" column="9" bodyfile="sds/include/sds.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>SDS Event Codes. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The following values are passed as event value to the <ref refid="group__SDS__Interface_1ga9a26c990f6c41064d04a15401f24b902" kindref="member">sdsEvent_t</ref> callback function. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>
