@@ -30,15 +30,14 @@ The following MDK-Middleware USB software components are required:
 
 ### USB Vendor ID and Product ID
 
-The default `USBD_Config_0.h` contains placeholder Vendor ID (VID) and Product ID (PID) values that **must** be replaced before deployment:
+The default `USBD_Config_0.h` contains placeholder Vendor ID (VID) and Product ID (PID) values:
 
 ```c
 #define USBD0_DEV_DESC_IDVENDOR         0xC251   // replace with your own VID
 #define USBD0_DEV_DESC_IDPRODUCT        0x8007   // replace with your own PID
 ```
 
-- **VID**: Must be a VID assigned to your organization by [USB-IF](https://www.usb.org/getting-vendor-id). Do not use the Keil VID (`0xC251`) in a product.
-- **PID**: Assign a product-specific value within your VID namespace.
+The VID=0xC251 (Keil) and PID=0x8007 can be used for internal testing environments with limited access. For deployments with public access, a VID/PID for mass production should be assigned.
 
 ## Starting SDSIO Server
 
