@@ -41,7 +41,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.7"
+SDSIO_SERVER_VERSION = "0.9.8"
 
 # SDSIO protocol command IDs
 CMD_OPEN        = 1
@@ -140,13 +140,15 @@ class ByteStreamBuffer:
 #                               Safe print                                     #
 # ---------------------------------------------------------------------------- #
 class safe_print:
+    _SPINNER = '|/-\\'
+
     def __init__(self, level=logging.INFO, formatter=None):
         if isinstance(formatter, str):
             formatter = logging.Formatter(formatter)
         self._lock = threading.Lock()
         self._logger = logging.getLogger("sdsio_logger")
-        self._progress_dots_num = 0
-        self._progress_dots_printing = False
+        self._spinner_idx = 0
+        self._spinner_active = False
 
         # Avoid adding duplicate handlers if logger already exists
         if not self._logger.handlers:
@@ -187,25 +189,21 @@ class safe_print:
             self._clear_progress()
             self._logger.exception(msg)
 
-    def progress_dots(self, mgr):
+    def progress_spinner(self, mgr):
         with self._lock:
             if mgr.opened_streams:
-                self._progress_dots_printing = True
-                if self._progress_dots_num == 16:
-                    self._progress_dots_num = 0
-                    sys.stdout.write("\r" + " " * 80 + "\r.")
-                    sys.stdout.flush()
-                else:
-                    sys.stdout.write(".")
+                frame = self._SPINNER[self._spinner_idx % len(self._SPINNER)]
+                sys.stdout.write(f"\r{frame}")
                 sys.stdout.flush()
-                self._progress_dots_num += 1
+                self._spinner_idx += 1
+                self._spinner_active = True
 
     def _clear_progress(self):
-        if self._progress_dots_printing:
-            sys.stdout.write("\n")
+        if self._spinner_active:
+            sys.stdout.write("\r \r")
             sys.stdout.flush()
-            self._progress_dots_num = 0
-            self._progress_dots_printing = False
+            self._spinner_active = False
+            self._spinner_idx = 0
 
 
 # Global printer object for logging
@@ -226,7 +224,7 @@ class StatusBar:
     def _run(self):
         while not self._stop.is_set():
             if (self.mgr.time_last_rw + self.interval) > time.time():
-                printer.progress_dots(self.mgr)
+                printer.progress_spinner(self.mgr)
             time.sleep(self.interval)
 
     def stop(self):
