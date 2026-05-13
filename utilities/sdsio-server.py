@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.11"
+SDSIO_SERVER_VERSION = "0.9.12"
 
 # SDSIO protocol command IDs
 CMD_OPEN        = 1
@@ -442,11 +442,21 @@ class sdsFlags:
 # ---------------------------------------------------------------------------- #
 class sdsControlInput(threading.Thread):
 
-    def __init__(self, flags: sdsFlags, monitor: Optional[sdsMonitorInterface] = None):
+    def __init__(self, flags: sdsFlags, monitor: Optional[sdsMonitorInterface] = None, shutdown_event: Optional[threading.Event] = None):
         super().__init__(daemon=True)
-        self._flags   = flags
-        self._monitor = monitor
-        self._quit    = threading.Event()
+        self._flags          = flags
+        self._monitor        = monitor
+        self._shutdown_event = shutdown_event
+        self._quit           = threading.Event()
+        # Capture the running event loop and main task so that X/x can request
+        # a clean asyncio cancellation instead of raising KeyboardInterrupt via
+        # os.kill(), which bypasses Python try/except on Windows.
+        try:
+            self._loop      = asyncio.get_running_loop()
+            self._main_task = asyncio.current_task()
+        except RuntimeError:
+            self._loop      = None
+            self._main_task = None
 
         # Mapping of key characters to (set_mask, clear_mask, description)
         self._KEY_ACTIONS = {
@@ -481,7 +491,15 @@ class sdsControlInput(threading.Thread):
                 continue
             if ch in ('x', 'X'):
                 printer.info(f"sdsControl: terminate ('{ch}')")
-                os.kill(os.getpid(), signal.SIGINT)
+                if self._shutdown_event:
+                    self._shutdown_event.set()
+                if self._loop and self._main_task:
+                    # Schedule cooperative cancellation through asyncio so that
+                    # the server's shutdown-flags path runs on all platforms.
+                    self._loop.call_soon_threadsafe(self._main_task.cancel)
+                else:
+                    # Fallback for non-asyncio usage (serial-only, tests, …)
+                    os.kill(os.getpid(), signal.SIGINT)
                 return
             action = self._KEY_ACTIONS.get(ch)
             if action:
@@ -559,15 +577,17 @@ class sdsio_manager:
         self.mon_port = mon_port
         # SDS Control Flags
         printer.info("Starting SDS Control Flags thread. R=record, P=playback, S/s=stop, X/x=terminate, A-H=set flags 0-7, a-h=clear flags 0-7.")
-        self.flags      = sdsFlags(auto_playback)
-        self.monitor    = sdsMonitorInterface(self.mon_port, self.flags) if self.mon_port else None
-        self.ctrl_input = sdsControlInput(self.flags, self.monitor)
+        self.shutdown_requested = threading.Event()
+        self.flags              = sdsFlags(auto_playback)
+        self.monitor            = sdsMonitorInterface(self.mon_port, self.flags) if self.mon_port else None
+        self.ctrl_input         = sdsControlInput(self.flags, self.monitor, self.shutdown_requested)
 
         self.info_flags: int = 0
         self.info_IdleRate: int = 0
         self._last_async_time = time.time()
 
     def _shutdown(self):
+        self.shutdown_requested.set()
         if self.ctrl_input:
             self.ctrl_input.stop()
             self.ctrl_input.join(timeout=2.0)
@@ -1085,7 +1105,7 @@ class async_sdsio_server_socket:
             try:
                 writer.write(self.manager.get_shutdown_flags())
                 await writer.drain()
-            except Exception:
+            except BaseException:
                 pass
             await self._safe_close(reader, writer)
             # Clean up any streams
@@ -1112,9 +1132,12 @@ class async_sdsio_server_socket:
             for task in list(self._handler_tasks):
                 task.cancel()
             if self._handler_tasks:
-                done, pending = await asyncio.wait(
-                    list(self._handler_tasks), timeout=2.0
-                )
+                try:
+                    done, pending = await asyncio.wait(
+                        list(self._handler_tasks), timeout=2.0
+                    )
+                except BaseException:
+                    pending = self._handler_tasks
                 for task in pending:
                     task.cancel()
 
@@ -1171,11 +1194,11 @@ class sdsio_server_serial:
             printer.info("Error initializing serial.")
             sys.exit(1)
         start_time = time.time()
-        while True:
+        while not self.manager.shutdown_requested.is_set():
             try:
                 self.ser.open()
                 printer.info("Serial port opened successfully.")
-                break
+                return True
             except Exception:
                 if first_attempt:
                     printer.info(f"Waiting for Client on {self.port}...")
@@ -1184,6 +1207,7 @@ class sdsio_server_serial:
                     printer.info(f"Serial port open failed after {self.connect_timeout} seconds.")
                     sys.exit(1)
                 time.sleep(0.5)
+        return False
 
     def close(self):
         try:
@@ -1206,12 +1230,13 @@ class sdsio_server_serial:
             raise
 
     def start(self):
-        self.open()
+        if not self.open():
+            return
         printer.info("Serial Server started.")
         buffer = bytearray()
 
         try:
-            while True:
+            while not self.manager.shutdown_requested.is_set():
                 # Send async FLAGS response periodically
                 resp = self.manager.get_async_response()
                 if resp:
@@ -1255,16 +1280,20 @@ class sdsio_server_serial:
             self.ser.close()
 
 def sdsio_server_serial_run_supervised(port, baudrate, parity, stop_bits, connect_timeout, manager):
-    while True:
+    while not manager.shutdown_requested.is_set():
         try:
             srv = sdsio_server_serial(
                 port, baudrate, parity,
                 stop_bits, connect_timeout, manager
             )
             srv.start()
+            if manager.shutdown_requested.is_set():
+                break
             # start() returned normally (e.g., invalid command)
             printer.info("Server restarting...")
         except Exception:
+            if manager.shutdown_requested.is_set():
+                break
             printer.info(f"Server fatal error.")
             printer.info("Server restarting...")
             # Reset all open streams
@@ -1619,7 +1648,7 @@ class sdsio_server_usb:
             # run until disconnect or until close() flips self.running=False
             try:
                 await asyncio.gather(self._consumer(), self._out_sender())
-            except asyncio.CancelledError:
+            except (asyncio.CancelledError):
                 # Send shutdown flags (clear alive bit) before cleanup
                 try:
                     self.handle.bulkWrite(self.out_ep, self.mgr.get_shutdown_flags(), timeout=1000)
@@ -2173,7 +2202,7 @@ async def main():
             printer.info("Starting USB Server...")
             await srv.start()
 
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, asyncio.CancelledError):
         pass
     finally:
         # Shutdown the UI thread and clean-up all SDS streams on exit
@@ -2185,6 +2214,6 @@ if __name__ == "__main__":
     printer.info("Press Ctrl+C to exit.")
     try:
         asyncio.run(main())
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, asyncio.CancelledError):
         printer.info("Ctrl+C received, shutting down.")
     printer.info("Server stopped.")
