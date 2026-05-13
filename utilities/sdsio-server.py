@@ -18,7 +18,6 @@ import argparse
 import sys
 import os
 import os.path as path
-from pandas import options
 import serial
 import usb1
 import ipaddress
@@ -41,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.9"
+SDSIO_SERVER_VERSION = "0.9.10"
 
 # SDSIO protocol command IDs
 CMD_OPEN        = 1
