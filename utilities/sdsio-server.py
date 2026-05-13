@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.10"
+SDSIO_SERVER_VERSION = "0.9.11"
 
 # SDSIO protocol command IDs
 CMD_OPEN        = 1
@@ -141,21 +141,38 @@ class ByteStreamBuffer:
 class safe_print:
     _SPINNER = '|/-\\'
 
-    def __init__(self, level=logging.INFO, formatter=None):
+    def __init__(self, level=logging.INFO, formatter=None, log_file=None):
         if isinstance(formatter, str):
             formatter = logging.Formatter(formatter)
         self._lock = threading.Lock()
         self._logger = logging.getLogger("sdsio_logger")
         self._spinner_idx = 0
         self._spinner_active = False
+        self._log_file = log_file
 
-        # Avoid adding duplicate handlers if logger already exists
-        if not self._logger.handlers:
+        # Replace any existing handlers (e.g. when main() reconfigures after arg parsing)
+        for h in self._logger.handlers[:]:
+            self._logger.removeHandler(h)
+            h.close()
+        if formatter is None:
+            formatter = logging.Formatter("[%(levelname)s] %(message)s")
+        if log_file:
+            if path.exists(log_file):
+                bak = log_file + ".bak"
+                if path.exists(bak):
+                    try:
+                        os.remove(bak)
+                    except Exception:
+                        pass
+                try:
+                    os.rename(log_file, bak)
+                except Exception:
+                    pass
+            handler = logging.FileHandler(log_file, encoding='utf-8')
+        else:
             handler = logging.StreamHandler()
-            if formatter is None:
-                formatter = logging.Formatter("[%(levelname)s] %(message)s")
-            handler.setFormatter(formatter)
-            self._logger.addHandler(handler)
+        handler.setFormatter(formatter)
+        self._logger.addHandler(handler)
 
         self._logger.setLevel(level)
 
@@ -189,6 +206,8 @@ class safe_print:
             self._logger.exception(msg)
 
     def progress_spinner(self, mgr):
+        if self._log_file:
+            return
         with self._lock:
             if mgr.opened_streams:
                 frame = self._SPINNER[self._spinner_idx % len(self._SPINNER)]
@@ -1767,6 +1786,13 @@ def dir_path(work_dir):
     else:
         raise argparse.ArgumentTypeError(f"Directory '{work_dir}' does not exist!")
 
+def log_file_path(log_file):
+    log_dir = path.dirname(path.abspath(log_file))
+    if path.isdir(log_dir):
+        return log_file
+    else:
+        raise argparse.ArgumentTypeError(f"Directory '{log_dir}' for log file does not exist!")
+
 def ip_validator(ip_str):
     try:
         ipaddress.ip_address(ip_str)
@@ -1903,7 +1929,7 @@ def parse_arguments():
                        help="Monitor control interface port", type=int, default=argparse.SUPPRESS)
         g.add_argument("--log", "-l", dest="log_file", metavar="<file>",
                        help="Redirect console output to a log file (for CI use)",
-                       default=argparse.SUPPRESS)
+                       type=log_file_path, default=argparse.SUPPRESS)
         g.add_argument("--verbose", "-v", action="store_true",
                        help="Enable debug messages", default=argparse.SUPPRESS)
         g.add_argument("--high-priority", dest="high_priority",
@@ -1987,7 +2013,7 @@ def parse_arguments():
     general.add_argument("--mon-port", "-m", dest="monitor_port", metavar="<port>",
                         help="Monitor control interface port", type=int, default=None)
     general.add_argument("--log",     "-l", dest="log_file", metavar="<file>",
-                        help="Redirect console output to a log file (for CI use)", default=None)
+                        help="Redirect console output to a log file (for CI use)", type=log_file_path, default=None)
     general.add_argument("--verbose", "-v", action="store_true", help="Enable debug messages")
     general.add_argument("--high-priority", dest="high_priority",
                         help="Increase process priority for USB server (requires elevated privileges)", action="store_true", default=False)
@@ -2037,10 +2063,10 @@ async def main():
     # configure logging
     if args.verbose:
         fmt = logging.Formatter("%(asctime)s [%(threadName)s] %(levelname)s: %(message)s")
-        log = safe_print(level=logging.DEBUG, formatter=fmt)
+        log = safe_print(level=logging.DEBUG, formatter=fmt, log_file=args.log_file)
     else:
         fmt = logging.Formatter("%(message)s")
-        log = safe_print(level=logging.INFO, formatter=fmt)
+        log = safe_print(level=logging.INFO, formatter=fmt, log_file=args.log_file)
     # override global printer
     global printer
     printer = log
@@ -2149,14 +2175,13 @@ async def main():
 
     except KeyboardInterrupt:
         pass
-
     finally:
         # Shutdown the UI thread and clean-up all SDS streams on exit
         manager._shutdown()
 
 if __name__ == "__main__":
     # minimal printer until main() configures it
-    printer = safe_print()
+    printer = safe_print(formatter="%(message)s")
     printer.info("Press Ctrl+C to exit.")
     try:
         asyncio.run(main())
