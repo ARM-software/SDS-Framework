@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.12"
+SDSIO_SERVER_VERSION = "0.9.13"
 
 # SDSIO protocol command IDs
 CMD_OPEN        = 1
@@ -58,6 +58,7 @@ SDSIO_MON_OPEN        = 1
 SDSIO_MON_CLOSE       = 2
 SDSIO_MON_FLAGS       = 6
 SDSIO_MON_INFO        = 7
+SDSIO_MON_SHUTDOWN    = 8
 
 # SDS Flags bit positions
 SDS_FLAG_MASK_START        = (1 << 31)
@@ -287,13 +288,13 @@ class sdsMonitorInterface():
 
     def handle_commands(self):
         if self._listening_socket is None:
-            return
+            return False
 
         if self._socket is None:
             self._accept_client()
 
         if self._socket is None:
-            return
+            return False
 
         # Receive available bytes into the buffer
         soc = self._socket
@@ -312,7 +313,7 @@ class sdsMonitorInterface():
                             pass
                         self._socket = None
                 self._recv_buf.clear()
-                return
+                return False
         except BlockingIOError:
             pass  # No data available right now
         except Exception:
@@ -325,10 +326,9 @@ class sdsMonitorInterface():
                         pass
                     self._socket = None
             self._recv_buf.clear()
-            return
+            return False
 
         # Process all complete 16-byte commands in the buffer
-        # Currently only SDSIO_MON_FLAGS is expected from the client. It doesn't have any response.
         while len(self._recv_buf) >= 16:
             cmd = int.from_bytes(self._recv_buf[0:4], 'little')
             if cmd == SDSIO_MON_FLAGS:
@@ -337,9 +337,14 @@ class sdsMonitorInterface():
                 printer.info(f"Monitor command received: SDSIO_MON_FLAGS (set=0x{set_flags:08X}, clear=0x{clear_flags:08X})")
                 if self._flags:
                     self._flags.apply(set_flags, clear_flags)
+            elif cmd == SDSIO_MON_SHUTDOWN:
+                printer.info("Monitor command received: SDSIO_MON_SHUTDOWN")
+                del self._recv_buf[:16]
+                return True
             else:
                 printer.warning(f"Unknown monitor command received: {cmd}")
             del self._recv_buf[:16]
+        return False
 
     def _send(self, msg: bytearray):
         """Send msg to the monitor client under the lock."""
@@ -478,28 +483,33 @@ class sdsControlInput(threading.Thread):
 
         self.start()
 
+    def _request_shutdown(self, source: str):
+        printer.info(f"sdsControl: terminate ({source})")
+        if self._shutdown_event:
+            self._shutdown_event.set()
+        if self._loop and self._main_task:
+            # Schedule cooperative cancellation through asyncio so that the
+            # server's shutdown-flags path runs on all platforms.
+            self._loop.call_soon_threadsafe(self._main_task.cancel)
+        else:
+            # Fallback for non-asyncio usage (serial-only, tests, …)
+            os.kill(os.getpid(), signal.SIGINT)
+
     def run(self):
         while not self._quit.is_set():
 
             # Poll monitor for incoming commands
             if self._monitor:
-                self._monitor.handle_commands()
+                if self._monitor.handle_commands():
+                    self._request_shutdown("monitor")
+                    return
 
             # Read from keyboard
             ch = self._read_key(timeout=0.01)
             if ch is None:
                 continue
             if ch in ('x', 'X'):
-                printer.info(f"sdsControl: terminate ('{ch}')")
-                if self._shutdown_event:
-                    self._shutdown_event.set()
-                if self._loop and self._main_task:
-                    # Schedule cooperative cancellation through asyncio so that
-                    # the server's shutdown-flags path runs on all platforms.
-                    self._loop.call_soon_threadsafe(self._main_task.cancel)
-                else:
-                    # Fallback for non-asyncio usage (serial-only, tests, …)
-                    os.kill(os.getpid(), signal.SIGINT)
+                self._request_shutdown(f"'{ch}'")
                 return
             action = self._KEY_ACTIONS.get(ch)
             if action:
