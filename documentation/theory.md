@@ -45,7 +45,7 @@ sequenceDiagram
 
 ## SDS Data Files
 
-Each data stream is stored in a separate SDS data file. In the diagram below `SCinput.0.sds` is the input to Signal Conditioning, `SCoutput.0.sds` is the output of Signal Conditioning, and `MLoutput.0.sds` is the output of the ML Model. Each execution of the algorithm is represented in a data block with a `timeslot`. The `timeslot` allows to correlate the blocks of different streams. In the above example, all blocks of one algorithm execution have the same time slot value.
+Each data stream is stored in a separate SDS data file. In the diagram below `SCinput.0.sds` is the input to Signal Conditioning, `SCoutput.0.sds` is the output of Signal Conditioning, and `MLoutput.0.sds` is the output of the ML Model. Each execution of the algorithm is represented in a data block with a `timeslot`. The `timeslot` allows to correlate the blocks of different streams. In the above example, all blocks of one algorithm execution have the same timeslot value.
 
 ![SDS Files](images/SDS-Files.png)
 
@@ -82,25 +82,25 @@ After playback completes, the process repeats with the `<label>` incremented by 
     - If a recording file name already exists, any existing `.bak` file with the same name is deleted,
       the current file is renamed by appending `.bak`, and the new recording uses the original file name.
 
-### Time slot
+### Timeslot
 
-The time slot is a 32-bit unsigned value and is used for:
+The timeslot is a 32-bit unsigned value and is used for:
 
-- Alignment of different data streams that have the same time slot value.
+- Alignment of different data streams that have the same timeslot value.
 - Order of the SDS data files captured during execution.
-- Combining multiple SDS file records with the same time slot value.
+- Combining multiple SDS file records with the same timeslot value.
 
-The same time slot connects different SDS file records. It is therefore useful to
-use the same time slot for the recording of one iteration of a DSP or ML algorithm.
-In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a time slot resolution.
+The same timeslot connects different SDS file records. It is therefore useful to
+use the same timeslot for the recording of one iteration of a DSP or ML algorithm.
+In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timeslot resolution.
 
 ### File Format
 
-The **SDS Framework** uses a binary data file format to store the individual data streams. It supports the recording and playback of multiple data streams that may have jitters.  Therefore each stream contains time slot information that allows to correlate the data streams as it is for example required in a sensor fusion application.
+The **SDS Framework** uses a binary data file format to store the individual data streams. It supports the recording and playback of multiple data streams that may have jitters.  Therefore each stream contains timeslot information that allows to correlate the data streams as it is for example required in a sensor fusion application.
 
 The binary data format (stored in `*.sds` data files) has a record structure with a variable size. Each record has the following format:
 
-1. **time slot**: record time slot in tick-frequency (32-bit unsigned integer, little endian)
+1. **timeslot**: record timeslot in tick-frequency (32-bit unsigned integer, little endian)
 2. **data size**: number of data bytes in the record (32-bit unsigned integer, little endian)
 3. **binary data**: SDS stream (little endian, no padding) as described with the `*.sds.yml` file.
 
@@ -113,7 +113,7 @@ The content of each data stream may be described in a [YAML](https://en.wikipedi
 &nbsp;&nbsp;&nbsp; `name:`           | Name of the Synchronous Data Stream (required)
 &nbsp;&nbsp;&nbsp; `description:`    | Additional descriptive text (optional)
 &nbsp;&nbsp;&nbsp; `frequency:`      | Capture frequency of the SDS (required)
-&nbsp;&nbsp;&nbsp; `tick-frequency:` | Tick frequency of the time slot value (optional); default: 1000
+&nbsp;&nbsp;&nbsp; `tick-frequency:` | Tick frequency of the timeslot value (optional); default: 1000
 &nbsp;&nbsp;&nbsp; `content:`        | List of values captured (required, see below)
 
 `content:`                           | List of values captured (in the order of the data file)
@@ -229,7 +229,7 @@ int32_t  n;                     // number of bytes written to data stream
    // open data stream for writing (recording)
    accel_id = sdsOpen("Accel", sdsModeWrite, accel_buf, sizeof(accel_buf));
      :
-   // write data in accelerometer buffer with time slot from RTOS kernel.
+   // write data in accelerometer buffer with timeslot from RTOS kernel.
    timeslot = osKernelGetTickCount();
    n = sdsWrite(accel_id, timeslot, accelerometer, sizeof(accelerometer));
    if (n != sizeof(accelerometer)) {

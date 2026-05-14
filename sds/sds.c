@@ -48,7 +48,7 @@ volatile uint32_t sdsIdleRate = 0xFFFFFFFF;
 
 // Data block header
 typedef struct {
-  uint32_t    timeslot;         // Time slot value
+  uint32_t    timeslot;         // Timeslot value
   uint32_t    data_size;        // Size of a data block in bytes
 } dataBlockHead_t;
 #define HEAD_SIZE sizeof(dataBlockHead_t)
@@ -711,7 +711,7 @@ int32_t sdsClose (sdsId_t id) {
 }
 
 /**
-  Write entire data block along with its time slot information to the SDS stream opened in write mode.
+  Write entire data block along with its timeslot information to the SDS stream opened in write mode.
 */
 int32_t sdsWrite (sdsId_t id, uint32_t timeslot, const void *buf, uint32_t buf_size) {
   sdsStream_t    *stream = id;
@@ -741,7 +741,7 @@ int32_t sdsWrite (sdsId_t id, uint32_t timeslot, const void *buf, uint32_t buf_s
 
     // Check if header + data fits into the buffer.
     if ((buf_size + sizeof(dataBlockHead_t)) <= (stream->buf_size - sdsBufferGetCount(stream->sds_buffer))) {
-      // Header: time slot, data block size.
+      // Header: timeslot, data block size.
       head.timeslot  = timeslot;
       head.data_size = buf_size;
 
@@ -773,7 +773,7 @@ int32_t sdsWrite (sdsId_t id, uint32_t timeslot, const void *buf, uint32_t buf_s
 }
 
 /**
-  Read entire data block along with its time slot information from the SDS stream opened in read mode.
+  Read entire data block along with its timeslot information from the SDS stream opened in read mode.
 */
 int32_t sdsRead (sdsId_t id, uint32_t *timeslot, void *buf, uint32_t buf_size) {
   sdsStream_t *stream = id;
@@ -829,7 +829,7 @@ int32_t sdsRead (sdsId_t id, uint32_t *timeslot, void *buf, uint32_t buf_size) {
           // Buffer size has been validated, so read operation is expected to succeed.
           ret = sdsBufferRead(stream->sds_buffer, buf, stream->head.data_size);
 
-          // Get time slot from the header.
+          // Get timeslot from the header.
           if (timeslot != NULL) {
             *timeslot = stream->head.timeslot;
           }

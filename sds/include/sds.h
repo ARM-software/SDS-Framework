@@ -99,9 +99,9 @@ int32_t sdsClose (sdsId_t id);
 
 /**
   \fn          int32_t sdsWrite (sdsId_t id, uint32_t timeslot, const void *buf, uint32_t buf_size)
-  \brief       Write entire data block along with its time slot information to the SDS stream opened in write mode.
+  \brief       Write entire data block along with its timeslot information to the SDS stream opened in write mode.
   \param[in]   id             \ref sdsId_t handle to SDS stream
-  \param[in]   timeslot       time slot
+  \param[in]   timeslot       timeslot
   \param[in]   buf            pointer to the data block buffer to be written
   \param[in]   buf_size       size of the data block buffer in bytes
   \return      number of bytes successfully written or
@@ -111,9 +111,9 @@ int32_t sdsWrite (sdsId_t id, uint32_t timeslot, const void *buf, uint32_t buf_s
 
 /**
   \fn          int32_t sdsRead (sdsId_t id, uint32_t *timeslot, void *buf, uint32_t buf_size)
-  \brief       Read entire data block along with its time slot information from the SDS stream opened in read mode.
+  \brief       Read entire data block along with its timeslot information from the SDS stream opened in read mode.
   \param[in]   id             \ref sdsId_t handle to SDS stream
-  \param[out]  timeslot       pointer to buffer for a time slot value
+  \param[out]  timeslot       pointer to buffer for a timeslot value
   \param[out]  buf            pointer to the data block buffer to be read
   \param[in]   buf_size       size of the data block buffer in bytes
   \return      number of bytes successfully read, or

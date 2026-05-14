@@ -180,7 +180,7 @@ After de-initialization, the system must be re-initialized before further use.
 /**
 \fn          sdsId_t sdsOpen (const char *name, sdsMode_t mode, void *buf, uint32_t buf_size)
 \details
-Opens an SDS stream for reading or writing time slot information and data blocks to or from the SDS file. The `buf` parameter specifies
+Opens an SDS stream for reading or writing timeslot information and data blocks to or from the SDS file. The `buf` parameter specifies
 a user-allocated memory region that serves as an internal circular buffer. The buffer must be large enough
 to hold at least the largest expected data block plus 8 bytes for header information.
 
@@ -224,7 +224,7 @@ Upon successful closure, the stream handle becomes invalid.
 /**
 \fn          int32_t sdsWrite (sdsId_t id, uint32_t timeslot, const void *buf, uint32_t buf_size)
 \details
-Writes a data block, including a header containing the time slot information and data block size, to the internal circular buffer.
+Writes a data block, including a header containing the timeslot information and data block size, to the internal circular buffer.
 
 The `sdsThread` worker thread asynchronously writes the data to the SDS file via the underlying SDS I/O interface.
 For an explanation of how the SDS system selects and names the target SDS file, refer to [Filenames section](../theory.md#filenames).
@@ -244,7 +244,7 @@ However, multiple threads can concurrently write to different streams, enabling 
 /**
 \fn          int32_t sdsRead (sdsId_t id, uint32_t *timeslot, void *buf, uint32_t buf_size)
 \details
-Reads a data block along with its associated time slot from the internal SDS circular buffer.
+Reads a data block along with its associated timeslot from the internal SDS circular buffer.
 
 The `sdsThread` worker thread asynchronously reads the data from the SDS file using the underlying SDS I/O interface.
 For details on how the specific SDS file is selected, refer to  [Filenames section](../theory.md#filenames).
@@ -261,7 +261,7 @@ data block. If it is too small, the function aborts and returns \ref SDS_ERROR_P
 If the end of the stream has been reached and no further data is available, the function returns \ref SDS_EOS.
 
 On success, the function reads the data block from the circular buffer, stores it in the user-provided buffer, and returns
-the size of the data block in bytes. The associated time slot is returned via the output parameter `timeslot`.
+the size of the data block in bytes. The associated timeslot is returned via the output parameter `timeslot`.
 
 Thread safety is ensured by allowing only a single thread to read from a given stream at a time.
 However, multiple threads can concurrently read from different streams, enabling parallel operations across multiple streams.
