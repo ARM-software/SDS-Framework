@@ -409,15 +409,15 @@ The Command with ID = **7** (SDSIO_CMD_INFO) sends control information (sdsFlags
 ## SDSIO Server Monitor Interface
 
 The [SDSIO Server](utilities.md#sdsio-server) provides an additional TCP socket that maybe used by a Monitor program to observe
-SDS file activity and control sdsFlags.
+SDS file activity and control `sdsFlags` in the firmware.
 The monitor interface is enabled with command line option `--mon-port <port>`.
 
 The following conventions describe the **command and message semantic** used in the following documentation:
 
 Symbol     | Description
 :----------|:----------------------
-\>         | Prefix indicating the direction: Command to SDSIO Server from Monitor program.
-<          | Prefix indicating the direction: Response or asynchronous message from SDSIO Server.
+\>         | Prefix indicating the direction: Command sent from the Monitor program to the SDSIO Server.
+<          | Prefix indicating the direction: Response or asynchronous message sent from the SDSIO Server to the Monitor program.
 WORD       | 32-bit value (low byte first).
 ****       | The field above has exactly one occurrence.
 ++++       | The field above has a variable length.
@@ -427,12 +427,13 @@ WORD       | 32-bit value (low byte first).
 Commands are sent to the server which replies with a response (depending on command).
 Server can also send asynchronous messages at any time when not processing a command.
 
-ID  | Name            | Description
-:--:|:----------------|:------------------------
-1   | SDSIO_MON_OPEN  | SDS data file was opened (message)
-2   | SDSIO_MON_CLOSE | SDS data file was closed (message)
-6   | SDSIO_MON_FLAGS | Send an SDS control flags update from the Monitor
-7   | SDSIO_MON_INFO  | Information update from the SDSIO Server (message)
+ID  | Name               | Description
+:--:|:-------------------|:------------------------
+1   | SDSIO_MON_OPEN     | Information about the SDS file open operation (message)
+2   | SDSIO_MON_CLOSE    | Information about the SDS file close operation (message)
+6   | SDSIO_MON_FLAGS    | Monitor program request to the SDSIO Server to update SDS control flags in the firmware
+7   | SDSIO_MON_INFO     | Information update received from the firmware and forwarded to the Monitor program (message)
+8   | SDSIO_MON_SHUTDOWN | Monitor program request to the SDSIO Server to complete current tasks and shut down gracefully
 
 Each **Command or Message** starts with a **Header (4 Words = 16 bytes)** followed by **optional data** of variable length.
 Depending on the Command, the SDSIO Server replies with a **Response** that includes a **Header** with the same ID
@@ -462,7 +463,9 @@ The Message with ID = **2** (SDSIO_MON_CLOSE) is sent whenever an SDS data file 
 
 **SDSIO_MON_FLAGS**
 
-The Command with ID = **6** (SDSIO_MON_FLAGS) is used to update the SDS control flags in the SDSIO Server. The `Set Mask` specifies the bits to set in the `sdsFlags` and the `Clear Mask` specifies the bits to clear in the `sdsFlags`. There is no response from the SDSIO Server to this Command.
+The Command with ID = **6** (SDSIO_MON_FLAGS) is used by the Monitor program to request an update of the SDS control flags in the firmware.
+The `Set Mask` specifies the bits to set in the `sdsFlags` and the `Clear Mask` specifies the bits to clear in the `sdsFlags`.
+This command does not generate a response from the SDSIO Server.
 
 ```txt
 | WORD | WORD     | WORD       | WORD |
@@ -472,11 +475,14 @@ The Command with ID = **6** (SDSIO_MON_FLAGS) is used to update the SDS control 
 
 **SDSIO_MON_INFO**
 
-The Message with ID = **7** (SDSIO_MON_INFO) contains information (sdsFlags, sdsIdleRate and error information) from the SDSIO Server. It is send whenever there is an update of this information in the SDSIO Server and on initial connection to the monitor interface.
+The Message with ID = **7** (SDSIO_MON_INFO) contains status information received by the SDSIO Server from the firmware,
+including sdsFlags, sdsIdleRate, and error information.
+The message is sent to the Monitor program whenever the SDSIO Server receives updated information from the firmware,
+as well as upon the initial connection to the Monitor program.
 
-- `sdsFlags` is the current value of that global variable.
-- `sdsIdleRate` is the current value of that global variable, value 0xFFFFFFFF indicates that idle rate information is not valid.
-- `Error Len` specifies the size of the `Error Data`, value 0 indicates that no error occurred.
+- `sdsFlags` is the current value of that global variable in the firmware.
+- `sdsIdleRate` is the current value of that global variable in the firmware, value 0xFFFFFFFF indicates that idle rate information is not valid.
+- `Error Len` specifies the size of the `Error Data`, value 0 indicates that no error occurred in the firmware.
 
 ```txt
 | WORD | WORD     | WORD        | WORD      |++++++++++++|
@@ -491,6 +497,20 @@ The Message with ID = **7** (SDSIO_MON_INFO) contains information (sdsFlags, sds
 | Status | Line | File name (string) |
 |********|******|++++++++++++++++++++|
 ```
+
+**SDSIO_MON_SHUTDOWN**
+
+The Command with ID = **8** (SDSIO_MON_SHUTDOWN) is used by the Monitor program to request the SDSIO Server to complete any ongoing operations, 
+signal to the firmware that it will stop operating, and shut down gracefully.
+
+```txt
+| WORD | WORD | WORD | WORD |
+>  8   |  0   |  0   |  0   |
+|******|******|******|******|
+```
+
+!!! Note
+    Monitor program or user should ensure that no streams are open before the shutdown is initiated.
 
 ## SDSIO Message Sequence
 
