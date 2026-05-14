@@ -265,7 +265,7 @@ De-initializes the SDS system. This function terminates the <computeroutput>sdsT
 </parameterlist>
 <simplesect kind="return"><para><ref refid="group__SDS__Interface_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref> handle to SDS stream, or NULL if operation failed</para>
 </simplesect>
-Opens an SDS stream for reading or writing time slot information and data blocks to or from the SDS file. The <computeroutput>buf</computeroutput> parameter specifies a user-allocated memory region that serves as an internal circular buffer. The buffer must be large enough to hold at least the largest expected data block plus 8 bytes for header information.</para>
+Opens an SDS stream for reading or writing timeslot information and data blocks to or from the SDS file. The <computeroutput>buf</computeroutput> parameter specifies a user-allocated memory region that serves as an internal circular buffer. The buffer must be large enough to hold at least the largest expected data block plus 8 bytes for header information.</para>
 <para>For opening stream in <bold>write mode</bold>:</para>
 <para><itemizedlist>
 <listitem><para>The <computeroutput>name</computeroutput> parameter defines the base name for the SDS output file and is used to construct the full file name in the format <computeroutput>name.index.sds</computeroutput>. The <computeroutput>index</computeroutput> is an auto-incrementing value that ensures a unique file name is generated. If a file with the generated name already exists, the <computeroutput>index</computeroutput> is incremented until an unused name is found.</para>
@@ -346,7 +346,7 @@ Closes an SDS stream and releases any internal resources associated with the str
           <declname>buf_size</declname>
         </param>
         <briefdescription>
-<para>Write entire data block along with its time slot information to the SDS stream opened in write mode. </para>
+<para>Write entire data block along with its timeslot information to the SDS stream opened in write mode. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -362,7 +362,7 @@ Closes an SDS stream and releases any internal resources associated with the str
 <parametername direction="in">timeslot</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>time slot </para>
+<para>timeslot </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -384,7 +384,7 @@ Closes an SDS stream and releases any internal resources associated with the str
 </parameterlist>
 <simplesect kind="return"><para>number of bytes successfully written or a negative value on error (see <ref refid="group__SDS__Return__Codes" kindref="compound">Function Return Codes</ref>)</para>
 </simplesect>
-Writes a data block, including a header containing the time slot information and data block size, to the internal circular buffer.</para>
+Writes a data block, including a header containing the timeslot information and data block size, to the internal circular buffer.</para>
 <para>The <computeroutput>sdsThread</computeroutput> worker thread asynchronously writes the data to the SDS file via the underlying SDS I/O interface. For an explanation of how the SDS system selects and names the target SDS file, refer to <ulink url="../theory.md#filenames">Filenames section</ulink>. This asynchronous design enables efficient, non-blocking data handling and optimized performance.</para>
 <para>Before attempting to write, function verifies that the entire header and the complete data block, provided via the buffer pointer <computeroutput>buf</computeroutput> and its size <computeroutput>buf_size</computeroutput>, can fit within the available space in the internal SDS circular buffer. If insufficient space is available, the operation is aborted and the function returns <ref refid="group__SDS__Return__Codes_1ga5b26591fac6b0aff5dbfec00d2ea773b" kindref="member">SDS_NO_SPACE</ref>.</para>
 <para>On success, the function writes the header and data block to the SDS circular buffer and returns the number of data bytes written, excluding the header.</para>
@@ -416,7 +416,7 @@ Writes a data block, including a header containing the time slot information and
           <declname>buf_size</declname>
         </param>
         <briefdescription>
-<para>Read entire data block along with its time slot information from the SDS stream opened in read mode. </para>
+<para>Read entire data block along with its timeslot information from the SDS stream opened in read mode. </para>
         </briefdescription>
         <detaileddescription>
 <para><parameterlist kind="param"><parameteritem>
@@ -432,7 +432,7 @@ Writes a data block, including a header containing the time slot information and
 <parametername direction="out">timeslot</parametername>
 </parameternamelist>
 <parameterdescription>
-<para>pointer to buffer for a time slot value </para>
+<para>pointer to buffer for a timeslot value </para>
 </parameterdescription>
 </parameteritem>
 <parameteritem>
@@ -454,12 +454,12 @@ Writes a data block, including a header containing the time slot information and
 </parameterlist>
 <simplesect kind="return"><para>number of bytes successfully read, or a negative value on error or SDS_EOS (see <ref refid="group__SDS__Return__Codes" kindref="compound">Function Return Codes</ref>)</para>
 </simplesect>
-Reads a data block along with its associated time slot from the internal SDS circular buffer.</para>
+Reads a data block along with its associated timeslot from the internal SDS circular buffer.</para>
 <para>The <computeroutput>sdsThread</computeroutput> worker thread asynchronously reads the data from the SDS file using the underlying SDS I/O interface. For details on how the specific SDS file is selected, refer to <ulink url="../theory.md#filenames">Filenames section</ulink>. The retrieved data is then written to the internal SDS circular buffer. This asynchronous design enables efficient, non-blocking data handling and ensures optimal performance.</para>
 <para>Before attempting to read, the function verifies that the entire header and the complete data block specified by the header are both present in the SDS circular buffer. If either the header is incomplete or the corresponding data block is not yet fully available, the function aborts and returns <ref refid="group__SDS__Return__Codes_1gadf38bbd9b95c00dc3fd512e04087c612" kindref="member">SDS_NO_DATA</ref>.</para>
 <para>The function verifies that the user-provided buffer <computeroutput>buf</computeroutput>, with size <computeroutput>buf_size</computeroutput>, is large enough to accommodate the entire data block. If it is too small, the function aborts and returns <ref refid="group__SDS__Return__Codes_1ga2878077ff7828f21757082f0125577ad" kindref="member">SDS_ERROR_PARAMETER</ref>.</para>
 <para>If the end of the stream has been reached and no further data is available, the function returns <ref refid="group__SDS__Return__Codes_1gae272775a6617dce7b3728042876cadd8" kindref="member">SDS_EOS</ref>.</para>
-<para>On success, the function reads the data block from the circular buffer, stores it in the user-provided buffer, and returns the size of the data block in bytes. The associated time slot is returned via the output parameter <computeroutput>timeslot</computeroutput>.</para>
+<para>On success, the function reads the data block from the circular buffer, stores it in the user-provided buffer, and returns the size of the data block in bytes. The associated timeslot is returned via the output parameter <computeroutput>timeslot</computeroutput>.</para>
 <para>Thread safety is ensured by allowing only a single thread to read from a given stream at a time. However, multiple threads can concurrently read from different streams, enabling parallel operations across multiple streams. </para>
         </detaileddescription>
         <inbodydescription>

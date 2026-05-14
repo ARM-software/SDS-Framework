@@ -80,9 +80,9 @@ sds.h _: Synchronous Data Stream Interface for writing and reading SDS files via
 |  int32\_t | [**sdsGetSize**](#function-sdsgetsize) ([**sdsId\_t**](group__SDS__Interface.md#typedef-sdsid_t) id) <br>_Get data block size from an SDS stream opened in read mode._  |
 |  int32\_t | [**sdsInit**](#function-sdsinit) ([**sdsEvent\_t**](group__SDS__Interface.md#typedef-sdsevent_t) event\_cb) <br>_Initialize SDS._  |
 |  [**sdsId\_t**](group__SDS__Interface.md#typedef-sdsid_t) | [**sdsOpen**](#function-sdsopen) (const char \* name, [**sdsMode\_t**](group__SDS__Interface.md#enum-sdsmode_t) mode, void \* buf, uint32\_t buf\_size) <br>_Open SDS stream._  |
-|  int32\_t | [**sdsRead**](#function-sdsread) ([**sdsId\_t**](group__SDS__Interface.md#typedef-sdsid_t) id, uint32\_t \* timeslot, void \* buf, uint32\_t buf\_size) <br>_Read entire data block along with its time slot information from the SDS stream opened in read mode._  |
+|  int32\_t | [**sdsRead**](#function-sdsread) ([**sdsId\_t**](group__SDS__Interface.md#typedef-sdsid_t) id, uint32\_t \* timeslot, void \* buf, uint32\_t buf\_size) <br>_Read entire data block along with its timeslot information from the SDS stream opened in read mode._  |
 |  int32\_t | [**sdsUninit**](#function-sdsuninit) (void) <br>_Uninitialize SDS._  |
-|  int32\_t | [**sdsWrite**](#function-sdswrite) ([**sdsId\_t**](group__SDS__Interface.md#typedef-sdsid_t) id, uint32\_t timeslot, const void \* buf, uint32\_t buf\_size) <br>_Write entire data block along with its time slot information to the SDS stream opened in write mode._  |
+|  int32\_t | [**sdsWrite**](#function-sdswrite) ([**sdsId\_t**](group__SDS__Interface.md#typedef-sdsid_t) id, uint32\_t timeslot, const void \* buf, uint32\_t buf\_size) <br>_Write entire data block along with its timeslot information to the SDS stream opened in write mode._  |
 
 
 
@@ -527,7 +527,7 @@ sdsId_t sdsOpen (
 [**sdsId\_t**](group__SDS__Interface.md#typedef-sdsid_t) handle to SDS stream, or NULL if operation failed
 
 
-Opens an SDS stream for reading or writing time slot information and data blocks to or from the SDS file. The `buf` parameter specifies a user-allocated memory region that serves as an internal circular buffer. The buffer must be large enough to hold at least the largest expected data block plus 8 bytes for header information.
+Opens an SDS stream for reading or writing timeslot information and data blocks to or from the SDS file. The `buf` parameter specifies a user-allocated memory region that serves as an internal circular buffer. The buffer must be large enough to hold at least the largest expected data block plus 8 bytes for header information.
 
 
 For opening stream in **write mode**:
@@ -562,7 +562,7 @@ This function returns a handle that uniquely identifies the stream. The handle i
 
 ### function sdsRead 
 
-_Read entire data block along with its time slot information from the SDS stream opened in read mode._ 
+_Read entire data block along with its timeslot information from the SDS stream opened in read mode._ 
 ```
 int32_t sdsRead (
     sdsId_t id,
@@ -580,7 +580,7 @@ int32_t sdsRead (
 
 
 * `id` [**sdsId\_t**](group__SDS__Interface.md#typedef-sdsid_t) handle to SDS stream 
-* `timeslot` pointer to buffer for a time slot value 
+* `timeslot` pointer to buffer for a timeslot value 
 * `buf` pointer to the data block buffer to be read 
 * `buf_size` size of the data block buffer in bytes 
 
@@ -591,7 +591,7 @@ int32_t sdsRead (
 number of bytes successfully read, or a negative value on error or SDS\_EOS (see [**Function Return Codes**](group__SDS__Return__Codes.md))
 
 
-Reads a data block along with its associated time slot from the internal SDS circular buffer.
+Reads a data block along with its associated timeslot from the internal SDS circular buffer.
 
 
 The `sdsThread` worker thread asynchronously reads the data from the SDS file using the underlying SDS I/O interface. For details on how the specific SDS file is selected, refer to [Filenames section](../theory.md#filenames). The retrieved data is then written to the internal SDS circular buffer. This asynchronous design enables efficient, non-blocking data handling and ensures optimal performance.
@@ -606,7 +606,7 @@ The function verifies that the user-provided buffer `buf`, with size `buf_size`,
 If the end of the stream has been reached and no further data is available, the function returns [**SDS\_EOS**](group__SDS__Return__Codes.md#define-sds_eos).
 
 
-On success, the function reads the data block from the circular buffer, stores it in the user-provided buffer, and returns the size of the data block in bytes. The associated time slot is returned via the output parameter `timeslot`.
+On success, the function reads the data block from the circular buffer, stores it in the user-provided buffer, and returns the size of the data block in bytes. The associated timeslot is returned via the output parameter `timeslot`.
 
 
 Thread safety is ensured by allowing only a single thread to read from a given stream at a time. However, multiple threads can concurrently read from different streams, enabling parallel operations across multiple streams. 
@@ -647,7 +647,7 @@ De-initializes the SDS system. This function terminates the `sdsThread` worker t
 
 ### function sdsWrite 
 
-_Write entire data block along with its time slot information to the SDS stream opened in write mode._ 
+_Write entire data block along with its timeslot information to the SDS stream opened in write mode._ 
 ```
 int32_t sdsWrite (
     sdsId_t id,
@@ -665,7 +665,7 @@ int32_t sdsWrite (
 
 
 * `id` [**sdsId\_t**](group__SDS__Interface.md#typedef-sdsid_t) handle to SDS stream 
-* `timeslot` time slot 
+* `timeslot` timeslot 
 * `buf` pointer to the data block buffer to be written 
 * `buf_size` size of the data block buffer in bytes 
 
@@ -676,7 +676,7 @@ int32_t sdsWrite (
 number of bytes successfully written or a negative value on error (see [**Function Return Codes**](group__SDS__Return__Codes.md))
 
 
-Writes a data block, including a header containing the time slot information and data block size, to the internal circular buffer.
+Writes a data block, including a header containing the timeslot information and data block size, to the internal circular buffer.
 
 
 The `sdsThread` worker thread asynchronously writes the data to the SDS file via the underlying SDS I/O interface. For an explanation of how the SDS system selects and names the target SDS file, refer to [Filenames section](../theory.md#filenames). This asynchronous design enables efficient, non-blocking data handling and optimized performance.
