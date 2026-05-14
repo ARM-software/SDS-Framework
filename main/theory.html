@@ -646,7 +646,7 @@ The <code>Set Mask</code> specifies the bits to set in the <code>sdsFlags</code>
 </code></pre>
 <h2 id="sdsio-server-monitor-interface">SDSIO Server Monitor Interface</h2>
 <p>The <a href="utilities.html#sdsio-server">SDSIO Server</a> provides an additional TCP socket that maybe used by a Monitor program to observe
-SDS file activity and control sdsFlags.
+SDS file activity and control <code>sdsFlags</code> in the firmware.
 The monitor interface is enabled with command line option <code>--mon-port &lt;port&gt;</code>.</p>
 <p>The following conventions describe the <strong>command and message semantic</strong> used in the following documentation:</p>
 <table>
@@ -659,11 +659,11 @@ The monitor interface is enabled with command line option <code>--mon-port &lt;p
 <tbody>
 <tr>
 <td style="text-align: left;">&gt;</td>
-<td style="text-align: left;">Prefix indicating the direction: Command to SDSIO Server from Monitor program.</td>
+<td style="text-align: left;">Prefix indicating the direction: Command sent from the Monitor program to the SDSIO Server.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&lt;</td>
-<td style="text-align: left;">Prefix indicating the direction: Response or asynchronous message from SDSIO Server.</td>
+<td style="text-align: left;">Prefix indicating the direction: Response or asynchronous message sent from the SDSIO Server to the Monitor program.</td>
 </tr>
 <tr>
 <td style="text-align: left;">WORD</td>
@@ -694,22 +694,27 @@ Server can also send asynchronous messages at any time when not processing a com
 <tr>
 <td style="text-align: center;">1</td>
 <td style="text-align: left;">SDSIO_MON_OPEN</td>
-<td style="text-align: left;">SDS data file was opened (message)</td>
+<td style="text-align: left;">Information about the SDS file open operation (message)</td>
 </tr>
 <tr>
 <td style="text-align: center;">2</td>
 <td style="text-align: left;">SDSIO_MON_CLOSE</td>
-<td style="text-align: left;">SDS data file was closed (message)</td>
+<td style="text-align: left;">Information about the SDS file close operation (message)</td>
 </tr>
 <tr>
 <td style="text-align: center;">6</td>
 <td style="text-align: left;">SDSIO_MON_FLAGS</td>
-<td style="text-align: left;">Send an SDS control flags update from the Monitor</td>
+<td style="text-align: left;">Monitor program request to the SDSIO Server to update SDS control flags in the firmware</td>
 </tr>
 <tr>
 <td style="text-align: center;">7</td>
 <td style="text-align: left;">SDSIO_MON_INFO</td>
-<td style="text-align: left;">Information update from the SDSIO Server (message)</td>
+<td style="text-align: left;">Information update received from the firmware and forwarded to the Monitor program (message)</td>
+</tr>
+<tr>
+<td style="text-align: center;">8</td>
+<td style="text-align: left;">SDSIO_MON_SHUTDOWN</td>
+<td style="text-align: left;">Monitor program request to the SDSIO Server to complete current tasks and shut down gracefully</td>
 </tr>
 </tbody>
 </table>
@@ -731,17 +736,22 @@ as the Command and may contain <strong>additional data</strong>.</p>
 |******|******|******|******|**************|++++++++++|
 </code></pre>
 <p><strong>SDSIO_MON_FLAGS</strong></p>
-<p>The Command with ID = <strong>6</strong> (SDSIO_MON_FLAGS) is used to update the SDS control flags in the SDSIO Server. The <code>Set Mask</code> specifies the bits to set in the <code>sdsFlags</code> and the <code>Clear Mask</code> specifies the bits to clear in the <code>sdsFlags</code>. There is no response from the SDSIO Server to this Command.</p>
+<p>The Command with ID = <strong>6</strong> (SDSIO_MON_FLAGS) is used by the Monitor program to request an update of the SDS control flags in the firmware.
+The <code>Set Mask</code> specifies the bits to set in the <code>sdsFlags</code> and the <code>Clear Mask</code> specifies the bits to clear in the <code>sdsFlags</code>.
+This command does not generate a response from the SDSIO Server.</p>
 <pre><code class="language-txt">| WORD | WORD     | WORD       | WORD |
 &gt;  6   | Set Mask | Clear Mask |  0   |
 |******|**********|************|******|
 </code></pre>
 <p><strong>SDSIO_MON_INFO</strong></p>
-<p>The Message with ID = <strong>7</strong> (SDSIO_MON_INFO) contains information (sdsFlags, sdsIdleRate and error information) from the SDSIO Server. It is send whenever there is an update of this information in the SDSIO Server and on initial connection to the monitor interface.</p>
+<p>The Message with ID = <strong>7</strong> (SDSIO_MON_INFO) contains status information received by the SDSIO Server from the firmware,
+including sdsFlags, sdsIdleRate, and error information.
+The message is sent to the Monitor program whenever the SDSIO Server receives updated information from the firmware,
+as well as upon the initial connection to the Monitor program.</p>
 <ul>
-<li><code>sdsFlags</code> is the current value of that global variable.</li>
-<li><code>sdsIdleRate</code> is the current value of that global variable, value 0xFFFFFFFF indicates that idle rate information is not valid.</li>
-<li><code>Error Len</code> specifies the size of the <code>Error Data</code>, value 0 indicates that no error occurred.</li>
+<li><code>sdsFlags</code> is the current value of that global variable in the firmware.</li>
+<li><code>sdsIdleRate</code> is the current value of that global variable in the firmware, value 0xFFFFFFFF indicates that idle rate information is not valid.</li>
+<li><code>Error Len</code> specifies the size of the <code>Error Data</code>, value 0 indicates that no error occurred in the firmware.</li>
 </ul>
 <pre><code class="language-txt">| WORD | WORD     | WORD        | WORD      |++++++++++++|
 &lt;  7   | sdsFlags | sdsIdleRate | Error Len | Error Data |
@@ -752,6 +762,17 @@ as the Command and may contain <strong>additional data</strong>.</p>
 | Status | Line | File name (string) |
 |********|******|++++++++++++++++++++|
 </code></pre>
+<p><strong>SDSIO_MON_SHUTDOWN</strong></p>
+<p>The Command with ID = <strong>8</strong> (SDSIO_MON_SHUTDOWN) is used by the Monitor program to request the SDSIO Server to complete any ongoing operations, 
+signal to the firmware that it will stop operating, and shut down gracefully.</p>
+<pre><code class="language-txt">| WORD | WORD | WORD | WORD |
+&gt;  8   |  0   |  0   |  0   |
+|******|******|******|******|
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Monitor program or user should ensure that no streams are open before the shutdown is initiated.</p>
+</div>
 <h2 id="sdsio-message-sequence">SDSIO Message Sequence</h2>
 <p>This section describes the states and the message sequence of the SDS framework when using the <a href="utilities.html#sdsio-server">SDSIO Server</a>.
 It contains the following threads that execute on the target.</p>
