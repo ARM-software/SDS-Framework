@@ -202,7 +202,7 @@ static uint32_t sdsLockAcquire (sdsStream_t *stream, uint32_t timeout) {
       lock = 1U;
       break;
     } else {
-      osDelay(1);
+      osDelay(1U);
     }
   } while (osKernelGetTickCount() < expirationTick);
 

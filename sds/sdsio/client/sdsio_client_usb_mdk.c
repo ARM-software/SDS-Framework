@@ -164,7 +164,7 @@ int32_t sdsioClientInit (void) {
             ret = SDS_OK;
             break;
           } else {
-            osDelay(1);
+            osDelay(1U);
           }
         }
       }
