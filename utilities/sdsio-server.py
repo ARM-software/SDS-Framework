@@ -1081,7 +1081,12 @@ class sdsio_manager:
             _status = int.from_bytes(err_data[0:4],'little')
             _line   = int.from_bytes(err_data[4:8],'little')
             _err_mgs = err_data[8:]
-            printer.info(f"sdsInfoError: status=0x{_status:08X}, line={_line}, msg={_err_mgs.decode('utf-8', errors='replace')}")
+            if _status == 0:
+                 _msg = "Error:    SDS_ASSERT failed: "
+            else:
+                _msg = f"Error:    SDS_ERROR_CHECK {_status}: "
+            _msg += f"{_err_mgs.decode('utf-8', errors='replace')}: {_line}"
+            printer.info(_msg)
 
         if self._monitor:
             self._monitor.send_info_msg(flags, idle_rate, err_data)
