@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-// SDS I/O Client via USB Custom (Keil::USB:Device:Custom)
-
-#include "rl_usb.h"                     // Keil.MDK-Plus::USB:CORE
-#include "Driver_USBD.h"
-#include "cmsis_os2.h"
-#include "cmsis_compiler.h"
+// SDS I/O Client via MDK-Middleware USB Custom Class (Keil::USB:Device:Custom Class)
 
 #include <string.h>
+
+#include "cmsis_os2.h"
+#include "cmsis_compiler.h"
+#include "rl_usb.h"
+#include "Driver_USBD.h"
 
 #include "sds.h"
 #include "sdsio_client.h"

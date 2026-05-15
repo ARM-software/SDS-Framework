@@ -19,13 +19,13 @@
 // SDS I/O Client via Serial (CMSIS Driver:USART)
 
 #include <string.h>
+
 #include "cmsis_os2.h"
 #include "cmsis_compiler.h"
+#include "Driver_USART.h"
 
 #include "sds.h"
 #include "sdsio_client.h"
-
-#include "Driver_USART.h"
 #include "sdsio_client_serial_config.h"
 
 // Check configuration

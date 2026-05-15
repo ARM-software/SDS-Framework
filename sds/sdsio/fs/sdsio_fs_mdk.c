@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// SDS I/O interface via File System (Keil::File System)
+// SDS I/O interface via MDK-Middleware File System (Keil::File System)
 
 #include <string.h>
 #include <stdio.h>
