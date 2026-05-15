@@ -153,7 +153,7 @@
 
     <!-- SDS I/O (USB - MDK_USB) -->
     <component Cclass="SDS" Cgroup="IO" Csub="USB" Cvariant="MDK USB" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via USB - MDK USB">
-      <description>I/O via USB interface to SDSIO Server (using component Keil::USB:Device:Custom)</description>
+      <description>I/O via USB interface to SDSIO Server (using component Keil::USB:Device:Custom Class)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
