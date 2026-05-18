@@ -178,7 +178,7 @@ __NO_RETURN void sdsControlThread (void *argument) {
   interval_time = osKernelGetTickCount();
 
   for (;;) {
-    sdsExchange();                              // Exchange control infromation with Host
+    sdsExchange();                              // Exchange control information with host
 
     // Detect if user button was pressed
     btn_val  = vioGetSignal(vioBUTTON0);

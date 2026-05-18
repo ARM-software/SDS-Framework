@@ -175,7 +175,7 @@ __NO_RETURN void AlgorithmThread (void *argument) {
         // Record algorithm input data
         do {
           ret = sdsWrite(sds_data_in_id, timeslot, algo_data_in_buf, sizeof(algo_data_in_buf));
-          if (ret == SDS_NO_DATA) {
+          if (ret == SDS_NO_SPACE) {
             osDelay(10U);
           }
         } while (ret == SDS_NO_SPACE);
