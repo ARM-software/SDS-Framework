@@ -30,7 +30,7 @@ import asyncio
 import ctypes
 import signal
 import yaml
-from typing import Optional
+from typing import Optional, NamedTuple
 
 if os.name == "nt":
     from ctypes import wintypes
@@ -40,7 +40,15 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.13"
+SDSIO_SERVER_VERSION = "0.9.14"
+
+
+class StreamInfo(NamedTuple):
+    name: str = None
+    mode: int = None
+    file_paths: list[str] = None
+    remaining_file_sizes: list[int] = None
+    file_idx:int = 0
 
 # SDSIO protocol command IDs
 CMD_OPEN        = 1
@@ -564,9 +572,9 @@ class sdsio_manager:
         self.play_step_index = 0
         self.default_work_dir = path.normpath(work_dir)
         self.work_dir = self.default_work_dir
-        self.opened_streams = {}    # sid -> (name, mode)
+        self.opened_streams = {}    # sid -> StreamInfo
         self.label_list = []
-        self.timestamp_list = []
+        self.timestamp_boundaries = []
         # write side
         self.write_buffers = {}     # sid -> ByteStreamBuffer
         self.write_threads = {}     # sid -> Thread
@@ -607,11 +615,17 @@ class sdsio_manager:
             self.monitor = None
         self.clean()
 
-    def _build_timestamp_boundaries(self, name: str) -> list[int]:
+    def _make_sds_file_path(self, name: str, label: str, mode: int) -> str:
+        suffix = ".p.sds" if mode == 1 and self.playback_mode else ".sds"
+        return path.join(self.work_dir, f"{name}.{label}{suffix}")
+
+    def _build_stream_file_paths(self, name: str, mode: int) -> list[str]:
+        return [self._make_sds_file_path(name, label, mode) for label in self.label_list]
+
+    def _build_timestamp_boundaries(self, file_paths: list[str]) -> list[int]:
         timestampes = []
-        for label in self.label_list:
-            # Open playback sds file and read timestamop of first packet
-            sds_file_path = path.join(self.work_dir, f"{name}.{label}.sds")
+        for sds_file_path in file_paths:
+            # Open playback sds file and read timestamp of first packet
             with open(sds_file_path, "rb") as f:
                 header = f.read(8)
                 if len(header) == 8:
@@ -622,24 +636,31 @@ class sdsio_manager:
                     timestampes.append(0xFFFFFFFF)
         return timestampes
 
+    def _build_file_sizes(self, file_paths: list[str]) -> list[int]:
+        sizes = []
+        for sds_file_path in file_paths:
+            try:
+                sz = os.path.getsize(sds_file_path)
+                sizes.append(sz)
+            except Exception:
+                sizes.append(0)
+        return sizes
+
     def _file_write_worker(self, sid, name, buf: ByteStreamBuffer, stop_evt):
         data = bytearray()
         try:
             if self.playback_mode:
-                # In playback mode, wait until label_list and timestamp_list are populated
-                # timestamp_list is generted when playback file is opened
-                while not self.label_list or not self.timestamp_list:
-                    if stop_evt.is_set():
+                # In playback mode, wait until label_list and timestamp_boundaries are populated
+                # timestamp_boundaries is generted when playback file is opened
+                while not self.label_list or not self.timestamp_boundaries:
+                    if stop_evt.is_set() or buf.eof:
                         return
                     time.sleep(0.1)
 
-            for index in range(len(self.label_list)):
+            stream = self.opened_streams[sid]
+            for index, sds_file_path in enumerate(stream.file_paths):
                 if stop_evt.is_set():
                     break
-
-                label = self.label_list[index]
-                sds_file_name = f"{name}.{label}.p.sds" if self.playback_mode else f"{name}.{label}.sds"
-                sds_file_path = path.join(self.work_dir, sds_file_name)
 
                 # Check if sds file exsist. If so, rename it to *.bak
                 if path.exists(sds_file_path):
@@ -655,10 +676,12 @@ class sdsio_manager:
 
                 eof_reached = False
                 with open(sds_file_path, "wb") as file_obj:
-                    stream_name, _ = self.opened_streams[sid]
-                    printer.info(f"Record:   {stream_name} ({sds_file_path})")
-                    if self.monitor:
-                        self.monitor.send_open_msg(sds_file_path, 1)
+                    if index > 0:
+                        # First file open was already notified in _open(); notify for subsequent files here
+                        printer.info(f"Record:   {stream.name} ({sds_file_path})")
+                        if self.monitor:
+                            self.monitor.send_open_msg(sds_file_path, 1)
+                        self.opened_streams[sid] = self.opened_streams[sid]._replace(file_idx=index)
                     while True:
                         data_sz = len(data)
 
@@ -685,8 +708,8 @@ class sdsio_manager:
                             data_block_size = int.from_bytes(data[4:8], 'little')
 
                             # Check if this record marks the boundary of the next label
-                            if self.timestamp_list and index + 1 < len(self.timestamp_list):
-                                if timestamp == self.timestamp_list[index + 1]:
+                            if self.timestamp_boundaries and index + 1 < len(self.timestamp_boundaries):
+                                if timestamp == self.timestamp_boundaries[index + 1]:
                                     break  # keep data — it will be written to the next label file
 
                             needed = 8 + data_block_size
@@ -710,9 +733,11 @@ class sdsio_manager:
                                 # Complete record: write and reset for next record
                                 file_obj.write(data)
                                 data = bytearray()
-                printer.info(f"Closed:   {name} ({sds_file_path})")
-                if self.monitor:
-                    self.monitor.send_close_msg(sds_file_path)
+                # Last file close is handled in _close(); send close only for non-last files
+                if not eof_reached and index < len(stream.file_paths) - 1:
+                    printer.info(f"Closed:   {name} ({sds_file_path})")
+                    if self.monitor:
+                        self.monitor.send_close_msg(sds_file_path)
                 if eof_reached:
                     break
         except Exception:
@@ -721,23 +746,18 @@ class sdsio_manager:
     def _file_read_worker(self, sid, name, buf: ByteStreamBuffer, stop_evt):
         chunk_size = 128 * 1024
         try:
-            for label in self.label_list:
+            stream = self.opened_streams[sid]
+            for idx, sds_file_path in enumerate(stream.file_paths):
                 if stop_evt.is_set():
                     break
-                sds_file_path = path.join(self.work_dir, f"{name}.{label}.sds")
                 with open(sds_file_path, "rb") as file_obj:
-                    printer.info(f"Playback: {name} ({sds_file_path})")
-                    if self.monitor:
-                        self.monitor.send_open_msg(sds_file_path, 0)
                     while not stop_evt.is_set():
                         data = file_obj.read(chunk_size)
                         if data:
                             buf.write(data)
                         else:
                             break  # EOF on this file, move to next label
-                printer.info(f"Closed:   {name} ({sds_file_path})")
-                if self.monitor:
-                    self.monitor.send_close_msg(sds_file_path)
+                # Close notifications are tracked via remaining_file_sizes in _read(); last close is in _close()
         except Exception:
             printer.exception(f"Reader {sid} error")
         finally:
@@ -774,7 +794,7 @@ class sdsio_manager:
             return resp_err
 
         # ensure not already open
-        if any(n == name for (n, _) in self.opened_streams.values()):
+        if any(stream.name == name for stream in self.opened_streams.values()):
             printer.info(f"Stream '{name}' is already opened, cannot open again.")
             return resp_err
 
@@ -827,17 +847,18 @@ class sdsio_manager:
                 if not self.playback_mode:
                     # find first available numeric label for new recording
                     idx = 0
-                    sds_file_path = path.join(self.work_dir, f"{name}.{idx}.sds")
+                    sds_file_path = self._make_sds_file_path(name, str(idx), mode)
                     while path.exists(sds_file_path):
                         idx += 1
-                        sds_file_path = path.join(self.work_dir, f"{name}.{idx}.sds")
+                        sds_file_path = self._make_sds_file_path(name, str(idx), mode)
                     self.label_list.append(str(idx))
 
+            file_paths = self._build_stream_file_paths(name, mode)
             # allocate new sid
             with self.manager_lock:
                 self.stream_id += 1
                 sid = self.stream_id
-            self.opened_streams[sid] = (name, mode)
+            self.opened_streams[sid] = StreamInfo(name=name, mode=mode, file_paths=file_paths)
             buf = ByteStreamBuffer()
             stop_evt = threading.Event()
             thr = threading.Thread(
@@ -849,24 +870,32 @@ class sdsio_manager:
             self.write_buffers[sid] = buf
             self.write_threads[sid] = thr
             self.write_stop[sid]   = stop_evt
+            # Notify monitor for the first file; subsequent files are notified in the write worker
+            if file_paths:
+                printer.info(f"Record:   {name} ({file_paths[0]})")
+                if self.monitor:
+                    self.monitor.send_open_msg(file_paths[0], 1)
 
         else:
+            file_paths = self._build_stream_file_paths(name, mode)
             # Validate that files for all labels exist
-            for label in self.label_list:
-                sds_file_path = path.join(self.work_dir, f"{name}.{label}.sds")
+            for sds_file_path in file_paths:
                 if not path.exists(sds_file_path):
                     printer.error(f"Missing file for playback stream '{name}': {sds_file_path}")
                     return resp_err
 
-            if not self.timestamp_list:
-                self.timestamp_list = self._build_timestamp_boundaries(name)
+            if not self.timestamp_boundaries:
+                self.timestamp_boundaries = self._build_timestamp_boundaries(file_paths)
 
             # allocate new sid
             with self.manager_lock:
                 self.stream_id += 1
                 sid = self.stream_id
 
-            self.opened_streams[sid] = (name, mode)
+            self.opened_streams[sid] = StreamInfo(name=name, mode=mode,
+                                                  file_paths=file_paths,
+                                                  remaining_file_sizes=self._build_file_sizes(file_paths),
+                                                  file_idx=0)
 
             buf = ByteStreamBuffer()
             stop_evt = threading.Event()
@@ -879,6 +908,11 @@ class sdsio_manager:
             self.read_buffers[sid] = buf
             self.read_threads[sid] = thr
             self.read_stop[sid]  = stop_evt
+            # Notify monitor for the first file; subsequent files are notified in the read worker
+            if file_paths:
+                printer.info(f"Playback: {name} ({file_paths[0]})")
+                if self.monitor:
+                    self.monitor.send_open_msg(file_paths[0], 0)
 
         # build success response
         resp = bytearray()
@@ -891,20 +925,39 @@ class sdsio_manager:
 
     def _close(self, sid):
         resp = bytearray()
-        name = self.opened_streams[sid][0]
+        stream = self.opened_streams[sid]
+        name = stream.name
 
         # clean up writer side
         if sid in self.write_buffers:
             buf = self.write_buffers.pop(sid)
             buf.set_eof()
-            self.write_stop[sid].set()
             self.write_threads[sid].join()
+            self.write_stop[sid].set()
+            # Send close notification for the last written file (all previous were sent in the write worker)
+            last_stream = self.opened_streams[sid]
+            if last_stream.file_paths:
+                last_idx = last_stream.file_idx
+                if last_idx < len(last_stream.file_paths):
+                    sds_file_path = last_stream.file_paths[last_idx]
+                    printer.info(f"Closed:   {name} ({sds_file_path})")
+                    if self.monitor:
+                        self.monitor.send_close_msg(sds_file_path)
             self.write_threads.pop(sid)
             self.write_stop.pop(sid)
         # clean up reader side
         if sid in self.read_buffers:
             self.read_stop[sid].set()
             self.read_threads[sid].join()
+            # Send close notification for the last read file (previous non-last closes sent in _read())
+            last_stream = self.opened_streams[sid]
+            if last_stream.file_paths:
+                last_idx = last_stream.file_idx
+                if last_idx < len(last_stream.file_paths):
+                    sds_file_path = last_stream.file_paths[last_idx]
+                    printer.info(f"Closed:   {name} ({sds_file_path})")
+                    if self.monitor:
+                        self.monitor.send_close_msg(sds_file_path)
             self.read_buffers.pop(sid)
             self.read_threads.pop(sid)
             self.read_stop.pop(sid)
@@ -915,7 +968,7 @@ class sdsio_manager:
             if self.playback_mode:
                 self.play_step_index += 1
             self.label_list.clear()
-            self.timestamp_list.clear()
+            self.timestamp_boundaries.clear()
 
         return resp
 
@@ -937,7 +990,7 @@ class sdsio_manager:
         data = bytearray()
         entry = self.opened_streams.get(sid)
         # invalid read
-        if not entry or entry[1] != 0:
+        if not entry or entry.mode != 0:
             resp.extend(cmd.to_bytes(4,'little'))
             resp.extend(sid.to_bytes(4,'little'))
             resp.extend((0).to_bytes(4,'little'))
@@ -951,6 +1004,42 @@ class sdsio_manager:
             if not chunk:
                 break
             data.extend(chunk)
+            # Track how much of each file has been forwarded; trigger close/advance on file boundary
+            stream = self.opened_streams.get(sid)
+            if stream and stream.remaining_file_sizes is not None:
+                chunk_remaining = len(chunk)
+                while chunk_remaining > 0:
+                    stream = self.opened_streams.get(sid)
+                    if not stream or stream.remaining_file_sizes is None:
+                        break
+                    f_idx = stream.file_idx
+                    if f_idx >= len(stream.remaining_file_sizes):
+                        break
+
+                    file_remaining = stream.remaining_file_sizes[f_idx]
+                    if file_remaining > 0:
+                        consumed = min(chunk_remaining, file_remaining)
+                        stream.remaining_file_sizes[f_idx] -= consumed
+                        chunk_remaining -= consumed
+
+                    if stream.remaining_file_sizes[f_idx] <= 0:
+                        stream.remaining_file_sizes[f_idx] = 0
+                        if stream.file_paths and f_idx < len(stream.file_paths) - 1:
+                            # Non-last file fully drained: report close and advance to next file
+                            sds_file_path = stream.file_paths[f_idx]
+                            printer.info(f"Closed:   {stream.name} ({sds_file_path})")
+                            if self.monitor:
+                                self.monitor.send_close_msg(sds_file_path)
+                            self.opened_streams[sid] = self.opened_streams[sid]._replace(file_idx=f_idx + 1)
+                            next_idx = f_idx + 1
+                            if next_idx < len(stream.file_paths):
+                                # First file open was already notified in _open(); notify for subsequent files here
+                                sds_file_path = stream.file_paths[next_idx]
+                                printer.info(f"Playback: {stream.name} ({sds_file_path})")
+                                if self.monitor:
+                                    self.monitor.send_open_msg(sds_file_path, 0)
+                            continue
+                        break
         if not data and buf.eof:
             eof = 1
         resp.extend(cmd.to_bytes(4,'little'))
@@ -2130,7 +2219,7 @@ async def main():
         # Server configuration from CLI arguments (overrides YAML)
         server_type = args.server_type
         if server_type == "socket":
-            interface = args.interface
+            socket_iface = args.interface
             ip = args.ip
             port = args.port
         elif server_type == "serial":
