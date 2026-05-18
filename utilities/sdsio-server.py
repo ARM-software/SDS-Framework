@@ -619,7 +619,16 @@ class sdsControlInput(threading.Thread):
 #                            SDS IO Manager                                    #
 # ---------------------------------------------------------------------------- #
 class sdsio_manager:
-    def __init__(self, work_dir, auto_playback=False, play_list: Optional[list] = None, mon_port: Optional[int] = None):
+    def __init__(
+        self,
+        work_dir,
+        auto_playback=False,
+        play_list: Optional[list] = None,
+        mon_port: Optional[int] = None,
+        status_bar_factory=None,
+        monitor_factory=None,
+        control_input_factory=None,
+    ):
         self._stream_id = 0
         self._play_step_index = 0
         self._default_work_dir = path.normpath(work_dir)
@@ -640,17 +649,31 @@ class sdsio_manager:
         # timestamp of last stream read or write command
         self.time_last_rw = time.time()
         # status bar
-        self._status = StatusBar(self)
+        self._status = None
+        if status_bar_factory is None:
+            status_bar_factory = StatusBar
+        if status_bar_factory:
+            self._status = status_bar_factory(self)
 
         self._playback_mode = False
         self._play_list = play_list
         self._mon_port = mon_port
         # SDS Control Flags
-        logger.info("Starting SDS Control Flags thread. R=record, P=playback, S/s=stop, X/x=terminate, A-H=set flags 0-7, a-h=clear flags 0-7.")
         self.shutdown_requested = threading.Event()
-        self._flags              = sdsFlags(auto_playback)
-        self._monitor            = sdsMonitorInterface(self._mon_port, self._flags) if self._mon_port else None
-        self._ctrl_input         = sdsControlInput(self._flags, self._monitor, self.shutdown_requested)
+        self._flags = sdsFlags(auto_playback)
+        self._monitor = None
+        if self._mon_port and monitor_factory is not False:
+            if monitor_factory is None:
+                monitor_factory = sdsMonitorInterface
+            if monitor_factory:
+                self._monitor = monitor_factory(self._mon_port, self._flags)
+        self._ctrl_input = None
+        if control_input_factory is not False:
+            if control_input_factory is None:
+                control_input_factory = sdsControlInput
+            if control_input_factory:
+                logger.info("Starting SDS Control Flags thread. R=record, P=playback, S/s=stop, X/x=terminate, A-H=set flags 0-7, a-h=clear flags 0-7.")
+                self._ctrl_input = control_input_factory(self._flags, self._monitor, self.shutdown_requested)
 
         self._info_flags: int = 0
         self._info_IdleRate: int = 0
