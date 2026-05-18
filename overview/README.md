@@ -37,7 +37,7 @@ SDS version 3 adds a control interface in the SDSIO-Server that enables:
 - User flags to configure algorithms or for A/B tests.
 - Managed playback data streams for regression tests.
 
-[Python-based utilities](https://arm-software.github.io/SDS-Framework/main/utilities.html) are provided for recording, playback, visualization, data conversion, and verification of the SDSIO communication. The [CMSIS SDS VS Code extension](https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-sds) implements a graphical interface for the SDSIO-Server.
+[Python-based utilities](https://arm-software.github.io/SDS-Framework/main/utilities.html) are provided for recording, playback, visualization, data conversion, and verification of the SDSIO communication. The [CMSIS SDS VS Code extension](https://marketplace.visualstudio.com/items?itemName=arm.cmsis-sds) implements a graphical interface for the SDSIO-Server.
 
 ## Links
 
