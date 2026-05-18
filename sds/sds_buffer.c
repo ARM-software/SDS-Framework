@@ -176,7 +176,7 @@ int32_t sdsBufferWrite (sdsBufferId_t id, const void *buf, uint32_t buf_size) {
   if ((sds_buffer != NULL) && (buf != NULL) && (buf_size != 0U)) {
 
     cnt_used = sds_buffer->cnt_in - sds_buffer->cnt_out;
-    cnt_free = sds_buffer->buf_size - cnt_used;
+    cnt_free = (cnt_used < sds_buffer->buf_size) ? (sds_buffer->buf_size - cnt_used) : 0U;
 
     if (buf_size < cnt_free) {
       num = buf_size;
