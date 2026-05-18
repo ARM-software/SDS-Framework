@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.15"
+SDSIO_SERVER_VERSION = "0.9.16"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -146,98 +146,95 @@ class ByteStreamBuffer:
 
 
 # ---------------------------------------------------------------------------- #
-#                               Safe print                                     #
+#                            Logging and spinner                               #
 # ---------------------------------------------------------------------------- #
-class safe_print:
-    _SPINNER = '|/-\\'
+class ConsoleSpinner:
+    _FRAMES = '|/-\\'
 
-    def __init__(self, level=logging.INFO, formatter=None, log_file=None):
-        if isinstance(formatter, str):
-            _formatter = logging.Formatter(formatter)
-        else:
-            _formatter = formatter
-        self._lock = threading.Lock()
-        self._logger = logging.getLogger("sdsio_logger")
-        self._spinner_idx = 0
-        self._spinner_active = False
-        self._log_file = log_file
+    def __init__(self, stream=sys.stdout, lock=None, enabled=True):
+        self._stream = stream
+        self._lock = lock or threading.Lock()
+        self._enabled = enabled
+        self._idx = 0
+        self._active = False
 
-        # Replace any existing handlers (e.g. when main() reconfigures after arg parsing)
-        for _h in self._logger.handlers[:]:
-            self._logger.removeHandler(_h)
-            _h.close()
-        if _formatter is None:
-            _formatter = logging.Formatter("[%(levelname)s] %(message)s")
-        if log_file:
-            if path.exists(log_file):
-                _bak = log_file + ".bak"
-                if path.exists(_bak):
-                    try:
-                        os.remove(_bak)
-                    except Exception:
-                        pass
-                try:
-                    os.rename(log_file, _bak)
-                except Exception:
-                    pass
-            _handler = logging.FileHandler(log_file, encoding='utf-8')
-        else:
-            _handler = logging.StreamHandler()
-        _handler.setFormatter(_formatter)
-        self._logger.addHandler(_handler)
+    @property
+    def lock(self):
+        return self._lock
 
-        self._logger.setLevel(level)
-
-    def set_level(self, level):
-        with self._lock:
-            self._logger.setLevel(level)
-
-    def info(self, msg):
-        with self._lock:
-            self._clear_progress()
-            self._logger.info(msg)
-
-    def debug(self, msg):
-        with self._lock:
-            self._clear_progress()
-            self._logger.debug(msg)
-
-    def warning(self, msg):
-        with self._lock:
-            self._clear_progress()
-            self._logger.warning(msg)
-
-    def error(self, msg):
-        with self._lock:
-            self._clear_progress()
-            self._logger.error(msg)
-
-    def exception(self, msg):
-        with self._lock:
-            self._clear_progress()
-            self._logger.exception(msg)
-
-    def progress_spinner(self, mgr):
-        if self._log_file:
+    def tick(self, active=True):
+        if not self._enabled or not active:
             return
         with self._lock:
-            if mgr.opened_streams:
-                _frame = self._SPINNER[self._spinner_idx % len(self._SPINNER)]
-                sys.stdout.write(f"\r{_frame}")
-                sys.stdout.flush()
-                self._spinner_idx += 1
-                self._spinner_active = True
+            self._tick_unlocked()
 
-    def _clear_progress(self):
-        if self._spinner_active:
-            sys.stdout.write("\r \r")
-            sys.stdout.flush()
-            self._spinner_active = False
-            self._spinner_idx = 0
+    def _tick_unlocked(self):
+        _frame = self._FRAMES[self._idx % len(self._FRAMES)]
+        self._stream.write(f"\r{_frame}")
+        self._stream.flush()
+        self._idx += 1
+        self._active = True
+
+    def clear_unlocked(self):
+        if self._enabled and self._active:
+            self._stream.write("\r \r")
+            self._stream.flush()
+            self._active = False
+            self._idx = 0
 
 
-# Global printer object for logging
-printer = safe_print(level=logging.INFO, formatter="%(message)s")
+class SpinnerAwareStreamHandler(logging.StreamHandler):
+    def __init__(self, stream, spinner: ConsoleSpinner):
+        super().__init__(stream)
+        self._spinner = spinner
+
+    def emit(self, record):
+        with self._spinner.lock:
+            self._spinner.clear_unlocked()
+            super().emit(record)
+
+
+def setup_logger(level=logging.INFO, formatter=None, log_file=None):
+    _logger = logging.getLogger("sdsio")
+    for _handler in _logger.handlers[:]:
+        _logger.removeHandler(_handler)
+        _handler.close()
+    _logger.setLevel(level)
+    _logger.propagate = False
+
+    if isinstance(formatter, str):
+        _formatter = logging.Formatter(formatter)
+    elif formatter is None:
+        _formatter = logging.Formatter("[%(levelname)s] %(message)s")
+    else:
+        _formatter = formatter
+
+    _terminal_lock = threading.Lock()
+    _spinner = ConsoleSpinner(sys.stdout, _terminal_lock, enabled=(log_file is None))
+
+    if log_file:
+        if path.exists(log_file):
+            _bak = log_file + ".bak"
+            if path.exists(_bak):
+                try:
+                    os.remove(_bak)
+                except Exception:
+                    pass
+            try:
+                os.rename(log_file, _bak)
+            except Exception:
+                pass
+        _handler = logging.FileHandler(log_file, encoding='utf-8')
+    else:
+        _handler = SpinnerAwareStreamHandler(sys.stdout, _spinner)
+
+    _handler.setFormatter(_formatter)
+    _logger.addHandler(_handler)
+    return _logger, _spinner
+
+
+# Global logger and spinner, reconfigured by main() after argument parsing.
+logger, spinner = setup_logger(level=logging.INFO, formatter="%(message)s")
 
 # ---------------------------------------------------------------------------- #
 #                            Print status bar                                  #
@@ -253,7 +250,7 @@ class StatusBar:
     def _run(self):
         while not self._stop_event.is_set():
             if (self._mgr.time_last_rw + self._interval) > time.time():
-                printer.progress_spinner(self._mgr)
+                spinner.tick(active=bool(self._mgr.opened_streams))
             time.sleep(self._interval)
 
     def stop(self):
@@ -271,7 +268,7 @@ class sdsMonitorInterface():
         self._recv_buf = bytearray()      # only accessed from handle_commands thread
         self._last_info = (0, 0, b'')     # cached (flags, idle_rate, err_data) for new clients
         if self._port:
-            printer.info(f"Starting monitor server on port {self._port}.")
+            logger.info(f"Starting monitor server on port {self._port}.")
             self._listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self._listening_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self._listening_socket.bind(('127.0.0.1', self._port))
@@ -288,7 +285,7 @@ class sdsMonitorInterface():
             with self._lock:
                 self._socket = _soc
             self._recv_buf.clear()
-            printer.info("Monitor client connected.")
+            logger.info("Monitor client connected.")
             # Send current info immediately on connection
             self.send_info_msg(*self._last_info)
         except socket.timeout:
@@ -314,7 +311,7 @@ class sdsMonitorInterface():
                 self._recv_buf.extend(_chunk)
             else:
                 # Peer closed connection gracefully
-                printer.info("Monitor client disconnected.")
+                logger.info("Monitor client disconnected.")
                 with self._lock:
                     if self._socket is _soc:
                         try:
@@ -327,7 +324,7 @@ class sdsMonitorInterface():
         except BlockingIOError:
             pass  # No data available right now
         except Exception:
-            printer.info("Monitor client disconnected.")
+            logger.info("Monitor client disconnected.")
             with self._lock:
                 if self._socket is _soc:
                     try:
@@ -344,15 +341,15 @@ class sdsMonitorInterface():
             if _cmd == SDSIO_MON_FLAGS:
                 _set_flags  = int.from_bytes(self._recv_buf[4:8],  'little')
                 _clear_flags = int.from_bytes(self._recv_buf[8:12], 'little')
-                printer.info(f"Monitor command received: SDSIO_MON_FLAGS (set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X})")
+                logger.info(f"Monitor command received: SDSIO_MON_FLAGS (set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X})")
                 if self._flags:
                     self._flags.apply(_set_flags, _clear_flags)
             elif _cmd == SDSIO_MON_SHUTDOWN:
-                printer.info("Monitor command received: SDSIO_MON_SHUTDOWN")
+                logger.info("Monitor command received: SDSIO_MON_SHUTDOWN")
                 del self._recv_buf[:16]
                 return True
             else:
-                printer.warning(f"Unknown monitor command received: {_cmd}")
+                logger.warning(f"Unknown monitor command received: {_cmd}")
             del self._recv_buf[:16]
         return False
 
@@ -494,7 +491,7 @@ class sdsControlInput(threading.Thread):
         self.start()
 
     def _request_shutdown(self, source: str):
-        printer.info(f"sdsControl: terminate ({source})")
+        logger.info(f"sdsControl: terminate ({source})")
         if self._shutdown_event:
             self._shutdown_event.set()
         if self._loop and self._main_task:
@@ -525,7 +522,7 @@ class sdsControlInput(threading.Thread):
             if _action:
                 _set_mask, _clear_mask, _desc = _action
                 self._flags.apply(_set_mask, _clear_mask)
-                printer.info(f"sdsControl: {_desc} ('{_ch}')")
+                logger.info(f"sdsControl: {_desc} ('{_ch}')")
 
     def stop(self):
         self._quit.set()
@@ -596,7 +593,7 @@ class sdsio_manager:
         self._play_list = play_list
         self._mon_port = mon_port
         # SDS Control Flags
-        printer.info("Starting SDS Control Flags thread. R=record, P=playback, S/s=stop, X/x=terminate, A-H=set flags 0-7, a-h=clear flags 0-7.")
+        logger.info("Starting SDS Control Flags thread. R=record, P=playback, S/s=stop, X/x=terminate, A-H=set flags 0-7, a-h=clear flags 0-7.")
         self.shutdown_requested = threading.Event()
         self._flags              = sdsFlags(auto_playback)
         self._monitor            = sdsMonitorInterface(self._mon_port, self._flags) if self._mon_port else None
@@ -673,17 +670,17 @@ class sdsio_manager:
                         try:
                             os.remove(_sds_file_path + ".bak")
                         except Exception:
-                            printer.warning(f"Could not delete backup file '{_sds_file_path}.bak'")
+                            logger.warning(f"Could not delete backup file '{_sds_file_path}.bak'")
                     try:
                         os.rename(_sds_file_path, _sds_file_path + ".bak")
                     except Exception:
-                        printer.warning(f"Could not create backup for existing file '{_sds_file_path}'")
+                        logger.warning(f"Could not create backup for existing file '{_sds_file_path}'")
 
                 _eof_reached = False
                 with open(_sds_file_path, "wb") as _file_obj:
                     if _index > 0:
                         # First file open was already notified in _open(); notify for subsequent files here
-                        printer.info(f"Record:   {_stream.name} ({_sds_file_path})")
+                        logger.info(f"Record:   {_stream.name} ({_sds_file_path})")
                         if self._monitor:
                             self._monitor.send_open_msg(_sds_file_path, 1)
                         self.opened_streams[sid] = self.opened_streams[sid]._replace(file_idx=_index)
@@ -740,13 +737,13 @@ class sdsio_manager:
                                 _data = bytearray()
                 # Last file close is handled in close(); send close only for non-last files
                 if not _eof_reached and _index < len(_stream.file_paths) - 1:
-                    printer.info(f"Closed:   {name} ({_sds_file_path})")
+                    logger.info(f"Closed:   {name} ({_sds_file_path})")
                     if self._monitor:
                         self._monitor.send_close_msg(_sds_file_path)
                 if _eof_reached:
                     break
         except Exception:
-            printer.exception(f"Writer {sid} error")
+            logger.exception(f"Writer {sid} error")
 
     def _file_read_worker(self, sid, name, buf: ByteStreamBuffer, stop_evt):
         _chunk_size = 128 * 1024
@@ -764,7 +761,7 @@ class sdsio_manager:
                             break  # EOF on this file, move to next label
                 # Close notifications are tracked via remaining_file_sizes in read(); last close is in close()
         except Exception:
-            printer.exception(f"Reader {sid} error")
+            logger.exception(f"Reader {sid} error")
         finally:
             buf.set_eof()
 
@@ -791,16 +788,16 @@ class sdsio_manager:
 
         # validate name
         if len(name) == 0:
-            printer.info(f"Invalid stream name: {name}")
+            logger.info(f"Invalid stream name: {name}")
             return _resp_err
         _invalid_chars = [chr(_i) for _i in range(0x00, 0x10)] + [chr(0x7F), '"', '*', '/', ':', '<', '>', '?', '\\', '|']
         if any(_ch in name for _ch in _invalid_chars):
-            printer.info(f"Invalid stream name: {name}")
+            logger.info(f"Invalid stream name: {name}")
             return _resp_err
 
         # ensure not already open
         if any(_stream.name == name for _stream in self.opened_streams.values()):
-            printer.info(f"Stream '{name}' is already opened, cannot open again.")
+            logger.info(f"Stream '{name}' is already opened, cannot open again.")
             return _resp_err
 
         # update playback mode from flags only when new session is started
@@ -819,7 +816,7 @@ class sdsio_manager:
                         _recdir = _step.get('recdir', None)
                         self._work_dir = path.normpath(path.join(self._default_work_dir, _recdir)) if _recdir else self._default_work_dir
                     else:
-                        printer.error(f"Open Failed. End of playlist. No more steps available for playback stream '{name}'.")
+                        logger.error(f"Open Failed. End of playlist. No more steps available for playback stream '{name}'.")
                         return _resp_err
                 else:
                     self._work_dir = self._default_work_dir
@@ -827,22 +824,22 @@ class sdsio_manager:
                     _clear_flags = 0
 
                 if _set_flags or _clear_flags:
-                    printer.debug(f"Applying flags for playback stream '{name}': set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}")
+                    logger.debug(f"Applying flags for playback stream '{name}': set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}")
                     self._flags.apply(_set_flags, _clear_flags)
 
                 # Create label list
                 _play_label_list = self._create_play_label_list(name)
                 if not _play_label_list:
                     if not self._play_list and self._play_step_index > 0:
-                        printer.error(f"Open Failed. No more files available for playback stream '{name}'.")
+                        logger.error(f"Open Failed. No more files available for playback stream '{name}'.")
                     else:
-                        printer.error(f"Open Failed. No files found for playback stream '{name}'.")
+                        logger.error(f"Open Failed. No files found for playback stream '{name}'.")
                     return _resp_err
                 self._label_list = _play_label_list
 
         else:
             if mode == 0:
-                printer.info(f"Cannot open stream '{name}' for playback. Playback mode is not enabled.")
+                logger.info(f"Cannot open stream '{name}' for playback. Playback mode is not enabled.")
                 return _resp_err
             self._work_dir = self._default_work_dir
 
@@ -877,7 +874,7 @@ class sdsio_manager:
             self._write_stop[_sid]   = _stop_evt
             # Notify monitor for the first file; subsequent files are notified in the write worker
             if _file_paths:
-                printer.info(f"Record:   {name} ({_file_paths[0]})")
+                logger.info(f"Record:   {name} ({_file_paths[0]})")
                 if self._monitor:
                     self._monitor.send_open_msg(_file_paths[0], 1)
 
@@ -886,7 +883,7 @@ class sdsio_manager:
             # Validate that files for all labels exist
             for _sds_file_path in _file_paths:
                 if not path.exists(_sds_file_path):
-                    printer.error(f"Missing file for playback stream '{name}': {_sds_file_path}")
+                    logger.error(f"Missing file for playback stream '{name}': {_sds_file_path}")
                     return _resp_err
 
             if not self._timestamp_boundaries:
@@ -915,7 +912,7 @@ class sdsio_manager:
             self._read_stop[_sid]  = _stop_evt
             # Notify monitor for the first file; subsequent files are notified in the read worker
             if _file_paths:
-                printer.info(f"Playback: {name} ({_file_paths[0]})")
+                logger.info(f"Playback: {name} ({_file_paths[0]})")
                 if self._monitor:
                     self._monitor.send_open_msg(_file_paths[0], 0)
 
@@ -945,7 +942,7 @@ class sdsio_manager:
                 _last_idx = _last_stream.file_idx
                 if _last_idx < len(_last_stream.file_paths):
                     _sds_file_path = _last_stream.file_paths[_last_idx]
-                    printer.info(f"Closed:   {_name} ({_sds_file_path})")
+                    logger.info(f"Closed:   {_name} ({_sds_file_path})")
                     if self._monitor:
                         self._monitor.send_close_msg(_sds_file_path)
             self._write_threads.pop(sid)
@@ -960,7 +957,7 @@ class sdsio_manager:
                 _last_idx = _last_stream.file_idx
                 if _last_idx < len(_last_stream.file_paths):
                     _sds_file_path = _last_stream.file_paths[_last_idx]
-                    printer.info(f"Closed:   {_name} ({_sds_file_path})")
+                    logger.info(f"Closed:   {_name} ({_sds_file_path})")
                     if self._monitor:
                         self._monitor.send_close_msg(_sds_file_path)
             self._read_buffers.pop(sid)
@@ -981,7 +978,7 @@ class sdsio_manager:
         _resp = bytearray()
         _buf = self._write_buffers.get(sid)
         if not _buf:
-            printer.info(f"Not opened for write: {sid}")
+            logger.info(f"Not opened for write: {sid}")
             return _resp
         _buf.write(data)
 
@@ -1032,7 +1029,7 @@ class sdsio_manager:
                         if _stream.file_paths and _f_idx < len(_stream.file_paths) - 1:
                             # Non-last file fully drained: report close and advance to next file
                             _sds_file_path = _stream.file_paths[_f_idx]
-                            printer.info(f"Closed:   {_stream.name} ({_sds_file_path})")
+                            logger.info(f"Closed:   {_stream.name} ({_sds_file_path})")
                             if self._monitor:
                                 self._monitor.send_close_msg(_sds_file_path)
                             self.opened_streams[sid] = self.opened_streams[sid]._replace(file_idx=_f_idx + 1)
@@ -1040,7 +1037,7 @@ class sdsio_manager:
                             if _next_idx < len(_stream.file_paths):
                                 # First file open was already notified in _open(); notify for subsequent files here
                                 _sds_file_path = _stream.file_paths[_next_idx]
-                                printer.info(f"Playback: {_stream.name} ({_sds_file_path})")
+                                logger.info(f"Playback: {_stream.name} ({_sds_file_path})")
                                 if self._monitor:
                                     self._monitor.send_open_msg(_sds_file_path, 0)
                             continue
@@ -1064,18 +1061,18 @@ class sdsio_manager:
         _resp.extend(sid.to_bytes(4,'little'))
         _resp.extend((1).to_bytes(4,'little'))
         _resp.extend((0).to_bytes(4,'little'))
-        printer.info("Ping received.")
+        logger.info("Ping received.")
         return _resp
 
     def _info(self, flags: int, idle_rate: int, err_data: bytes):
         # Print info: sdsFlags, sdsIdleRate, Error
         _resp = bytearray()
         if self._info_flags != flags:
-            printer.info(f"sdsFlags = 0x{flags:08X}")
+            logger.info(f"sdsFlags = 0x{flags:08X}")
             self._info_flags = flags
         if idle_rate and self._info_IdleRate != idle_rate:
             if idle_rate != 0xFFFFFFFF:
-                printer.info(f"{idle_rate}% idle")
+                logger.info(f"{idle_rate}% idle")
             self._info_IdleRate = idle_rate
         if err_data:
             _status = int.from_bytes(err_data[0:4],'little')
@@ -1086,7 +1083,7 @@ class sdsio_manager:
             else:
                 _msg = f"Error:    SDS_ERROR_CHECK {_status}: "
             _msg += f"{_err_mgs.decode('utf-8', errors='replace')}: {_line}"
-            printer.info(_msg)
+            logger.info(_msg)
 
         if self._monitor:
             self._monitor.send_info_msg(flags, idle_rate, err_data)
@@ -1145,7 +1142,7 @@ class sdsio_manager:
             return self._info(_flags, _idle_rate, _err_data)
 
         else:
-            printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
+            logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
             return bytearray()
 
 
@@ -1176,7 +1173,7 @@ class async_sdsio_server_socket:
         _task = asyncio.current_task()
         self._handler_tasks.add(_task)
         try:
-            printer.info(f"SDSIO Client connected.")
+            logger.info(f"SDSIO Client connected.")
             while True:
                 # Send async FLAGS response periodically
                 _resp = self._manager.get_async_response()
@@ -1193,8 +1190,8 @@ class async_sdsio_server_socket:
                 # validate command before reading payload
                 _cmd = int.from_bytes(_hdr[0:4],'little')
                 if _cmd not in CMD_ALL:
-                    printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
-                    printer.info("Closing SDSIO Client connection...")
+                    logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
+                    logger.info("Closing SDSIO Client connection...")
                     break
 
                 _sz  = int.from_bytes(_hdr[12:16],'little')
@@ -1207,7 +1204,7 @@ class async_sdsio_server_socket:
             raise                          # re-raise per docs
         except (asyncio.IncompleteReadError, ConnectionResetError, OSError):
             if not self._shutting_down:
-                printer.info(f"SDSIO Client disconnected.")
+                logger.info(f"SDSIO Client disconnected.")
         finally:
             self._handler_tasks.discard(_task)
             # Send shutdown flags (clear alive bit) before closing
@@ -1220,12 +1217,12 @@ class async_sdsio_server_socket:
             # Clean up any streams
             self._manager.clean()
             if not self._shutting_down:
-                printer.info("Waiting for SDSIO Client to reconnect...")
+                logger.info("Waiting for SDSIO Client to reconnect...")
 
     async def start(self):
         self.server = await asyncio.start_server(self._handle_client, self._ip, self._port)
         _addr = self.server.sockets[0].getsockname()
-        printer.info(f"Socket server listening on {_addr[0]}:{_addr[1]}")
+        logger.info(f"Socket server listening on {_addr[0]}:{_addr[1]}")
         try:
             # Block until cancelled (start_server already accepts connections)
             await asyncio.Event().wait()
@@ -1256,11 +1253,11 @@ async def sdsio_server_socket_run_supervised(ip, port, manager):
         try:
             await _srv.start()
             # If start() returns normally, break out
-            printer.info("Server shut down cleanly.")
+            logger.info("Server shut down cleanly.")
             break
         except Exception:
-            printer.info(f"Server fatal error.")
-            printer.info("Server restarting...")
+            logger.info(f"Server fatal error.")
+            logger.info("Server restarting...")
             # Clean up any streams
             manager.clean()
             # Close the listener socket if it’s open
@@ -1285,7 +1282,7 @@ class sdsio_server_serial:
 
     def _open(self):
         _first_attempt = True
-        printer.info(f"Serial Port: {self._port}")
+        logger.info(f"Serial Port: {self._port}")
         try:
             self._ser = serial.Serial()
             if sys.platform != "darwin":
@@ -1300,20 +1297,20 @@ class sdsio_server_serial:
             self._ser.stopbits = self._stop_bits
             self._ser.timeout = 0
         except Exception:
-            printer.info("Error initializing serial.")
+            logger.info("Error initializing serial.")
             sys.exit(1)
         _start_time = time.time()
         while not self._manager.shutdown_requested.is_set():
             try:
                 self._ser.open()
-                printer.info("Serial port opened successfully.")
+                logger.info("Serial port opened successfully.")
                 return True
             except Exception:
                 if _first_attempt:
-                    printer.info(f"Waiting for Client on {self._port}...")
+                    logger.info(f"Waiting for Client on {self._port}...")
                     _first_attempt = False
                 if self._connect_timeout and (time.time() - _start_time >= self._connect_timeout):
-                    printer.info(f"Serial port open failed after {self._connect_timeout} seconds.")
+                    logger.info(f"Serial port open failed after {self._connect_timeout} seconds.")
                     sys.exit(1)
                 time.sleep(0.5)
         return False
@@ -1328,20 +1325,20 @@ class sdsio_server_serial:
         try:
             return self._ser.read(size)
         except Exception:
-            printer.info("Serial read error")
+            logger.info("Serial read error")
             raise
 
     def _write(self, data):
         try:
             return self._ser.write(data)
         except Exception:
-            printer.info("Serial write error")
+            logger.info("Serial write error")
             raise
 
     def start(self):
         if not self._open():
             return
-        printer.info("Serial Server started.")
+        logger.info("Serial Server started.")
         _buffer = bytearray()
 
         try:
@@ -1365,7 +1362,7 @@ class sdsio_server_serial:
                     # validate command before reading payload
                     _cmd = int.from_bytes(_header[0:4], 'little')
                     if _cmd not in CMD_ALL:
-                        printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
+                        logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
                         _buffer.clear()
                         return  # Exit start(), finally block will clean up
 
@@ -1399,12 +1396,12 @@ def sdsio_server_serial_run_supervised(port, baudrate, parity, stop_bits, connec
             if manager.shutdown_requested.is_set():
                 break
             # start() returned normally (e.g., invalid command)
-            printer.info("Server restarting...")
+            logger.info("Server restarting...")
         except Exception:
             if manager.shutdown_requested.is_set():
                 break
-            printer.info(f"Server fatal error.")
-            printer.info("Server restarting...")
+            logger.info(f"Server fatal error.")
+            logger.info("Server restarting...")
             # Reset all open streams
             manager.clean()
             # Try to close the port if it's still open
@@ -1475,7 +1472,7 @@ class sdsio_server_usb:
                         continue
                 if _usb_dev is None:
                     if _first_attempt:
-                        printer.info("Waiting for SDSIO Client USB device...")
+                        logger.info("Waiting for SDSIO Client USB device...")
                         _first_attempt = False
                     await asyncio.sleep(0.5)
 
@@ -1534,7 +1531,7 @@ class sdsio_server_usb:
                 except OSError:
                     pass
         except Exception:
-            printer.exception("[TUNE] thread tuning failed.")
+            logger.exception("[TUNE] thread tuning failed.")
 
     def _libusb_loop(self):
         if self._high_priority:
@@ -1631,7 +1628,7 @@ class sdsio_server_usb:
                 # validate command before reading payload
                 _cmd = int.from_bytes(_hdr[0:4],'little')
                 if _cmd not in CMD_ALL:
-                    printer.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
+                    logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
                     self._protocol_error = True
                     self._running = False
                     self._rx_buf.clear()
@@ -1741,9 +1738,9 @@ class sdsio_server_usb:
             # Mark server active in the normal path too (hotplug working)
             self._running = True
             if not _silent_reconnect:
-                printer.info(f"SDSIO Client USB device connected.")
+                logger.info(f"SDSIO Client USB device connected.")
             else:
-                printer.debug("USB session re-established.")
+                logger.debug("USB session re-established.")
                 _silent_reconnect = False
 
             # start polling thread
@@ -1797,11 +1794,11 @@ class sdsio_server_usb:
                 if _device_present:
                     # Transient USB failure — device is still plugged in.
                     # Loop back and silently reconnect.
-                    printer.debug("USB transfers interrupted; reconnecting...")
+                    logger.debug("USB transfers interrupted; reconnecting...")
                     _silent_reconnect = True
                     continue
                 else:
-                    printer.info("USB device disconnected.")
+                    logger.info("USB device disconnected.")
 
             # On protocol error, wait for device to be physically reset
             if _protocol_err:
@@ -1835,13 +1832,13 @@ class sdsio_server_usb:
                 return False
 
             # Wait for device to disappear
-            printer.info("Waiting for SDSIO Client USB device to disconnect...")
+            logger.info("Waiting for SDSIO Client USB device to disconnect...")
             while _device_present():
                 if self._shutdown_event.wait(0.5):
                     return
 
             # Wait for device to reappear
-            printer.info("Waiting for SDSIO Client USB device to reconnect...")
+            logger.info("Waiting for SDSIO Client USB device to reconnect...")
             while not _device_present():
                 if self._shutdown_event.wait(0.5):
                     return
@@ -2199,13 +2196,14 @@ async def main():
     # configure logging
     if _args.verbose:
         _fmt = logging.Formatter("%(asctime)s [%(threadName)s] %(levelname)s: %(message)s")
-        _log = safe_print(level=logging.DEBUG, formatter=_fmt, log_file=_args.log_file)
+        _log, _spinner = setup_logger(level=logging.DEBUG, formatter=_fmt, log_file=_args.log_file)
     else:
         _fmt = logging.Formatter("%(message)s")
-        _log = safe_print(level=logging.INFO, formatter=_fmt, log_file=_args.log_file)
-    # override global printer
-    global printer
-    printer = _log
+        _log, _spinner = setup_logger(level=logging.INFO, formatter=_fmt, log_file=_args.log_file)
+    # override globals configured before argument parsing
+    global logger, spinner
+    logger = _log
+    spinner = _spinner
 
     # Open and parse the control YAML if provided, and apply any configuration
     # CLI arguments will override YAML settings where applicable (e.g. server type)
@@ -2220,7 +2218,7 @@ async def main():
             else:
                 raise ValueError("Invalid control YAML.")
         except Exception as _e:
-            printer.error(f"Failed to load control YAML: {_e}")
+            logger.error(f"Failed to load control YAML: {_e}")
 
     # Server type
     if _args.server_type is not None:
@@ -2306,7 +2304,7 @@ async def main():
         elif _server_type == "usb":
             _loop = asyncio.get_running_loop()
             _srv = sdsio_server_usb(_manager, _loop, high_priority=_high_priority)
-            printer.info("Starting USB Server...")
+            logger.info("Starting USB Server...")
             await _srv.start()
 
     except (KeyboardInterrupt, asyncio.CancelledError):
@@ -2316,11 +2314,9 @@ async def main():
         _manager.shutdown()
 
 if __name__ == "__main__":
-    # minimal printer until main() configures it
-    printer = safe_print(formatter="%(message)s")
-    printer.info("Press Ctrl+C to exit.")
+    logger.info("Press Ctrl+C to exit.")
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, asyncio.CancelledError):
-        printer.info("Ctrl+C received, shutting down.")
-    printer.info("Server stopped.")
+        logger.info("Ctrl+C received, shutting down.")
+    logger.info("Server stopped.")
