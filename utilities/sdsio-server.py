@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.16"
+SDSIO_SERVER_VERSION = "0.9.17"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -420,17 +420,62 @@ class sdsFlags:
         self._lock  = threading.Lock()
         self._auto_playback = auto_playback
         self._playback_mode = auto_playback
+        self._target_flags = 0
+        self._auto_start_pending = False
+        self._auto_terminate_pending = False
+        if auto_playback:
+            self._set = SDS_FLAG_MASK_PLAYBACK_MODE | SDS_FLAG_MASK_START
+            self._auto_start_pending = True
 
     def apply(self, set_mask: int, clear_mask: int):
         with self._lock:
-            self._set   |= set_mask
-            self._clear |= clear_mask
+            self._set    = (self._set | set_mask) & ~clear_mask
+            self._clear  = (self._clear | clear_mask) & ~set_mask
+            if set_mask & SDS_FLAG_MASK_PLAYBACK_MODE:
+                self._playback_mode = True
+            if not self._auto_playback and (clear_mask & SDS_FLAG_MASK_PLAYBACK_MODE):
+                self._playback_mode = False
+
+    def update_from_target(self, flags: int):
+        with self._lock:
+            self._target_flags = flags
+            if flags & SDS_FLAG_MASK_START:
+                self._auto_start_pending = False
+            if flags & SDS_FLAG_MASK_PLAYBACK_MODE:
+                self._playback_mode = True
+            elif not self._auto_playback:
+                self._playback_mode = False
+
+    def request_auto_playback_start(self) -> bool:
+        with self._lock:
+            if not self._auto_playback:
+                return False
+            if self._auto_terminate_pending:
+                return False
+            if self._auto_start_pending or (self._target_flags & SDS_FLAG_MASK_START):
+                return False
+            self._set |= SDS_FLAG_MASK_PLAYBACK_MODE | SDS_FLAG_MASK_START
+            self._clear &= ~(SDS_FLAG_MASK_PLAYBACK_MODE | SDS_FLAG_MASK_START)
+            self._playback_mode = True
+            self._auto_start_pending = True
+            return True
+
+    def request_auto_playback_terminate(self) -> bool:
+        with self._lock:
+            if not self._auto_playback:
+                return False
+            if self._auto_start_pending or self._auto_terminate_pending:
+                return False
+            if self._target_flags & SDS_FLAG_MASK_START:
+                return False
+            self._set |= SDS_FLAG_MASK_CI_TERMINATE
+            self._clear &= ~SDS_FLAG_MASK_CI_TERMINATE
+            self._auto_terminate_pending = True
+            return True
 
     def consume_set(self) -> int:
         with self._lock:
             _val = self._set | SDS_FLAG_MASK_ALIVE
-            if self._auto_playback:
-                _val |= SDS_FLAG_MASK_PLAYBACK_MODE
             if _val & SDS_FLAG_MASK_PLAYBACK_MODE:
                 self._playback_mode = True
             self._set = 0
@@ -447,6 +492,14 @@ class sdsFlags:
     @property
     def playback_mode(self):
         return self._playback_mode
+
+    @property
+    def auto_playback(self):
+        return self._auto_playback
+
+    @property
+    def target_flags(self):
+        return self._target_flags
 
 
 # ---------------------------------------------------------------------------- #
@@ -602,6 +655,7 @@ class sdsio_manager:
         self._info_flags: int = 0
         self._info_IdleRate: int = 0
         self._last_async_time = time.time()
+        self._last_playback_stream_name = None
 
     def shutdown(self):
         self.shutdown_requested.set()
@@ -777,6 +831,28 @@ class sdsio_manager:
                 _labels.append(str(self._play_step_index))
         return _labels
 
+    def _has_next_auto_playback_step(self) -> bool:
+        if not self._flags.auto_playback or self.opened_streams:
+            return False
+        if self._play_list:
+            return self._play_step_index < len(self._play_list)
+        if self._last_playback_stream_name:
+            return bool(self._create_play_label_list(self._last_playback_stream_name))
+        return False
+
+    def _request_auto_playback_if_needed(self, target_flags: Optional[int] = None):
+        _target_flags = self._flags.target_flags if target_flags is None else target_flags
+        if _target_flags & SDS_FLAG_MASK_START:
+            return
+        if self.opened_streams:
+            return
+        if self._has_next_auto_playback_step():
+            if self._flags.request_auto_playback_start():
+                logger.info(f"sdsControl: auto playback step {self._play_step_index}")
+        elif self._flags.auto_playback and self._last_playback_stream_name:
+            if self._flags.request_auto_playback_terminate():
+                logger.info("sdsControl: auto playback terminate")
+
     def _open(self, mode, name):
         _cmd = CMD_OPEN
         # prepare error response
@@ -915,6 +991,7 @@ class sdsio_manager:
                 logger.info(f"Playback: {name} ({_file_paths[0]})")
                 if self._monitor:
                     self._monitor.send_open_msg(_file_paths[0], 0)
+            self._last_playback_stream_name = name
 
         # build success response
         _resp = bytearray()
@@ -971,6 +1048,7 @@ class sdsio_manager:
                 self._play_step_index += 1
             self._label_list.clear()
             self._timestamp_boundaries.clear()
+            self._request_auto_playback_if_needed()
 
         return _resp
 
@@ -1067,6 +1145,8 @@ class sdsio_manager:
     def _info(self, flags: int, idle_rate: int, err_data: bytes):
         # Print info: sdsFlags, sdsIdleRate, Error
         _resp = bytearray()
+        self._flags.update_from_target(flags)
+        self._request_auto_playback_if_needed(flags)
         if self._info_flags != flags:
             logger.info(f"sdsFlags = 0x{flags:08X}")
             self._info_flags = flags
