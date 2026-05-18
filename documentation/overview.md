@@ -30,12 +30,12 @@ In a simulation environment, the **SDS Interface** streams the SDS data files ba
 
 ## SDS Performance Measurements
 
-| Board                 | STMicroelectronics B-U585I-IOT02A    | Alif Semiconductor AppKit-E7   | Alif Semiconductor DevKit-E7   |
+| Board                 | STMicroelectronics B-U585I-IOT02A    | Alif Semiconductor DevKit-E8   | Alif Semiconductor DevKit-E8   |
 |-----------------------|--------------------------------------|--------------------------------|--------------------------------|
 | CPU speed             | 160 MHz                              | 400 Mhz                        | 400 MHz                        |
 | I/O Interface         | USB Full-speed                       | USB High-speed                 | Ethernet 10/100                |
-| Bandwidth             | 1.1 MB/s                             | 15 MB/s                        | 6 MB/s                         |
-| Idle rate             | 86 %                                 | 63 %                           | 65 %                           |
+| Bandwidth             | 1.1 MB/s                             | 20 MB/s                        | 8 MB/s                         |
+| Idle rate             | 86 %                                 | 55 %                           | 66 %                           |
 
 Performance measurements were obtained using the [DataTest](https://arm-software.github.io/SDS-Framework/main/template.html#using-datatest) project, which validates captured data streams on the available board interfaces (Ethernet and USB Bulk).
 SDS data files were verified using the [SDS-Check](https://arm-software.github.io/SDS-Framework/main/utilities.html#sds-check) utility.
