@@ -27,33 +27,18 @@
 import os
 import logging
 from os import path
-from typing import List, Optional, Tuple
 import yaml
 
-logger = logging.getLogger(__name__)
-
-# Add custom APP
-APP_LEVEL = 45
-logging.addLevelName(APP_LEVEL, "APP")
-
-## Set verbosity level
-#verbosity = logging.DEBUG
-#verbosity = logging.INFO
-#verbosity = logging.WARNING
-verbosity = logging.ERROR
-#verbosity = APP_LEVEL
-
-def app(self, message, *args, **kwargs):
-    if self.isEnabledFor(APP_LEVEL):
-        self._log(APP_LEVEL, message, args, **kwargs)
-logging.Logger.app = app
-
-level = { 10: "DEBUG",  20: "INFO", 30: "WARNING", 40: "ERROR", 45: "APP" }
-logging.basicConfig(format='%(message)s', level = verbosity, filename = 'sdsio.log', filemode = 'w')
-
-# sdsio.log created by arm_vsi3.py
-logger.app(f"Created by {path.abspath(__file__)}\n")
-
+from sdsio import (
+    CMD_CLOSE,
+    CMD_FLAGS,
+    CMD_INFO,
+    CMD_OPEN,
+    CMD_PING,
+    CMD_READ,
+    CMD_WRITE,
+    sdsio_manager,
+)
 
 # IRQ registers
 IRQ_Status = 0
@@ -81,392 +66,140 @@ DMA_Control_Direction_M2P = 1<<1
 COMMAND     = 0     # index=0, user read/write
 STREAM_ID   = 0     # index=1, user read/write
 ARGUMENT    = 0     # index=2, user read/write
+FLAGS_SET   = 0     # index=3, user read/write
+FLAGS_CLR   = 0     # index=4, user read/write
 
 # Data buffer
 Data = bytearray()
 
-# 'No limit' for idx-end
-NO_LIMIT = 0x7FFFFFFF
-
 # SDS I/O error/status codes (32-bit two's-complement, used in the ARGUMENT register)
 SDSIO_ERROR = (-1 & 0xFFFFFFFF)  # -1
-SDSIO_EOS   = (-6 & 0xFFFFFFFF)  # -6
+SDSIO_EOS   = (-7 & 0xFFFFFFFF)  # -7
 
-class IndexAllocator:
-    """
-    Hands out the next SDS index.
-    """
+# VSI3 writes SDSIO logs to sdsio.log
+logger = logging.getLogger("sdsio")
+logger.setLevel(logging.INFO)
+logger.propagate = False
+for _handler in logger.handlers[:]:
+    logger.removeHandler(_handler)
+    _handler.close()
+_log_handler = logging.FileHandler("sdsio.log", mode="w", encoding="utf-8")
+_log_handler.setFormatter(logging.Formatter("%(message)s"))
+logger.addHandler(_log_handler)
+logger.info(f"Created by {path.abspath(__file__)}\n")
 
-    def __init__(self, idx_start: int = 0, idx_end: int = NO_LIMIT, idx_list: Optional[List[int]] = None):
-        self._idx_start = idx_start
-        self._idx_end   = idx_end
-        self._idx_list  = idx_list
-        self._idx_next  = idx_start   # next sequential candidate
-        self._list_pos  = 0           # position within _list mode
+def _load_sdsio_server_config(base_dir: str):
+    _cfg_path = None
+    _candidates = [
+        path.join(base_dir, "sdsio.yml"),
+        path.join(base_dir, "sdsio.yaml"),
+    ]
+    _candidates.extend(sorted(path.join(base_dir, _name) for _name in os.listdir(base_dir) if _name.endswith(".sdsio.yml")))
+    _candidates.extend(sorted(path.join(base_dir, _name) for _name in os.listdir(base_dir) if _name.endswith(".sdsio.yaml")))
 
-    def reset(self) -> None:
-        self._idx_next = self._idx_start
-        self._list_pos  = 0
+    for _candidate in _candidates:
+        if path.isfile(_candidate):
+            _cfg_path = _candidate
+            break
 
-    def get_idx(self) -> Optional[int]:
-        idx = None
-
-        if self._idx_list:
-            if self._list_pos < len(self._idx_list):
-                idx = self._idx_list[self._list_pos]
-                self._list_pos += 1
-                return idx
-        else:
-            # sequential mode
-            if self._idx_next <= self._idx_end:
-                idx = self._idx_next
-                self._idx_next += 1
-        return idx
-
-class StreamManager:
-    """
-    Manages streaming data and associated resources.
-    """
-
-    def __init__(self, work_dir: str = None):
-        # Initialize the StreamManager instance.
-        self._stream_id = 0
-        base_dir = work_dir if work_dir else os.getcwd()
-        self._opened_streams = {}           # sid -> (file_obj, name, mode)
-        self._stream_indexes = {}           # stream name -> IndexAllocator
-        self._sdsControlFlagsSet   = 0   # VSI -> Device
-        self._sdsControlFlagsClear = 0   # VSI -> Device
-        self._sdsStatusFlags       = 0   # Device -> VSI
-
-        # Load SDSIO configuration from sdsio.yml configuration file
-        dir_path, idx_start, idx_end, idx_list = self._load_sdsio_config(base_dir)
-        self._sds_dir   = dir_path          # directory that stores SDS files
-        self._idx_start = idx_start
-        self._idx_end   = idx_end
-        self._idx_list  = idx_list
-        self._rec_play  = {1: "Record:   ", 0: "Playback: "}
-
-    def _format_stream_path(self, fname) -> str:
+    _ctrl_data = {}
+    if _cfg_path:
         try:
-            base_dir = os.getcwd()
-            p = os.path.relpath(fname, base_dir)
-            # If file is outside base_dir, relpath starts with '..' (e.g., '../foo' or '..\foo')
-            if p == os.pardir or p.startswith(os.pardir + os.sep):
-                return os.path.abspath(fname)
-        except Exception:
-            # Different drives on Windows or other relpath issues -> use absolute
-            return fname
+            with open(_cfg_path, "r", encoding="utf-8") as _yml_file:
+                _yml_data = yaml.safe_load(_yml_file) or {}
+            if "sdsio" in _yml_data:
+                _ctrl_data = _yml_data["sdsio"] or {}
+        except Exception as _e:
+            logger.error(f"Failed to load control YAML: {_e}")
 
-        # p is relative here; add ./ or .\ for clarity if not already present
-        if p.startswith("./") or p.startswith(".\\"):
-            return p
-        return (".\\" if os.sep == "\\" else "./") + p
+    _work_dir = _ctrl_data.get("workdir", base_dir) if _ctrl_data else base_dir
+    _work_dir = path.normpath(path.join(base_dir, _work_dir)) if not path.isabs(_work_dir) else path.normpath(_work_dir)
+    _play_list = _ctrl_data.get("play", None) if _ctrl_data else None
 
-    @staticmethod
-    def _load_sdsio_config(base_dir: str) -> Tuple[str, int, int, Optional[List[int]]]:
-        """
-        Load SDSIO config from sdsio.yml/.yaml in workdir.
-
-        dir_path: absolute directory path (str)          [default: workdir]
-        idx_start: int                                   [default: 0]
-        idx_end: int                                     [default: NO_LIMIT]
-        idx_list: [List[int]]                            [default: None]
-        """
-        workdir_abs = path.abspath(base_dir)
-        cfg_path = None
-        for name in ("sdsio.yml", "sdsio.yaml"):
-            candidate = path.join(workdir_abs, name)
-            if path.isfile(candidate):
-                cfg_path = candidate
-                break
-
-        # defaults
-        dir_path:  str = workdir_abs
-        idx_start: int = 0
-        idx_end:   int = NO_LIMIT
-        idx_list:  Optional[List[int]] = None
-
-        if cfg_path is None:
-            logger.warning("sdsio.yml: No configuration file. Default values will be used.")
-            return dir_path, idx_start, idx_end, idx_list
-
-        with open(cfg_path, "r", encoding="utf-8") as f:
-            try:
-                data = yaml.safe_load(f) or {}
-            except:
-                logger.warning(f"sdsio.yml: Failed to parse '{path.basename(cfg_path)}'. Default values will be used.")
-                data = {}
-
-        # dir
-        if "dir" in data and data["dir"] is not None:
-            if not isinstance(data["dir"], str):
-                logger.warning(f"sdsio.yml: 'dir' must be a string (path). Default value will be used: {dir_path}.")
-            d = data["dir"].strip()
-            if d:
-                dir_path_abs = path.normpath(d if path.isabs(d) else path.abspath(path.join(workdir_abs, d)))
-                if not path.isdir(dir_path_abs):
-                    # Check if dir_path_abs is a subfolder of workdir_abs
-                    try:
-                        rel = os.path.relpath(dir_path_abs, workdir_abs)
-                        is_subfolder = not rel.startswith(os.pardir + os.sep) and not os.path.isabs(rel)
-                    except Exception:
-                        is_subfolder = False
-
-                    if is_subfolder:
-                        try:
-                            os.makedirs(dir_path_abs, exist_ok=True)
-                            dir_path = dir_path_abs
-                            logger.info(f"sdsio.yml: Directory '{dir_path_abs}' did not exist and was created.")
-                        except Exception:
-                            logger.warning(f"sdsio.yml: Failed to create directory '{dir_path_abs}'. Default value will be used: {dir_path}.")
-                    else:
-                        logger.warning(f"sdsio.yml: Directory '{dir_path_abs}' does not exist. Default value will be used: {dir_path}.")
-                else:
-                    dir_path = dir_path_abs
+    # auto-playback is always enabled on VSI
+    _auto_playback = True
+    return _work_dir, _auto_playback, _play_list
 
 
-        # idx-start
-        if "idx-start" in data and data["idx-start"] is not None:
-            v = data["idx-start"]
-            if isinstance(v, bool):
-                logger.warning(f"sdsio.yml: 'idx-start' must be an integer, got boolean. Default value will be used: {idx_start}.")
-            else:
-                try:
-                    idx_start = int(v)
-                except:
-                    logger.warning(f"sdsio.yml: 'idx-start' must be an integer. Default value will be used: {idx_start}.")
-                if idx_start < 0:
-                    logger.warning(f"sdsio.yml: 'idx-start' must be >= 0. Default value will be used: {idx_start}.")
+def _build_sdsio_request(command: int, sid: int = 0, argument: int = 0, data: bytes = b"") -> bytearray:
+    _req = bytearray()
+    _req.extend(command.to_bytes(4, "little"))
+    _req.extend(sid.to_bytes(4, "little"))
+    _req.extend(argument.to_bytes(4, "little"))
+    _req.extend(len(data).to_bytes(4, "little"))
+    _req.extend(data)
+    return _req
 
-        # idx-end
-        if "idx-end" in data and data["idx-end"] is not None:
-            v = data["idx-end"]
-            if isinstance(v, bool):
-                logger.warning(f"sdsio.yml: 'idx-end' must be an integer, got boolean. Default value will be used: {idx_end}.")
-            else:
-                try:
-                    idx_end = int(v)
-                except:
-                    logger.warning(f"sdsio.yml: 'idx-end' must be an integer. Default value will be used: {idx_end}.")
-                if idx_end < 0:
-                    logger.warning(f"sdsio.yml: 'idx-end' must be >= 0. Default value will be used: {idx_end}.")
-                if idx_end < idx_start:
-                    logger.warning(f"sdsio.yml: 'idx-end' must be >= idx_start. Default value will be used: {idx_end}.")
 
-        # idx-list
-        if "idx-list" in data and data["idx-list"] is not None:
-            lst_err = False
-            lst = data["idx-list"]
-            if not isinstance(lst, (list, tuple)):
-                logger.warning(f"sdsio.yml: 'idx-list' must be a list of integers. idx_start {idx_start} and idx_end {idx_end} will be used.")
-                lst_err = True
-            out: List[int] = []
-            seen = set()
-            for i, v in enumerate(lst):
-                if isinstance(v, bool):
-                    logger.warning(f"sdsio.yml: 'idx-list[{i}]' must be an integer, got boolean. idx_start {idx_start} and idx_end {idx_end} will be used.")
-                    lst_err = True
-                    break
-                try:
-                    iv = int(v)
-                except:
-                    logger.warning(f"sdsio.yml: 'idx-list[{i}]' must be an integer. idx_start {idx_start} and idx_end {idx_end} will be used.")
-                    lst_err = True
-                    break
-                if iv not in seen:
-                    out.append(iv)
-                    seen.add(iv)
-            if not lst_err and out:
-                idx_list = out
+_work_dir, _auto_playback, _play_list = _load_sdsio_server_config(os.getcwd())
+Stream = sdsio_manager(
+    work_dir=_work_dir,
+    auto_playback=_auto_playback,
+    play_list=_play_list,
+    mon_port=None,
+    status_bar_factory=False,
+    monitor_factory=False,
+    control_input_factory=False,
+)
 
-        return dir_path, idx_start, idx_end, idx_list
-
-    def open(self, name: str, mode: int) -> int:
-        # Open a stream in read (mode=0) or write (mode=1).
-        # Returns a non-zero stream ID on success, or 0 on error.
-        logger.debug(f"Open name={name}, mode={mode}")
-
-        # Check mode
-        if mode not in (0, 1):
-            logger.app(f"ERROR:    Open failed. Invalid mode for stream: {name}.")
-            return 0
-
-        try:
-            if not name or any(ch in name for ch in '"*/:<>?\\|'):
-                logger.app(f"{self._rec_play[mode]} {name} - ERROR. Invalid name.")
-                return 0
-            if name in (n for (_, n, _) in self._opened_streams.values()):
-                logger.app(f"{self._rec_play[mode]} {name} - ERROR. Already open.")
-                return 0
-
-            # Check if stream name already has an IndexAllocator, else create one
-            if name not in self._stream_indexes:
-                # Use the loaded config for all streams for now
-                self._stream_indexes[name] = IndexAllocator(self._idx_start, self._idx_end, self._idx_list)
-
-            # Get new index
-            idx = self._stream_indexes[name].get_idx()
-            if idx is None:
-                logger.app(f"{self._rec_play[mode]} {name} - ACCESS REJECTED. Index excluded in sdsio.yml")
-                return 0
-
-            fname = path.join(self._sds_dir, f"{name}.{idx}.sds")
-            file_path = self._format_stream_path(fname)
-
-            if mode == 1:
-                # write mode
-                f = open(fname, 'wb')
-                self._stream_id += 1
-                sid = self._stream_id
-                logger.app(f"{self._rec_play[mode]} {name} ({file_path}).")
-
-            else:
-                # read mode:
-                if path.exists(fname):
-                    f = open(fname, 'rb')
-                    logger.app(f"{self._rec_play[mode]} {name} ({file_path}).")
-                    self._stream_id += 1
-                    sid = self._stream_id
-                else:
-                    sid = 0
-
-            if sid != 0:
-                self._opened_streams[sid] = (f, name, mode)
-            return sid
-
-        except Exception:
-            logger.app(f"{self._rec_play[mode]} {name} - ERROR. Failed to open.")
-            return 0
-
-    def close(self, sid: int) -> bool:
-        # Close the stream with the given ID.
-        # Returns True on success, False if invalid ID.
-        entry = self._opened_streams.pop(sid, None)
-        if not entry:
-            logger.app(f"ERROR:    Close failed. Invalid stream ID: {sid}.")
-            return False
-        f, name, mode = entry
-        try:
-            f.close()
-            logger.app(f"Closed:    {name}.")
-            return True
-        except Exception:
-            logger.app(f"{self._rec_play[mode]} {name} - ERROR. Failed to close.")
-            return False
-
-    def write(self, sid: int, data: bytes) -> bool:
-        # Write raw bytes to an open write stream.
-        # Returns True on success, False otherwise.
-        entry = self._opened_streams.get(sid)
-        if not entry:
-            logger.app(f"ERROR:    Write failed. Invalid stream ID: {sid}.")
-            return False
-        f, name, mode = entry
-        if mode != 1:
-            logger.app(f"{self._rec_play[mode]} {name} - ERROR. Not opened for write.")
-            return False
-        try:
-            f.write(data)
-            f.flush()
-            return True
-        except Exception:
-            logger.app(f"{self._rec_play[mode]} {name} - ERROR. Failed to write.")
-            return False
-
-    def read(self, sid: int, size: int) -> tuple[bytes, bool]:
-        # Read up to `size` bytes from an open read stream.
-        # Returns a tuple (data, eof) where `eof` is True if end-of-stream reached.
-        entry = self._opened_streams.get(sid)
-        if not entry:
-            logger.app(f"ERROR:    Read failed. Invalid stream ID: {sid}.")
-            return b'', True
-        f, name, mode = entry
-        if mode != 0:
-            logger.app(f"{self._rec_play[mode]} {name} - ERROR. Not opened for read.")
-            return b'', True
-        try:
-            data = f.read(size)
-            eof = not data
-            return data, eof
-        except Exception:
-            logger.app(f"{self._rec_play[mode]} {name} - ERROR. Failed to read.")
-            return b'', True
-
-    def ctrl_write(self, data: bytes) -> bool:
-        # Writes raw bytes to the _sdsStatusFlags variable.
-        # Logs the resulting value and any recorded error information.
-        # Returns True on success, False otherwise.
-        if len(data) >= 4:
-            self._sdsStatusFlags = int.from_bytes(data[0:4], byteorder='little')
-            # Log sdsStatusFlags value (Device -> Host (this script))
-            logger.app(f"sdsStatusFlags = 0x{self._sdsStatusFlags:08X}")
-            if len(data) > 8:
-                # Log error info captured at failed SDS_ASSERT (Device -> Host (this script))
-                #          filename                 + ":" + line number                                        + ": error: `SDS_ASSERT` failed\n"
-                logger.app(data[8:].decode('utf-8') + ":" + str(int.from_bytes(data[4:8], byteorder='little')) + ": error: `SDS_ASSERT` failed\n")
-            return True
-        else:
-            logger.app(f"ERROR: Failed to write less than 4 bytes of control data.")
-            return False
-
-    def ctrl_read(self, size: int) -> bytes:
-        # Returns 8 bytes, the value of _sdsControlFlagsSet and _sdsControlFlagsClear variables or b``.
-        data = bytearray()
-        if (size >= 8):
-            data.extend(self._sdsControlFlagsSet.to_bytes(4,'little'))
-            data.extend(self._sdsControlFlagsClear.to_bytes(4,'little'))
-            self._sdsControlFlagsSet = 0
-            self._sdsControlFlagsClear = 0
-        else:
-            logger.app(f"ERROR: Failed to read less than 8 bytes of control data.")
-        return data
-
-    def clean(self):
-        # Close all open streams.
-        for sid in list(self._opened_streams):
-            self.close(sid)
-
-# Global instance using current directory
-Stream = StreamManager()
 
 ## Process command
 #  @param command requested SDSIO command
 def processCOMMAND(command):
-    global Data, Stream, STREAM_ID, ARGUMENT
+    global Data, Stream, STREAM_ID, ARGUMENT, FLAGS_SET, FLAGS_CLR
 
-    cmd = { 1: "CMD_OPEN", 2: "CMD_CLOSE", 3: "CMD_WRITE", 4: "CMD_READ", 6: "CMD_CTRL_WRITE", 7: "CMD_CTRL_READ" }
+    cmd = { 1: "CMD_OPEN", 2: "CMD_CLOSE", 3: "CMD_WRITE", 4: "CMD_READ", 5: "CMD_PING", 6: "CMD_FLAGS", 7: "CMD_INFO" }
 
     if not command in cmd:
-        logger.app(f"ERROR:    Unknown COMMAND: {command}.")
+        logger.info(f"ERROR:    Unknown COMMAND: {command}.")
         return 0
 
     logger.info(f"Processing {cmd[command]}")
 
-    if command == 1: # Open
-        fname = Data[:Data.find(0)].decode("utf-8")
-        STREAM_ID = Stream.open(fname, ARGUMENT)
+    try:
+        if command == CMD_OPEN:
+            _resp = Stream.execute_request(_build_sdsio_request(CMD_OPEN, argument=ARGUMENT, data=Data))
+            STREAM_ID = int.from_bytes(_resp[4:8], "little") if len(_resp) >= 8 else 0
+            ARGUMENT = int.from_bytes(_resp[8:12], "little") if len(_resp) >= 12 else SDSIO_ERROR
 
-    elif command == 2: # Close
-        Stream.close(STREAM_ID)
+        elif command == CMD_CLOSE:
+            Stream.execute_request(_build_sdsio_request(CMD_CLOSE, sid=STREAM_ID))
+            ARGUMENT = 0
 
-    elif command == 3: # Write
-        # Return data length or SDSIO_ERROR
-        ARGUMENT = len(Data) if Stream.write(STREAM_ID, Data) else SDSIO_ERROR
+        elif command == CMD_WRITE:
+            _can_write = STREAM_ID in Stream._write_buffers
+            Stream.execute_request(_build_sdsio_request(CMD_WRITE, sid=STREAM_ID, data=Data))
+            ARGUMENT = len(Data) if _can_write else SDSIO_ERROR
 
-    elif command == 4: # Read
-        # Return data length or SDSIO_EOS
-        Data, eof = Stream.read(STREAM_ID, ARGUMENT)
-        ARGUMENT = len(Data) if not eof else SDSIO_EOS
+        elif command == CMD_READ:
+            _resp = Stream.execute_request(_build_sdsio_request(CMD_READ, sid=STREAM_ID, argument=ARGUMENT))
+            _eof = int.from_bytes(_resp[8:12], "little") if len(_resp) >= 12 else 1
+            _size = int.from_bytes(_resp[12:16], "little") if len(_resp) >= 16 else 0
+            Data = bytearray(_resp[16:16 + _size])
+            ARGUMENT = SDSIO_EOS if _eof and _size == 0 else _size
 
-    elif command == 6: # Control Write
-        # Return data length or SDSIO_ERROR
-        ARGUMENT = len(Data) if Stream.ctrl_write(Data) else SDSIO_ERROR
+        elif command == CMD_PING:
+            _resp = Stream.execute_request(_build_sdsio_request(CMD_PING, sid=STREAM_ID))
+            ARGUMENT = int.from_bytes(_resp[8:12], "little") if len(_resp) >= 12 else SDSIO_ERROR
 
-    elif command == 7: # Control Read
-        # Return data length or SDSIO_ERROR
-        logger.info(f"command == 7")
-        Data = Stream.ctrl_read(ARGUMENT)
-        ARGUMENT = len(Data) if Data else SDSIO_ERROR
+        elif command == CMD_FLAGS:
+            _resp = Stream._get_async_flags()
+            FLAGS_SET = int.from_bytes(_resp[4:8], "little") if len(_resp) >= 8 else 0
+            FLAGS_CLR = int.from_bytes(_resp[8:12], "little") if len(_resp) >= 12 else 0
+            Data = bytearray()
+
+        elif command == CMD_INFO:
+            Stream.execute_request(_build_sdsio_request(CMD_INFO, sid=STREAM_ID, argument=ARGUMENT, data=Data))
+            ARGUMENT = len(Data)
+
+    except Exception:
+        logger.exception(f"ERROR:    Failed to process {cmd[command]}.")
+        ARGUMENT = SDSIO_ERROR
+        if command == CMD_OPEN:
+            STREAM_ID = 0
+        elif command == CMD_FLAGS:
+            FLAGS_SET = 0
+            FLAGS_CLR = 0
 
     return command
 
@@ -574,7 +307,7 @@ def wrDataDMA(data, size):
 #  @param index user register index (zero based)
 #  @return value value read (32-bit)
 def rdRegs(index):
-    global Timer_Control, COMMAND, STREAM_ID, ARGUMENT
+    global Timer_Control, COMMAND, STREAM_ID, ARGUMENT, FLAGS_SET, FLAGS_CLR
     logger.info("Python function rdRegs() called")
 
     if   index == 0:
@@ -586,6 +319,12 @@ def rdRegs(index):
     elif index == 2:
         value = ARGUMENT
         logger.debug(f"Read ARGUMENT: {value}")
+    elif index == 3:
+        value = FLAGS_SET
+        logger.debug(f"Read FLAGS_SET: {value}")
+    elif index == 4:
+        value = FLAGS_CLR
+        logger.debug(f"Read FLAGS_CLR: {value}")
     else:
         logger.debug(f"User register {index} not used")
         value = 0
@@ -598,7 +337,7 @@ def rdRegs(index):
 #  @param value value to write (32-bit)
 #  @return value value written (32-bit)
 def wrRegs(index, value):
-    global COMMAND, STREAM_ID, ARGUMENT
+    global COMMAND, STREAM_ID, ARGUMENT, FLAGS_SET, FLAGS_CLR
     logger.info("Python function wrRegs() called")
 
     if   index == 0:
@@ -609,6 +348,12 @@ def wrRegs(index, value):
     elif index == 2:
         ARGUMENT = value
         logger.debug(f"Write ARGUMENT: {value}")
+    elif index == 3:
+        FLAGS_SET = value
+        logger.debug(f"Write FLAGS_SET: {value}")
+    elif index == 4:
+        FLAGS_CLR = value
+        logger.debug(f"Write FLAGS_CLR: {value}")
     else:
         logger.debug(f"User register {index} not used")
 

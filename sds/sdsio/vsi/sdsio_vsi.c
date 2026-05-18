@@ -32,6 +32,8 @@
 #define COMMAND         Regs[0]         // IO Command
 #define STREAM_ID       Regs[1]         // Stream handle
 #define ARGUMENT        Regs[2]         // IO parameter
+#define FLAGS_SET       Regs[3]         // Flags set mask
+#define FLAGS_CLR       Regs[4]         // Flags clear mask
 
 // SDSIO Commands
 #define CMD_OPEN        1U
@@ -41,7 +43,12 @@
 #define CMD_FLAGS       6U
 #define CMD_INFO        7U
 
+#ifndef SDSIO_VSI_ERROR_MAX_DATA_SIZE
+#define SDSIO_VSI_ERROR_MAX_DATA_SIZE  128U
+#endif
+
 static osSemaphoreId_t lock_id = NULL;
+static uint8_t         error_data[SDSIO_VSI_ERROR_MAX_DATA_SIZE];
 
 // SDS I/O functions
 
@@ -242,11 +249,76 @@ int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
 }
 
 /**
-  Ask host for SDSIO_CMD_FLAGS information and update sdsFlags accordingly.
+  Check whether asynchronous SDSIO_CMD_FLAGS information has been received
+  from the host, and update sdsFlags accordingly.
+  Read:
+    header: command   = SDSIO_CMD_FLAGS
+            sdsio_id  = set mask
+            argument  = clear mask
+            data_size = 0
+
   Send the current sdsFlags value, along with sdsIdleRate and any optional
   error information (sdsError), to the host.
+  Send:
+    header: command   = SDSIO_CMD_INFO
+            sdsio_id  = sdsFlags
+            argument  = sdsIdleRate
+            data_size = number of error data bytes to send
+    data:   error data to be sent
 */
 int32_t sdsExchange (void) {
-  // Not implemented yet
-  return SDS_ERROR_IO;
+  uint32_t set_mask;
+  uint32_t clr_mask;
+  uint32_t ofs = 0U;
+  uint32_t len = 0U;
+
+  if (osSemaphoreAcquire (lock_id, osWaitForever) != osOK) {
+    return SDS_ERROR_IO;
+  }
+
+  /* Request pending control flag changes from the VSI host. */
+  SDSIO->COMMAND = CMD_FLAGS;
+
+  set_mask = SDSIO->FLAGS_SET;
+  clr_mask = SDSIO->FLAGS_CLR;
+  sdsFlagsModify(set_mask, clr_mask);
+
+  /* Send target status back only while the host reports it is alive. */
+  if ((sdsFlags & SDS_FLAG_ALIVE) != 0U) {
+    if (sdsError.occurred != 0U) {
+      sdsError.occurred = 0U;
+      memcpy(error_data,       &sdsError.status, sizeof(sdsError.status));
+      ofs  = sizeof(sdsError.status);
+      memcpy(error_data + ofs, &sdsError.line,   sizeof(sdsError.line));
+      ofs += sizeof(sdsError.line);
+      if (sdsError.file != NULL) {
+        len = strlen(sdsError.file);
+        if (len > (sizeof(error_data) - ofs)) {
+          len = sizeof(error_data) - ofs;
+        }
+        memcpy(error_data + ofs, sdsError.file, len);
+        ofs += len;
+      }
+    }
+
+    if (ofs != 0U) {
+      SDSIO->DMA.Address    = (uint32_t)error_data;
+      SDSIO->DMA.BlockSize  = ofs;
+      SDSIO->DMA.BlockNum   = 1U;
+      SDSIO->DMA.Control    = ARM_VSI_DMA_Direction_M2P  | ARM_VSI_DMA_Enable_Msk;
+      SDSIO->Timer.Interval = 0U;
+      SDSIO->Timer.Control  = ARM_VSI_Timer_Trig_DMA_Msk | ARM_VSI_Timer_Run_Msk;
+
+      while (SDSIO->Timer.Control & ARM_VSI_Timer_Run_Msk);
+      SDSIO->DMA.Control = 0U;
+    }
+
+    SDSIO->STREAM_ID = sdsFlags;
+    SDSIO->ARGUMENT  = sdsIdleRate;
+    SDSIO->COMMAND   = CMD_INFO;
+  }
+
+  osSemaphoreRelease (lock_id);
+
+  return SDS_OK;
 }
