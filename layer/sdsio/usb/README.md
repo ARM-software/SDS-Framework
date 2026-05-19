@@ -37,7 +37,10 @@ The default `USBD_Config_0.h` contains placeholder Vendor ID (VID) and Product I
 #define USBD0_DEV_DESC_IDPRODUCT        0x8007   // replace with your own PID
 ```
 
-The VID=0xC251 (Keil) and PID=0x8007 can be used for internal testing environments with limited access. For deployments with public access, a VID/PID for mass production should be assigned.
+The Vendor ID **0xC251 (Keil)** and Product ID **0x8007** can be used for internal testing environments with limited access.
+For production, the Vendor ID (VID) and Product ID (PID) should be vendor-specific.
+The Vendor ID must be assigned by the [USB Implementers Forum (USB-IF)](https://www.usb.org/) following the procedure for
+[Getting a Vendor ID](https://www.usb.org/getting-vendor-id).
 
 ## Starting SDSIO Server
 
