@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.17"
+SDSIO_SERVER_VERSION = "0.9.18"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -631,8 +631,8 @@ class sdsio_manager:
     ):
         self._stream_id = 0
         self._play_step_index = 0
-        self._default_work_dir = path.normpath(work_dir)
-        self._work_dir = self._default_work_dir
+        self._work_dir = path.normpath(work_dir)
+        self._rec_dir = self._work_dir
         self.opened_streams = {}    # sid -> StreamInfo
         self._label_list = []
         self._timestamp_boundaries = []
@@ -696,7 +696,8 @@ class sdsio_manager:
 
     def _make_sds_file_path(self, name: str, label: str, mode: int) -> str:
         _suffix = ".p.sds" if mode == 1 and self._playback_mode else ".sds"
-        return path.join(self._work_dir, f"{name}.{label}{_suffix}")
+        _dir = self._rec_dir if mode == 1 else self._work_dir
+        return path.join(_dir, f"{name}.{label}{_suffix}")
 
     def _build_stream_file_paths(self, name: str, mode: int) -> list[str]:
         return [self._make_sds_file_path(name, _label, mode) for _label in self._label_list]
@@ -913,12 +914,14 @@ class sdsio_manager:
                         _set_flags = _step.get('setflags', 0)
                         _clear_flags = _step.get('clearflags', 0)
                         _recdir = _step.get('recdir', None)
-                        self._work_dir = path.normpath(path.join(self._default_work_dir, _recdir)) if _recdir else self._default_work_dir
+                        if _recdir:
+                            self._rec_dir = path.normpath(_recdir if path.isabs(_recdir) else path.join(self._work_dir, _recdir))
+                        else:
+                            self._rec_dir = self._work_dir
                     else:
                         logger.error(f"Open Failed. End of playlist. No more steps available for playback stream '{name}'.")
                         return _resp_err
                 else:
-                    self._work_dir = self._default_work_dir
                     _set_flags = 0
                     _clear_flags = 0
 
@@ -940,7 +943,6 @@ class sdsio_manager:
             if mode == 0:
                 logger.info(f"Cannot open stream '{name}' for playback. Playback mode is not enabled.")
                 return _resp_err
-            self._work_dir = self._default_work_dir
 
         # mode 1 = write, 0 = read
         if mode == 1:
@@ -955,6 +957,11 @@ class sdsio_manager:
                     self._label_list.append(str(_idx))
 
             _file_paths = self._build_stream_file_paths(name, mode)
+            # validate if recdir exsist
+            if _file_paths and not path.exists(path.dirname(_file_paths[0])):
+                logger.error(f"Recording directory does not exist for stream '{name}': {path.dirname(_file_paths[0])}")
+                return _resp_err
+
             # allocate new sid
             with self._manager_lock:
                 self._stream_id += 1
