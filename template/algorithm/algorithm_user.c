@@ -27,9 +27,17 @@
 */
 int32_t InitAlgorithm (void) {
 
-#warning "Add your initialization code for the algorithm under test."
+#warning "Add initialization code for the algorithm under test."
 
   return 0;
+}
+
+/**
+  \fn           void ResetAlgorithm (void)
+  \brief        Reset algorithm under test before starting a playback run.
+*/
+void ResetAlgorithm (void) {
+#warning "Add reset logic for the algorithm under test."
 }
 
 /**
@@ -43,7 +51,7 @@ int32_t InitAlgorithm (void) {
 */
 int32_t ExecuteAlgorithm (uint8_t *in_buf, uint32_t in_num, uint8_t *out_buf, uint32_t out_num) {
 
-#warning "Add your implementation code to execute the algorithm under test."
+#warning "Add implementation code to execute the algorithm under test."
 
   return 0;
 }

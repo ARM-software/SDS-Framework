@@ -33,6 +33,14 @@ int32_t InitAlgorithm (void) {
 }
 
 /**
+  \fn           void ResetAlgorithm (void)
+  \brief        Reset algorithm under test before starting a playback run.
+*/
+void ResetAlgorithm (void) {
+  // No reset action is necessary
+}
+
+/**
   \fn           int32_t ExecuteAlgorithm (uint8_t *in_buf, uint32_t in_num, uint8_t *out_buf, uint32_t out_num)
   \brief        Execute algorithm under test.
   \param[in]    in_buf          pointer to memory buffer containing input data for algorithm

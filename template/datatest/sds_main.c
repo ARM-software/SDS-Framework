@@ -52,6 +52,9 @@ int32_t OpenStreams (void) {
 
   if ((sdsFlags & SDS_FLAG_PLAYBACK) != 0U) {   // If open for playback requested
     play = 1U;
+
+    // Reset algorithm under test before starting a playback run
+    ResetAlgorithm();
   }
 
   // Open stream for playback or recording of input data, depending on the mode
