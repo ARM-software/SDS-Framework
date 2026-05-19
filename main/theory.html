@@ -133,6 +133,16 @@
 <p><img alt="Implementation Files of SDS" src="images/Theory_of_Operation.png"/></p>
 <h2 id="usage">Usage</h2>
 <p>The following diagram shows the usage of the SDS functions (executed in <code>sdsThread</code>).  The <code>sdsControlThread</code> controls the overall execution. <code>AlgorithmThread</code> is the thread that executes Signal Conditioning (SC) and ML Model.</p>
+<p>When <code>AlgorithmThread</code> starts, it first calls the <code>InitInputData</code> function, which initializes the input interfaces
+(for example, camera, microphone, accelerometer, etc.). It then calls <code>InitAlgorithm</code>, which is responsible for initializing the ML algorithm.</p>
+<p>After initialization, <code>AlgorithmThread</code> enters a loop in which it repeatedly calls <code>GetInputData</code>. This function provides a block of input data
+used for a single inference. The inference itself is executed by the <code>ExecuteAlgorithm</code> function.</p>
+<p>Two additional functions are also provided:</p>
+<ul>
+<li><code>DiscardInputData</code>: used during playback to discard incoming live input data, since the actual input is read from the SDS file.</li>
+<li><code>ResetAlgorithm</code>: called before each playback run to reset internal states, memory buffers, and results from previous inferences,
+  ensuring a clean start for the new playback session.</li>
+</ul>
 <div class="mermaid">sequenceDiagram
     participant sdsControlThread
     participant sdsThread
