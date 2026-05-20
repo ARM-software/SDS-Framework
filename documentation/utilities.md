@@ -5,9 +5,10 @@
 <!-- markdownlint-disable MD024 -->
 
 The SDS-Framework pack includes in the folder `/utilities` several utilities that are implemented in Python.
-Install **Python 3.9** or later and packages listed in file `/utilities/requirements.txt` to run these utilities:
+Install **Python** and packages listed in file `/utilities/requirements.txt` to run these utilities:
 
-- [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer) or serial (UART) connection.
+- [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via USB, socket (TCP/IP),
+  Segger RTT or serial (UART) connection.
 - [**SDS-View:**](#sds-view) graphical data viewer for SDS data files.
 - [**SDS-Convert:**](#sds-convert) convert SDS data files into CSV, Qeexo V2 CSV, or WAV format.
 - [**SDS-Check:**](#sds-check) check SDS data files for correctness and consistency.
@@ -25,7 +26,7 @@ Perform the following steps to setup the Python environment for using the SDS ut
 >python --version
 ```
 
-- Navigate in the folder SDS/\<version\>/utilities and install the required Python packages with `pip`:
+- Navigate in the folder `SDS/<version>/utilities` and install the required Python packages with `pip`:
 
 ```bash
 >cd %CMSIS_PACK_ROOT%/ARM/SDS/3.0.0/utilities
@@ -34,9 +35,8 @@ Perform the following steps to setup the Python environment for using the SDS ut
 
 - Add to the system **Path** environment variable the path to the `%CMSIS_PACK_ROOT%/ARM/SDS/3.0.0/utilities` folder.
 
-!!! Notes
+!!! Note
     - `%CMSIS_PACK_ROOT%` is just a placeholder for the Pack location on your local PC. The **Path** variable must be extended by the absolute path to the `utilities` folder.
-    - Do not set the variable `PYTHONPATH` as this may conflict with the Python scripts that are used in AVH FVP models. AVH FVP use Python version 3.9 which may create a conflict.
 
 ### Windows
 
