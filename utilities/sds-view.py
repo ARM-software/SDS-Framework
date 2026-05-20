@@ -172,10 +172,10 @@ def main():
                                      formatter_class=formatter)
 
     required = parser.add_argument_group("required")
-    required.add_argument("-y", dest="yaml", metavar="<yaml_file>",
-                            help="YAML sensor description file", required=True)
     required.add_argument("-i", dest="sds", metavar="<sds_file>",
-                            help="SDS file", nargs="+", required=True)
+                            help="SDS files", nargs="+", required=True)
+    required.add_argument("-y", dest="yaml", metavar="<yaml_file>",
+                            help="YAML metadata file", required=True)
 
     optional = parser.add_argument_group("optional")
     optional.add_argument("--3D", dest="view3D",
