@@ -420,8 +420,8 @@ All plots form a single recording will be displayed on the same figure (shared v
 <li>Invoke the tool as explained below.</li>
 </ul>
 <pre><code class="language-txt">usage: sds-view.py [-h]
-                   -y &lt;yaml_file&gt;
                    -i &lt;sds_file&gt; [&lt;sds_file&gt; ...]
+                   -y &lt;yaml_file&gt;
                    [--3D]
 
 View SDS data
@@ -430,14 +430,14 @@ options:
   -h, --help                      show this help message and exit
 
 required:
-  -y &lt;yaml_file&gt;                  YAML sensor description file
-  -i &lt;sds_file&gt; [&lt;sds_file&gt; ...]  SDS file
+  -i &lt;sds_file&gt; [&lt;sds_file&gt; ...]  SDS files
+  -y &lt;yaml_file&gt;                  YAML metadata file
 
 optional:
   --3D                            Plot 3D view in addition to normal 2D
 </code></pre>
 <p><strong>Example:</strong></p>
-<pre><code class="language-bash">python sds-view.py -y test/Gyroscope.sds.yml -i test/Gyroscope.0.sds
+<pre><code class="language-bash">python sds-view.py -i test/Gyroscope.0.sds -y test/Gyroscope.sds.yml
 </code></pre>
 <p><strong>Example display:</strong></p>
 <p><img alt="Example output" src="images/SDS-View.png" /></p>
