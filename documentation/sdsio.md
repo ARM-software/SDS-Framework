@@ -12,7 +12,7 @@ The SDSIO components offer flexible SDS communication interfaces. You may choose
   - component: SDS:IO:Custom                     # Source code template for custom implementation
 ```
 
-To simplify usage further, the following pre-configured SDS interface layers in *csolution project format* are available. These connect via various interfaces to the SDSIO Server, which provides read/write access to SDS data files.
+To simplify usage further, the following pre-configured SDS interface layers in *csolution project format* are available. These connect via various interfaces to the SDSIO-Server, which provides read/write access to SDS data files.
 
 - [Ethernet Interface](#layer-sdsio_network) using the MDK-Middleware Network component.
 - [USB Bulk Interface](#layer-sdsio_usb) using the MDK-Middleware USB component.
@@ -80,7 +80,7 @@ The [`layer/sdsio/filesystem/sdsio_fs.clayer.yml`](https://github.com/ARM-softwa
 
 ## Layer: sdsio_fvp
 
-The [`template/sdsio/fvp/sdsio_fvp.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp) targets AVH FVP simulation and is configured for recording and playback to/from the Host computer. It uses the [SDSIO VSI interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html) implemented by the file `vsi/python/arm_vsi3.py`, which is loaded by the FVP simulation model. As the SDSIO server is implemented in `arm_vsi3.py` there is no separate SDSIO server needed.
+The [`template/sdsio/fvp/sdsio_fvp.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp) targets AVH FVP simulation and is configured for recording and playback to/from the Host computer. It uses the [SDSIO VSI interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html) implemented by the file `vsi/python/arm_vsi3.py`, which is loaded by the FVP simulation model. Since the SDSIO-Server functionality is implemented in `arm_vsi3.py`, no separate SDSIO-Server is required.
 
 ### Configuration File: sdsio.yml
 

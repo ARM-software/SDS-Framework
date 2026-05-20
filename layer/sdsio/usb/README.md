@@ -42,16 +42,16 @@ For production, the Vendor ID (VID) and Product ID (PID) should be vendor-specif
 The Vendor ID must be assigned by the [USB Implementers Forum (USB-IF)](https://www.usb.org/) following the procedure for
 [Getting a Vendor ID](https://www.usb.org/getting-vendor-id).
 
-## Starting SDSIO Server
+## Starting SDSIO-Server
 
-The **SDSIO Server** is a Python-based utility for PC, which is included in the
+The **SDSIO-Server** is a Python-based utility for PC, which is included in the
 [SDS-Framework](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) pack.
 
-To start the SDSIO Server, run it from the `./utilities` directory with:
+To start the SDSIO-Server, run it from the `./utilities` directory with:
 
 ```txt
 python sdsio-server.py usb
 ```
 
-Further information about the SDSIO Server application can be found in the
+Further information about the SDSIO-Server application can be found in the
 [SDS-Framework documentation](https://github.com/ARM-software/SDS-Framework/tree/main/documentation/utilities.md#sdsio-server).

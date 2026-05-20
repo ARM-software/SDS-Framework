@@ -25,16 +25,16 @@ The following SEGGER RTT software components are required:
   - component: SEGGER:RTT
 ```
 
-## Starting SDSIO Server
+## Starting SDSIO-Server
 
-The **SDSIO Server** is a Python-based utility for PC, which is included in the
+The **SDSIO-Server** is a Python-based utility for PC, which is included in the
 [SDS-Framework](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) pack.
 
-To start the SDSIO Server, run it from the `./utilities` directory with:
+To start the SDSIO-Server, run it from the `./utilities` directory with:
 
 ```txt
 python sdsio-server.py socket --ipaddr 127.0.0.1
 ```
 
-Further information about the SDSIO Server application can be found in the
+Further information about the SDSIO-Server application can be found in the
 [SDS-Framework documentation](https://github.com/ARM-software/SDS-Framework/tree/main/documentation/utilities.md#sdsio-server).

@@ -44,7 +44,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r ./utilities/requirements.txt
 
-      - name: Extract SDSIO Server version
+      - name: Extract SDSIO-Server version
         shell: bash
         run: |
           SDSIO_SERVER_VERSION=$(sed -nE "s/^SDSIO_SERVER_VERSION[[:space:]]*=[[:space:]]*['\"]([^'\"]+)['\"].*/\1/p" utilities/sdsio-server.py | head -n 1)

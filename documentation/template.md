@@ -101,7 +101,7 @@ Once the *csolution project* is loaded the VS Code IDE presents you with a dialo
 
 The SDS template applications contains two targets (evaluation board, AVH FVP simulation model) and two projects:
 
-- **DataTest** is a data communication test between target and SDSIO Server or file system.
+- **DataTest** is a data communication test between target and SDSIO-Server or file system.
 - **AlgorithmTest** allows to add the DSP or ML algorithm that should be tested.
 
 Use the command `CMSIS:Manage Solution Settings` to choose a one project that you want to explore.  Start with the **DataTest** first that should work "out-of-the box" on target hardware.
@@ -138,13 +138,13 @@ The **DataTest** project validates the communication channel.
 ### Recording/playback on Simulation Model
 
 1. Select the target `AVH-SSE-300` (or `AVH-SSE-320`) with Project `DataTest` and Build Type `Debug` to record/playback SDS data files.
-2. Start the [SDSIO Server](utilities.md#sdsio-server) for selected SDSIO communication interface.
+2. Start the [SDSIO-Server](utilities.md#sdsio-server) for selected SDSIO communication interface.
 3. [Build and Run](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp/README.md) the application.
 4. Use [SDS-Check](utilities.md#sds-check) to verify correctness of the recording.
 
 **Recording**
 
-Activate the recording from the SDSIO Server by pressing `R` key. To stop the recording press the `S` key.
+Activate the recording from the SDSIO-Server by pressing `R` key. To stop the recording press the `S` key.
 
 This run should generate the files `Test_In.0.sds` and `Test_Out.0.sds` in the solution folder. The `DataTest` project is configured to record 1000 data records at an interval of 10 ms.
 
@@ -158,7 +158,7 @@ When the project is restarted, new files with different names are created: `Test
 
 **Playback**
 
-Activate the playback from the SDSIO Server by pressing the `P` key.
+Activate the playback from the SDSIO-Server by pressing the `P` key.
 
 This run should read the `Test_In.0.sds` file and generate the `Test_Out.0.p.sds` file.
 
@@ -172,13 +172,13 @@ Compare the output files `Test_Out.0.sds` and `Test_Out.0.p.sds` with any progra
 ### Recording/playback on Hardware Target
 
 1. Select the `STM32F746G-DISCO` target with Project `DataTest` and Build Type `Debug` to record/playback SDS data files.
-2. Start the [SDSIO Server](utilities.md#sdsio-server) for selected SDSIO communication interface.
+2. Start the [SDSIO-Server](utilities.md#sdsio-server) for selected SDSIO communication interface.
 3. Build and Run the application.
 4. Use [SDS-Check](utilities.md#sds-check) to verify correctness of the recording.
 
 **Recording**
 
-Activate the recording from the SDSIO Server by pressing `R` key. To stop the recording press the `S` key.
+Activate the recording from the SDSIO-Server by pressing `R` key. To stop the recording press the `S` key.
 Alternatively the recording can be started or stopped by pressing the user button on the board.
 
 This run should generate the files `Test_In.0.sds` and `Test_Out.0.sds` in the solution folder. The `DataTest` project is configured to record 1000 data records at an interval of 10 ms.
@@ -196,7 +196,7 @@ When the project is restarted, new files with different names are created: `Test
 
 **Playback**
 
-Activate the playback from the SDSIO Server by pressing the `P` key.
+Activate the playback from the SDSIO-Server by pressing the `P` key.
 
 This run should read the `Test_In.0.sds` file and generate the `Test_Out.0.p.sds` file.
 

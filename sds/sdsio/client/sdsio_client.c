@@ -35,7 +35,7 @@ typedef struct {
   uint32_t data_size;
 } sdsio_header_t;
 
-// SDSIO Server Command IDs
+// SDSIO-Server Command IDs
 #define SDSIO_CMD_OPEN          1U
 #define SDSIO_CMD_CLOSE         2U
 #define SDSIO_CMD_WRITE         3U

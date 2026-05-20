@@ -136,7 +136,7 @@ int32_t sdsGetSize (sdsId_t id);
 // Error information structure
 typedef struct {                    
   int32_t status;                       ///< The error status code (see \ref SDS_Return_Codes).
-  const char *file;                     ///< Pointer to the file name in which the error occurred.
+  const char *file;                     ///< Pointer to the filename in which the error occurred.
   uint32_t line;                        ///< Line number at which the error occurred.
   uint8_t occurred;                     ///< Flag indicating that an error has occurred.
 } sdsError_t;

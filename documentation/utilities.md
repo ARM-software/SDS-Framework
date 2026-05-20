@@ -147,7 +147,7 @@ if-opts (optional):
 
 !!! Note
     - The `--ipaddr` and `--netif` options are mutually exclusive.
-    - SDSIO Server only supports IPv4 addresses.
+    - SDSIO-Server only supports IPv4 addresses.
 
 
 !!! Note

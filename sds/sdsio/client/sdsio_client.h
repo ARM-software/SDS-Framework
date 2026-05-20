@@ -32,7 +32,7 @@ typedef enum {
   sdsioReceiveNonBlocking = 1U          // Receive in non-blocking mode
 } sdsioReceiveMode_t;
 
-// SDSIO Client works in a pair with SDSIO Server. Communication protocol is documented in the following link:
+// SDSIO-Client works in a pair with SDSIO-Server. Communication protocol is documented in the following link:
 // https://arm-software.github.io/SDS-Framework/main/theory/#sdsio-server-protocol
 
 // Function prototypes

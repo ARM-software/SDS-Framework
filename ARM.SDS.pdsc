@@ -17,19 +17,19 @@
       Active development ...
       SDS Framework:
       - Simplified API to improve usability and developer experience (breaking change)
-      - Added support for control data exchange between firmware and host (SDSIO Server)
+      - Added support for control data exchange between firmware and host (SDSIO-Server)
       - Reorganized source directory structure for better clarity and maintainability
       - Standardized configuration file naming conventions
       - Moved the Buffer component under the Stream component
       - Updated SDSIO layers
       - Enhanced and updated documentation
-      SDSIO Server:
+      SDSIO-Server:
       - Added support for control data exchange with the SDSIO Client
       - Introduced a keyboard-based user interface for controlling firmware application flags
       - Added monitor data exchange support for the SDS VS Code extension
       - Introduced configuration via the sdsio.yml file
       - Enhanced playback capabilities through the sdsio.yml configuration
-      SDSIO Client:
+      SDSIO-Client:
       - Updated all interface implementations to support non-blocking receive operations
       - Added RTT-based implementation
       Template:
@@ -121,7 +121,7 @@
 
     <!-- SDS I/O (Socket) -->
     <component Cclass="SDS" Cgroup="IO" Csub="Socket" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via Socket">
-      <description>I/O via Socket interface to SDSIO Server (using component MDK-Packs::IoT Utility:Socket)</description>
+      <description>I/O via Socket interface to SDSIO-Server (using component MDK-Packs::IoT Utility:Socket)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
@@ -137,7 +137,7 @@
 
     <!-- SDS I/O (RTT) -->
     <component Cclass="SDS" Cgroup="IO" Csub="RTT" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via RTT">
-      <description>I/O via RTT to SDSIO Server (using component SEGGER:RTT)</description>
+      <description>I/O via RTT to SDSIO-Server (using component SEGGER:RTT)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
@@ -153,7 +153,7 @@
 
     <!-- SDS I/O (USB - MDK_USB) -->
     <component Cclass="SDS" Cgroup="IO" Csub="USB" Cvariant="MDK USB" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via USB - MDK USB">
-      <description>I/O via USB interface to SDSIO Server (using component Keil::USB:Device:Custom Class)</description>
+      <description>I/O via USB interface to SDSIO-Server (using component Keil::USB:Device:Custom Class)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
@@ -170,7 +170,7 @@
 
     <!-- SDS I/O (Serial - CMSIS USART) -->
     <component Cclass="SDS" Cgroup="IO" Csub="Serial" Cvariant="CMSIS USART" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via Serial - CMSIS USART">
-      <description>I/O via USART interface to SDSIO Server (using component CMSIS Driver:USART)</description>
+      <description>I/O via USART interface to SDSIO-Server (using component CMSIS Driver:USART)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
@@ -187,7 +187,7 @@
 
     <!-- SDS I/O (Custom client) -->
     <component Cclass="SDS" Cgroup="IO" Csub="Custom" Capiversion="3.0.0" Cversion="3.0.0">
-      <description>I/O via Custom interface to SDSIO Server</description>
+      <description>I/O via Custom interface to SDSIO-Server</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
         #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */

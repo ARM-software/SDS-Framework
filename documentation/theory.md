@@ -69,14 +69,14 @@ Each data stream is stored in a separate SDS data file. In the diagram below `SC
 The `sdsOpen` function takes `<name>` and the stream opening mode as input parameters.
 Opening a stream in `sdsModeRead` mode is used for playback and opening stream in `sdsModeWrite` is used for recording.
 
-The file name used when opening a stream depends on the presence of the `sdsio.yml` steering file and its `play` node.
+The filename used when opening a stream depends on the presence of the `sdsio.yml` steering file and its `play` node.
 
-If the steering file exists and contains `play` node, the file name follows the pattern `<name>.<label>.sds`, where `<label>` is specified in the corresponding
+If the steering file exists and contains `play` node, the filename follows the pattern `<name>.<label>.sds`, where `<label>` is specified in the corresponding
 `step` node in the `play` node. After playback or recording completes, processing continues with the next `step` node, if available, and the process repeats.
 
 The previous explanation applies only to playback; for recording, the file naming pattern is determined as follows.
 
-If the steering file does not exist or does not contain `play` node, the file name follows the pattern `<name>.<label>.sds`, where for:
+If the steering file does not exist or does not contain `play` node, the filename follows the pattern `<name>.<label>.sds`, where for:
 
 **Recording:**
 
@@ -91,8 +91,8 @@ After playback completes, the process repeats with the `<label>` incremented by 
 !!! Note
     - Files recorded during playback include an additional `.p` before the `.sds` extension to
       distinguish them from originally recorded files (e.g., `ML_Out.0.p.sds`).
-    - If a recording file name already exists, any existing `.bak` file with the same name is deleted,
-      the current file is renamed by appending `.bak`, and the new recording uses the original file name.
+    - If a recording filename already exists, any existing `.bak` file with the same name is deleted,
+      the current file is renamed by appending `.bak`, and the new recording uses the original filename.
 
 ### Timeslot
 
@@ -261,23 +261,23 @@ The size of the data stream buffer depends on several factors such as:
 As a guideline, the buffer size should be at least **(2 × block size) + 2 KB**.  
 The minimum recommended buffer size is **0x1000 (4 KB)**.
 
-## SDSIO Server Firmware Protocol
+## SDSIO-Server Firmware Protocol
 
-The [SDSIO Server](utilities.md#sdsio-server) uses a simple protocol for data exchange between a host computer and the embedded target that integrates an [SDSIO Interface](sdsio.md). The protocol assumes that the correct communication to the server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.
+The [SDSIO-Server](utilities.md#sdsio-server) uses a simple protocol for data exchange between a host computer and the embedded target that integrates an [SDSIO Interface](sdsio.md). The protocol assumes that the correct communication to the SDSIO-Server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.
 
 The following conventions describe the **command semantic** used in the following documentation:
 
 Symbol     | Description
 :----------|:----------------------
-\>         | Prefix indicating the direction: Command from target firmware to SDSIO Server on the host computer.
-<          | Prefix indicating the direction: Response from SDSIO Server to target firmware.
+\>         | Prefix indicating the direction: Command from target firmware to SDSIO-Server on the host computer.
+<          | Prefix indicating the direction: Response from SDSIO-Server to target firmware.
 WORD       | 32-bit value (low byte first).
 ****       | The field above has exactly one occurrence.
 ++++       | The field above has a variable length.
 
 **Commands:**
 
-Commands are sent from the embedded target to the host computer running the SDSIO Server.
+Commands are sent from the embedded target to the host computer running the SDSIO-Server.
 
 ID  | Name            | Description
 :--:|:----------------|:------------------------
@@ -285,12 +285,12 @@ ID  | Name            | Description
 2   | SDSIO_CMD_CLOSE | Close an SDS data file
 3   | SDSIO_CMD_WRITE | Write to an SDS data file
 4   | SDSIO_CMD_READ  | Read from an SDS data file
-5   | SDSIO_CMD_PING  | Ping Server
+5   | SDSIO_CMD_PING  | Ping SDSIO-Server
 6   | SDSIO_CMD_FLAGS | SDS control flags update request from host
 7   | SDSIO_CMD_INFO  | Send control information to host
 
 Each **Command** starts with a **Header (4 Words = 16 bytes)** followed by **optional data** of variable length.
-Depending on the Command, the SDSIO Server replies with a **Response** that includes a **Header** with the same ID
+Depending on the Command, the SDSIO-Server replies with a **Response** that includes a **Header** with the same ID
 as the Command and may contain **additional data**.
 
 !!! Note
@@ -301,7 +301,7 @@ as the Command and may contain **additional data**.
 The Command with ID = **1** (SDSIO_CMD_OPEN) opens an SDS data file on the host computer.
 `Mode` defines `read` (value = 0) or `write` (value = 1) operation. `Len of Stream Name` is the size of the string in bytes.
 
-SDS data file names use the following file format: `<name>.<label>.sds`, where `<name>` is the stream name used as base file name
+SDS data filenames use the following file format: `<name>.<label>.sds`, where `<name>` is the stream name used as base filename
 of the SDS data file and `<label>` is a user label or index depending on usage (for details see section [Filenames](#filenames)).
 
 ```txt
@@ -322,7 +322,7 @@ The Response with ID = **1** (SDSIO_CMD_OPEN) provides a `Handle` that is used t
 
 The Command with ID = **2** (SDSIO_CMD_CLOSE) closes an SDS data file on the host computer.
 The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**.
-There is no Response from the SDSIO Server to this Command.
+There is no Response from the SDSIO-Server to this Command.
 
 ```txt
 | WORD |  WORD  | WORD | WORD |
@@ -335,7 +335,7 @@ There is no Response from the SDSIO Server to this Command.
 The Command with ID = **3** (SDSIO_CMD_WRITE) writes data to an SDS data file on the host computer.
 The `Handle` is the identifier obtained with **SDSIO_CMD_OPEN**.
 `Size` specifies the size of `Data` in bytes.
-There is no Response from the SDSIO Server to this Command.
+There is no Response from the SDSIO-Server to this Command.
 
 ```txt
 | WORD |  WORD  | WORD | WORD |++++++|
@@ -366,7 +366,7 @@ The Response with ID = **4** (SDSIO_CMD_READ) provides the data read from an SDS
 
 **SDSIO_CMD_PING**
 
-The Command with ID = **5** (SDSIO_CMD_PING) verifies if the Server is active and reachable on the host.
+The Command with ID = **5** (SDSIO_CMD_PING) verifies if the SDSIO-Server is active and reachable on the host.
 
 ```txt
 | WORD | WORD | WORD | WORD |
@@ -398,7 +398,7 @@ The `Set Mask` specifies the bits to set in the `sdsFlags` and the `Clear Mask` 
 
 **SDSIO_CMD_INFO**
 
-The Command with ID = **7** (SDSIO_CMD_INFO) sends control information (sdsFlags, sdsIdleRate and error information) to the host. There is no Response from the SDSIO Server to this Command.
+The Command with ID = **7** (SDSIO_CMD_INFO) sends control information (sdsFlags, sdsIdleRate and error information) to the host. There is no Response from the SDSIO-Server to this Command.
 
 - `sdsFlags` is the current value of that global variable.
 - `sdsIdleRate` is the current value of that global variable, value 0xFFFFFFFF indicates that idle rate information is not valid.
@@ -413,14 +413,14 @@ The Command with ID = **7** (SDSIO_CMD_INFO) sends control information (sdsFlags
 `Error Data` contains the information from `sdsError` global structure and has the following format.
 
 ```txt
-| WORD   | WORD |++++++++++++++++++++|
-| Status | Line | File name (string) |
-|********|******|++++++++++++++++++++|
+| WORD   | WORD |+++++++++++++++++++|
+| Status | Line | Filename (string) |
+|********|******|+++++++++++++++++++|
 ```
 
-## SDSIO Server Monitor Interface
+## SDSIO-Server Monitor Interface
 
-The [SDSIO Server](utilities.md#sdsio-server) provides an additional TCP socket that maybe used by a Monitor program to observe
+The [SDSIO-Server](utilities.md#sdsio-server) provides an additional TCP socket that maybe used by a Monitor program to observe
 SDS file activity and control `sdsFlags` in the firmware.
 The monitor interface is enabled with command line option `--mon-port <port>`.
 
@@ -428,32 +428,32 @@ The following conventions describe the **command and message semantic** used in 
 
 Symbol     | Description
 :----------|:----------------------
-\>         | Prefix indicating the direction: Command sent from the Monitor program to the SDSIO Server.
-<          | Prefix indicating the direction: Response or asynchronous message sent from the SDSIO Server to the Monitor program.
+\>         | Prefix indicating the direction: Command sent from the Monitor program to the SDSIO-Server.
+<          | Prefix indicating the direction: Response or asynchronous message sent from the SDSIO-Server to the Monitor program.
 WORD       | 32-bit value (low byte first).
 ****       | The field above has exactly one occurrence.
 ++++       | The field above has a variable length.
 
 **Commands and Messages:**
 
-Commands are sent to the server which replies with a response (depending on command).
-Server can also send asynchronous messages at any time when not processing a command.
+Commands are sent to the SDSIO-Server which replies with a response (depending on command).
+SDSIO-Server can also send asynchronous messages at any time when not processing a command.
 
 ID  | Name               | Description
 :--:|:-------------------|:------------------------
 1   | SDSIO_MON_OPEN     | Information about the SDS file open operation (message)
 2   | SDSIO_MON_CLOSE    | Information about the SDS file close operation (message)
-6   | SDSIO_MON_FLAGS    | Monitor program request to the SDSIO Server to update SDS control flags in the firmware
+6   | SDSIO_MON_FLAGS    | Monitor program request to the SDSIO-Server to update SDS control flags in the firmware
 7   | SDSIO_MON_INFO     | Information update received from the firmware and forwarded to the Monitor program (message)
-8   | SDSIO_MON_SHUTDOWN | Monitor program request to the SDSIO Server to complete current tasks and shut down gracefully
+8   | SDSIO_MON_SHUTDOWN | Monitor program request to the SDSIO-Server to complete current tasks and shut down gracefully
 
 Each **Command or Message** starts with a **Header (4 Words = 16 bytes)** followed by **optional data** of variable length.
-Depending on the Command, the SDSIO Server replies with a **Response** that includes a **Header** with the same ID
+Depending on the Command, the SDSIO-Server replies with a **Response** that includes a **Header** with the same ID
 as the Command and may contain **additional data**.
 
 **SDSIO_MON_OPEN**
 
-The Message with ID = **1** (SDSIO_MON_OPEN) is sent whenever an SDS data file is opened by the SDSIO Server.
+The Message with ID = **1** (SDSIO_MON_OPEN) is sent whenever an SDS data file is opened by the SDSIO-Server.
 `Mode` defines `read` (value = 0) or `write` (value = 1) operation. `Filename Len` is the size of the string in bytes and `Filename` is the name of the file (including path).
 
 ```txt
@@ -464,7 +464,7 @@ The Message with ID = **1** (SDSIO_MON_OPEN) is sent whenever an SDS data file i
 
 **SDSIO_MON_CLOSE**
 
-The Message with ID = **2** (SDSIO_MON_CLOSE) is sent whenever an SDS data file is closed by the SDSIO Server.
+The Message with ID = **2** (SDSIO_MON_CLOSE) is sent whenever an SDS data file is closed by the SDSIO-Server.
 `Filename Len` is the size of the string in bytes and `Filename` is the name of the file (including path).
 
 ```txt
@@ -477,7 +477,7 @@ The Message with ID = **2** (SDSIO_MON_CLOSE) is sent whenever an SDS data file 
 
 The Command with ID = **6** (SDSIO_MON_FLAGS) is used by the Monitor program to request an update of the SDS control flags in the firmware.
 The `Set Mask` specifies the bits to set in the `sdsFlags` and the `Clear Mask` specifies the bits to clear in the `sdsFlags`.
-This command does not generate a response from the SDSIO Server.
+This command does not generate a response from the SDSIO-Server.
 
 ```txt
 | WORD | WORD     | WORD       | WORD |
@@ -487,9 +487,9 @@ This command does not generate a response from the SDSIO Server.
 
 **SDSIO_MON_INFO**
 
-The Message with ID = **7** (SDSIO_MON_INFO) contains status information received by the SDSIO Server from the firmware,
+The Message with ID = **7** (SDSIO_MON_INFO) contains status information received by the SDSIO-Server from the firmware,
 including sdsFlags, sdsIdleRate, and error information.
-The message is sent to the Monitor program whenever the SDSIO Server receives updated information from the firmware,
+The message is sent to the Monitor program whenever the SDSIO-Server receives updated information from the firmware,
 as well as upon the initial connection to the Monitor program.
 
 - `sdsFlags` is the current value of that global variable in the firmware.
@@ -505,14 +505,14 @@ as well as upon the initial connection to the Monitor program.
 `Error Data` contains the information from `sdsError` global structure and has the following format.
 
 ```txt
-| WORD   | WORD |++++++++++++++++++++|
-| Status | Line | File name (string) |
-|********|******|++++++++++++++++++++|
+| WORD   | WORD |+++++++++++++++++++|
+| Status | Line | Filename (string) |
+|********|******|+++++++++++++++++++|
 ```
 
 **SDSIO_MON_SHUTDOWN**
 
-The Command with ID = **8** (SDSIO_MON_SHUTDOWN) is used by the Monitor program to request the SDSIO Server to complete any ongoing operations, 
+The Command with ID = **8** (SDSIO_MON_SHUTDOWN) is used by the Monitor program to request the SDSIO-Server to complete any ongoing operations, 
 signal to the firmware that it will stop operating, and shut down gracefully.
 
 ```txt
@@ -526,23 +526,23 @@ signal to the firmware that it will stop operating, and shut down gracefully.
 
 ## SDSIO Message Sequence
 
-This section describes the states and the message sequence of the SDS framework when using the [SDSIO Server](utilities.md#sdsio-server).
+This section describes the states and the message sequence of the SDS framework when using the [SDSIO-Server](utilities.md#sdsio-server).
 It contains the following threads that execute on the target.
 
 - **sdsControlThread**: Control thread that organizes the overall execution.
 - **AlgorithmThread**: Executes the algorithm under test.
 - **sdsThread**: SDS worker thread.
-- **SDSIO Server**: SDSIO Server running on the host computer.
+- **SDSIO-Server**: SDSIO-Server running on the host computer.
 
 !!! Note
-    - The command `SDSIO_CMD_FLAGS` is sent asynchronous by the SDSIO Server.
+    - The command `SDSIO_CMD_FLAGS` is sent asynchronous by the SDSIO-Server.
 
 The `sdsControlThread` handles a state machine with the following states:
 
 States                   | Description
 :------------------------|:------------
-SDS_STATE_INACTIVE       | Streaming is not active; waiting for flag info from SDSIO Server
-SDS_STATE_CONNECTED      | Device (client) is connected to SDSIO Server (host), but streaming is not active
+SDS_STATE_INACTIVE       | Streaming is not active; waiting for flag info from SDSIO-Server
+SDS_STATE_CONNECTED      | Device (client) is connected to SDSIO-Server (host), but streaming is not active
 SDS_STATE_START          | Request to start streaming, open streams and get ready for read/write operations
 SDS_STATE_ACTIVE         | Streaming is active
 SDS_STATE_STOP_REQ       | Request to stop streaming and close open streams
@@ -551,7 +551,7 @@ SDS_STATE_END            | Request to end streaming (e.g., no more playback data
 SDS_STATE_RESET          | Request to reset the device
 SDS_STATE_END            | Request to terminate the active session
 
-The following flowcharts show the state transition in context with the messages that are exchanged with the `SDSIO Server`.
+The following flowcharts show the state transition in context with the messages that are exchanged with the `SDSIO-Server`.
 
 **Connect flowchart**
 
@@ -560,7 +560,7 @@ sequenceDiagram
     participant sdsControlThread
     activate sdsControlThread
 
-    participant Server as SDSIO Server<br/>(host)
+    participant Server as SDSIO-Server<br/>(host)
 
     Note over sdsControlThread: sdsInit
     Note right of sdsControlThread: SDS_STATE_INACTIVE 
@@ -589,7 +589,7 @@ sequenceDiagram
     activate AlgorithmThread
     participant SDSIO as sdsThread
     activate SDSIO
-    participant Server as SDSIO Server<br/>(host)
+    participant Server as SDSIO-Server<br/>(host)
     activate Server
 
     Note right of sdsControlThread: SDS_STATE_CONNECTED 
@@ -634,7 +634,7 @@ sequenceDiagram
     activate AlgorithmThread
     participant SDSIO as sdsThread
     activate SDSIO
-    participant Server as SDSIO Server<br/>(host)
+    participant Server as SDSIO-Server<br/>(host)
     activate Server
 
     Note right of sdsControlThread: SDS_STATE_ACTIVE 
@@ -673,7 +673,7 @@ sequenceDiagram
     activate AlgorithmThread
     participant SDSIO as sdsThread
     activate SDSIO
-    participant Server as SDSIO Server<br/>(host)
+    participant Server as SDSIO-Server<br/>(host)
     activate Server
 
     Note right of sdsControlThread: SDS_STATE_CONNECTED 
