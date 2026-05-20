@@ -279,7 +279,8 @@ python sds-view.py -i test/Gyroscope.0.sds -y test/Gyroscope.sds.yml
 
 ## SDS-Convert
 
-The Python utility [**SDS-Convert**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) converts SDS data files to selected format based on description in metadata (YAML) files.
+The Python utility [**SDS-Convert**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) converts SDS files into the
+selected output format based on the descriptions provided in the metadata (YAML) files.
 
 ### Usage
 
@@ -288,9 +289,9 @@ The Python utility [**SDS-Convert**](https://github.com/ARM-software/SDS-Framewo
 
 #### Audio WAV
 
-The `audio_wav` mode converts raw microphone data from `.sds` files into a standard RIFF/WAV file using linear
+The `audio_wav` mode converts SDS file (`.sds`) containing raw microphone data into a standard RIFF/WAV file (`.wav`) using linear
 PCM encoding. The conversion process involves appending a WAV header, generated from parameters specified in the
-associated metadata `.yml` file, to the raw audio data extracted from the `.sds` stream. The metadata defines
+associated YAML metadata file (`.yml`), to the raw audio data extracted from the SDS file. The metadata defines
 essential audio parameters such as channel configuration (mono or stereo), sample rate (frame rate), and sample
 width (bit depth).
 
@@ -300,7 +301,7 @@ usage: sds-convert.py audio_wav [-h]
                                 -o <output_file>
                                 -y <yaml_file>
 
-Convert SDS files to audio WAV format
+Convert SDS file to WAV audio files
 
 options:
   -h, --help        show this help message and exit
@@ -312,7 +313,7 @@ required:
 ```
 
 !!! Note
-    - The tool expects the SDS stream to be strictly audio - no header markers or custom formatting.
+    - The tool expects the SDS file to contain strictly audio data - no header markers or custom formatting.
 
 **Example of metadata yml file for mono microphone:**
 
@@ -348,17 +349,15 @@ python sds-convert.py audio_wav -i Microphone.0.sds -o microphone.wav -y Microph
 
 #### Simple CSV
 
-The `simple_csv` mode converts sensor data from `.sds` files into a human-readable CSV format.
-This mode is designed for exporting data from a single sensor. If the sensor has multiple
-channels, each channel will appear as a separate column in the output CSV.
+The `simple_csv` mode converts SDS file (`.sds`) containing sensor data into a human-readable CSV file (`.csv`).
 
-Timestamps are represented in floating-point format, in seconds. Using the `--normalize` flag causes
-all timestamps in the input file to be offset so that the first timestamp is `0`.
+Timeslots are represented in floating-point format, in seconds. Using the `--normalize` parameter causes
+all timeslots in the input file to be offset so that the first timeslot starts at `0`.
 
-Users may specify a time range selection of the input data to be processed using the following flags:
+Users may specify a time range selection of the input data to be processed using the following parameters:
 
-- `--start-timestamp <timestamp>`: Starting input data timestamp in floating-point format, in seconds.
-- `--stop-timestamp <timestamp>`: Stopping input data timestamp in floating-point format, in seconds.
+- `--start-timeslot <timeslot>`: Starting input data timeslot in floating-point format, in seconds.
+- `--stop-timeslot <timeslot>` : Stopping input data timeslot in floating-point format, in seconds.
 
 ```txt
 usage: sds-convert.py simple_csv [-h]
@@ -366,10 +365,10 @@ usage: sds-convert.py simple_csv [-h]
                                  -o <output_file>
                                  -y <yaml_file>
                                  [--normalize]
-                                 [--start-timestamp <timestamp>]
-                                 [--stop-timestamp <timestamp>]
+                                 [--start-timeslot <timeslot>]
+                                 [--stop-timeslot <timeslot>]
 
-Convert SDS files to CSV format with timestamps and data columns
+Convert SDS file to CSV file with timeslots and data columns
 
 options:
   -h, --help                     show this help message and exit
@@ -380,9 +379,9 @@ required:
   -y <yaml_file>                 YAML metadata file
 
 optional:
-  --normalize                    Normalize timestamps so they start with 0
-  --start-timestamp <timestamp>  Starting input data timestamp, in seconds (default: None)
-  --stop-timestamp <timestamp>   Stopping input data timestamp, in seconds (default: None)
+  --normalize                    Normalize timeslots so they start with 0
+  --start-timeslot <timeslot>    Starting input data timeslot, in seconds (default: None)
+  --stop-timeslot <timeslot>     Stopping input data timeslot, in seconds (default: None)
 ```
 
 !!! Note
@@ -413,62 +412,63 @@ sds:
 **Example:**
 
 ```bash
-python sds-convert.py simple_csv -i Gyroscope.0.sds -o gyroscope_simple.csv -y Gyroscope.sds.yml --normalize --start-tick 0.2 --stop-tick 0.3
+python sds-convert.py simple_csv -i Gyroscope.0.sds -o Gyroscope.csv -y Gyroscope.sds.yml --normalize --start-timeslot 0.2 --stop-timeslot 0.3
 ```
 
 #### Qeexo V2 CSV
 
-The `qeexo_v2_csv` mode converts sensor data from .sds files into a Qeexo V2 CSV format.
+The `qeexo_v2_csv` mode converts between SDS files (`.sds`) containing sensor data and Qeexo V2 CSV files (`.csv`).
 
 Link to [Qeexo V2 CSV format specification](https://docs.qeexo.com/guides/userguides/data-management#2-1-Data-format-specification).
 
-Timestamps are represented in integer format, in milliseconds. Using the `--normalize` flag causes
-all timestamps in the input file to be offset so that the first timestamp is `0`.
+Timeslots are represented in integer format, in milliseconds. Using the `--normalize` parameter causes
+all timeslots in the input file to be offset so that the first timeslot starts at `0`.
 
-Users may specify a time range selection of the input data to be processed using the following flags:
+Users may specify a time range selection of the input data to be processed using the following parameters:
 
-- `--start-timestamp <timestamp>`: Starting input data timestamp in integer format, in milliseconds.
-- `--stop-timestamp <timestamp>`: Stopping input data timestamp in integer format, in milliseconds.
+- `--start-timeslot <timeslot>`: Starting input data timeslot in integer format, in milliseconds.
+- `--stop-timeslot <timeslot>` : Stopping input data timeslot in integer format, in milliseconds.
 
-By default, the output file will have raw timestamps in integer format, in milliseconds.
-The default output timestamp interval is set to `50 ms`.
-To override this setting use the `--interval <ms>` flag, where `<ms>` is the desired interval in milliseconds.
+By default, the output file will have raw timeslots in integer format, in milliseconds.
+The default output timeslot interval is set to `50 ms`.
+To override this setting use the `--interval <ms>` parameter, where `<ms>` is the desired interval in milliseconds.
 
-An optional label can be added to the output by providing a string argument to the `--label <text>` flag.
+An optional label can be added to the output by providing a string argument to the `--label <text>` parameter.
 This `<text>` will populate the label column in the output file.
 
 ```txt
-usage: sds-convert.py qeexo_v2_csv [-h] -i <input_file> [<input_file> ...]
+usage: sds-convert.py qeexo_v2_csv [-h]
+                                   -i <input_file> [<input_file> ...]
                                    -o <output_file>
                                    [-y <yaml_file> [<yaml_file> ...]]
                                    [--normalize]
-                                   [--start-timestamp <timestamp>]
-                                   [--stop-timestamp <timestamp>]
+                                   [--start-timeslot <timeslot>]
+                                   [--stop-timeslot <timeslot>]
                                    [--label 'label']
                                    [--interval <interval>]
                                    [--sds_index <sds_index>]
 
-Convert SDS files to Qeexo AutoML V2 CSV format (supports multiple sensors)
+Convert between SDS and Qeexo AutoML V2 CSV files (supports multiple sensors)
 
 options:
   -h, --help                          show this help message and exit
 
 required:
-  -i <input_file> [<input_file> ...]  Input file
+  -i <input_file> [<input_file> ...]  Input files
   -o <output_file>                    Output file
 
 optional:
-  -y <yaml_file> [<yaml_file> ...]    YAML metadata file
-  --normalize                         Normalize timestamps so they start with 0
-  --start-timestamp <timestamp>       Starting input data timestamp, in ms (default: None)
-  --stop-timestamp <timestamp>        Stopping input data timestamp, in ms (default: None)
+  -y <yaml_file> [<yaml_file> ...]    YAML metadata files
+  --normalize                         Normalize timeslots so they start with 0
+  --start-timeslot <timeslot>         Starting input data timeslot, in ms (default: None)
+  --stop-timeslot <timeslot>          Stopping input data timeslot, in ms (default: None)
   --label 'label'                     Qeexo class label for sensor data (default: None)
-  --interval <interval>               Qeexo timestamp interval, in ms (default: 50)
+  --interval <interval>               Qeexo timeslot interval, in ms (default: 50)
   --sds_index <sds_index>             SDS file index to write (default: <sensor>.0.sds)
 ```
 
 !!! Note
-    - The metadata and SDS data file pairs must be passed as arguments in the same order to decode the data correctly.
+    - The SDS and metadata file pairs must be passed as arguments in the same order to decode the data correctly.
     - Current implementation assumes that the tick frequency is `1000 Hz` and does not use the `tick-frequency` value from the metadata file.
 
 **Example of metadata yml file for accelerometer:**
@@ -495,22 +495,22 @@ sds:
 
 **Examples:**
 
-Convert **SDS data** files to **Qeexo V2 CSV** files:
+Convert **SDS** files to **Qeexo V2 CSV** files:
 
 ```bash
-python sds-convert.py qeexo_v2_csv -i Gyroscope.0.sds Accelerometer.0.sds -o sensor_fusion.csv -y Gyroscope.sds.yaml Accelerometer.sds.yaml --normalize --start-tick 200 --stop-tick 300
+python sds-convert.py qeexo_v2_csv -i Gyroscope.0.sds Accelerometer.0.sds -o SensorFusion.csv -y Gyroscope.sds.yaml Accelerometer.sds.yaml --normalize --start-timeslot 200 --stop-timeslot 300
 ```
 
-Convert **Qeexo V2 CSV** files to **SDS data** files:
+Convert **Qeexo V2 CSV** files to **SDS** files:
 
 ```bash
-python sds-convert.py qeexo_v2_csv -i accelerometer_data.csv -o accelerometer.sds
+python sds-convert.py qeexo_v2_csv -i Accelerometer.csv -o Accelerometer.sds
 ```
 
 #### Video
 
-The `video` mode converts the stream of video frames from the `.sds` file into a standard MP4 (H.264)
-video file. Video frame format shall be specified in the `.yml` metadata file, where pixel format,
+The `video` mode converts SDS file (`.sds`) containing video frames into a standard MP4 (H.264) file (`.mp4`).
+Video frame format shall be specified in the YAML metadata file (`.yml`), where pixel format,
 resolution and frame stride shall be properly specified.
 
 ```txt
@@ -519,7 +519,7 @@ usage: sds-convert.py video [-h]
                             -o <output_file>
                             -y <yaml_file>
 
-Convert SDS video recordings to MP4 format (requires video metadata)
+Convert SDS file to MP4 video file
 
 options:
   -h, --help        show this help message and exit
@@ -531,7 +531,7 @@ required:
 ```
 
 !!! Note
-    - The tool expects the SDS stream to be strictly video frames - no header markers or custom formatting.
+    - The tool expects the SDS file to contain strictly video frames - no header markers or custom formatting.
 
 **Example of metadata yml file for RGB888 video stream:**
 
@@ -553,7 +553,7 @@ sds:
 **Example:**
 
 ```bash
-python sds-convert.py video -i Camera.0.sds -o Camera.0.mp4 -y Camera.sds.yml
+python sds-convert.py video -i Camera.0.sds -o Camera.mp4 -y Camera.sds.yml
 ```
 
 !!! Note

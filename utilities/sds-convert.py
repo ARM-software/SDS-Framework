@@ -1,4 +1,4 @@
-# Copyright (c) 2023,2025 Arm Limited. All rights reserved.
+# Copyright (c) 2023-2026 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -37,40 +37,40 @@ except Exception as e:
 class RecordManager:
     def __init__(self):
         self.HEADER_SIZE    = 8
-        self.TIMESTAMP_SIZE = 4
+        self.TIMESLOT_SIZE  = 4
         self.data_buff      = bytearray()
-        self.timestamp      = []
+        self.timeslot       = []
         self.data_size      = []
 
     # Flush data buffer
     def __flush(self):
         self.data_buff      = bytearray()
-        self.timestamp      = []
+        self.timeslot       = []
         self.data_size      = []
 
     # Private function for retrieving data from record
     def __getRecord(self, file):
         record = bytearray(file.read(self.HEADER_SIZE))
         if len(record) == self.HEADER_SIZE:
-            self.timestamp.append(unpack("I", record[:self.TIMESTAMP_SIZE])[0])
-            self.data_size.append(unpack("I", record[self.TIMESTAMP_SIZE:])[0])
+            self.timeslot.append(unpack("I", record[:self.TIMESLOT_SIZE])[0])
+            self.data_size.append(unpack("I", record[self.TIMESLOT_SIZE:])[0])
             self.data_buff.extend(bytearray(file.read(self.data_size[-1])))
 
     # Extract all data from .sds recording and return a dictionary
-    # Dictionary consists of: timestamp, data_size, raw_data
+    # Dictionary consists of: timeslot, data_size, raw_data
     def getData(self, file):
         record_num = 0
 
         while True:
             self.__getRecord(file)
-            if len(self.timestamp) == record_num:
+            if len(self.timeslot) == record_num:
                 break
             else:
                 record_num += 1
 
-        data = {"timestamp" : self.timestamp, \
+        data = {"timeslot"  : self.timeslot, \
                 "data_size" : self.data_size, \
-                "raw_data" : self.data_buff}
+                "raw_data"  : self.data_buff}
 
         self.__flush()
 
@@ -78,7 +78,7 @@ class RecordManager:
 
 
 # Potential AutoML CSV V2 columns that are not sensors, and so should be ignored.
-EXCLUDE_QX_CSVV2_COLS = ('timestamp', 'index', 'event', 'label', 'data_type', 'seconds', 'recording_id', 'event_id')
+EXCLUDE_QX_CSVV2_COLS = ('timeslot', 'index', 'event', 'label', 'data_type', 'seconds', 'recording_id', 'event_id')
 
 # Convert C style data type to Python style
 def getDataType(data_type):
@@ -216,11 +216,11 @@ def prepareData(meta_data, raw_data, data_manipulation):
 # Only supports one sensor at a time
 def write_SDS_SimpleCSV(args, data, meta_data):
     normalize = args.normalize
-    csv_start_timestamp = args.start_timestamp
-    csv_stop_timestamp = args.stop_timestamp
+    csv_start_timeslot = args.start_timeslot
+    csv_stop_timeslot = args.stop_timeslot
 
     # Automatically generate new column for each sensor channel
-    csv_header = ['timestamp']
+    csv_header = ['timeslot']
     for channel in meta_data:
         channel_name = channel["value"]
         csv_header.append(channel_name)
@@ -229,11 +229,11 @@ def write_SDS_SimpleCSV(args, data, meta_data):
     writer.writerow(csv_header)
 
     # Convert [ms] to [s]
-    timestamp = [t / 1000 for t in data["timestamp"]]
+    timeslot = [t / 1000 for t in data["timeslot"]]
     data_size = data["data_size"]
 
     cnt = 0
-    cnt_max = len(timestamp)
+    cnt_max = len(timeslot)
 
     while True:
         # Break while loop if end of file is reached
@@ -252,45 +252,45 @@ def write_SDS_SimpleCSV(args, data, meta_data):
 
         # Prepare and write CSV row to output file if record_row is not empty
         if record_row != [[] for i in range(0, len(meta_data))]:
-            csv_timestamp = timestamp[cnt]
-            # Normalize output timestamps
+            csv_timeslot = timeslot[cnt]
+            # Normalize output timeslots
             if normalize:
-                csv_timestamp -= timestamp[0]
-            # Interpolate timestamps if there is more than one data point in this record
+                csv_timeslot -= timeslot[0]
+            # Interpolate timeslots if there is more than one data point in this record
             if len(record_row[0]) > 1:
                 # Get number of samples in this record
                 n_samples = len(record_row[0])
 
-                # Reuse previous time difference to interpolate timestamps for final record
+                # Reuse previous time difference to interpolate timeslots for final record
                 if cnt == (cnt_max-1):
-                    csv_timestamp_next = csv_timestamp + (csv_timestamp - csv_timestamp_previous)
+                    csv_timeslot_next = csv_timeslot + (csv_timeslot - csv_timeslot_previous)
                 else:
-                    csv_timestamp_next = timestamp[cnt + 1]
+                    csv_timeslot_next = timeslot[cnt + 1]
                     if normalize:
-                        csv_timestamp_next -= timestamp[0]
+                        csv_timeslot_next -= timeslot[0]
 
-                # Interpolate timestamps between current and next record, based on the number of
+                # Interpolate timeslots between current and next record, based on the number of
                 # data points in current record
-                tmp_time = np.linspace(csv_timestamp, csv_timestamp_next,  n_samples + 1)[:-1]
-                csv_timestamp_previous = csv_timestamp
+                tmp_time = np.linspace(csv_timeslot, csv_timeslot_next,  n_samples + 1)[:-1]
+                csv_timeslot_previous = csv_timeslot
 
                 # Write generated CSV row to output file
                 for t in range(0, len(tmp_time)):
-                    # If start/stop timestamp parameters are specified, write to output file
-                    # when timestamps are between selected boundaries
-                    if (csv_start_timestamp is None) or (tmp_time[t] >= csv_start_timestamp):
-                        if (csv_stop_timestamp is None) or (csv_stop_timestamp > tmp_time[t]):
+                    # If start/stop timeslot parameters are specified, write to output file
+                    # when timeslots are between selected boundaries
+                    if (csv_start_timeslot is None) or (tmp_time[t] >= csv_start_timeslot):
+                        if (csv_stop_timeslot is None) or (csv_stop_timeslot > tmp_time[t]):
                             tmp_record_row = [record_row[i][t] for i in range(len(record_row))]
                             writer.writerow([float(tmp_time[t])] + tmp_record_row)
                         else:
                             break
             else:
-                # If start/stop timestamp parameters are specified, write to output file
-                # when timestamps are between selected boundaries
-                if (csv_start_timestamp is None) or (csv_timestamp >= csv_start_timestamp):
-                    if (csv_stop_timestamp is None) or (csv_stop_timestamp > csv_timestamp):
+                # If start/stop timeslot parameters are specified, write to output file
+                # when timeslots are between selected boundaries
+                if (csv_start_timeslot is None) or (csv_timeslot >= csv_start_timeslot):
+                    if (csv_stop_timeslot is None) or (csv_stop_timeslot > csv_timeslot):
                         # Write generated CSV row to output file
-                        writer.writerow([float(csv_timestamp)] + record_row[0])
+                        writer.writerow([float(csv_timeslot)] + record_row[0])
                     else:
                         break
             cnt += 1
@@ -304,10 +304,10 @@ def write_SDS_SimpleCSV(args, data, meta_data):
 def write_SDS_QeexoV2CSV(args, data, meta_data):
     interval = args.interval
     normalize = args.normalize
-    csv_start_timestamp = args.start_timestamp
-    csv_stop_timestamp = args.stop_timestamp
+    csv_start_timeslot = args.start_timeslot
+    csv_stop_timeslot = args.stop_timeslot
 
-    csv_header = ['timestamp']
+    csv_header = ['timeslot']
     for sensor in meta_data:
         sensor_name = qeexoColumnName(sensor)
         csv_header.append(sensor_name)
@@ -315,18 +315,18 @@ def write_SDS_QeexoV2CSV(args, data, meta_data):
 
     writer.writerow(csv_header)
 
-    # Set sensor position counters to 0 and extract base timestamps for each sensor
+    # Set sensor position counters to 0 and extract base timeslots for each sensor
     cnt = {}
     cnt_old = {}
-    timestamp_base = []
+    timeslot_base = []
     for sensor in data:
         cnt_old[sensor] = 0
         cnt[sensor] = 0
-        timestamp_base.append(data[sensor]["timestamp"][0])
+        timeslot_base.append(data[sensor]["timeslot"][0])
 
-    # Select timestamp with lowest value and round to first next interval
-    csv_timestamp_base = (min(timestamp_base) // interval) * interval
-    csv_timestamp = csv_timestamp_base + interval
+    # Select timeslot with lowest value and round to first next interval
+    csv_timeslot_base = (min(timeslot_base) // interval) * interval
+    csv_timeslot = csv_timeslot_base + interval
 
     while True:
         # Create a list of lists, based on the number of sensors
@@ -334,25 +334,25 @@ def write_SDS_QeexoV2CSV(args, data, meta_data):
         sensor_idx = 0
 
         for sensor in data:
-            timestamp = data[sensor]["timestamp"]
+            timeslot = data[sensor]["timeslot"]
             data_size = data[sensor]["data_size"]
 
             # Check if end of file is reached. If it is, skip current sensor
             # Otherwise store current position counter in cnt_old
-            if cnt[sensor] < len(timestamp):
+            if cnt[sensor] < len(timeslot):
                 cnt_old[sensor] = cnt[sensor]
             else:
                 continue
 
             # Increment position counter of this sensor if elapsed time in record
-            # is less than next CSV timestamp
-            while timestamp[cnt[sensor]] < csv_timestamp:
+            # is less than next CSV timeslot
+            while timeslot[cnt[sensor]] < csv_timeslot:
                 cnt[sensor] += 1
                 # Break while loop if end of file is reached
-                if cnt[sensor] == len(timestamp):
+                if cnt[sensor] == len(timeslot):
                     break
 
-            # Calculate number of data bytes for current timestamp
+            # Calculate number of data bytes for current timeslot
             n_bytes = sum(data_size[cnt_old[sensor]:cnt[sensor]])
 
             # Extract needed data and flush used bytes from buffer
@@ -373,26 +373,26 @@ def write_SDS_QeexoV2CSV(args, data, meta_data):
             elif len(sensor_data) == 1:
                 csv_data = sensor_data[0]
 
-            # Insert sensor data for this CSV timestamp
+            # Insert sensor data for this CSV timeslot
             csv_row[sensor_idx] = csv_data
             sensor_idx += 1
 
-        # Write current row into CSV file and increment CSV timestamp by one interval.
+        # Write current row into CSV file and increment CSV timeslot by one interval.
         # If there is no data present in this row, exit while loop without writing to the file.
         if csv_row != [[] for i in range(0, len(data.keys()))]:
             if normalize:
-                tmp_csv_timestamp = csv_timestamp - csv_timestamp_base
+                tmp_csv_timeslot = csv_timeslot - csv_timeslot_base
             else:
-                tmp_csv_timestamp = csv_timestamp
+                tmp_csv_timeslot = csv_timeslot
 
-            # If start/stop timestamp parameters are specified, write to output file
-            # when timestamps are between selected boundaries
-            if (csv_start_timestamp is None) or (tmp_csv_timestamp >= csv_start_timestamp):
-                if (csv_stop_timestamp is None) or (csv_stop_timestamp > tmp_csv_timestamp):
-                    writer.writerow([tmp_csv_timestamp] + csv_row + [args.label])
+            # If start/stop timeslot parameters are specified, write to output file
+            # when timeslots are between selected boundaries
+            if (csv_start_timeslot is None) or (tmp_csv_timeslot >= csv_start_timeslot):
+                if (csv_stop_timeslot is None) or (csv_stop_timeslot > tmp_csv_timeslot):
+                    writer.writerow([tmp_csv_timeslot] + csv_row + [args.label])
                 else:
                     break
-            csv_timestamp += interval
+            csv_timeslot += interval
         else:
             break
 
@@ -406,9 +406,9 @@ def write_QeexoV2CSV_SDS(index):
         filename = f'{sensor}.{index}.sds'
         with open(filename, 'wb') as f:
             for idx, row in csv_data.iterrows():
-                start_ts = int(row['timestamp'])
+                start_ts = int(row['timeslot'])
                 # Sensor data is a string which is a JSON array containing all of the samples
-                # at this 50ms timestamp block
+                # at this 50ms timeslot block
                 all_samples = row[sensor]
                 data = json.loads(all_samples)
                 if len(data)>0:
@@ -416,7 +416,7 @@ def write_QeexoV2CSV_SDS(index):
                     ts_step = 50 / float(len(data))
                     cur_ts = float(start_ts)
 
-                    # Write one record (timestamp, data size, binary data) of selected sensor to SDS file
+                    # Write one record (timeslot, data size, binary data) of selected sensor to SDS file
                     for sample in data:
                         f.write(int(cur_ts).to_bytes(4, byteorder='little', signed=False))
 
@@ -528,11 +528,11 @@ def write_SDS_VideoMP4(filename, framerate, data, meta_data):
 
     # Process each record in the SDS file
     raw_data = data["raw_data"]
-    timestamp = data["timestamp"]
+    timeslot = data["timeslot"]
     data_size = data["data_size"]
 
     frame_count = 0
-    for idx in range(len(timestamp)):
+    for idx in range(len(timeslot)):
         frame_size = data_size[idx]
 
         # Extract frame data
@@ -627,21 +627,21 @@ def main():
     # Parse arguments
     formatter = lambda prog: argparse.HelpFormatter(prog, max_help_position=60)
     parser = argparse.ArgumentParser(
-        description="Convert from or to SDS files using selected data conversion format",
-        epilog="Example: python sds-convert.py audio_wav -i input.sds -o output.wav -y metadata.yml",
+        description="Convert between SDS files and various file formats",
+        epilog="Example: python sds-convert.py audio_wav -i <input_file> -o <output_file> -y <yaml_file>",
         formatter_class=formatter)
 
     subparsers = parser.add_subparsers(
         dest="convert_format",
         title="conversion formats",
-        description="Choose a format to convert to/from SDS files",
+        description="Choose a format for file conversion",
         help="Use '<format> --help' for format-specific options",
         required=True)
 
     # Audio WAV
     parser_audio_wav = subparsers.add_parser("audio_wav",
-                                             help="Convert SDS audio stream to audio WAV format",
-                                             description="Convert SDS files to audio WAV format",
+                                             help="Convert SDS file to WAV audio file",
+                                             description="Convert SDS file to WAV audio file",
                                              formatter_class=formatter, add_help=False)
     parser_audio_wav_options = parser_audio_wav.add_argument_group("options")
     parser_audio_wav_options.add_argument("-h", "--help", action="help",
@@ -656,8 +656,8 @@ def main():
 
     # Simple CSV
     parser_simple_csv = subparsers.add_parser("simple_csv",
-                                              help="Convert SDS stream to CSV format (single sensor)",
-                                              description="Convert SDS files to CSV format with timestamps and data columns",
+                                              help="Convert SDS file to CSV file (single sensor)",
+                                              description="Convert SDS file to CSV file with timeslots and data columns",
                                               formatter_class=formatter, add_help=False)
     parser_simple_csv_options = parser_simple_csv.add_argument_group("options")
     parser_simple_csv_options.add_argument("-h", "--help", action="help",
@@ -671,42 +671,42 @@ def main():
                                             help="YAML metadata file", required=True)
     parser_simple_csv_optional = parser_simple_csv.add_argument_group("optional")
     parser_simple_csv_optional.add_argument("--normalize", dest="normalize",
-                                            help="Normalize timestamps so they start with 0", action="store_true")
-    parser_simple_csv_optional.add_argument("--start-timestamp", dest="start_timestamp", metavar="<timestamp>",
-                                            help="Starting input data timestamp, in seconds (default: %(default)s)",
+                                            help="Normalize timeslots so they start with 0", action="store_true")
+    parser_simple_csv_optional.add_argument("--start-timeslot", dest="start_timeslot", metavar="<timeslot>",
+                                            help="Starting input data timeslot, in seconds (default: %(default)s)",
                                             type=float, default=None)
-    parser_simple_csv_optional.add_argument("--stop-timestamp", dest="stop_timestamp", metavar="<timestamp>",
-                                            help="Stopping input data timestamp, in seconds (default: %(default)s)",
+    parser_simple_csv_optional.add_argument("--stop-timeslot", dest="stop_timeslot", metavar="<timeslot>",
+                                            help="Stopping input data timeslot, in seconds (default: %(default)s)",
                                             type=float, default=None)
 
     # Qeexo V2 CSV
     parser_qeexo_v2_csv = subparsers.add_parser("qeexo_v2_csv",
-                                                help="Convert SDS to/from Qeexo AutoML V2 CSV format",
-                                                description="Convert SDS files to Qeexo AutoML V2 CSV format (supports multiple sensors)",
+                                                help="Convert between SDS and Qeexo AutoML V2 CSV files",
+                                                description="Convert between SDS and Qeexo AutoML V2 CSV files (supports multiple sensors)",
                                                 formatter_class=formatter, add_help=False)
     parser_qeexo_v2_csv_options = parser_qeexo_v2_csv.add_argument_group("options")
     parser_qeexo_v2_csv_options.add_argument("-h", "--help", action="help",
                                              help="show this help message and exit")
     parser_qeexo_v2_csv_required = parser_qeexo_v2_csv.add_argument_group("required")
     parser_qeexo_v2_csv_required.add_argument("-i", dest="in_file", metavar="<input_file>",
-                                              help="Input file", nargs="+", type=in_file, required=True)
+                                              help="Input files", nargs="+", type=in_file, required=True)
     parser_qeexo_v2_csv_required.add_argument("-o", dest="out_file", metavar="<output_file>",
                                               help="Output file", type=out_file, required=True)
     parser_qeexo_v2_csv_optional = parser_qeexo_v2_csv.add_argument_group("optional")
     parser_qeexo_v2_csv_optional.add_argument("-y", dest="yaml", metavar="<yaml_file>",
                                               help="YAML metadata file", nargs="+", default=None)
     parser_qeexo_v2_csv_optional.add_argument("--normalize", dest="normalize",
-                                              help="Normalize timestamps so they start with 0", action="store_true")
-    parser_qeexo_v2_csv_optional.add_argument("--start-timestamp", dest="start_timestamp", metavar="<timestamp>",
-                                              help="Starting input data timestamp, in ms (default: %(default)s)",
+                                              help="Normalize timeslots so they start with 0", action="store_true")
+    parser_qeexo_v2_csv_optional.add_argument("--start-timeslot", dest="start_timeslot", metavar="<timeslot>",
+                                              help="Starting input data timeslot, in ms (default: %(default)s)",
                                               type=float, default=None)
-    parser_qeexo_v2_csv_optional.add_argument("--stop-timestamp", dest="stop_timestamp", metavar="<timestamp>",
-                                              help="Stopping input data timestamp, in ms (default: %(default)s)",
+    parser_qeexo_v2_csv_optional.add_argument("--stop-timeslot", dest="stop_timeslot", metavar="<timeslot>",
+                                              help="Stopping input data timeslot, in ms (default: %(default)s)",
                                               type=float, default=None)
     parser_qeexo_v2_csv_optional.add_argument("--label", dest="label", metavar="'label'",
                                               help="Qeexo class label for sensor data (default: %(default)s)", default=None)
     parser_qeexo_v2_csv_optional.add_argument("--interval", dest="interval", metavar="<interval>",
-                                              help="Qeexo timestamp interval, in ms (default: %(default)s)",
+                                              help="Qeexo timeslot interval, in ms (default: %(default)s)",
                                               type=int, default=50)
     parser_qeexo_v2_csv_optional.add_argument("--sds_index", dest="sds_index", metavar="<sds_index>", 
                                               help="SDS file index to write (default: <sensor>.%(default)s.sds)",
@@ -714,8 +714,8 @@ def main():
 
     # Video to MP4
     parser_video = subparsers.add_parser("video",
-                                         help="Convert SDS video stream to MP4 format",
-                                         description="Convert SDS video recordings to MP4 format (requires video metadata)",
+                                         help="Convert SDS file to MP4 video file",
+                                         description="Convert SDS file to MP4 video file",
                                          formatter_class=formatter, add_help=False)
     parser_video_options = parser_video.add_argument_group("options")
     parser_video_options.add_argument("-h", "--help", action="help",
