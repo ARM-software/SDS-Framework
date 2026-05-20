@@ -1,4 +1,4 @@
-# Copyright (c) 2022 Arm Limited. All rights reserved.
+# Copyright (c) 2022-2026 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -28,7 +28,7 @@ import yaml
 class RecordManager:
     def __init__(self):
         self.HEADER_SIZE    = 8
-        self.TIMESTAMP_SIZE = 4
+        self.TIMESLOT_SIZE  = 4
         self.data = bytearray()
 
     # Flush data buffer
@@ -39,8 +39,8 @@ class RecordManager:
     def __getRecord(self, file):
         record = bytearray(file.read(self.HEADER_SIZE))
         if len(record) == self.HEADER_SIZE:
-            timestamp = struct.unpack("I", record[:self.TIMESTAMP_SIZE])[0]
-            data_size = struct.unpack("I", record[self.TIMESTAMP_SIZE:])[0]
+            timeslot  = struct.unpack("I", record[:self.TIMESLOT_SIZE])[0]
+            data_size = struct.unpack("I", record[self.TIMESLOT_SIZE:])[0]
             self.data.extend(bytearray(file.read(data_size)))
             return True
         else:
@@ -74,7 +74,7 @@ def getDataType(data_type):
 
     return d_type
 
-# Open SDS data file in read mode
+# Open SDS file in read mode
 def openFile(file_name):
     try:
         if ".yml" in file_name:
@@ -135,10 +135,10 @@ def plotData(all_data, data_desc, freq, title, view3D):
         # Scale and offset data points
         scaled_data = [((x * scale) + offset) for x in data]
 
-        # Generate timestamps using number of data points and sampling frequency
+        # Generate timeslots using number of data points and sampling frequency
         t = np.arange(0, len(data) / freq, 1 / freq)
         if len(t) > len(data):
-            # Truncate timestamps to match the number of data points
+            # Truncate timeslots to match the number of data points
             t = t[0:len(data)]
         plt.plot(t, scaled_data, label=desc["value"])
 
@@ -174,8 +174,8 @@ def main():
     required = parser.add_argument_group("required")
     required.add_argument("-y", dest="yaml", metavar="<yaml_file>",
                             help="YAML sensor description file", required=True)
-    required.add_argument("-s", dest="sds", metavar="<sds_file>",
-                            help="SDS data recording file", nargs="+", required=True)
+    required.add_argument("-i", dest="sds", metavar="<sds_file>",
+                            help="SDS file", nargs="+", required=True)
 
     optional = parser.add_argument_group("optional")
     optional.add_argument("--3D", dest="view3D",

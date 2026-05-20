@@ -231,9 +231,11 @@ python sdsio-server.py serial --port COM3 --baudrate 115200
 
 ## SDS-View
 
-The Python utility [**SDS-View**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) outputs a time-based plot of SDS data files (`<name>.<index>.sds`) based on the meta-data file (`<name>.sds.yml`).
+The Python utility [**SDS-View**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) generates a time-based plot
+from data recorded in SDS files (`<name>.<label>.sds`) using the metadata provided in `<name>.sds.yml`.
 
-The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description. All plots form a single recording will be displayed on the same figure (shared vertical scale).
+The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description.
+All plots form a single recording will be displayed on the same figure (shared vertical scale).
 
 If there are 3 values described in the metadata file, an optional 3D view may be displayed.
 
@@ -249,7 +251,7 @@ If there are 3 values described in the metadata file, an optional 3D view may be
 ```txt
 usage: sds-view.py [-h]
                    -y <yaml_file>
-                   -s <sds_file> [<sds_file> ...]
+                   -i <sds_file> [<sds_file> ...]
                    [--3D]
 
 View SDS data
@@ -259,7 +261,7 @@ options:
 
 required:
   -y <yaml_file>                  YAML sensor description file
-  -s <sds_file> [<sds_file> ...]  SDS data recording file
+  -i <sds_file> [<sds_file> ...]  SDS file
 
 optional:
   --3D                            Plot 3D view in addition to normal 2D
@@ -268,7 +270,7 @@ optional:
 **Example:**
 
 ```bash
-python sds-view.py -y test/Gyroscope.sds.yml -s test/Gyroscope.0.sds
+python sds-view.py -y test/Gyroscope.sds.yml -i test/Gyroscope.0.sds
 ```
 
 **Example display:**
