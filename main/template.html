@@ -252,7 +252,7 @@ Because the input data stream can be repeated, it enables consistent verificatio
 <h4 id="build-the-template-application">Build the Template Application</h4>
 <p>The SDS template applications contains two targets (evaluation board, AVH FVP simulation model) and two projects:</p>
 <ul>
-<li><strong>DataTest</strong> is a data communication test between target and SDSIO Server or file system.</li>
+<li><strong>DataTest</strong> is a data communication test between target and SDSIO-Server or file system.</li>
 <li><strong>AlgorithmTest</strong> allows to add the DSP or ML algorithm that should be tested.</li>
 </ul>
 <p>Use the command <code>CMSIS:Manage Solution Settings</code> to choose a one project that you want to explore.  Start with the <strong>DataTest</strong> first that should work "out-of-the box" on target hardware.</p>
@@ -285,12 +285,12 @@ Because the input data stream can be repeated, it enables consistent verificatio
 <h3 id="recordingplayback-on-simulation-model">Recording/playback on Simulation Model</h3>
 <ol>
 <li>Select the target <code>AVH-SSE-300</code> (or <code>AVH-SSE-320</code>) with Project <code>DataTest</code> and Build Type <code>Debug</code> to record/playback SDS data files.</li>
-<li>Start the <a href="utilities.html#sdsio-server">SDSIO Server</a> for selected SDSIO communication interface.</li>
+<li>Start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> for selected SDSIO communication interface.</li>
 <li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp/README.md">Build and Run</a> the application.</li>
 <li>Use <a href="utilities.html#sds-check">SDS-Check</a> to verify correctness of the recording.</li>
 </ol>
 <p><strong>Recording</strong></p>
-<p>Activate the recording from the SDSIO Server by pressing <code>R</code> key. To stop the recording press the <code>S</code> key.</p>
+<p>Activate the recording from the SDSIO-Server by pressing <code>R</code> key. To stop the recording press the <code>S</code> key.</p>
 <p>This run should generate the files <code>Test_In.0.sds</code> and <code>Test_Out.0.sds</code> in the solution folder. The <code>DataTest</code> project is configured to record 1000 data records at an interval of 10 ms.</p>
 <p>To verify correctness of the recording using SDS-Check utility use the following commands:</p>
 <pre><code class="language-bash">python sds-check.py -s Test_In.0.sds
@@ -298,7 +298,7 @@ python sds-check.py -s Test_Out.0.sds
 </code></pre>
 <p>When the project is restarted, new files with different names are created: <code>Test_In.1.sds</code> and <code>Test_Out.1.sds</code>.</p>
 <p><strong>Playback</strong></p>
-<p>Activate the playback from the SDSIO Server by pressing the <code>P</code> key.</p>
+<p>Activate the playback from the SDSIO-Server by pressing the <code>P</code> key.</p>
 <p>This run should read the <code>Test_In.0.sds</code> file and generate the <code>Test_Out.0.p.sds</code> file.</p>
 <p>To verify correctness of the recording using SDS-Check utility use the following command:</p>
 <pre><code class="language-bash">python sds-check.py -s Test_Out.0.p.sds
@@ -307,12 +307,12 @@ python sds-check.py -s Test_Out.0.sds
 <h3 id="recordingplayback-on-hardware-target">Recording/playback on Hardware Target</h3>
 <ol>
 <li>Select the <code>STM32F746G-DISCO</code> target with Project <code>DataTest</code> and Build Type <code>Debug</code> to record/playback SDS data files.</li>
-<li>Start the <a href="utilities.html#sdsio-server">SDSIO Server</a> for selected SDSIO communication interface.</li>
+<li>Start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> for selected SDSIO communication interface.</li>
 <li>Build and Run the application.</li>
 <li>Use <a href="utilities.html#sds-check">SDS-Check</a> to verify correctness of the recording.</li>
 </ol>
 <p><strong>Recording</strong></p>
-<p>Activate the recording from the SDSIO Server by pressing <code>R</code> key. To stop the recording press the <code>S</code> key.
+<p>Activate the recording from the SDSIO-Server by pressing <code>R</code> key. To stop the recording press the <code>S</code> key.
 Alternatively the recording can be started or stopped by pressing the user button on the board.</p>
 <p>This run should generate the files <code>Test_In.0.sds</code> and <code>Test_Out.0.sds</code> in the solution folder. The <code>DataTest</code> project is configured to record 1000 data records at an interval of 10 ms.</p>
 <p>To verify correctness of the recording using SDS-Check utility use the following commands:</p>
@@ -327,7 +327,7 @@ python sds-check.py -s Test_Out.0.sds
 </ul>
 </div>
 <p><strong>Playback</strong></p>
-<p>Activate the playback from the SDSIO Server by pressing the <code>P</code> key.</p>
+<p>Activate the playback from the SDSIO-Server by pressing the <code>P</code> key.</p>
 <p>This run should read the <code>Test_In.0.sds</code> file and generate the <code>Test_Out.0.p.sds</code> file.</p>
 <p>To verify correctness of the recording using SDS-Check utility use the following command:</p>
 <pre><code class="language-bash">python sds-check.py -s Test_Out.0.p.sds

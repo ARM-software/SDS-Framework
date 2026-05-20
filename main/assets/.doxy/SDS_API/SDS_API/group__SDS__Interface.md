@@ -534,7 +534,7 @@ For opening stream in **write mode**:
 
 
 
-* The `name` parameter defines the base name for the SDS output file and is used to construct the full file name in the format `name.index.sds`. The `index` is an auto-incrementing value that ensures a unique file name is generated. If a file with the generated name already exists, the `index` is incremented until an unused name is found.
+* The `name` parameter defines the base name for the SDS output file and is used to construct the full filename in the format `name.index.sds`. The `index` is an auto-incrementing value that ensures a unique filename is generated. If a file with the generated name already exists, the `index` is incremented until an unused name is found.
 
 
 
@@ -543,7 +543,7 @@ For opening stream in **read mode**:
 
 
 
-* The `name` parameter specifies the base name of the SDS input file. When SDS I/O is a file system then the function attempts to locate and open the file in the format `name.index.sds`, where `index` is an auto-incrementing value. If no matching file is found, the function returns an error. When SDS I/O uses SDS I/O Client in conjunction with the SDS I/O Server, the file name is constructed by the SDS I/O Server according to configuration specified in the `sdsio.yml` steering file.
+* The `name` parameter specifies the base name of the SDS input file. When SDS I/O is a file system then the function attempts to locate and open the file in the format `name.index.sds`, where `index` is an auto-incrementing value. If no matching file is found, the function returns an error. When SDS I/O uses SDS I/O Client in conjunction with the SDS I/O Server, the filename is constructed by the SDS I/O Server according to configuration specified in the `sdsio.yml` steering file.
 
 
 

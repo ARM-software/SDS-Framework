@@ -405,11 +405,11 @@
 <p>Opens an SDS stream for reading or writing timeslot information and data blocks to or from the SDS file. The <code>buf</code> parameter specifies a user-allocated memory region that serves as an internal circular buffer. The buffer must be large enough to hold at least the largest expected data block plus 8 bytes for header information.</p>
 <p>For opening stream in <strong>write mode</strong>:</p>
 <ul>
-<li>The <code>name</code> parameter defines the base name for the SDS output file and is used to construct the full file name in the format <code>name.index.sds</code>. The <code>index</code> is an auto-incrementing value that ensures a unique file name is generated. If a file with the generated name already exists, the <code>index</code> is incremented until an unused name is found.</li>
+<li>The <code>name</code> parameter defines the base name for the SDS output file and is used to construct the full filename in the format <code>name.index.sds</code>. The <code>index</code> is an auto-incrementing value that ensures a unique filename is generated. If a file with the generated name already exists, the <code>index</code> is incremented until an unused name is found.</li>
 </ul>
 <p>For opening stream in <strong>read mode</strong>:</p>
 <ul>
-<li>The <code>name</code> parameter specifies the base name of the SDS input file. When SDS I/O is a file system then the function attempts to locate and open the file in the format <code>name.index.sds</code>, where <code>index</code> is an auto-incrementing value. If no matching file is found, the function returns an error. When SDS I/O uses SDS I/O Client in conjunction with the SDS I/O Server, the file name is constructed by the SDS I/O Server according to configuration specified in the <code>sdsio.yml</code> steering file.</li>
+<li>The <code>name</code> parameter specifies the base name of the SDS input file. When SDS I/O is a file system then the function attempts to locate and open the file in the format <code>name.index.sds</code>, where <code>index</code> is an auto-incrementing value. If no matching file is found, the function returns an error. When SDS I/O uses SDS I/O Client in conjunction with the SDS I/O Server, the filename is constructed by the SDS I/O Server according to configuration specified in the <code>sdsio.yml</code> steering file.</li>
 </ul>
 <p>For details, refer to <a href="../theory.html#filenames">Filenames section</a>.</p>
 <p>This function returns a handle that uniquely identifies the stream. The handle is used as a reference in subsequent function calls to perform operations on the stream. </p>

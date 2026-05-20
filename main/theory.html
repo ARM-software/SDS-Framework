@@ -84,9 +84,9 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#buffer-size">Buffer Size</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#sdsio-server-firmware-protocol">SDSIO Server Firmware Protocol</a>
+<li class="toctree-l2"><a class="reference internal" href="#sdsio-server-firmware-protocol">SDSIO-Server Firmware Protocol</a>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#sdsio-server-monitor-interface">SDSIO Server Monitor Interface</a>
+<li class="toctree-l2"><a class="reference internal" href="#sdsio-server-monitor-interface">SDSIO-Server Monitor Interface</a>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#sdsio-message-sequence">SDSIO Message Sequence</a>
 </li>
@@ -173,11 +173,11 @@ used for a single inference. The inference itself is executed by the <code>Execu
 <h3 id="filenames">Filenames</h3>
 <p>The <code>sdsOpen</code> function takes <code>&lt;name&gt;</code> and the stream opening mode as input parameters.
 Opening a stream in <code>sdsModeRead</code> mode is used for playback and opening stream in <code>sdsModeWrite</code> is used for recording.</p>
-<p>The file name used when opening a stream depends on the presence of the <code>sdsio.yml</code> steering file and its <code>play</code> node.</p>
-<p>If the steering file exists and contains <code>play</code> node, the file name follows the pattern <code>&lt;name&gt;.&lt;label&gt;.sds</code>, where <code>&lt;label&gt;</code> is specified in the corresponding
+<p>The filename used when opening a stream depends on the presence of the <code>sdsio.yml</code> steering file and its <code>play</code> node.</p>
+<p>If the steering file exists and contains <code>play</code> node, the filename follows the pattern <code>&lt;name&gt;.&lt;label&gt;.sds</code>, where <code>&lt;label&gt;</code> is specified in the corresponding
 <code>step</code> node in the <code>play</code> node. After playback or recording completes, processing continues with the next <code>step</code> node, if available, and the process repeats.</p>
 <p>The previous explanation applies only to playback; for recording, the file naming pattern is determined as follows.</p>
-<p>If the steering file does not exist or does not contain <code>play</code> node, the file name follows the pattern <code>&lt;name&gt;.&lt;label&gt;.sds</code>, where for:</p>
+<p>If the steering file does not exist or does not contain <code>play</code> node, the filename follows the pattern <code>&lt;name&gt;.&lt;label&gt;.sds</code>, where for:</p>
 <p><strong>Recording:</strong></p>
 <p><code>&lt;label&gt;</code> is a sequential number starting at 0 and incremented by 1. The first value for which no corresponding file exists is used to create a new file.
 After recording completes, the process continues from the last <code>&lt;label&gt;</code> value.</p>
@@ -189,8 +189,8 @@ After playback completes, the process repeats with the <code>&lt;label&gt;</code
 <ul>
 <li>Files recorded during playback include an additional <code>.p</code> before the <code>.sds</code> extension to
   distinguish them from originally recorded files (e.g., <code>ML_Out.0.p.sds</code>).</li>
-<li>If a recording file name already exists, any existing <code>.bak</code> file with the same name is deleted,
-  the current file is renamed by appending <code>.bak</code>, and the new recording uses the original file name.</li>
+<li>If a recording filename already exists, any existing <code>.bak</code> file with the same name is deleted,
+  the current file is renamed by appending <code>.bak</code>, and the new recording uses the original filename.</li>
 </ul>
 </div>
 <h3 id="timeslot">Timeslot</h3>
@@ -482,8 +482,8 @@ int32_t  n;                     // number of bytes written to data stream
 </ul>
 <p>As a guideline, the buffer size should be at least <strong>(2 × block size) + 2 KB</strong>.<br/>
 The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
-<h2 id="sdsio-server-firmware-protocol">SDSIO Server Firmware Protocol</h2>
-<p>The <a href="utilities.html#sdsio-server">SDSIO Server</a> uses a simple protocol for data exchange between a host computer and the embedded target that integrates an <a href="sdsio.html">SDSIO Interface</a>. The protocol assumes that the correct communication to the server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.</p>
+<h2 id="sdsio-server-firmware-protocol">SDSIO-Server Firmware Protocol</h2>
+<p>The <a href="utilities.html#sdsio-server">SDSIO-Server</a> uses a simple protocol for data exchange between a host computer and the embedded target that integrates an <a href="sdsio.html">SDSIO Interface</a>. The protocol assumes that the correct communication to the SDSIO-Server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.</p>
 <p>The following conventions describe the <strong>command semantic</strong> used in the following documentation:</p>
 <table>
 <thead>
@@ -495,11 +495,11 @@ The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
 <tbody>
 <tr>
 <td style="text-align: left;">&gt;</td>
-<td style="text-align: left;">Prefix indicating the direction: Command from target firmware to SDSIO Server on the host computer.</td>
+<td style="text-align: left;">Prefix indicating the direction: Command from target firmware to SDSIO-Server on the host computer.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&lt;</td>
-<td style="text-align: left;">Prefix indicating the direction: Response from SDSIO Server to target firmware.</td>
+<td style="text-align: left;">Prefix indicating the direction: Response from SDSIO-Server to target firmware.</td>
 </tr>
 <tr>
 <td style="text-align: left;">WORD</td>
@@ -516,7 +516,7 @@ The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
 </tbody>
 </table>
 <p><strong>Commands:</strong></p>
-<p>Commands are sent from the embedded target to the host computer running the SDSIO Server.</p>
+<p>Commands are sent from the embedded target to the host computer running the SDSIO-Server.</p>
 <table>
 <thead>
 <tr>
@@ -549,7 +549,7 @@ The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
 <tr>
 <td style="text-align: center;">5</td>
 <td style="text-align: left;">SDSIO_CMD_PING</td>
-<td style="text-align: left;">Ping Server</td>
+<td style="text-align: left;">Ping SDSIO-Server</td>
 </tr>
 <tr>
 <td style="text-align: center;">6</td>
@@ -564,7 +564,7 @@ The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
 </tbody>
 </table>
 <p>Each <strong>Command</strong> starts with a <strong>Header (4 Words = 16 bytes)</strong> followed by <strong>optional data</strong> of variable length.
-Depending on the Command, the SDSIO Server replies with a <strong>Response</strong> that includes a <strong>Header</strong> with the same ID
+Depending on the Command, the SDSIO-Server replies with a <strong>Response</strong> that includes a <strong>Header</strong> with the same ID
 as the Command and may contain <strong>additional data</strong>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -575,7 +575,7 @@ as the Command and may contain <strong>additional data</strong>.</p>
 <p><strong>SDSIO_CMD_OPEN</strong></p>
 <p>The Command with ID = <strong>1</strong> (SDSIO_CMD_OPEN) opens an SDS data file on the host computer.
 <code>Mode</code> defines <code>read</code> (value = 0) or <code>write</code> (value = 1) operation. <code>Len of Stream Name</code> is the size of the string in bytes.</p>
-<p>SDS data file names use the following file format: <code>&lt;name&gt;.&lt;label&gt;.sds</code>, where <code>&lt;name&gt;</code> is the stream name used as base file name
+<p>SDS data filenames use the following file format: <code>&lt;name&gt;.&lt;label&gt;.sds</code>, where <code>&lt;name&gt;</code> is the stream name used as base filename
 of the SDS data file and <code>&lt;label&gt;</code> is a user label or index depending on usage (for details see section <a href="#filenames">Filenames</a>).</p>
 <pre><code class="language-txt">| WORD |  WORD  | WORD | WORD **************|+++++++++++++|
 &gt;  1   |   0    | Mode | Len of Stream Name | Stream Name |
@@ -589,7 +589,7 @@ of the SDS data file and <code>&lt;label&gt;</code> is a user label or index dep
 <p><strong>SDSIO_CMD_CLOSE</strong></p>
 <p>The Command with ID = <strong>2</strong> (SDSIO_CMD_CLOSE) closes an SDS data file on the host computer.
 The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</strong>.
-There is no Response from the SDSIO Server to this Command.</p>
+There is no Response from the SDSIO-Server to this Command.</p>
 <pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |
 &gt;  2   | Handle |  0   |  0   |
 |******|********|******|******|
@@ -598,7 +598,7 @@ There is no Response from the SDSIO Server to this Command.</p>
 <p>The Command with ID = <strong>3</strong> (SDSIO_CMD_WRITE) writes data to an SDS data file on the host computer.
 The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</strong>.
 <code>Size</code> specifies the size of <code>Data</code> in bytes.
-There is no Response from the SDSIO Server to this Command.</p>
+There is no Response from the SDSIO-Server to this Command.</p>
 <pre><code class="language-txt">| WORD |  WORD  | WORD | WORD |++++++|
 &gt;  3   | Handle |  0   | Size | Data |
 |******|********|******|******|++++++|
@@ -618,7 +618,7 @@ The <code>Handle</code> is the identifier obtained with <strong>SDSIO_CMD_OPEN</
 |******|********|********|******|++++++|
 </code></pre>
 <p><strong>SDSIO_CMD_PING</strong></p>
-<p>The Command with ID = <strong>5</strong> (SDSIO_CMD_PING) verifies if the Server is active and reachable on the host.</p>
+<p>The Command with ID = <strong>5</strong> (SDSIO_CMD_PING) verifies if the SDSIO-Server is active and reachable on the host.</p>
 <pre><code class="language-txt">| WORD | WORD | WORD | WORD |
 &gt;  5   |  0   |  0   |  0   |
 |******|******|******|******|
@@ -639,7 +639,7 @@ The <code>Set Mask</code> specifies the bits to set in the <code>sdsFlags</code>
 |******|**********|************|******|
 </code></pre>
 <p><strong>SDSIO_CMD_INFO</strong></p>
-<p>The Command with ID = <strong>7</strong> (SDSIO_CMD_INFO) sends control information (sdsFlags, sdsIdleRate and error information) to the host. There is no Response from the SDSIO Server to this Command.</p>
+<p>The Command with ID = <strong>7</strong> (SDSIO_CMD_INFO) sends control information (sdsFlags, sdsIdleRate and error information) to the host. There is no Response from the SDSIO-Server to this Command.</p>
 <ul>
 <li><code>sdsFlags</code> is the current value of that global variable.</li>
 <li><code>sdsIdleRate</code> is the current value of that global variable, value 0xFFFFFFFF indicates that idle rate information is not valid.</li>
@@ -650,12 +650,12 @@ The <code>Set Mask</code> specifies the bits to set in the <code>sdsFlags</code>
 |******|**********|*************|***********|++++++++++++|
 </code></pre>
 <p><code>Error Data</code> contains the information from <code>sdsError</code> global structure and has the following format.</p>
-<pre><code class="language-txt">| WORD   | WORD |++++++++++++++++++++|
-| Status | Line | File name (string) |
-|********|******|++++++++++++++++++++|
+<pre><code class="language-txt">| WORD   | WORD |+++++++++++++++++++|
+| Status | Line | Filename (string) |
+|********|******|+++++++++++++++++++|
 </code></pre>
-<h2 id="sdsio-server-monitor-interface">SDSIO Server Monitor Interface</h2>
-<p>The <a href="utilities.html#sdsio-server">SDSIO Server</a> provides an additional TCP socket that maybe used by a Monitor program to observe
+<h2 id="sdsio-server-monitor-interface">SDSIO-Server Monitor Interface</h2>
+<p>The <a href="utilities.html#sdsio-server">SDSIO-Server</a> provides an additional TCP socket that maybe used by a Monitor program to observe
 SDS file activity and control <code>sdsFlags</code> in the firmware.
 The monitor interface is enabled with command line option <code>--mon-port &lt;port&gt;</code>.</p>
 <p>The following conventions describe the <strong>command and message semantic</strong> used in the following documentation:</p>
@@ -669,11 +669,11 @@ The monitor interface is enabled with command line option <code>--mon-port &lt;p
 <tbody>
 <tr>
 <td style="text-align: left;">&gt;</td>
-<td style="text-align: left;">Prefix indicating the direction: Command sent from the Monitor program to the SDSIO Server.</td>
+<td style="text-align: left;">Prefix indicating the direction: Command sent from the Monitor program to the SDSIO-Server.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&lt;</td>
-<td style="text-align: left;">Prefix indicating the direction: Response or asynchronous message sent from the SDSIO Server to the Monitor program.</td>
+<td style="text-align: left;">Prefix indicating the direction: Response or asynchronous message sent from the SDSIO-Server to the Monitor program.</td>
 </tr>
 <tr>
 <td style="text-align: left;">WORD</td>
@@ -690,8 +690,8 @@ The monitor interface is enabled with command line option <code>--mon-port &lt;p
 </tbody>
 </table>
 <p><strong>Commands and Messages:</strong></p>
-<p>Commands are sent to the server which replies with a response (depending on command).
-Server can also send asynchronous messages at any time when not processing a command.</p>
+<p>Commands are sent to the SDSIO-Server which replies with a response (depending on command).
+SDSIO-Server can also send asynchronous messages at any time when not processing a command.</p>
 <table>
 <thead>
 <tr>
@@ -714,7 +714,7 @@ Server can also send asynchronous messages at any time when not processing a com
 <tr>
 <td style="text-align: center;">6</td>
 <td style="text-align: left;">SDSIO_MON_FLAGS</td>
-<td style="text-align: left;">Monitor program request to the SDSIO Server to update SDS control flags in the firmware</td>
+<td style="text-align: left;">Monitor program request to the SDSIO-Server to update SDS control flags in the firmware</td>
 </tr>
 <tr>
 <td style="text-align: center;">7</td>
@@ -724,22 +724,22 @@ Server can also send asynchronous messages at any time when not processing a com
 <tr>
 <td style="text-align: center;">8</td>
 <td style="text-align: left;">SDSIO_MON_SHUTDOWN</td>
-<td style="text-align: left;">Monitor program request to the SDSIO Server to complete current tasks and shut down gracefully</td>
+<td style="text-align: left;">Monitor program request to the SDSIO-Server to complete current tasks and shut down gracefully</td>
 </tr>
 </tbody>
 </table>
 <p>Each <strong>Command or Message</strong> starts with a <strong>Header (4 Words = 16 bytes)</strong> followed by <strong>optional data</strong> of variable length.
-Depending on the Command, the SDSIO Server replies with a <strong>Response</strong> that includes a <strong>Header</strong> with the same ID
+Depending on the Command, the SDSIO-Server replies with a <strong>Response</strong> that includes a <strong>Header</strong> with the same ID
 as the Command and may contain <strong>additional data</strong>.</p>
 <p><strong>SDSIO_MON_OPEN</strong></p>
-<p>The Message with ID = <strong>1</strong> (SDSIO_MON_OPEN) is sent whenever an SDS data file is opened by the SDSIO Server.
+<p>The Message with ID = <strong>1</strong> (SDSIO_MON_OPEN) is sent whenever an SDS data file is opened by the SDSIO-Server.
 <code>Mode</code> defines <code>read</code> (value = 0) or <code>write</code> (value = 1) operation. <code>Filename Len</code> is the size of the string in bytes and <code>Filename</code> is the name of the file (including path).</p>
 <pre><code class="language-txt">| WORD | WORD | WORD | WORD | WORD ********|++++++++++|
 &lt;  1   |  0   | Mode |  0   | Filename Len | Filename |
 |******|******|******|******|**************|++++++++++|
 </code></pre>
 <p><strong>SDSIO_MON_CLOSE</strong></p>
-<p>The Message with ID = <strong>2</strong> (SDSIO_MON_CLOSE) is sent whenever an SDS data file is closed by the SDSIO Server.
+<p>The Message with ID = <strong>2</strong> (SDSIO_MON_CLOSE) is sent whenever an SDS data file is closed by the SDSIO-Server.
 <code>Filename Len</code> is the size of the string in bytes and <code>Filename</code> is the name of the file (including path).</p>
 <pre><code class="language-txt">| WORD | WORD | WORD | WORD | WORD ********|++++++++++|
 &lt;  2   |  0   |  0   |  0   | Filename Len | Filename |
@@ -748,15 +748,15 @@ as the Command and may contain <strong>additional data</strong>.</p>
 <p><strong>SDSIO_MON_FLAGS</strong></p>
 <p>The Command with ID = <strong>6</strong> (SDSIO_MON_FLAGS) is used by the Monitor program to request an update of the SDS control flags in the firmware.
 The <code>Set Mask</code> specifies the bits to set in the <code>sdsFlags</code> and the <code>Clear Mask</code> specifies the bits to clear in the <code>sdsFlags</code>.
-This command does not generate a response from the SDSIO Server.</p>
+This command does not generate a response from the SDSIO-Server.</p>
 <pre><code class="language-txt">| WORD | WORD     | WORD       | WORD |
 &gt;  6   | Set Mask | Clear Mask |  0   |
 |******|**********|************|******|
 </code></pre>
 <p><strong>SDSIO_MON_INFO</strong></p>
-<p>The Message with ID = <strong>7</strong> (SDSIO_MON_INFO) contains status information received by the SDSIO Server from the firmware,
+<p>The Message with ID = <strong>7</strong> (SDSIO_MON_INFO) contains status information received by the SDSIO-Server from the firmware,
 including sdsFlags, sdsIdleRate, and error information.
-The message is sent to the Monitor program whenever the SDSIO Server receives updated information from the firmware,
+The message is sent to the Monitor program whenever the SDSIO-Server receives updated information from the firmware,
 as well as upon the initial connection to the Monitor program.</p>
 <ul>
 <li><code>sdsFlags</code> is the current value of that global variable in the firmware.</li>
@@ -768,12 +768,12 @@ as well as upon the initial connection to the Monitor program.</p>
 |******|**********|*************|***********|++++++++++++|
 </code></pre>
 <p><code>Error Data</code> contains the information from <code>sdsError</code> global structure and has the following format.</p>
-<pre><code class="language-txt">| WORD   | WORD |++++++++++++++++++++|
-| Status | Line | File name (string) |
-|********|******|++++++++++++++++++++|
+<pre><code class="language-txt">| WORD   | WORD |+++++++++++++++++++|
+| Status | Line | Filename (string) |
+|********|******|+++++++++++++++++++|
 </code></pre>
 <p><strong>SDSIO_MON_SHUTDOWN</strong></p>
-<p>The Command with ID = <strong>8</strong> (SDSIO_MON_SHUTDOWN) is used by the Monitor program to request the SDSIO Server to complete any ongoing operations, 
+<p>The Command with ID = <strong>8</strong> (SDSIO_MON_SHUTDOWN) is used by the Monitor program to request the SDSIO-Server to complete any ongoing operations, 
 signal to the firmware that it will stop operating, and shut down gracefully.</p>
 <pre><code class="language-txt">| WORD | WORD | WORD | WORD |
 &gt;  8   |  0   |  0   |  0   |
@@ -784,18 +784,18 @@ signal to the firmware that it will stop operating, and shut down gracefully.</p
 <p>Monitor program or user should ensure that no streams are open before the shutdown is initiated.</p>
 </div>
 <h2 id="sdsio-message-sequence">SDSIO Message Sequence</h2>
-<p>This section describes the states and the message sequence of the SDS framework when using the <a href="utilities.html#sdsio-server">SDSIO Server</a>.
+<p>This section describes the states and the message sequence of the SDS framework when using the <a href="utilities.html#sdsio-server">SDSIO-Server</a>.
 It contains the following threads that execute on the target.</p>
 <ul>
 <li><strong>sdsControlThread</strong>: Control thread that organizes the overall execution.</li>
 <li><strong>AlgorithmThread</strong>: Executes the algorithm under test.</li>
 <li><strong>sdsThread</strong>: SDS worker thread.</li>
-<li><strong>SDSIO Server</strong>: SDSIO Server running on the host computer.</li>
+<li><strong>SDSIO-Server</strong>: SDSIO-Server running on the host computer.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>The command <code>SDSIO_CMD_FLAGS</code> is sent asynchronous by the SDSIO Server.</li>
+<li>The command <code>SDSIO_CMD_FLAGS</code> is sent asynchronous by the SDSIO-Server.</li>
 </ul>
 </div>
 <p>The <code>sdsControlThread</code> handles a state machine with the following states:</p>
@@ -809,11 +809,11 @@ It contains the following threads that execute on the target.</p>
 <tbody>
 <tr>
 <td style="text-align: left;">SDS_STATE_INACTIVE</td>
-<td style="text-align: left;">Streaming is not active; waiting for flag info from SDSIO Server</td>
+<td style="text-align: left;">Streaming is not active; waiting for flag info from SDSIO-Server</td>
 </tr>
 <tr>
 <td style="text-align: left;">SDS_STATE_CONNECTED</td>
-<td style="text-align: left;">Device (client) is connected to SDSIO Server (host), but streaming is not active</td>
+<td style="text-align: left;">Device (client) is connected to SDSIO-Server (host), but streaming is not active</td>
 </tr>
 <tr>
 <td style="text-align: left;">SDS_STATE_START</td>
@@ -845,13 +845,13 @@ It contains the following threads that execute on the target.</p>
 </tr>
 </tbody>
 </table>
-<p>The following flowcharts show the state transition in context with the messages that are exchanged with the <code>SDSIO Server</code>.</p>
+<p>The following flowcharts show the state transition in context with the messages that are exchanged with the <code>SDSIO-Server</code>.</p>
 <p><strong>Connect flowchart</strong></p>
 <div class="mermaid">sequenceDiagram
     participant sdsControlThread
     activate sdsControlThread
 
-    participant Server as SDSIO Server&lt;br/&gt;(host)
+    participant Server as SDSIO-Server&lt;br/&gt;(host)
 
     Note over sdsControlThread: sdsInit
     Note right of sdsControlThread: SDS_STATE_INACTIVE 
@@ -880,7 +880,7 @@ It contains the following threads that execute on the target.</p>
     activate AlgorithmThread
     participant SDSIO as sdsThread
     activate SDSIO
-    participant Server as SDSIO Server&lt;br/&gt;(host)
+    participant Server as SDSIO-Server&lt;br/&gt;(host)
     activate Server
 
     Note right of sdsControlThread: SDS_STATE_CONNECTED 
@@ -922,7 +922,7 @@ It contains the following threads that execute on the target.</p>
     activate AlgorithmThread
     participant SDSIO as sdsThread
     activate SDSIO
-    participant Server as SDSIO Server&lt;br/&gt;(host)
+    participant Server as SDSIO-Server&lt;br/&gt;(host)
     activate Server
 
     Note right of sdsControlThread: SDS_STATE_ACTIVE 
@@ -958,7 +958,7 @@ It contains the following threads that execute on the target.</p>
     activate AlgorithmThread
     participant SDSIO as sdsThread
     activate SDSIO
-    participant Server as SDSIO Server&lt;br/&gt;(host)
+    participant Server as SDSIO-Server&lt;br/&gt;(host)
     activate Server
 
     Note right of sdsControlThread: SDS_STATE_CONNECTED 

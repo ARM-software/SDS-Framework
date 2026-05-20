@@ -123,7 +123,7 @@
   - component: SDS:IO:VSI                        # VSI Simulation interface of an AVH FVP
   - component: SDS:IO:Custom                     # Source code template for custom implementation
 </code></pre>
-<p>To simplify usage further, the following pre-configured SDS interface layers in <em>csolution project format</em> are available. These connect via various interfaces to the SDSIO Server, which provides read/write access to SDS data files.</p>
+<p>To simplify usage further, the following pre-configured SDS interface layers in <em>csolution project format</em> are available. These connect via various interfaces to the SDSIO-Server, which provides read/write access to SDS data files.</p>
 <ul>
 <li><a href="#layer-sdsio_network">Ethernet Interface</a> using the MDK-Middleware Network component.</li>
 <li><a href="#layer-sdsio_usb">USB Bulk Interface</a> using the MDK-Middleware USB component.</li>
@@ -166,7 +166,7 @@ Closed:   ML_Out (.\ML_Out.0.p.sds).
 <h2 id="layer-sdsio_fs">Layer: sdsio_fs</h2>
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem"><code>layer/sdsio/filesystem/sdsio_fs.clayer.yml</code></a> is configured for recording to a Memory Card. It uses the MDK-Middleware File System component.</p>
 <h2 id="layer-sdsio_fvp">Layer: sdsio_fvp</h2>
-<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp"><code>template/sdsio/fvp/sdsio_fvp.clayer.yml</code></a> targets AVH FVP simulation and is configured for recording and playback to/from the Host computer. It uses the <a href="https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html">SDSIO VSI interface</a> implemented by the file <code>vsi/python/arm_vsi3.py</code>, which is loaded by the FVP simulation model. As the SDSIO server is implemented in <code>arm_vsi3.py</code> there is no separate SDSIO server needed.</p>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp"><code>template/sdsio/fvp/sdsio_fvp.clayer.yml</code></a> targets AVH FVP simulation and is configured for recording and playback to/from the Host computer. It uses the <a href="https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html">SDSIO VSI interface</a> implemented by the file <code>vsi/python/arm_vsi3.py</code>, which is loaded by the FVP simulation model. Since the SDSIO-Server functionality is implemented in <code>arm_vsi3.py</code>, no separate SDSIO-Server is required.</p>
 <h3 id="configuration-file-sdsioyml">Configuration File: sdsio.yml</h3>
 <p>The SDSIO VSI interface can be configured using the <code>sdsio.yml</code> file in the current working folder that is used to start the FVP simulator. This configuration settings define the <a href="theory.html#sds-data-files">SDS data file</a> access during FVP simulation.</p>
 <p><strong>Description:</strong></p>

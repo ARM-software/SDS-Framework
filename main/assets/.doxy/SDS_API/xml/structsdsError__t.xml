@@ -25,7 +25,7 @@
         <name>file</name>
         <qualifiedname>sdsError_t::file</qualifiedname>
         <briefdescription>
-<para>Pointer to the file name in which the error occurred. </para>
+<para>Pointer to the filename in which the error occurred. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
