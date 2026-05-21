@@ -159,13 +159,19 @@ def dot(value):
 def main():
     # Process arguments
     formatter = lambda prog: argparse.HelpFormatter(prog,max_help_position=60)
-    parser = argparse.ArgumentParser(description="SDS data validation", formatter_class=formatter)
+    parser = argparse.ArgumentParser(description="SDS data validation", formatter_class=formatter, add_help=False)
+    parser.add_argument("-h", "--help", action="help", help="Show this help message and exit")
 
     required = parser.add_argument_group("required")
     required.add_argument("-i", dest="sds", metavar="<sds_file>", help="SDS file", required=True)
 
     optional = parser.add_argument_group("optional")
     optional.add_argument("-t", dest="tick_rate", metavar="<tick_rate>", help="Timeslot tick rate in Hz (default: 1000 for 1 ms tick interval)", required=False)
+
+    # Parse arguments - show help if no arguments provided
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
 
     args = parser.parse_args()
     filename = args.sds

@@ -582,7 +582,7 @@ usage: sds-check.py [-h] -i <sds_file> [-t <tick_rate>]
 SDS data validation
 
 options:
-  -h, --help      show this help message and exit
+  -h, --help      Show this help message and exit
 
 required:
   -i <sds_file>   SDS file
