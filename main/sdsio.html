@@ -168,11 +168,15 @@ Closed:   ML_Out (.\ML_Out.0.p.sds).
 <h2 id="layer-sdsio_fvp">Layer: sdsio_fvp</h2>
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp"><code>template/sdsio/fvp/sdsio_fvp.clayer.yml</code></a> targets AVH FVP simulation and is configured for recording and playback to/from the Host computer. It uses the <a href="https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html">SDSIO VSI interface</a> implemented by the file <code>vsi/python/arm_vsi3.py</code>, which is loaded by the FVP simulation model. Since the SDSIO-Server functionality is implemented in <code>arm_vsi3.py</code>, no separate SDSIO-Server is required.</p>
 <h3 id="configuration-file-sdsioyml">Configuration File: sdsio.yml</h3>
-<p>The SDSIO VSI interface can be configured using the <code>sdsio.yml</code> file in the current working folder that is used to start the FVP simulator. This configuration settings define the <a href="theory.html#sds-data-files">SDS data file</a> access during FVP simulation.</p>
-<p><strong>Description:</strong></p>
-<pre><code class="language-yml"></code></pre>
-<p><strong>Example:</strong></p>
-<pre><code class="language-yml"></code></pre>
+<p>The SDSIO VSI interface can be configured using a <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a> located in the simulator working directory.</p>
+<p>The VSI3 Python script (<code>arm_vsi3.py</code>) searches for a control file using the following order (first match wins):</p>
+<ul>
+<li><code>sdsio.yml</code></li>
+<li><code>sdsio.yaml</code></li>
+<li>the first file (alphabetical order) matching <code>*.sdsio.yml</code></li>
+<li>the first file (alphabetical order) matching <code>*.sdsio.yaml</code></li>
+</ul>
+<p>If a control file is found, the script reads the <code>sdsio:</code> root node. If <code>workdir:</code> is a relative path, it is interpreted relative to the simulator working directory.</p>
 <h3 id="log-file-sdsiolog">Log File: sdsio.log</h3>
 <p>During the FVP simulation a log file is generated that lists the <a href="theory.html#sds-data-files">SDS data file</a> access.</p>
 <p><strong>Example:</strong></p>
