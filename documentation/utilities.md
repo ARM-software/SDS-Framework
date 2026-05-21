@@ -216,14 +216,14 @@ general-opts:
 
 **Keyboard input (while running):**
 
-| Key | Action
-|-----|------------------
-| R/r | Start recording
-| P/p | Start playback
-| S/s | Stop  recording/playback
-| A-H | Set user flags 0-7
-| a-h | Clear user flags 0-7
-| X/x | Terminate server
+Key | Action
+:--:|:------------------
+R/r | Start recording
+P/p | Start playback
+S/s | Stop  recording/playback
+A-H | Set user flags 0-7
+a-h | Clear user flags 0-7
+X/x | Terminate server
 
 #### Serial Mode
 
@@ -267,7 +267,6 @@ if-opts (optional):
     - The `--ipaddr` and `--netif` options are mutually exclusive.
     - SDSIO-Server only supports IPv4 addresses.
 
-
 !!! Note
     - The target device and the Host computer must be connected to the same network. With a standard network installation, the DHCP server assigns IP addresses automatically.
     - On **Windows**, a firewall may restrict socket connections. To allow the SDSIO-Server through the Windows Defender Firewall:
@@ -298,34 +297,7 @@ options:
   -h, --help             show this help message and exit
 ```
 
-!!! Note
-    - For more reliable operation at higher data transfer rates, it is recommended to enable the `--high-priority` general option. This increases the thread priority of the SDSIO-Server process.
-    - When using `--high-priority`, elevated privileges are required depending on your operating system:
-        - **Windows**: Run the Python script as an administrator.
-        - **macOS/Linux**: Execute the script with `sudo` or ensure the user has sufficient permissions.
-
-!!! Note
-    - On **macOS**, the **libusb** system library is required. If not already installed, you can install it using with [Homebrew](https://brew.sh/):
-
-    `>brew install libusb`
-
-!!! Note
-    - On **Linux**, access to USB devices from user space requires a udev rule by default.
-      Create a udev rule file (e.g. `/etc/udev/rules.d/99-sdsio.rules`) with the
-      vendor and product ID of the SDSIO Client device:
-
-      `SUBSYSTEM=="usb", ATTRS{idVendor}=="XXXX", ATTRS{idProduct}=="XXXX", MODE="0666"`
-
-      Then reload rules with `sudo udevadm control --reload && sudo udevadm trigger`.
-      Use `dmesg` before and after plugging in the device to find the vendor/product IDs.
-
 **Example:**
-
-```bash
-python sdsio-server.py usb --workdir ./work_dir
-```
-
-#### Examples
 
 ```bash
 # Recommended: all config in YAML
@@ -346,6 +318,22 @@ python sdsio-server.py socket --port 5050
 # Serial server
 python sdsio-server.py serial --port COM3 --baudrate 115200
 ```
+
+!!! Note
+    - For more reliable operation at higher data transfer rates, it is recommended to enable the `--high-priority` general option. This increases the thread priority of the SDSIO-Server process.
+    - When using `--high-priority`, elevated privileges are required depending on your operating system:
+        - **Windows**: Run the Python script as an administrator.
+        - **macOS/Linux**: Execute the script with `sudo` or ensure the user has sufficient permissions.
+
+On **macOS**, the **libusb** system library is required. If not already installed, you can install it with [Homebrew](https://brew.sh/): `>brew install libusb`
+
+On **Linux**, access to USB devices from user space requires a udev rule by default. Create a udev rule file (e.g. `/etc/udev/rules.d/99-sdsio.rules`) with the vendor and product ID of the SDSIO Client device.
+
+```bash
+SUBSYSTEM=="usb", ATTRS{idVendor}=="XXXX", ATTRS{idProduct}=="XXXX", MODE="0666"
+```
+
+Then reload rules with `sudo udevadm control --reload && sudo udevadm trigger`.  Use `dmesg` before and after plugging in the device to find the vendor/product IDs.
 
 ## SDS-View
 

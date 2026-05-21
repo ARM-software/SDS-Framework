@@ -2,6 +2,7 @@
 
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD060 -->
 
 The [SDS template application](https://github.com/ARM-software/SDS-Framework/tree/main/template) is a test framework for DSP and ML algorithms. It allows recording and playback of real-world data streams using physical hardware or on simulation models using [(Arm Virtual Hardware - FVP)](https://github.com/ARM-software/AVH) to an user algorithm under test. The real-world data streams are captured in SDS data files. This enables multiple uses cases:
 
@@ -149,6 +150,7 @@ Activate the recording from the SDSIO-Server by pressing `R` key. To stop the re
 This run should generate the files `Test_In.0.sds` and `Test_Out.0.sds` in the solution folder. The `DataTest` project is configured to record 1000 data records at an interval of 10 ms.
 
 To verify correctness of the recording using SDS-Check utility use the following commands:
+
 ```bash
 python sds-check.py -s Test_In.0.sds
 python sds-check.py -s Test_Out.0.sds
@@ -163,6 +165,7 @@ Activate the playback from the SDSIO-Server by pressing the `P` key.
 This run should read the `Test_In.0.sds` file and generate the `Test_Out.0.p.sds` file.
 
 To verify correctness of the recording using SDS-Check utility use the following command:
+
 ```bash
 python sds-check.py -s Test_Out.0.p.sds
 ```
@@ -184,6 +187,7 @@ Alternatively the recording can be started or stopped by pressing the user butto
 This run should generate the files `Test_In.0.sds` and `Test_Out.0.sds` in the solution folder. The `DataTest` project is configured to record 1000 data records at an interval of 10 ms.
 
 To verify correctness of the recording using SDS-Check utility use the following commands:
+
 ```bash
 python sds-check.py -s Test_In.0.sds
 python sds-check.py -s Test_Out.0.sds
@@ -201,6 +205,7 @@ Activate the playback from the SDSIO-Server by pressing the `P` key.
 This run should read the `Test_In.0.sds` file and generate the `Test_Out.0.p.sds` file.
 
 To verify correctness of the recording using SDS-Check utility use the following command:
+
 ```bash
 python sds-check.py -s Test_Out.0.p.sds
 ```
