@@ -84,17 +84,16 @@ The [`template/sdsio/fvp/sdsio_fvp.clayer.yml`](https://github.com/ARM-software/
 
 ### Configuration File: sdsio.yml
 
-The SDSIO VSI interface can be configured using the `sdsio.yml` file in the current working folder that is used to start the FVP simulator. This configuration settings define the [SDS data file](theory.md#sds-data-files) access during FVP simulation.
+The SDSIO VSI interface can be configured using a [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml) located in the simulator working directory.
 
-**Description:**
+The VSI3 Python script (`arm_vsi3.py`) searches for a control file using the following order (first match wins):
 
-```yml
-```
+- `sdsio.yml`
+- `sdsio.yaml`
+- the first file (alphabetical order) matching `*.sdsio.yml`
+- the first file (alphabetical order) matching `*.sdsio.yaml`
 
-**Example:**
-
-```yml
-```
+If a control file is found, the script reads the `sdsio:` root node. If `workdir:` is a relative path, it is interpreted relative to the simulator working directory.
 
 ### Log File: sdsio.log
 

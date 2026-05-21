@@ -2,6 +2,7 @@
 
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD060 -->
 
 The SDS Framework enables to record and playback one or more data streams to an application that is under development as shown in the diagram below. With the SDSIO Interface the data streams are connected to SDS data files. The file storage can be either embedded within the system and accessed by a file system or external on a host computer and accessed by a communication interface such as Ethernet or USB.
 
@@ -512,7 +513,7 @@ as well as upon the initial connection to the Monitor program.
 
 **SDSIO_MON_SHUTDOWN**
 
-The Command with ID = **8** (SDSIO_MON_SHUTDOWN) is used by the Monitor program to request the SDSIO-Server to complete any ongoing operations, 
+The Command with ID = **8** (SDSIO_MON_SHUTDOWN) is used by the Monitor program to request the SDSIO-Server to complete any ongoing operations,
 signal to the firmware that it will stop operating, and shut down gracefully.
 
 ```txt
