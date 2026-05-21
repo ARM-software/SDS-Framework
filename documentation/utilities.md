@@ -561,15 +561,15 @@ python sds-convert.py video -i Camera.0.sds -o Camera.mp4 -y Camera.sds.yml
 
 ## SDS-Check
 
-The Python utility [**SDS-Check**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) checks SDS data files for correctness and consistency.
+The Python utility [**SDS-Check**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) checks SDS files for correctness and consistency.
 
 The following checks are performed:
 
-- [Size consistency check](#size-consistency-check): The data size of all records should match the size of the SDS file.
-- [Timestamp consistency check](#timestamp-consistency-check): Verifies that the timestamps of the records are in ascending order.
-- [Jitter check](#jitter-check): Prints the record with the largest deviation from the average timestamp interval.
-- [Delta time check](#delta-time-check): Finds the record with the largest timestamp difference from the following record.
-- [Duplicate timestamp check](#duplicate-timestamp-check): Finds records with identical timestamps.
+- [Size consistency check](#size-consistency-check): Checks that data size of all records matches the size of the SDS file.
+- [Timeslot consistency check](#timeslot-consistency-check): Verifies that the timeslots of the records are in ascending order.
+- [Jitter check](#jitter-check): Searches for the record with the largest deviation from the average timeslot interval and prints its record number and deviation.
+- [Delta time check](#delta-time-check): Checks for the record with the largest timeslot difference compared to the following record.
+- [Duplicate timeslot check](#duplicate-timeslot-check): Checks for records with identical timeslots.
 
 ### Usage
 
@@ -577,7 +577,7 @@ The following checks are performed:
 - Invoke the tool as explained below.
 
 ```txt
-usage: sds-check.py [-h] -s <sds_file> [-t <tick_rate>]
+usage: sds-check.py [-h] -i <sds_file> [-t <tick_rate>]
 
 SDS data validation
 
@@ -585,25 +585,23 @@ options:
   -h, --help      show this help message and exit
 
 required:
-  -s <sds_file>   SDS data recording file
+  -i <sds_file>   SDS file
 
 optional:
-  -t <tick_rate>  Timestamp tick rate in Hz (default: 1000 for 1 ms tick interval)
+  -t <tick_rate>  Timeslot tick rate in Hz (default: 1000 for 1 ms tick interval)
 ```
 
 **Example:**
 
 ```txt
-python sds-check.py -s Accelerometer.0.sds
+python sds-check.py -i Accelerometer.0.sds
 File Name         : Accelerometer.0.sds
 File Size         : 156.020 bytes
 Number of Records : 289
 Recording Time    : 14 s
 Recording Interval: 50 ms
 Data Size         : 153.748 bytes
-Largest Block     : 552 bytes
-Smallest Block    : 462 bytes
-Average Block     : 532 bytes
+Block Size        : 532 bytes
 Data Rate         : 10.640 byte/s
 Jitter            : Not detected
 Validation passed
@@ -614,121 +612,97 @@ Validation passed
 
 ### Summary Report
 
-After processing the SDS data file, the SDS-Check utility prints a summary report with statistics:
+After processing the SDS file, the SDS-Check utility prints a summary report with the following information:
 
-- **File Name**         : Name of the SDS data file
+- **File Name**         : Name of the SDS file
 - **File Size**         : Size of the file in bytes
 - **Number of Records** : Total number of records
 - **Recording Time**    : Duration of the recording in seconds or milliseconds
-- **Recording Interval**: Time interval of the recording in milliseconds
-- **Data Size**         : Size of the data w/o record headers in bytes
-- **Largest Block**     : Largest block size, if different from the average block size
-- **Smallest Block**    : Smallest block size, if different from the average block size
-- **Average Block**     : Average block size of a data record
+- **Recording Interval**: Time interval between records in milliseconds
+- **Data Size**         : Total size of the data without record headers in bytes
+- **Block Size**        : Data block size, if all data blocks are of the same size
+- **Max Block Size**    : Maximum data block size, if different from the average data block size
+- **Min Block Size**    : Minimum data block size, if different from the average data block size
+- **Avg Block Size**    : Average data block size
 - **Data Rate**         : Recorded data rate in bytes per second
-- **Max Jitter**        : Maximum deviation from the expected timestamps, if detected (optional)
-- **Max Delta Time**    : Largest difference of the neighboring timestamps, if deviating from the recording interval (optional)
-- **Duplicate Tstamps** : Number of duplicated timestamps, if found
+- **Max Jitter**        : Maximum deviation from the expected timeslots, if detected (optional)
+- **Max Delta Time**    : Largest difference of the neighboring timeslots, if deviating from the recording interval (optional)
+- **Duplicate Tslots**  : Number of duplicated timeslots, if found
 
 ### Size consistency check
 
 This check processes the SDS data records and calculates the total size of the SDS data.
 It is the sum of all data records (header + data). This data size should match the size of
-the SDS file.
-
-If the sizes do not match this error is printed:
+the SDS file. If the sizes do not match, an error such as the one below is printed:
 
 ```txt
 Error: File size mismatch. Expected 360 bytes, but file contains 363 bytes.
 ```
 
-### Timestamp consistency check
+### Timeslot consistency check
 
-This check processes the SDS records and ensures that the timestamps recorded in the records
-are arranged in ascending order. If the utility detects that the timestamp of the subsequent
-data record is lower than the current one, this error is printed:
+This check processes the SDS records and ensures that the timeslots recorded in the records
+are arranged in ascending order. If the timeslots are not in the ascending order, an error
+such as the one below is printed:
 
 ```txt
-Error: Timestamp not in ascending order in record 23.
+Error: Timeslot not in ascending order in record 23.
 ```
 
 ### Jitter check
 
 This check processes the SDS data records and searches for the maximum deviation of the recorded
-timestamps from the expected ones. If a deviation is found, the maximum deviation is
+timeslots from the expected ones. If a deviation is found, the maximum deviation is
 evaluated as **jitter** and, together with the record number, is printed in the summary report.
 
 ```txt
 File Name         : Gyroscope.0.sds
-File Size         : 153.334 bytes
-Number of Records : 284
-Recording Time    : 14 s
-Recording Interval: 50 ms
-Data Size         : 151.088 bytes
-Largest Block     : 606 bytes
-Smallest Block    : 444 bytes
-Average Block     : 532 bytes
-Data Rate         : 10.640 byte/s
-Jitter            : Not detected
+  :
+Max Jitter        : 59 ms, in record 19
 Validation passed
 ```
 
 ### Delta time check
 
-This check processes the SDS records and finds the largest difference in timestamps
+This check processes the SDS records and finds the largest difference in timeslots
 between two neighboring records, called **Max Delta Time**.
 
-For normally recorded files, the delta time and the recording interval are identical, so no information
+Normally, in SDS files, the delta time and the recording interval are identical, so no information
 about the delta time status is printed. If the delta time and the recording interval are not identical,
 that is, a difference is detected, the **Max Delta Time** together with the record number is printed
 in the summary report.
 
 ```txt
 File Name         : Temperature.0.sds
-File Size         : 360 bytes
-Number of Records : 30
-Recording Time    : 30 s
-Recording Interval: 1.024 ms
-Data Size         : 120 bytes
-Data Block        : 4 bytes
-Data Rate         : 4 byte/s
-Max Jitter        : 59 ms, in record 19
+  :
 Max Delta Time    : 1.050 ms, in record 2
 Validation passed
 ```
 
 This is not an error, but a report of an anomaly. If the time delta is significantly larger than the
 sampling interval, for example many times longer, this may indicate that one or more data records are
-missing from the recorded file.
+missing from the SDS file.
 
-### Duplicate timestamp check
+### Duplicate timeslot check
 
-This check processes the SDS records to identify duplicated timestamps. This means that the same timestamp
+This check processes the SDS records to identify duplicated timeslots. This means that the same timeslot
 is used in several consecutive data records.
 
 This may indicate that the recording loop in an embedded application is not set up correctly. It is also
-possible that duplicate timestamps are caused by unexpected thread delays in the embedded application.
+possible that duplicate timeslots are caused by unexpected thread delays in the embedded application.
 
-Duplicate timestamps are unusual in typical recording files. If multiple timestamps with the same value
-are found in the SDS file, **Duplicate Tstamps** will be added to the summary report.
+Duplicate timeslots are unusual in typical recording files. If multiple timeslots with the same value
+are found in the SDS file, **Duplicate Tslots** will be added to the summary report.
 
 ```txt
 File Name         : DataInput.0.sds
-File Size         : 164.075.008 bytes
-Number of Records : 445.856
-Recording Time    : 446 s
-Recording Interval: 1 ms
-Data Size         : 160.508.160 bytes
-Data Block        : 360 bytes
-Data Rate         : 360.000 byte/s
-Max Jitter        : 26 ms, in record 273.884
-Max Delta Time    : 35 ms, in record 277.863
-Duplicate Tstamps : 4, found at record 1
+  :
+Duplicate Tslots  : 4, found at record 1
 Validation passed
 ```
 
 This is not an error, but a report of an anomaly. The report contains the number of records with
-the same timestamp and the position in the SDS file where the anomaly was detected (record number).
+the same timeslot and the position in the SDS file where the anomaly was detected (record number).
 
 !!! Note
-    Only the first occurrence of a duplicate timestamp is reported.
+    Only the first occurrence of a duplicate timeslot is reported.

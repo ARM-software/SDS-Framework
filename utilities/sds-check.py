@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Arm Limited. All rights reserved.
+# Copyright (c) 2023-2026 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# SDS check
+# SDS-Check
 
 
 import sys
@@ -27,26 +27,26 @@ info = {}
 class RecordManager:
     def __init__(self):
         self.HEADER_SIZE    = 8
-        self.TIMESTAMP_SIZE = 4
+        self.TIMESLOT_SIZE  = 4
         self.data_buff      = bytearray()
-        self.timestamp      = []
+        self.timeslot       = []
         self.data_size      = []
 
     # Flush data buffer
     def __flush(self):
         self.data_buff      = bytearray()
-        self.timestamp      = []
+        self.timeslot       = []
         self.data_size      = []
 
     # Private function for retrieving data from record
     def __getRecord(self, file):
         record = bytearray(file.read(self.HEADER_SIZE))
         if len(record) == self.HEADER_SIZE:
-            # Extract timestamp
-            self.timestamp.append(struct.unpack("I", record[:self.TIMESTAMP_SIZE])[0])
+            # Extract timeslot
+            self.timeslot.append(struct.unpack("I", record[:self.TIMESLOT_SIZE])[0])
 
             # Extract data size
-            data_size = struct.unpack("I", record[self.TIMESTAMP_SIZE:])[0]
+            data_size = struct.unpack("I", record[self.TIMESLOT_SIZE:])[0]
             self.data_size.append(data_size)
 
             # Read the data based on the size
@@ -59,7 +59,7 @@ class RecordManager:
         return True
 
     # Extract all data from .sds recording and return a dictionary
-    # Dictionary consists of: timestamp, data_size, raw_data
+    # Dictionary consists of: timeslot, data_size, raw_data
     def getData(self, file):
         # Reset internal state before starting to read data
         self.__flush()
@@ -70,7 +70,7 @@ class RecordManager:
                 break
 
         # Return the collected data in a dictionary
-        data = {"timestamp" : self.timestamp, \
+        data = {"timeslot"  : self.timeslot, \
                 "data_size" : self.data_size, \
                 "raw_data"  : self.data_buff}
 
@@ -100,30 +100,30 @@ def checkSizes(filename,data):
 
     return info["file_size"] == info["data_size"]
 
-# check timestamps
-def checkTimestamps(data):
-    data_len = len(data["timestamp"])
+# check timeslots
+def checkTimeslots(data):
+    data_len = len(data["timeslot"])
     info["records"] = data_len
 
     if data_len < 2: return True
 
-    # Check if timestamps are in ascending order
+    # Check if timeslots are in ascending order
     # and find the largest delta time
     info["delta_time"] = int(0)
     for n in range(1,data_len):
-        if data["timestamp"][n] < data["timestamp"][n-1]:
+        if data["timeslot"][n] < data["timeslot"][n-1]:
             # Error: Not in ascending order
             info["record_id"] = n
             return False
-        if data["timestamp"][n] - data["timestamp"][n-1] > info["delta_time"]:
-            info["delta_time"]  = data["timestamp"][n] - data["timestamp"][n-1]
+        if data["timeslot"][n] - data["timeslot"][n-1] > info["delta_time"]:
+            info["delta_time"]  = data["timeslot"][n] - data["timeslot"][n-1]
             info["delta_index"] = n
 
-    # Check whether timestamps are duplicated
+    # Check whether timeslots are duplicated
     # and save the index at which sequence begins
     info["dup_count"] = count = int(0)
     for n in range(1,data_len):
-        if data["timestamp"][n] == data["timestamp"][n-1]:
+        if data["timeslot"][n] == data["timeslot"][n-1]:
             count += 1
             if count > info["dup_count"]:
                 if count == 1:
@@ -133,19 +133,19 @@ def checkTimestamps(data):
             count = 0
 
     #Check the jitter, save the index at which the jitter is greatest
-    info["tick_span"] = data["timestamp"][-1] - data["timestamp"][0] 
+    info["tick_span"] = data["timeslot"][-1] - data["timeslot"][0] 
 
     interval = info["tick_span"] / (data_len-1)
     info["interval"] = round(interval)
     info["jitter"]   = int(0)
 
-    timestamp = data["timestamp"][0] + interval
+    timeslot = data["timeslot"][0] + interval
     for n in range(1,data_len):
-        diff = round(abs(data["timestamp"][n] - timestamp))
+        diff = round(abs(data["timeslot"][n] - timeslot))
         if diff > info["jitter"]:
             info["jitter"] = diff
             info["index"]  = n
-        timestamp += interval
+        timeslot += interval
 
     return True
 
@@ -162,10 +162,10 @@ def main():
     parser = argparse.ArgumentParser(description="SDS data validation", formatter_class=formatter)
 
     required = parser.add_argument_group("required")
-    required.add_argument("-s", dest="sds", metavar="<sds_file>", help="SDS data recording file", required=True)
+    required.add_argument("-i", dest="sds", metavar="<sds_file>", help="SDS file", required=True)
 
     optional = parser.add_argument_group("optional")
-    optional.add_argument("-t", dest="tick_rate", metavar="<tick_rate>", help="Timestamp tick rate in Hz (default: 1000 for 1 ms tick interval)", required=False)
+    optional.add_argument("-t", dest="tick_rate", metavar="<tick_rate>", help="Timeslot tick rate in Hz (default: 1000 for 1 ms tick interval)", required=False)
 
     args = parser.parse_args()
     filename = args.sds
@@ -192,8 +192,8 @@ def main():
         print(f"Error: File size mismatch. Expected {dot(info['data_size'])} bytes, but file contains {dot(info['file_size'])} bytes.")
         sys.exit(1)
 
-    if not checkTimestamps(data):
-        print(f"Error: Timestamp not in ascending order in record {dot(info['record_id'])}.")
+    if not checkTimeslots(data):
+        print(f"Error: Timeslot not in ascending order in record {dot(info['record_id'])}.")
         sys.exit(1)
 
     # Print summary
@@ -226,11 +226,11 @@ def main():
     print(f"Data Size         : {dot(info['block_size'] * info['records'])} bytes")
 
     if info["largest"] > info["block_size"] or info["smallest"] < info["block_size"]:
-        print(f"Largest Block     : {dot(info['largest'])} bytes")
-        print(f"Smallest Block    : {dot(info['smallest'])} bytes")
-        print(f"Average Block     : {dot(info['block_size'])} bytes")
+        print(f"Max Block Size    : {dot(info['largest'])} bytes")
+        print(f"Min Block Size    : {dot(info['smallest'])} bytes")
+        print(f"Avg Block Size    : {dot(info['block_size'])} bytes")
     else:
-        print(f"Data Block        : {dot(info['block_size'])} bytes")
+        print(f"Block Size        : {dot(info['block_size'])} bytes")
     
     # Print data rate
     datarate = round((info["block_size"] * tickrate) / info["interval"])
@@ -248,9 +248,9 @@ def main():
     if info["delta_time"] > info["interval"]:
         print(f"Max Delta Time    : {dot(deltatime)} ms, in record {dot(info['delta_index'])}")
 
-    # Print number of duplicated timestamps
+    # Print number of duplicated timeslots
     if info["dup_count"] > 0:
-        print(f"Duplicate Tstamps : {dot(info['dup_count'])}, found at record {dot(info['dup_index'])}")
+        print(f"Duplicate Tslots : {dot(info['dup_count'])}, found at record {dot(info['dup_index'])}")
 
     print("Validation passed")
 
