@@ -169,7 +169,10 @@ def plotData(all_data, data_desc, freq, title, view3D):
 def main():
     formatter = lambda prog: argparse.HelpFormatter(prog,max_help_position=60)
     parser = argparse.ArgumentParser(description="View SDS data",
-                                     formatter_class=formatter)
+                                     formatter_class=formatter,
+                                     add_help=False)
+    parser.add_argument("-h", "--help", action="help",
+                          help="Show this help message and exit")
 
     required = parser.add_argument_group("required")
     required.add_argument("-i", dest="sds", metavar="<sds_file>",
@@ -180,6 +183,11 @@ def main():
     optional = parser.add_argument_group("optional")
     optional.add_argument("--3D", dest="view3D",
                             help="Plot 3D view in addition to normal 2D", action="store_true")
+
+    # Parse arguments - show help if no arguments provided
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
 
     args = parser.parse_args()
 

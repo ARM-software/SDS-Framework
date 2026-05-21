@@ -257,7 +257,7 @@ usage: sds-view.py [-h]
 View SDS data
 
 options:
-  -h, --help                      show this help message and exit
+  -h, --help                      Show this help message and exit
 
 required:
   -i <sds_file> [<sds_file> ...]  SDS files
