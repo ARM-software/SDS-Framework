@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * Copyright (c) 2020-2025 Arm Limited (or its affiliates). All rights reserved.
+ * Copyright (c) 2020-2026 Arm Limited (or its affiliates). All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -24,6 +24,8 @@ static uint8_t LinkUp;
 
 /* Ethernet event callback function */
 void netETH_Notify (uint32_t if_num, netETH_Event event, uint32_t val) {
+  (void)if_num;
+  (void)val;
 
   if (event == netETH_LinkUp) {
     LinkUp = 1U;
