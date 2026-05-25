@@ -25,7 +25,7 @@ using [Arm Virtual Hardware - Fixed Virtual Platform](https://github.com/Arm-sof
 ![Workflow for simulation](images/Workflow.png)
 
 The [**SDS Interface**](sdsio.md) is integrated into the target application and runs on the microcontroller.
-It enables data streaming into SDS data files via various interfaces such as Ethernet, RTT, UART, USB, or File System.
+It enables data streaming into SDS data files via various interfaces such as USB, Ethernet, RTT, UART, or File System.
 The I/O implementation included in SDS utilizes the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil/overview/),
 however custom interfaces to other middleware or different communication channels can also be used.
 

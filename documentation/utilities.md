@@ -7,9 +7,8 @@
 The SDS-Framework pack includes in the folder `/utilities` several utilities that are implemented in Python.
 Install **Python** and packages listed in file `/utilities/requirements.txt` to run these utilities:
 
-- [SDSIO Control File: `*.sdsio.yml`](#sdsio-control-file-sdsioyml) options for SDSIO-Server and for the AVH FVP VSI3 simulation interface (`sdsio.yml`).
-- [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via USB, socket (TCP/IP),
-  Segger RTT or serial (UART) connection.
+- [**SDSIO Control File**: `*.sdsio.yml`](#sdsio-control-file-sdsioyml) options for SDSIO-Server and for the AVH FVP VSI3 simulation interface (`sdsio.yml`).
+- [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via USB, socket (TCP/IP) or serial (UART) connection.
 - [**SDS-View:**](#sds-view) graphical data viewer for SDS data files.
 - [**SDS-Convert:**](#sds-convert) convert SDS data files into CSV, Qeexo V2 CSV, or WAV format.
 - [**SDS-Check:**](#sds-check) check SDS data files for correctness and consistency.
@@ -165,26 +164,26 @@ sdsio:
 
 ## SDSIO-Server
 
-The Python utility [**SDSIO-Server**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) enables recording and playback of SDS data files via socket (TCP/IP), USB (Bulk transfer), or serial (UART) connection.
-It communicates with the target using these [SDSIO Client interfaces](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client):
+The Python utility [**SDSIO-Server**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) enables recording and playback of SDS data files via USB, socket (TCP/IP) or serial (UART) connection.
+It communicates with the target using these [SDSIO-Client interfaces](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client):
 
-- [serial/usart](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_serial.c) for serial communication via CMSIS-Driver USART.
+- [usb](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_usb_mdk.c) for communication via USB using MDK-Middleware.
 - [socket](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_socket.c) for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.
-- [usb/bulk](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_usb_mdk.c) for communication via USB Bulk transfer using MDK-Middleware.
+- [serial](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_serial.c) for serial communication via CMSIS-Driver USART.
 
 The SDS data stream is recorded to and played back from `*.sds` files with the following naming convention:
 
-`<name>.<label>[.p].sds`  (where `[.p]` is optional and present only for recorded files in playback mode)
+`<name>.<label>[.p].sds`  (where `[.p]` is optional and present only for files recorded during the playback)
 
 For more details see [Filenames section](theory.md#filenames)
 
-The data content of the `<name>.<label>[.p].sds` is described with metadata file `<name>.sds.yml` in [YAML format](https://github.com/ARM-software/SDS-Framework/tree/main/schema).
+The contents of `<name>.<label>[.p].sds` files are described by the metadata file `<name>.sds.yml` in [YAML format](https://github.com/ARM-software/SDS-Framework/tree/main/schema).
 
 ### Usage
 
 - [Setup](#setup) the Python environment.
 - Configure via a YAML control file (`-c *.sdsio.yml`) or specify the interface directly on the command line.
-- Terminate the server with `Ctrl+C` or by pressing `X`.
+- Terminate the server by pressing `Ctrl+C` or the `X` key in the server application window.
 
 ```txt
 usage: sdsio-server.py [-h] [-V] [{socket | serial | usb} [if-opts]] [-c <*.sdsio.yml>] [general-opts]
@@ -193,10 +192,10 @@ SDSIO-Server: record and playback SDS data stream files over USB, socket, or ser
 Configure via *.sdsio.yml file or specify the interface parameters directly on the command line.
 
 options:
-  --help, -h                   Show this help message
-  --version, -V                Show program's version number
+  --help, -h                   Show this help message and exit
+  --version, -V                Show program's version number and exit
 
-interface (optional, default: usb; overrides interface in *.sdsio.yml):
+interface (optional, default: usb; overrides interface specified in *.sdsio.yml):
   {socket | serial | usb}
     socket                     Run TCP socket server
     serial                     Run serial server
@@ -206,15 +205,15 @@ configuration:
   --control, -c <*.sdsio.yml>  Configure interface, SDS file directories, and playback steps
 
 general-opts:
-  --playback, -p               Start SDSIO-Server in playback mode (used in CI tests)
-  --workdir <path>             Directory for SDS files (overrides *.sdsio.yml; default: current directory)
+  --playback, -p               Start SDSIO-Server in playback mode (typically used in CI tests)
+  --workdir <path>             Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
   --mon-port, -m <port>        Monitor control interface port
-  --log, -l <file>             Redirect console output to a log file (for CI use)
+  --log, -l <file>             Redirect console output to a log file (typically for CI use)
   --verbose, -v                Enable debug messages
-  --high-priority              Increase process priority for USB server (requires elevated privileges)
+  --high-priority              Increase process priority when using USB interface (requires elevated privileges)
 ```
 
-**Keyboard input (while running):**
+**Keyboard input (in the server application window):**
 
 Key | Action
 :--:|:------------------
@@ -225,28 +224,19 @@ A-H | Set user flags 0-7
 a-h | Clear user flags 0-7
 X/x | Terminate server
 
-#### Serial Mode
+#### USB Mode
 
 ```txt
-usage: sdsio-server.py serial [-h] --port <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>] [general-opts]
+usage: sdsio-server.py usb [-h] [general-opts]
 
 options:
-  -h, --help                   show this help message and exit
-
-if-opts (required):
-  --port <Serial Port>         Serial port (required)
-
-if-opts (optional):
-  --baudrate <Baudrate>        Baudrate (default: 115200)
-  --parity <Parity>            Parity: none, even, odd, mark, space (default: none)
-  --stopbits <Stop bits>       Stop bits: 1, 1.5, 2 (default: 1)
-  --connect-timeout <Timeout>  Serial port connection timeout in seconds (default: no timeout)
+  -h, --help             Show this help message and exit
 ```
 
 **Example:**
 
 ```bash
-python sdsio-server.py serial --port COM0 --baudrate 115200 --workdir ./work_dir
+python sdsio-server.py usb --workdir ./work_dir
 ```
 
 #### Socket Mode
@@ -255,11 +245,11 @@ python sdsio-server.py serial --port COM0 --baudrate 115200 --workdir ./work_dir
 usage: sdsio-server.py socket [-h] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [general-opts]
 
 options:
-  -h, --help             show this help message and exit
+  -h, --help             Show this help message and exit
 
 if-opts (optional):
-  --ipaddr <IP>          Server IP address (example: 192.168.0.100), cannot be used with 'netif'
-  --netif <Interface>    Network interface (example: eth0), cannot be used with 'ipaddr'
+  --ipaddr <IP>          Server IP address (example: 192.168.0.100), cannot be combined with 'netif'
+  --netif <Interface>    Network interface (example: eth0), cannot be combined with 'ipaddr'
   --port <TCP Port>      TCP port number (default: 5050)
 ```
 
@@ -268,7 +258,7 @@ if-opts (optional):
     - SDSIO-Server only supports IPv4 addresses.
 
 !!! Note
-    - The target device and the Host computer must be connected to the same network. With a standard network installation, the DHCP server assigns IP addresses automatically.
+    - The target device and the host computer must be connected to the same network. With a standard network installation, the DHCP server assigns IP addresses automatically.
     - On **Windows**, a firewall may restrict socket connections. To allow the SDSIO-Server through the Windows Defender Firewall:
         - Open **Windows Security - Firewall & network protection - Allow an app through firewall**.
         - Click **Change settings**, then allow your Python runtime (`python.exe`) on the network profile you use (usually Private).
@@ -288,35 +278,54 @@ For Linux:
 python sdsio-server.py socket --netif eth0 --workdir ./work_dir
 ```
 
-#### USB Mode
+#### Serial Mode
 
 ```txt
-usage: sdsio-server.py usb [-h] [general-opts]
+usage: sdsio-server.py serial [-h] --port <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>] [general-opts]
 
 options:
-  -h, --help             show this help message and exit
+  -h, --help                   Show this help message and exit
+
+if-opts (required):
+  --port <Serial Port>         Serial port (required)
+
+if-opts (optional):
+  --baudrate <Baudrate>        Baudrate (default: 115200)
+  --parity <Parity>            Parity: none, even, odd, mark, space (default: none)
+  --stopbits <Stop bits>       Stop bits: 1, 1.5, 2 (default: 1)
+  --connect-timeout <Timeout>  Serial port connection timeout in seconds (default: no timeout)
 ```
 
 **Example:**
 
 ```bash
-# Recommended: all config in YAML
+python sdsio-server.py serial --port COM0 --baudrate 115200 --workdir ./work_dir
+```
+
+#### Examples of using general options:
+
+Start SDSIO-Server with all configuration provided via the `sdsio.yml` file:
+
+```bash
 python sdsio-server.py -c sdsio.yml
+```
 
-# Playback mode
+Start SDSIO-Server and automatically start `playback`:
+
+```bash
 python sdsio-server.py -c sdsio.yml --playback
+```
 
-# With VS Code SDS extension monitor
+Start SDSIO-Server with monitor server waiting on the port `6060`:
+
+```bash
 python sdsio-server.py -c sdsio.yml --mon-port 6060
+```
 
-# USB server with explicit work directory
+Start SDSIO-Server using user specified working directory:
+
+```bash
 python sdsio-server.py usb --workdir ./data
-
-# TCP socket server
-python sdsio-server.py socket --port 5050
-
-# Serial server
-python sdsio-server.py serial --port COM3 --baudrate 115200
 ```
 
 !!! Note
