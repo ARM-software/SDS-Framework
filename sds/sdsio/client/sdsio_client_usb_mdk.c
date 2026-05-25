@@ -241,7 +241,7 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
                                     osFlagsWaitAll,
                                     SDSIO_USB_TIMEOUT);
     if ((event_status & osFlagsError) != 0U) {
-      if (event_status == osFlagsErrorTimeout) {
+      if (event_status == (int32_t)osFlagsErrorTimeout) {
         // Timeout happened.
         ret = SDS_ERROR_TIMEOUT;
       } else {
@@ -339,7 +339,7 @@ int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size, sdsioReceiveMode_t 
                                       osFlagsWaitAll,
                                       SDSIO_USB_TIMEOUT);
       if ((event_status & osFlagsError) != 0U) {
-        if (event_status == osFlagsErrorTimeout) {
+        if (event_status == (int32_t)osFlagsErrorTimeout) {
           // Timeout happened.
           ret = SDS_ERROR_TIMEOUT;
         } else {

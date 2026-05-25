@@ -352,7 +352,7 @@ static void sdsReadHandler (sdsStream_t *stream) {
     // Check if the stream is in the opening state and the processing of the state is not completed.
     if ((stream->state == SDS_STREAM_STATE_OPENING) && ((stream->flags & SDS_STREAM_INITIAL_FILL) == 0U)) {
       // Check if SDS Stream Buffer is filled with data from the SDS I/O interface (at least to threshold or EOS).
-      if ((sdsBufferGetCount(stream->sds_buffer) >= stream->threshold) || ((stream->flags & SDS_STREAM_EOS) != 0U)) {
+      if ((sdsBufferGetCount(stream->sds_buffer) >= (int32_t)stream->threshold) || ((stream->flags & SDS_STREAM_EOS) != 0U)) {
         // Stream buffer is filled with data from the SDS I/O interface.
         // Set the internal SDS_STREAM_INITIAL_FILL flag to mark that sdsReadHandler has finished processing the opening state.
         stream->flags |= SDS_STREAM_INITIAL_FILL;
@@ -751,7 +751,7 @@ int32_t sdsWrite (sdsId_t id, uint32_t timeslot, const void *buf, uint32_t buf_s
 
       // If amount of data in the SDS Stream Buffer is at or above the threshold,
       // notify the sdsThread by setting the corresponding thread flag to process the stream.
-      if (sdsBufferGetCount(stream->sds_buffer) >= stream->threshold) {
+      if (sdsBufferGetCount(stream->sds_buffer) >= (int32_t)stream->threshold) {
         osThreadFlagsSet(sdsThreadId, 1U << stream->index);
       }
     } else {
@@ -808,7 +808,7 @@ int32_t sdsRead (sdsId_t id, uint32_t *timeslot, void *buf, uint32_t buf_size) {
 
     // Check if header was already read:
     // If not (head.data_size == 0) and there is enough data available, read new header.
-    if ((stream->head.data_size == 0U) && (size >= HEAD_SIZE)) {
+    if ((stream->head.data_size == 0U) && (size >= (int32_t)HEAD_SIZE)) {
       sdsBufferRead(stream->sds_buffer, &stream->head, HEAD_SIZE);
       size -= HEAD_SIZE;
     }
@@ -821,7 +821,7 @@ int32_t sdsRead (sdsId_t id, uint32_t *timeslot, void *buf, uint32_t buf_size) {
         ret = SDS_ERROR_PARAMETER;
       } else {
         // Check if whole data block is available in the SDS Stream Buffer.
-        if (stream->head.data_size > size) {
+        if ((int32_t)stream->head.data_size > size) {
           // Whole data block is not available in the SDS Stream Buffer.
           ret = SDS_NO_DATA;
         } else {
@@ -904,14 +904,14 @@ int32_t sdsGetSize (sdsId_t id) {
 
   // Check if header was already read:
   // If not (head.data_size == 0) and there is enough data available, read new header.
-  if ((stream->head.data_size == 0U) && (size >= HEAD_SIZE)) {
+  if ((stream->head.data_size == 0U) && (size >= (int32_t)HEAD_SIZE)) {
     sdsBufferRead(stream->sds_buffer, &stream->head, HEAD_SIZE);
     size -= HEAD_SIZE;
   }
 
   // Check if Header is valid and data block size in header is valid.
   if (stream->head.data_size != 0U) {
-    if (stream->head.data_size > size) {
+    if ((int32_t)stream->head.data_size > size) {
       // Whole data block is not available in the SDS Stream Buffer.
       ret = SDS_NO_DATA;
     } else {

@@ -150,7 +150,7 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
     nonblocking = 0U;
     iotSocketSetOpt(socket, IOT_SOCKET_IO_FIONBIO, &nonblocking, sizeof(nonblocking));
   }
-  while (num < buf_size) {
+  while (num < (int32_t)buf_size) {
     sock_status = iotSocketSend(socket, buf + num, buf_size - num);
     if (sock_status >= 0) {
       num += sock_status;
