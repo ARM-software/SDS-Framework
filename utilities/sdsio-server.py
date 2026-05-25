@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.18"
+SDSIO_SERVER_VERSION = "0.9.19"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -2142,15 +2142,19 @@ def parse_arguments():
     _parser.is_top_level = True
     _parser.usage = "%(prog)s [-h] [-V] [{socket | serial | usb} [if-opts]] [-c sdsio.yml] [general-opts]"
 
-    _options = _parser.add_argument_group("options")
-    _options.add_argument("--help", "-h", help="Show this help message", action="help")
-    _options.add_argument("--version", "-V", action="version",
-                         help="Show program's version number", version=f"%(prog)s {SDSIO_SERVER_VERSION}")
+    def _add_info_opts(p, version_text=None):
+        _options = p.add_argument_group("options")
+        _options.add_argument("--help", "-h", help="Show this help message and exit", action="help")
+        _options.add_argument("--version", "-V", action="version",
+                              help="Show program's version number and exit",
+                              version=version_text or f"%(prog)s {SDSIO_SERVER_VERSION}")
+
+    _add_info_opts(_parser)
 
     # Subparsers
     _subparsers = _parser.add_subparsers(
         dest="server_type",
-        title="interface (optional, default: usb; overrides interface in *.sdsio.yml)",
+        title="interface (optional, default: usb; overrides interface specified in *.sdsio.yml)",
         metavar="{socket | serial | usb}",
         parser_class=MSStyleArgumentParser
     )
@@ -2163,20 +2167,20 @@ def parse_arguments():
         """Append a general-opts group to subparser p (called after server-specific groups)."""
         _g = p.add_argument_group("general-opts")
         _g.add_argument("--playback", "-p", dest="auto_playback", action="store_true",
-                       help="Start SDSIO-Server in playback mode (used in CI tests)",
+                       help="Start SDSIO-Server in playback mode (typically used in CI tests)",
                        default=argparse.SUPPRESS)
         _g.add_argument("--workdir", dest="work_dir", metavar="<path>",
-                       help="Directory for SDS files (overrides *.sdsio.yml; default: current directory)",
+                       help="Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)",
                        type=dir_path, default=argparse.SUPPRESS)
         _g.add_argument("--mon-port", "-m", dest="monitor_port", metavar="<port>",
                        help="Monitor control interface port", type=int, default=argparse.SUPPRESS)
         _g.add_argument("--log", "-l", dest="log_file", metavar="<file>",
-                       help="Redirect console output to a log file (for CI use)",
+                       help="Redirect console output to a log file (typically for CI use)",
                        type=log_file_path, default=argparse.SUPPRESS)
         _g.add_argument("--verbose", "-v", action="store_true",
                        help="Enable debug messages", default=argparse.SUPPRESS)
         _g.add_argument("--high-priority", dest="high_priority",
-                       help="Increase process priority for USB server (requires elevated privileges)",
+                       help="Increase process priority when using USB interface (requires elevated privileges)",
                        action="store_true", default=argparse.SUPPRESS)
 
     # socket
@@ -2184,19 +2188,21 @@ def parse_arguments():
         "socket",
         prog=f"{_parser.prog} socket",
         formatter_class=_formatter,
+        add_help=False,
         help="Run TCP socket server",
         epilog="",  # keep subcommand help clean
     )
     _parser_socket.is_subparser = True
     _parser_socket.error_hint = "For help on how to use the socket server and its arguments, run: %(prog)s -h"
-    _parser_socket.usage = "%(prog)s [-h] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [general-opts]"
+    _parser_socket.usage = "%(prog)s [-h] [-V] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [general-opts]"
+    _add_info_opts(_parser_socket, version_text=f"{_parser.prog} {SDSIO_SERVER_VERSION}")
 
     _socket_group = _parser_socket.add_argument_group("if-opts (optional)")
     _socket_group.add_argument("--ipaddr", dest="ip", metavar="<IP>",
-                              help="Server IP address (example: 192.168.0.100), cannot be used with 'netif'",
+                              help="Server IP address (example: 192.168.0.100), cannot be combined with 'netif'",
                               type=ip_validator, default=None)
     _socket_group.add_argument("--netif", dest="interface", metavar="<Interface>",
-                              help="Network interface (example: eth0), cannot be used with 'ipaddr'",
+                              help="Network interface (example: eth0), cannot be combined with 'ipaddr'",
                               type=interface_validator, default=None)
     _socket_group.add_argument("--port", dest="port", metavar="<TCP Port>",
                               help="TCP port number (default: 5050)", type=int, default=5050)
@@ -2207,12 +2213,14 @@ def parse_arguments():
         "serial",
         prog=f"{_parser.prog} serial",
         formatter_class=_formatter,
+        add_help=False,
         help="Run serial server",
         epilog="",  # keep subcommand help clean
     )
     _parser_serial.is_subparser = True
     _parser_serial.error_hint = "For help on how to use the serial server and its arguments, run: %(prog)s -h"
-    _parser_serial.usage = "%(prog)s [-h] --port <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>] [general-opts]"
+    _parser_serial.usage = "%(prog)s [-h] [-V] --port <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>] [general-opts]"
+    _add_info_opts(_parser_serial, version_text=f"{_parser.prog} {SDSIO_SERVER_VERSION}")
 
     _serial_required = _parser_serial.add_argument_group("if-opts (required)")
     _serial_required.add_argument("--port", dest="port", metavar="<Serial Port>",
@@ -2240,26 +2248,28 @@ def parse_arguments():
         "usb",
         prog=f"{_parser.prog} usb",
         formatter_class=_formatter,
+        add_help=False,
         help="Run USB bulk server",
         epilog="",  # keep subcommand help clean
     )
     _parser_usb.is_subparser = True
     _parser_usb.error_hint = "For help on how to use the usb server and its arguments, run: %(prog)s -h"
-    _parser_usb.usage = "%(prog)s [-h] [general-opts]"
+    _parser_usb.usage = "%(prog)s [-h] [-V] [general-opts]"
+    _add_info_opts(_parser_usb, version_text=f"{_parser.prog} {SDSIO_SERVER_VERSION}")
     _add_general_opts(_parser_usb)
 
     _general = _parser.add_argument_group("general-opts")
     _general.add_argument("--playback", "-p", dest="auto_playback", action="store_true",
-                         help="Start SDSIO-Server in playback mode (used in CI tests)", default=None)
+                         help="Start SDSIO-Server in playback mode (typically used in CI tests)", default=None)
     _general.add_argument("--workdir", dest="work_dir", metavar="<path>",
-                        help="Directory for SDS files (overrides *.sdsio.yml; default: current directory)", type=dir_path, default=None)
+                        help="Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)", type=dir_path, default=None)
     _general.add_argument("--mon-port", "-m", dest="monitor_port", metavar="<port>",
                         help="Monitor control interface port", type=int, default=None)
     _general.add_argument("--log",     "-l", dest="log_file", metavar="<file>",
-                        help="Redirect console output to a log file (for CI use)", type=log_file_path, default=None)
+                        help="Redirect console output to a log file (typically for CI use)", type=log_file_path, default=None)
     _general.add_argument("--verbose", "-v", action="store_true", help="Enable debug messages")
     _general.add_argument("--high-priority", dest="high_priority",
-                        help="Increase process priority for USB server (requires elevated privileges)", action="store_true", default=False)
+                        help="Increase process priority when using USB interface (requires elevated privileges)", action="store_true", default=False)
 
 
     # two-phase parse
@@ -2314,6 +2324,8 @@ async def main():
     global logger, spinner
     logger = _log
     spinner = _spinner
+    logger.info("SDSIO-Server v%s", SDSIO_SERVER_VERSION)
+    logger.info("Press 'Ctrl+C' or 'X' to exit.")
 
     # Open and parse the control YAML if provided, and apply any configuration
     # CLI arguments will override YAML settings where applicable (e.g. server type)
@@ -2424,7 +2436,6 @@ async def main():
         _manager.shutdown()
 
 if __name__ == "__main__":
-    logger.info("Press Ctrl+C to exit.")
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, asyncio.CancelledError):
