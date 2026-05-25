@@ -31,12 +31,12 @@
 
 // Input Data block size, in bytes
 #ifndef ALGO_DATA_IN_BLOCK_SIZE
-#define ALGO_DATA_IN_BLOCK_SIZE         ((((ALGO_TEST_BANDWIDTH * ALGO_TEST_INTERVAL) / 1000) / 6) * 6)
+#define ALGO_DATA_IN_BLOCK_SIZE         ((((ALGO_TEST_BANDWIDTH * ALGO_TEST_INTERVAL) / 1000U) / 6U) * 6U)
 #endif
 
 // Output Data block size, in bytes
 #ifndef ALGO_DATA_OUT_BLOCK_SIZE
-#define ALGO_DATA_OUT_BLOCK_SIZE        (40)
+#define ALGO_DATA_OUT_BLOCK_SIZE        (40U)
 #endif
 
 #endif

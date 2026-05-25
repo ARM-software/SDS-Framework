@@ -53,12 +53,12 @@ int32_t ExecuteAlgorithm (uint8_t *in_buf, uint32_t in_num, uint8_t *out_buf, ui
   uint32_t  sum_x, sum_y, sum_z;
   uint16_t *ptr_axis;
   uint16_t *ptr_out;
-  int32_t   i;
+  uint32_t  i;
 
   // Process input data
   ptr_axis = (uint16_t *)in_buf;
   sum_x = sum_y = sum_z = 0U;
-  for (i = 0; i < (in_num / 6); i++) {
+  for (i = 0U; i < (in_num / 6U); i++) {
     sum_x    += *ptr_axis;
     ptr_axis += 1;
     sum_y    += *ptr_axis;
@@ -72,7 +72,7 @@ int32_t ExecuteAlgorithm (uint8_t *in_buf, uint32_t in_num, uint8_t *out_buf, ui
 
   // Store output data
   ptr_out = (uint16_t *)out_buf;
-  for (i = 0; i < (out_num / 4); i++) {
+  for (i = 0U; i < (out_num / 4U); i++) {
     *ptr_out = (sum_x ^ sum_z) & 0xFFFF;
     ptr_out += 1;
     *ptr_out = (sum_y ^ sum_z) & 0xFFFF;

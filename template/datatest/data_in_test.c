@@ -63,7 +63,7 @@ int32_t GetInputData (uint8_t *buf, uint32_t max_len) {
   static uint32_t interval_time = 0U;
          accelerometer_sample_t *ptr_acc_sample;
          uint16_t val;
-         int32_t  i;
+         uint32_t i;
 
   // Check input parameters
   if ((buf == NULL) || (max_len == 0U)) {
@@ -82,7 +82,7 @@ int32_t GetInputData (uint8_t *buf, uint32_t max_len) {
 
   // Generate test data in the `buf`
   ptr_acc_sample = (accelerometer_sample_t *)buf;
-  for (i = 0; i < (ALGO_DATA_IN_BLOCK_SIZE / 6); i++) {
+  for (i = 0U; i < (ALGO_DATA_IN_BLOCK_SIZE / 6U); i++) {
     val = (index + i) % 3000;
     ptr_acc_sample->x = val;
     val = (val + 250) % 3000;
@@ -97,5 +97,5 @@ int32_t GetInputData (uint8_t *buf, uint32_t max_len) {
   interval_time += ALGO_TEST_INTERVAL;
   osDelayUntil(interval_time);
 
-  return ALGO_DATA_IN_BLOCK_SIZE;
+  return (int32_t)ALGO_DATA_IN_BLOCK_SIZE;
 }

@@ -144,6 +144,8 @@ void sdsStatusLED (void) {
 
 // SDS event callback
 static void sds_event_callback (sdsId_t id, uint32_t event) {
+  (void)id;
+
   if ((event & SDS_EVENT_ERROR_IO) != 0U) {
     SDS_ASSERT(false);
   }
@@ -161,6 +163,8 @@ __NO_RETURN void sdsControlThread (void *argument) {
   uint8_t  btn_val, keypress, btn_prev = 0U;
   uint32_t interval_time;
   int32_t  ret;
+
+  (void)argument;
 
   // Calibrate idle counter on 10 ms interval
   sdsIdleCalibrate();
@@ -253,9 +257,12 @@ __NO_RETURN void sdsControlThread (void *argument) {
 
       case SDS_STATE_TERMINATE:         // Request to terminate CI run (on FVP simulation or pyOCD)
       default:                          // or unexpected state
+        // Clear TERMINATE flag in sdsFlags
+        sdsFlagsModify(0U, SDS_FLAG_TERMINATE);
+        sdsState = SDS_STATE_INACTIVE;
+
         // Send signal to terminate simulator or pyOCD
         putchar(0x04);
-        sdsState = SDS_STATE_INACTIVE;
         break;
     }
 

@@ -22,13 +22,13 @@
 // Input Data block size, in bytes
 #ifndef ALGO_DATA_IN_BLOCK_SIZE
 #warning "Set the algorithm input data block size (ALGO_DATA_IN_BLOCK_SIZE) to match your implementation, then remove this line."
-#define ALGO_DATA_IN_BLOCK_SIZE         (1024)
+#define ALGO_DATA_IN_BLOCK_SIZE         (1024U)
 #endif
 
 // Output Data block size, in bytes
 #ifndef ALGO_DATA_OUT_BLOCK_SIZE
 #warning "Set the algorithm output data block size (ALGO_DATA_OUT_BLOCK_SIZE) to match your implementation, then remove this line."
-#define ALGO_DATA_OUT_BLOCK_SIZE        (32)
+#define ALGO_DATA_OUT_BLOCK_SIZE        (32U)
 #endif
 
 #endif

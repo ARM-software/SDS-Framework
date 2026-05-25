@@ -64,5 +64,5 @@ int32_t GetInputData (uint8_t *buf, uint32_t max_len) {
 
 #warning "Add your code to retrieve a block of input data required by the algorithm under test."
 
-  return ALGO_DATA_IN_BLOCK_SIZE;
+  return (int32_t)ALGO_DATA_IN_BLOCK_SIZE;
 }
