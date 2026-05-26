@@ -26,6 +26,7 @@ logger = logging.getLogger("sdsio")
 # ---------------------------------------------------------------------------- #
 #                  SDSIO server-compatible stream implementation                #
 # ---------------------------------------------------------------------------- #
+SDSIO_VSI_VERSION = "3.0.0"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -216,6 +217,7 @@ class sdsio_manager:
         auto_playback=False,
         play_list: Optional[list] = None,
         mon_port: Optional[int] = None,
+        write_flush_size: int = 0,
         status_bar_factory=None,
         monitor_factory=None,
         control_input_factory=None,
@@ -249,6 +251,7 @@ class sdsio_manager:
         self._playback_mode = False
         self._play_list = play_list
         self._mon_port = mon_port
+        self._write_flush_size = write_flush_size
         # SDS Control Flags
         self.shutdown_requested = threading.Event()
         self._flags = sdsFlags(auto_playback)
@@ -347,6 +350,7 @@ class sdsio_manager:
 
                 _eof_reached = False
                 with open(_sds_file_path, "wb") as _file_obj:
+                    _bytes_since_flush = 0
                     if _index > 0:
                         # First file open was already notified in _open(); notify for subsequent files here
                         logger.info(f"Record:   {_stream.name} ({_sds_file_path})")
@@ -403,7 +407,15 @@ class sdsio_manager:
                             else:
                                 # Complete record: write and reset for next record
                                 _file_obj.write(_data)
+                                _bytes_since_flush += len(_data)
+                                if self._write_flush_size and _bytes_since_flush >= self._write_flush_size:
+                                    _file_obj.flush()
+                                    os.fsync(_file_obj.fileno())
+                                    _bytes_since_flush = 0
                                 _data = bytearray()
+                    if self._write_flush_size and _bytes_since_flush:
+                        _file_obj.flush()
+                        os.fsync(_file_obj.fileno())
                 # Last file close is handled in close(); send close only for non-last files
                 if not _eof_reached and _index < len(_stream.file_paths) - 1:
                     logger.info(f"Closed:   {name} ({_sds_file_path})")
