@@ -130,10 +130,10 @@
 <li><strong>Interval</strong>: is the periodic time interval at which the compute node executes.</li>
 </ul>
 <p><img alt="SDSIO Interface for Player and Recorder" src="images/SDS-InOut.png"/></p>
-<p>The core of the SDS-Framework is a circular buffer handling (<code>sds_buffer.c/h</code>) that is controlled by the Stream interface functions (<code>sds.c/h</code>). This circular buffer is the queue for the file I/O communication (<code>sdsio_x.c / sdsio.h</code>). Using the Stream functions, the data stream under development may read and write data streams as shown in the diagram above.</p>
+<p>Using the SDS Stream Interface functions (<code>sds.c/h</code>), the data stream under development may read and write as shown above. The Stream Interface functions store data streams in a circular buffer (<code>sds_buffer.c/h</code>). This circular buffer is the I/O queue for the SDSIO-Client (<code>sdsio_x.c / sdsio.h</code>). </p>
 <p><img alt="Implementation Files of SDS" src="images/Theory_of_Operation.png"/></p>
 <h2 id="usage">Usage</h2>
-<p>The following diagram shows the usage of the SDS functions (executed in <code>sdsThread</code>).  The <code>sdsControlThread</code> controls the overall execution. <code>AlgorithmThread</code> is the thread that executes Signal Conditioning (SC) and ML Model.</p>
+<p>The following diagram shows the usage of the SDS Stream Interface functions (executed in <code>sdsThread</code>).  The <code>sdsControlThread</code> controls the overall execution. <code>AlgorithmThread</code> is the thread that executes Signal Conditioning (SC) and ML Model.</p>
 <p>When <code>AlgorithmThread</code> starts, it first calls the <code>InitInputData</code> function, which initializes the input interfaces
 (for example, camera, microphone, accelerometer, etc.). It then calls <code>InitAlgorithm</code>, which is responsible for initializing the ML algorithm.</p>
 <p>After initialization, <code>AlgorithmThread</code> enters a loop in which it repeatedly calls <code>GetInputData</code>. This function provides a block of input data

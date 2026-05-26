@@ -36,54 +36,54 @@
     <member refid="group__SDS__State__Codes_1ga53d987b53be4e6630c55f0ecc5550851" kind="define"><name>SDS_STATE_END</name></member>
     <member refid="group__SDS__State__Codes_1gad98b7ed572340d850818401fe30c255b" kind="define"><name>SDS_STATE_RESET</name></member>
     <member refid="group__SDS__State__Codes_1gace7f9148e2614b1dd42cf6804f7b82e1" kind="define"><name>SDS_STATE_TERMINATE</name></member>
-    <member refid="group__SDS__Interface_1ga2efce73b9fb6a87eeb28d3587d3ccdb7" kind="enum"><name>sdsMode_t</name></member>
-    <member refid="group__SDS__Interface_1gad6d59026db360abedd94d82ab336ebbf" kind="typedef"><name>sdsId_t</name></member>
-    <member refid="group__SDS__Interface_1ga9a26c990f6c41064d04a15401f24b902" kind="typedef"><name>sdsEvent_t</name></member>
-    <member refid="group__SDS__Interface_1ga67fcecf8a20781854b399b5107417526" kind="variable"><name>sdsError</name></member>
-    <member refid="group__SDS__Interface_1ga5dc742cda7ce949a6b73105b0be095ca" kind="variable"><name>sdsFlags</name></member>
-    <member refid="group__SDS__Interface_1gac5fbc1c61d43606b0c54a482781a2ce9" kind="variable"><name>sdsState</name></member>
-    <member refid="group__SDS__Interface_1ga7c5a17f56f2d24b1453f0d198f2c572d" kind="variable"><name>sdsIdleRate</name></member>
-    <member refid="group__SDS__Interface_1ga31335fdb44338293976461dec3634b03" kind="function"><name>sdsInit</name></member>
-    <member refid="group__SDS__Interface_1ga78ba5fcb605d9b2ef149dc8c89070247" kind="function"><name>sdsUninit</name></member>
-    <member refid="group__SDS__Interface_1ga556e7b58658f67d3a59a1ae32b4af2a0" kind="function"><name>sdsOpen</name></member>
-    <member refid="group__SDS__Interface_1ga22743afd7f4d4f25622e426fef93bdac" kind="function"><name>sdsClose</name></member>
-    <member refid="group__SDS__Interface_1ga08ace9f59d5d5dcf5f671ec2738a174a" kind="function"><name>sdsWrite</name></member>
-    <member refid="group__SDS__Interface_1gacb7b42f9087f9de9fe5021db3318751e" kind="function"><name>sdsRead</name></member>
-    <member refid="group__SDS__Interface_1ga55fa3875a9ef1ebfd4108eba1a4cfb49" kind="function"><name>sdsGetSize</name></member>
-    <member refid="group__SDS__Interface_1ga538b3bd8c3f78dd8eaa768a5c93ff6bd" kind="function"><name>sdsExchange</name></member>
-    <member refid="group__SDS__Interface_1gacc58cf2b724d52c75d118a5c5ddc81d0" kind="function"><name>sdsFlagsModify</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga2efce73b9fb6a87eeb28d3587d3ccdb7" kind="enum"><name>sdsMode_t</name></member>
+    <member refid="group__SDS__Stream__Interface_1gad6d59026db360abedd94d82ab336ebbf" kind="typedef"><name>sdsId_t</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga9a26c990f6c41064d04a15401f24b902" kind="typedef"><name>sdsEvent_t</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga67fcecf8a20781854b399b5107417526" kind="variable"><name>sdsError</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga5dc742cda7ce949a6b73105b0be095ca" kind="variable"><name>sdsFlags</name></member>
+    <member refid="group__SDS__Stream__Interface_1gac5fbc1c61d43606b0c54a482781a2ce9" kind="variable"><name>sdsState</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga7c5a17f56f2d24b1453f0d198f2c572d" kind="variable"><name>sdsIdleRate</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga31335fdb44338293976461dec3634b03" kind="function"><name>sdsInit</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga78ba5fcb605d9b2ef149dc8c89070247" kind="function"><name>sdsUninit</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga556e7b58658f67d3a59a1ae32b4af2a0" kind="function"><name>sdsOpen</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga22743afd7f4d4f25622e426fef93bdac" kind="function"><name>sdsClose</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga08ace9f59d5d5dcf5f671ec2738a174a" kind="function"><name>sdsWrite</name></member>
+    <member refid="group__SDS__Stream__Interface_1gacb7b42f9087f9de9fe5021db3318751e" kind="function"><name>sdsRead</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga55fa3875a9ef1ebfd4108eba1a4cfb49" kind="function"><name>sdsGetSize</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga538b3bd8c3f78dd8eaa768a5c93ff6bd" kind="function"><name>sdsExchange</name></member>
+    <member refid="group__SDS__Stream__Interface_1gacc58cf2b724d52c75d118a5c5ddc81d0" kind="function"><name>sdsFlagsModify</name></member>
   </compound>
   <compound refid="sds_8txt" kind="file"><name>sds.txt</name>
   </compound>
   <compound refid="sdsio_8h" kind="file"><name>sdsio.h</name>
-    <member refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kind="enum"><name>sdsioMode_t</name></member>
-    <member refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kind="typedef"><name>sdsioId_t</name></member>
-    <member refid="group__SDS__IO__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" kind="function"><name>sdsioInit</name></member>
-    <member refid="group__SDS__IO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" kind="function"><name>sdsioUninit</name></member>
-    <member refid="group__SDS__IO__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" kind="function"><name>sdsioOpen</name></member>
-    <member refid="group__SDS__IO__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" kind="function"><name>sdsioClose</name></member>
-    <member refid="group__SDS__IO__Interface_1gafb6b812114b27595ead2d18f2b151e6e" kind="function"><name>sdsioWrite</name></member>
-    <member refid="group__SDS__IO__Interface_1gaed816e11cb116354d8d95d97693a736c" kind="function"><name>sdsioRead</name></member>
+    <member refid="group__SDSIO__Client__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kind="enum"><name>sdsioMode_t</name></member>
+    <member refid="group__SDSIO__Client__Interface_1ga98da0c4e985ba1602142116ec7b47526" kind="typedef"><name>sdsioId_t</name></member>
+    <member refid="group__SDSIO__Client__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" kind="function"><name>sdsioInit</name></member>
+    <member refid="group__SDSIO__Client__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" kind="function"><name>sdsioUninit</name></member>
+    <member refid="group__SDSIO__Client__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" kind="function"><name>sdsioOpen</name></member>
+    <member refid="group__SDSIO__Client__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" kind="function"><name>sdsioClose</name></member>
+    <member refid="group__SDSIO__Client__Interface_1gafb6b812114b27595ead2d18f2b151e6e" kind="function"><name>sdsioWrite</name></member>
+    <member refid="group__SDSIO__Client__Interface_1gaed816e11cb116354d8d95d97693a736c" kind="function"><name>sdsioRead</name></member>
   </compound>
-  <compound refid="group__SDS__Interface" kind="group"><name>SDS_Interface</name>
-    <member refid="group__SDS__Interface_1gad6d59026db360abedd94d82ab336ebbf" kind="typedef"><name>sdsId_t</name></member>
-    <member refid="group__SDS__Interface_1ga9a26c990f6c41064d04a15401f24b902" kind="typedef"><name>sdsEvent_t</name></member>
-    <member refid="group__SDS__Interface_1ga2efce73b9fb6a87eeb28d3587d3ccdb7" kind="enum"><name>sdsMode_t</name></member>
-    <member refid="group__SDS__Interface_1ga2efce73b9fb6a87eeb28d3587d3ccdb7a0a6b0cd15ecc29b62756ff21e09881a9" kind="enumvalue"><name>sdsModeRead</name></member>
-    <member refid="group__SDS__Interface_1ga2efce73b9fb6a87eeb28d3587d3ccdb7aa3656d7170e8d013e3653d4bd49708af" kind="enumvalue"><name>sdsModeWrite</name></member>
-    <member refid="group__SDS__Interface_1ga5dc742cda7ce949a6b73105b0be095ca" kind="variable"><name>sdsFlags</name></member>
-    <member refid="group__SDS__Interface_1gac5fbc1c61d43606b0c54a482781a2ce9" kind="variable"><name>sdsState</name></member>
-    <member refid="group__SDS__Interface_1ga67fcecf8a20781854b399b5107417526" kind="variable"><name>sdsError</name></member>
-    <member refid="group__SDS__Interface_1ga7c5a17f56f2d24b1453f0d198f2c572d" kind="variable"><name>sdsIdleRate</name></member>
-    <member refid="group__SDS__Interface_1ga31335fdb44338293976461dec3634b03" kind="function"><name>sdsInit</name></member>
-    <member refid="group__SDS__Interface_1ga78ba5fcb605d9b2ef149dc8c89070247" kind="function"><name>sdsUninit</name></member>
-    <member refid="group__SDS__Interface_1ga556e7b58658f67d3a59a1ae32b4af2a0" kind="function"><name>sdsOpen</name></member>
-    <member refid="group__SDS__Interface_1ga22743afd7f4d4f25622e426fef93bdac" kind="function"><name>sdsClose</name></member>
-    <member refid="group__SDS__Interface_1ga08ace9f59d5d5dcf5f671ec2738a174a" kind="function"><name>sdsWrite</name></member>
-    <member refid="group__SDS__Interface_1gacb7b42f9087f9de9fe5021db3318751e" kind="function"><name>sdsRead</name></member>
-    <member refid="group__SDS__Interface_1ga55fa3875a9ef1ebfd4108eba1a4cfb49" kind="function"><name>sdsGetSize</name></member>
-    <member refid="group__SDS__Interface_1ga538b3bd8c3f78dd8eaa768a5c93ff6bd" kind="function"><name>sdsExchange</name></member>
-    <member refid="group__SDS__Interface_1gacc58cf2b724d52c75d118a5c5ddc81d0" kind="function"><name>sdsFlagsModify</name></member>
+  <compound refid="group__SDS__Stream__Interface" kind="group"><name>SDS_Stream_Interface</name>
+    <member refid="group__SDS__Stream__Interface_1gad6d59026db360abedd94d82ab336ebbf" kind="typedef"><name>sdsId_t</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga9a26c990f6c41064d04a15401f24b902" kind="typedef"><name>sdsEvent_t</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga2efce73b9fb6a87eeb28d3587d3ccdb7" kind="enum"><name>sdsMode_t</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga2efce73b9fb6a87eeb28d3587d3ccdb7a0a6b0cd15ecc29b62756ff21e09881a9" kind="enumvalue"><name>sdsModeRead</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga2efce73b9fb6a87eeb28d3587d3ccdb7aa3656d7170e8d013e3653d4bd49708af" kind="enumvalue"><name>sdsModeWrite</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga5dc742cda7ce949a6b73105b0be095ca" kind="variable"><name>sdsFlags</name></member>
+    <member refid="group__SDS__Stream__Interface_1gac5fbc1c61d43606b0c54a482781a2ce9" kind="variable"><name>sdsState</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga67fcecf8a20781854b399b5107417526" kind="variable"><name>sdsError</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga7c5a17f56f2d24b1453f0d198f2c572d" kind="variable"><name>sdsIdleRate</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga31335fdb44338293976461dec3634b03" kind="function"><name>sdsInit</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga78ba5fcb605d9b2ef149dc8c89070247" kind="function"><name>sdsUninit</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga556e7b58658f67d3a59a1ae32b4af2a0" kind="function"><name>sdsOpen</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga22743afd7f4d4f25622e426fef93bdac" kind="function"><name>sdsClose</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga08ace9f59d5d5dcf5f671ec2738a174a" kind="function"><name>sdsWrite</name></member>
+    <member refid="group__SDS__Stream__Interface_1gacb7b42f9087f9de9fe5021db3318751e" kind="function"><name>sdsRead</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga55fa3875a9ef1ebfd4108eba1a4cfb49" kind="function"><name>sdsGetSize</name></member>
+    <member refid="group__SDS__Stream__Interface_1ga538b3bd8c3f78dd8eaa768a5c93ff6bd" kind="function"><name>sdsExchange</name></member>
+    <member refid="group__SDS__Stream__Interface_1gacc58cf2b724d52c75d118a5c5ddc81d0" kind="function"><name>sdsFlagsModify</name></member>
   </compound>
   <compound refid="group__SDS__Return__Codes" kind="group"><name>SDS_Return_Codes</name>
     <member refid="group__SDS__Return__Codes_1gafebe74e89e19cf971c72779eeaec6863" kind="define"><name>SDS_OK</name></member>
@@ -118,17 +118,17 @@
     <member refid="group__SDS__State__Codes_1gad98b7ed572340d850818401fe30c255b" kind="define"><name>SDS_STATE_RESET</name></member>
     <member refid="group__SDS__State__Codes_1gace7f9148e2614b1dd42cf6804f7b82e1" kind="define"><name>SDS_STATE_TERMINATE</name></member>
   </compound>
-  <compound refid="group__SDS__IO__Interface" kind="group"><name>SDS_IO_Interface</name>
-    <member refid="group__SDS__IO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kind="typedef"><name>sdsioId_t</name></member>
-    <member refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kind="enum"><name>sdsioMode_t</name></member>
-    <member refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41ae1e892569bf150769083e37f812029a3" kind="enumvalue"><name>sdsioModeRead</name></member>
-    <member refid="group__SDS__IO__Interface_1gac3a964db3af73a3457d3fe72a7922f41a2e552b9f633629884f6d5205e384ca94" kind="enumvalue"><name>sdsioModeWrite</name></member>
-    <member refid="group__SDS__IO__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" kind="function"><name>sdsioInit</name></member>
-    <member refid="group__SDS__IO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" kind="function"><name>sdsioUninit</name></member>
-    <member refid="group__SDS__IO__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" kind="function"><name>sdsioOpen</name></member>
-    <member refid="group__SDS__IO__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" kind="function"><name>sdsioClose</name></member>
-    <member refid="group__SDS__IO__Interface_1gafb6b812114b27595ead2d18f2b151e6e" kind="function"><name>sdsioWrite</name></member>
-    <member refid="group__SDS__IO__Interface_1gaed816e11cb116354d8d95d97693a736c" kind="function"><name>sdsioRead</name></member>
+  <compound refid="group__SDSIO__Client__Interface" kind="group"><name>SDSIO_Client_Interface</name>
+    <member refid="group__SDSIO__Client__Interface_1ga98da0c4e985ba1602142116ec7b47526" kind="typedef"><name>sdsioId_t</name></member>
+    <member refid="group__SDSIO__Client__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kind="enum"><name>sdsioMode_t</name></member>
+    <member refid="group__SDSIO__Client__Interface_1gac3a964db3af73a3457d3fe72a7922f41ae1e892569bf150769083e37f812029a3" kind="enumvalue"><name>sdsioModeRead</name></member>
+    <member refid="group__SDSIO__Client__Interface_1gac3a964db3af73a3457d3fe72a7922f41a2e552b9f633629884f6d5205e384ca94" kind="enumvalue"><name>sdsioModeWrite</name></member>
+    <member refid="group__SDSIO__Client__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" kind="function"><name>sdsioInit</name></member>
+    <member refid="group__SDSIO__Client__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" kind="function"><name>sdsioUninit</name></member>
+    <member refid="group__SDSIO__Client__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" kind="function"><name>sdsioOpen</name></member>
+    <member refid="group__SDSIO__Client__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" kind="function"><name>sdsioClose</name></member>
+    <member refid="group__SDSIO__Client__Interface_1gafb6b812114b27595ead2d18f2b151e6e" kind="function"><name>sdsioWrite</name></member>
+    <member refid="group__SDSIO__Client__Interface_1gaed816e11cb116354d8d95d97693a736c" kind="function"><name>sdsioRead</name></member>
   </compound>
   <compound refid="dir_d09908635ef304ba819d3349bcb716bf" kind="dir"><name>sds/include</name>
   </compound>

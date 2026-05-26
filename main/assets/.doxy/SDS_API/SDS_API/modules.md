@@ -5,20 +5,7 @@
 Here is a list of all modules:
 
 
-* [**SDS I/O Interface**](group__SDS__IO__Interface.md) sdsio.h _: Synchronous Data Stream I/O Interface for data streams._
-    
-
-
-
-
-
-
-
-
-
-
-
-* [**SDS Interface**](group__SDS__Interface.md) sds.h _: Synchronous Data Stream Interface for writing and reading SDS files via communication or file I/O interface._
+* [**SDS Stream Interface**](group__SDS__Stream__Interface.md) sds.h _: Synchronous Data Stream Interface for record (write) and playback (read) of SDS data streams via a SDSIO interface._
     
 
     * [**Event Codes**](group__SDS__Event__Codes.md) _SDS Event Codes._ 
@@ -73,6 +60,19 @@ Here is a list of all modules:
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+* [**SDSIO Client Interface**](group__SDSIO__Client__Interface.md) sdsio.h _: Input/Output Interface for SDS data streams._
+    
 
 
 

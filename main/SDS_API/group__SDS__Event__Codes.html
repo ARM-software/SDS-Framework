@@ -113,16 +113,16 @@
 </tr>
 <tr>
 <td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="group__SDS__Event__Codes.html#define-sds_event_no_data"><strong>SDS_EVENT_NO_DATA</strong></a>  <code>(4UL)</code><br><em>Event triggered when</em> <a href="group__SDS__Interface.html#function-sdsread"><em><strong>sdsRead</strong></em></a> <em>fails due to insufficient data in the SDS circular buffer.</em></td>
+<td style="text-align: left;"><a href="group__SDS__Event__Codes.html#define-sds_event_no_data"><strong>SDS_EVENT_NO_DATA</strong></a>  <code>(4UL)</code><br><em>Event triggered when</em> <a href="group__SDS__Stream__Interface.html#function-sdsread"><em><strong>sdsRead</strong></em></a> <em>fails due to insufficient data in the SDS circular buffer.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">define</td>
-<td style="text-align: left;"><a href="group__SDS__Event__Codes.html#define-sds_event_no_space"><strong>SDS_EVENT_NO_SPACE</strong></a>  <code>(2UL)</code><br><em>Event triggered when</em> <a href="group__SDS__Interface.html#function-sdswrite"><em><strong>sdsWrite</strong></em></a> <em>fails due to insufficient space in the SDS circular buffer.</em></td>
+<td style="text-align: left;"><a href="group__SDS__Event__Codes.html#define-sds_event_no_space"><strong>SDS_EVENT_NO_SPACE</strong></a>  <code>(2UL)</code><br><em>Event triggered when</em> <a href="group__SDS__Stream__Interface.html#function-sdswrite"><em><strong>sdsWrite</strong></em></a> <em>fails due to insufficient space in the SDS circular buffer.</em></td>
 </tr>
 </tbody>
 </table>
 <h2 id="detailed-description">Detailed Description</h2>
-<p>The following values are passed as event value to the <a href="group__SDS__Interface.html#typedef-sdsevent_t"><strong>sdsEvent_t</strong></a> callback function. </p>
+<p>The following values are passed as event value to the <a href="group__SDS__Stream__Interface.html#typedef-sdsevent_t"><strong>sdsEvent_t</strong></a> callback function. </p>
 <h2 id="macro-definition-documentation">Macro Definition Documentation</h2>
 <h3 id="define-sds_event_error_io">define SDS_EVENT_ERROR_IO</h3>
 <p><em>Event triggered when an SDS I/O error occurs.</em> </p>
@@ -131,13 +131,13 @@
 <hr>
 
 <h3 id="define-sds_event_no_data">define SDS_EVENT_NO_DATA</h3>
-<p><em>Event triggered when</em> <a href="group__SDS__Interface.html#function-sdsread"><em><strong>sdsRead</strong></em></a> <em>fails due to insufficient data in the SDS circular buffer.</em></p>
+<p><em>Event triggered when</em> <a href="group__SDS__Stream__Interface.html#function-sdsread"><em><strong>sdsRead</strong></em></a> <em>fails due to insufficient data in the SDS circular buffer.</em></p>
 <pre><code>#define SDS_EVENT_NO_DATA `(4UL)`
 </code></pre>
 <hr>
 
 <h3 id="define-sds_event_no_space">define SDS_EVENT_NO_SPACE</h3>
-<p><em>Event triggered when</em> <a href="group__SDS__Interface.html#function-sdswrite"><em><strong>sdsWrite</strong></em></a> <em>fails due to insufficient space in the SDS circular buffer.</em></p>
+<p><em>Event triggered when</em> <a href="group__SDS__Stream__Interface.html#function-sdswrite"><em><strong>sdsWrite</strong></em></a> <em>fails due to insufficient space in the SDS circular buffer.</em></p>
 <pre><code>#define SDS_EVENT_NO_SPACE `(2UL)`
 </code></pre>
 <hr>

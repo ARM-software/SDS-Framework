@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Group SDS_Interface - SDS-Framework</title>
+    <title>Group SDS_Stream_Interface - SDS-Framework</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Group SDS_Interface";
-        var mkdocs_page_input_path = "SDS_API/group__SDS__Interface.md";
+        var mkdocs_page_name = "Group SDS_Stream_Interface";
+        var mkdocs_page_input_path = "SDS_API/group__SDS__Stream__Interface.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -85,9 +85,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../index.html" class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Group SDS_Interface</li>
+      <li class="breadcrumb-item active">Group SDS_Stream_Interface</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__Interface.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/SDS_API/group__SDS__Stream__Interface.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -95,9 +95,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="group-sds_interface">Group SDS_Interface</h1>
-<p><a href="modules.html"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="group__SDS__Interface.html"><strong>SDS_Interface</strong></a></p>
-<p>sds.h <em>: Synchronous Data Stream Interface for writing and reading SDS files via communication or file I/O interface.</em><a href="#detailed-description">More...</a></p>
+                <h1 id="group-sds_stream_interface">Group SDS_Stream_Interface</h1>
+<p><a href="modules.html"><strong>Modules</strong></a> <strong>&gt;</strong> <a href="group__SDS__Stream__Interface.html"><strong>SDS_Stream_Interface</strong></a></p>
+<p>sds.h <em>: Synchronous Data Stream Interface for record (write) and playback (read) of SDS data streams via a SDSIO interface.</em><a href="#detailed-description">More...</a></p>
 <h2 id="modules">Modules</h2>
 <table>
 <thead>
@@ -186,7 +186,7 @@
 <tbody>
 <tr>
 <td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdsclose"><strong>sdsClose</strong></a> (<a href="group__SDS__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> id) <br><em>Close SDS stream.</em></td>
+<td style="text-align: left;"><a href="#function-sdsclose"><strong>sdsClose</strong></a> (<a href="group__SDS__Stream__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> id) <br><em>Close SDS stream.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">int32_t</td>
@@ -194,23 +194,23 @@
 </tr>
 <tr>
 <td style="text-align: right;">void</td>
-<td style="text-align: left;"><a href="#function-sdsflagsmodify"><strong>sdsFlagsModify</strong></a> (uint32_t set_mask, uint32_t clear_mask) <br><em>Modify</em> <a href="group__SDS__Interface.html#variable-sdsflags"><em><strong>sdsFlags</strong></em></a> <em>control flags (atomic operation).</em></td>
+<td style="text-align: left;"><a href="#function-sdsflagsmodify"><strong>sdsFlagsModify</strong></a> (uint32_t set_mask, uint32_t clear_mask) <br><em>Modify</em> <a href="group__SDS__Stream__Interface.html#variable-sdsflags"><em><strong>sdsFlags</strong></em></a> <em>control flags (atomic operation).</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdsgetsize"><strong>sdsGetSize</strong></a> (<a href="group__SDS__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> id) <br><em>Get data block size from an SDS stream opened in read mode.</em></td>
+<td style="text-align: left;"><a href="#function-sdsgetsize"><strong>sdsGetSize</strong></a> (<a href="group__SDS__Stream__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> id) <br><em>Get data block size from an SDS stream opened in read mode.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdsinit"><strong>sdsInit</strong></a> (<a href="group__SDS__Interface.html#typedef-sdsevent_t"><strong>sdsEvent_t</strong></a> event_cb) <br><em>Initialize SDS.</em></td>
+<td style="text-align: left;"><a href="#function-sdsinit"><strong>sdsInit</strong></a> (<a href="group__SDS__Stream__Interface.html#typedef-sdsevent_t"><strong>sdsEvent_t</strong></a> event_cb) <br><em>Initialize SDS.</em></td>
 </tr>
 <tr>
-<td style="text-align: right;"><a href="group__SDS__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a></td>
-<td style="text-align: left;"><a href="#function-sdsopen"><strong>sdsOpen</strong></a> (const char * name, <a href="group__SDS__Interface.html#enum-sdsmode_t"><strong>sdsMode_t</strong></a> mode, void * buf, uint32_t buf_size) <br><em>Open SDS stream.</em></td>
+<td style="text-align: right;"><a href="group__SDS__Stream__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a></td>
+<td style="text-align: left;"><a href="#function-sdsopen"><strong>sdsOpen</strong></a> (const char * name, <a href="group__SDS__Stream__Interface.html#enum-sdsmode_t"><strong>sdsMode_t</strong></a> mode, void * buf, uint32_t buf_size) <br><em>Open SDS stream.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdsread"><strong>sdsRead</strong></a> (<a href="group__SDS__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> id, uint32_t * timeslot, void * buf, uint32_t buf_size) <br><em>Read entire data block along with its timeslot information from the SDS stream opened in read mode.</em></td>
+<td style="text-align: left;"><a href="#function-sdsread"><strong>sdsRead</strong></a> (<a href="group__SDS__Stream__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> id, uint32_t * timeslot, void * buf, uint32_t buf_size) <br><em>Read entire data block along with its timeslot information from the SDS stream opened in read mode.</em></td>
 </tr>
 <tr>
 <td style="text-align: right;">int32_t</td>
@@ -218,28 +218,28 @@
 </tr>
 <tr>
 <td style="text-align: right;">int32_t</td>
-<td style="text-align: left;"><a href="#function-sdswrite"><strong>sdsWrite</strong></a> (<a href="group__SDS__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> id, uint32_t timeslot, const void * buf, uint32_t buf_size) <br><em>Write entire data block along with its timeslot information to the SDS stream opened in write mode.</em></td>
+<td style="text-align: left;"><a href="#function-sdswrite"><strong>sdsWrite</strong></a> (<a href="group__SDS__Stream__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> id, uint32_t timeslot, const void * buf, uint32_t buf_size) <br><em>Write entire data block along with its timeslot information to the SDS stream opened in write mode.</em></td>
 </tr>
 </tbody>
 </table>
 <h2 id="detailed-description">Detailed Description</h2>
-<p>The <strong>SDS</strong> system manages writing to and reading from SDS files through communication or file I/O interfaces. It supports recording and playback of real-world data for applications such as machine learning and data analysis. For details on I/O interfaces, refer to chapter <a href="../sdsio.html">SDS IO Interface</a>.</p>
-<p>The system uses a dedicated worker thread (<code>sdsThread</code>) to handle file I/O asynchronously. User-facing APIs interact only with internal circular buffers, allowing efficient, non-blocking data operations.</p>
-<p>Each SDS stream is identified by a handle of type <a href="group__SDS__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a>, returned by <a href="group__SDS__Interface.html#function-sdsopen"><strong>sdsOpen</strong></a> function, and is required for all subsequent operations on that stream.</p>
+<p>The <strong>SDS Interface</strong> manages recording (write) and playback (read) of SDS data streams through the <a href="../sdsio.html">SDSIO Interface</a>. Data streams represent real-world I/O data for DSP and machine learning algorithms.</p>
+<p>The SDS system uses a dedicated worker thread (<code>sdsThread</code>) to handle data stream I/O asynchronously. User-facing APIs interact only with internal circular buffers, allowing efficient, non-blocking data operations.</p>
+<p>Each SDS stream is identified by a handle of type <a href="group__SDS__Stream__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a>, which is returned by the <a href="group__SDS__Stream__Interface.html#function-sdsopen"><strong>sdsOpen</strong></a> function and is required for all subsequent operations on that stream.</p>
 <p><strong>Thread</strong> <strong>Safety</strong> </p>
-<p>The SDS Interface functions are <strong>thread-safe</strong> for regular operation:</p>
+<p>The SDS Interface functions are <strong>thread-safe</strong> during normal operation:</p>
 <ul>
-<li>A single thread may read from or write to a specific stream at a time.</li>
-<li>Multiple streams can be used concurrently by separate threads without conflict.</li>
+<li>A single thread may read from or write to a specific data stream at a time.</li>
+<li>Multiple data streams can be used concurrently by separate threads without conflict.</li>
 </ul>
-<p>While operational calls are thread-safe, <strong>improper reuse of closed streams can lead to data corruption</strong>:</p>
+<p>While operational calls are thread-safe, <strong>reuse of closed streams can lead to data corruption</strong>:</p>
 <ul>
-<li>When a stream is closed via <a href="group__SDS__Interface.html#function-sdsclose"><strong>sdsClose</strong></a>, its internal control block may be <strong>reallocated</strong> if another stream is opened.</li>
+<li>When a stream is closed via <a href="group__SDS__Stream__Interface.html#function-sdsclose"><strong>sdsClose</strong></a>, its internal control block may be <strong>reallocated</strong> if another stream is opened.</li>
 <li>If a <code>read</code> or <code>write</code> operation is still pending on a handle after it has been closed, and a new stream is opened that causes control block reuse, the pending operation may unexpectedly complete on the <strong>newly opened stream</strong>.</li>
 </ul>
-<p>To prevent such issues:</p>
+<p>To prevent these issues:</p>
 <ul>
-<li>Avoid opening a new stream immediately after closing another unless you can guarantee that all references and asynchronous operations related to the previous stream have been fully completed or canceled. </li>
+<li>Avoid opening a new stream immediately after closing another unless you can guarantee that all references and asynchronous operations related to the previous stream have completed or have been canceled. </li>
 </ul>
 <h2 id="public-types-documentation">Public Types Documentation</h2>
 <h3 id="typedef-sdsevent_t">typedef sdsEvent_t</h3>
@@ -248,10 +248,10 @@
 </code></pre>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="group__SDS__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle of SDS stream </li>
+<li><code>id</code> <a href="group__SDS__Stream__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle of SDS stream </li>
 <li><code>event</code> event code (see <a href="group__SDS__Event__Codes.html"><strong>Event Codes</strong></a>)</li>
 </ul>
-<p>This callback function is registered by passing a pointer to it as a parameter to the <a href="group__SDS__Interface.html#function-sdsinit"><strong>sdsInit</strong></a> function. It is triggered when an event such as insufficient data or space, or an error, occurs during the stream operation. </p>
+<p>This callback function is registered by passing a pointer to it as a parameter to the <a href="group__SDS__Stream__Interface.html#function-sdsinit"><strong>sdsInit</strong></a> function. It is triggered when an event such as insufficient data or space, or an error, occurs during the stream operation. </p>
 <hr>
 
 <h3 id="typedef-sdsid_t">typedef sdsId_t</h3>
@@ -268,7 +268,7 @@
     sdsModeWrite = 1
 };
 </code></pre>
-<p>This <em>enum</em> identifies the opening mode of an SDS stream: read or write. It is a parameter of the <a href="group__SDS__Interface.html#function-sdsopen"><strong>sdsOpen</strong></a> function. </p>
+<p>This <em>enum</em> identifies the opening mode of an SDS stream: read or write. It is a parameter of the <a href="group__SDS__Stream__Interface.html#function-sdsopen"><strong>sdsOpen</strong></a> function. </p>
 <hr>
 <h2 id="public-attributes-documentation">Public Attributes Documentation</h2>
 <h3 id="variable-sdserror">variable sdsError</h3>
@@ -276,24 +276,24 @@
 <pre><code>sdsError_t sdsError;
 </code></pre>
 <p>This <em>global structure</em> stores SDS diagnostic information, including status code, source file, line number, and an occurrence flag.</p>
-<p>This information is relayed to the host in real time as it occurs (see <a href="group__SDS__Interface.html#function-sdsexchange"><strong>sdsExchange</strong></a>). </p>
+<p>This information is relayed to the host in real time as it occurs (see <a href="group__SDS__Stream__Interface.html#function-sdsexchange"><strong>sdsExchange</strong></a>). </p>
 <hr>
 
 <h3 id="variable-sdsflags">variable sdsFlags</h3>
 <p><em>Configuration options and control information.</em> </p>
 <pre><code>volatile uint32_t sdsFlags;
 </code></pre>
-<p>The sdsFlags are used to store configuration and diagnostic information in a single word. The sdsFlags value can be modified by the SDS application (using the function <a href="group__SDS__Interface.html#function-sdsflagsmodify"><strong>sdsFlagsModify</strong></a>) or by the SDSIO-Server.</p>
-<p>The sdsFlags are a 32-bit <em>global variable</em> that contains a set of bits used for firmware control and feedback. The highest 8 bits are used by the SDS system (see <a href="group__SDS__Flag__Masks.html"><strong>sdsFlags Bitmasks</strong></a>) for control, and the lower 24 bits are available to the user. The user bits are useful for configuring algorithms in A/B tests (i.e. bypass a filter), but can be also used to communicate status information to the host.</p>
-<p>The host that runs the SDSIO-Server can update the sdsFlags on demand. The sdsFlags value is also sent to the host periodically (see <a href="group__SDS__Interface.html#function-sdsexchange"><strong>sdsExchange</strong></a>). </p>
+<p>The sdsFlags variable stores configuration and diagnostic information in a single 32-bit word. This global variable can be directly read by the SDS application. To update the value from the SDS application use the function <a href="group__SDS__Stream__Interface.html#function-sdsflagsmodify"><strong>sdsFlagsModify</strong></a>.</p>
+<p>The highest 8 bits are reserved for SDS control (see <a href="group__SDS__Flag__Masks.html"><strong>sdsFlags Bitmasks</strong></a>), and the lower 24 bits are available to the user. User bits can be used to configure algorithms in A/B tests (e.g., bypassing a filter) and to report status information to the SDSIO-Server.</p>
+<p>The SDSIO-Server running on a host computer receives the sdsFlags value periodically (see <a href="group__SDS__Stream__Interface.html#function-sdsexchange"><strong>sdsExchange</strong></a>). The SDSIO server can also update the sdsFlags variable, for example to start recording or configure algorithms. </p>
 <hr>
 
 <h3 id="variable-sdsidlerate">variable sdsIdleRate</h3>
 <p><em>Idle rate information.</em> </p>
 <pre><code>volatile uint32_t sdsIdleRate;
 </code></pre>
-<p>This <em>global variable</em> stores current value of idle rate in percents, value 0xFFFFFFFF is reserved for unknown value in case that idle time measurement is not available.</p>
-<p>This information is relayed to the host in real time periodically (see <a href="group__SDS__Interface.html#function-sdsexchange"><strong>sdsExchange</strong></a>). </p>
+<p>This <em>global variable</em> stores the current idle rate as a percentage. The value 0xFFFFFFFF indicates an unknown value when idle time measurement is not available.</p>
+<p>This information is relayed to the host in real time periodically (see <a href="group__SDS__Stream__Interface.html#function-sdsexchange"><strong>sdsExchange</strong></a>). </p>
 <hr>
 
 <h3 id="variable-sdsstate">variable sdsState</h3>
@@ -312,10 +312,11 @@
 </code></pre>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="group__SDS__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS stream </li>
+<li><code>id</code> <a href="group__SDS__Stream__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS stream </li>
 </ul>
 <p><strong>Returns:</strong></p>
 <p>SDS_OK on success or a negative value on error (see <a href="group__SDS__Return__Codes.html"><strong>Function Return Codes</strong></a>)</p>
+<p><strong>Description:</strong> </p>
 <p>Closes an SDS stream and releases any internal resources associated with the stream handle.</p>
 <p>For closing a stream used in <strong>write mode</strong>:</p>
 <ul>
@@ -336,11 +337,12 @@
 </code></pre>
 <p><strong>Returns:</strong></p>
 <p>SDS_OK on success or a negative value on error (see <a href="group__SDS__Return__Codes.html"><strong>Function Return Codes</strong></a>)</p>
-<p>Exchanges SDS control information with the host. Update <a href="group__SDS__Interface.html#variable-sdsflags"><strong>sdsFlags</strong></a> if requested by the host, and send current sdsFlags value along with <a href="group__SDS__Interface.html#variable-sdsidlerate"><strong>sdsIdleRate</strong></a> and optional error information <a href="group__SDS__Interface.html#variable-sdserror"><strong>sdsError</strong></a> to the host. </p>
+<p><strong>Description:</strong> </p>
+<p>Exchanges SDS control information with the host. Updates <a href="group__SDS__Stream__Interface.html#variable-sdsflags"><strong>sdsFlags</strong></a> if requested by the host, and sends the current sdsFlags value along with <a href="group__SDS__Stream__Interface.html#variable-sdsidlerate"><strong>sdsIdleRate</strong></a> and optional error information <a href="group__SDS__Stream__Interface.html#variable-sdserror"><strong>sdsError</strong></a> to the host. </p>
 <hr>
 
 <h3 id="function-sdsflagsmodify">function sdsFlagsModify</h3>
-<p><em>Modify</em> <a href="group__SDS__Interface.html#variable-sdsflags"><em><strong>sdsFlags</strong></em></a> <em>control flags (atomic operation).</em></p>
+<p><em>Modify</em> <a href="group__SDS__Stream__Interface.html#variable-sdsflags"><em><strong>sdsFlags</strong></em></a> <em>control flags (atomic operation).</em></p>
 <pre><code>void sdsFlagsModify (
     uint32_t set_mask,
     uint32_t clear_mask
@@ -351,6 +353,7 @@
 <li><code>set_mask</code> bits to set in sdsFlags (see <a href="group__SDS__Flag__Masks.html"><strong>sdsFlags Bitmasks</strong></a>) </li>
 <li><code>clear_mask</code> bits to clear in sdsFlags (see <a href="group__SDS__Flag__Masks.html"><strong>sdsFlags Bitmasks</strong></a>)</li>
 </ul>
+<p><strong>Description:</strong> </p>
 <p>Atomically sets and clears bits in the global <code>sdsFlags</code> control flags. Bits present in <code>set_mask</code> are set and bits present in <code>clear_mask</code> are cleared in the update, applied in that order. </p>
 <hr>
 
@@ -362,11 +365,12 @@
 </code></pre>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="group__SDS__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to stream </li>
+<li><code>id</code> <a href="group__SDS__Stream__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to stream </li>
 </ul>
 <p><strong>Returns:</strong></p>
 <p>number of bytes in next available data block, or a negative value on error or SDS_EOS (see <a href="group__SDS__Return__Codes.html"><strong>Function Return Codes</strong></a>)</p>
-<p>Function verifies that the entire header and the complete data block specified by the header are both present in the SDS circular buffer. It returns the size, in bytes, of the next available data block in the stream. If either the header is incomplete or the corresponding data block is not yet fully available, the function returns <a href="group__SDS__Return__Codes.html#define-sds_no_data"><strong>SDS_NO_DATA</strong></a>. If the end of the stream has been reached and no further data is available, the function returns <a href="group__SDS__Return__Codes.html#define-sds_eos"><strong>SDS_EOS</strong></a>. </p>
+<p><strong>Description:</strong> </p>
+<p>The function verifies that the entire header and the complete data block specified by the header are both present in the SDS circular buffer. It returns the size, in bytes, of the next available data block in the stream. If either the header is incomplete or the corresponding data block is not yet fully available, the function returns <a href="group__SDS__Return__Codes.html#define-sds_no_data"><strong>SDS_NO_DATA</strong></a>. If the end of the stream has been reached and no further data is available, the function returns <a href="group__SDS__Return__Codes.html#define-sds_eos"><strong>SDS_EOS</strong></a>. </p>
 <hr>
 
 <h3 id="function-sdsinit">function sdsInit</h3>
@@ -377,11 +381,12 @@
 </code></pre>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>event_cb</code> pointer to <a href="group__SDS__Interface.html#typedef-sdsevent_t"><strong>sdsEvent_t</strong></a> callback function </li>
+<li><code>event_cb</code> pointer to <a href="group__SDS__Stream__Interface.html#typedef-sdsevent_t"><strong>sdsEvent_t</strong></a> callback function </li>
 </ul>
 <p><strong>Returns:</strong></p>
 <p>SDS_OK on success or a negative value on error (see <a href="group__SDS__Return__Codes.html"><strong>Function Return Codes</strong></a>)</p>
-<p>Initializes the SDS system. This function allocates resources, initializes underlying SDS I/O interface and creates the <code>sdsThread</code> worker thread. An optional callback function can be registered to receive notifications (e.g., I/O errors). This function must be called once before opening SDS streams. </p>
+<p><strong>Description:</strong> </p>
+<p>Initializes the SDS system. This function allocates resources, initializes underlying SDSIO interface, and creates the <code>sdsThread</code> worker thread. An optional callback function can be registered to receive notifications (e.g., I/O errors). This function must be called once before opening SDS streams. </p>
 <hr>
 
 <h3 id="function-sdsopen">function sdsOpen</h3>
@@ -396,20 +401,21 @@
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>name</code> SDS stream name (pointer to NULL terminated string) </li>
-<li><code>mode</code> SDS stream opening mode (see <a href="group__SDS__Interface.html#enum-sdsmode_t"><strong>sdsMode_t</strong></a>) </li>
+<li><code>mode</code> SDS stream opening mode (see <a href="group__SDS__Stream__Interface.html#enum-sdsmode_t"><strong>sdsMode_t</strong></a>) </li>
 <li><code>buf</code> pointer to buffer for SDS stream </li>
 <li><code>buf_size</code> buffer size in bytes </li>
 </ul>
 <p><strong>Returns:</strong></p>
-<p><a href="group__SDS__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS stream, or NULL if operation failed</p>
+<p><a href="group__SDS__Stream__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS stream, or NULL if operation failed</p>
+<p><strong>Description:</strong> </p>
 <p>Opens an SDS stream for reading or writing timeslot information and data blocks to or from the SDS file. The <code>buf</code> parameter specifies a user-allocated memory region that serves as an internal circular buffer. The buffer must be large enough to hold at least the largest expected data block plus 8 bytes for header information.</p>
-<p>For opening stream in <strong>write mode</strong>:</p>
+<p>To open a stream in <strong>write mode</strong> (for recording):</p>
 <ul>
 <li>The <code>name</code> parameter defines the base name for the SDS output file and is used to construct the full filename in the format <code>name.index.sds</code>. The <code>index</code> is an auto-incrementing value that ensures a unique filename is generated. If a file with the generated name already exists, the <code>index</code> is incremented until an unused name is found.</li>
 </ul>
-<p>For opening stream in <strong>read mode</strong>:</p>
+<p>To open a stream in <strong>read mode</strong> (for playback):</p>
 <ul>
-<li>The <code>name</code> parameter specifies the base name of the SDS input file. When SDS I/O is a file system then the function attempts to locate and open the file in the format <code>name.index.sds</code>, where <code>index</code> is an auto-incrementing value. If no matching file is found, the function returns an error. When SDS I/O uses SDS I/O Client in conjunction with the SDS I/O Server, the filename is constructed by the SDS I/O Server according to configuration specified in the <code>sdsio.yml</code> steering file.</li>
+<li>The <code>name</code> parameter specifies the base name of the SDS input file. When SDSIO uses a file system, the function attempts to locate and open the file in the format <code>name.index.sds</code>, where <code>index</code> is an auto-incrementing value. If no matching file is found, the function returns an error. When SDSIO uses an SDSIO Client in conjunction with the SDSIO-Server, the filename is constructed by the SDSIO-Server according to the configuration specified in the <code>sdsio.yml</code> steering file.</li>
 </ul>
 <p>For details, refer to <a href="../theory.html#filenames">Filenames section</a>.</p>
 <p>This function returns a handle that uniquely identifies the stream. The handle is used as a reference in subsequent function calls to perform operations on the stream. </p>
@@ -426,15 +432,16 @@
 </code></pre>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="group__SDS__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS stream </li>
+<li><code>id</code> <a href="group__SDS__Stream__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS stream </li>
 <li><code>timeslot</code> pointer to buffer for a timeslot value </li>
 <li><code>buf</code> pointer to the data block buffer to be read </li>
 <li><code>buf_size</code> size of the data block buffer in bytes </li>
 </ul>
 <p><strong>Returns:</strong></p>
 <p>number of bytes successfully read, or a negative value on error or SDS_EOS (see <a href="group__SDS__Return__Codes.html"><strong>Function Return Codes</strong></a>)</p>
+<p><strong>Description:</strong> </p>
 <p>Reads a data block along with its associated timeslot from the internal SDS circular buffer.</p>
-<p>The <code>sdsThread</code> worker thread asynchronously reads the data from the SDS file using the underlying SDS I/O interface. For details on how the specific SDS file is selected, refer to <a href="../theory.html#filenames">Filenames section</a>. The retrieved data is then written to the internal SDS circular buffer. This asynchronous design enables efficient, non-blocking data handling and ensures optimal performance.</p>
+<p>The <code>sdsThread</code> worker thread asynchronously reads the data from the SDS file using the underlying SDSIO interface. For details on how the specific SDS file is selected, refer to <a href="../theory.html#filenames">Filenames section</a>. The retrieved data is then written to the internal SDS circular buffer. This asynchronous design enables efficient, non-blocking data handling and ensures optimal performance.</p>
 <p>Before attempting to read, the function verifies that the entire header and the complete data block specified by the header are both present in the SDS circular buffer. If either the header is incomplete or the corresponding data block is not yet fully available, the function aborts and returns <a href="group__SDS__Return__Codes.html#define-sds_no_data"><strong>SDS_NO_DATA</strong></a>.</p>
 <p>The function verifies that the user-provided buffer <code>buf</code>, with size <code>buf_size</code>, is large enough to accommodate the entire data block. If it is too small, the function aborts and returns <a href="group__SDS__Return__Codes.html#define-sds_error_parameter"><strong>SDS_ERROR_PARAMETER</strong></a>.</p>
 <p>If the end of the stream has been reached and no further data is available, the function returns <a href="group__SDS__Return__Codes.html#define-sds_eos"><strong>SDS_EOS</strong></a>.</p>
@@ -450,6 +457,7 @@
 </code></pre>
 <p><strong>Returns:</strong></p>
 <p>SDS_OK on success or a negative value on error (see <a href="group__SDS__Return__Codes.html"><strong>Function Return Codes</strong></a>)</p>
+<p><strong>Description:</strong> </p>
 <p>De-initializes the SDS system. This function terminates the <code>sdsThread</code> worker thread, and releases the internal resources. All open SDS streams must be closed by the user before calling this function. After de-initialization, the system must be re-initialized before further use. </p>
 <hr>
 
@@ -464,16 +472,17 @@
 </code></pre>
 <p><strong>Parameters:</strong></p>
 <ul>
-<li><code>id</code> <a href="group__SDS__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS stream </li>
+<li><code>id</code> <a href="group__SDS__Stream__Interface.html#typedef-sdsid_t"><strong>sdsId_t</strong></a> handle to SDS stream </li>
 <li><code>timeslot</code> timeslot </li>
 <li><code>buf</code> pointer to the data block buffer to be written </li>
 <li><code>buf_size</code> size of the data block buffer in bytes </li>
 </ul>
 <p><strong>Returns:</strong></p>
 <p>number of bytes successfully written or a negative value on error (see <a href="group__SDS__Return__Codes.html"><strong>Function Return Codes</strong></a>)</p>
+<p><strong>Description:</strong> </p>
 <p>Writes a data block, including a header containing the timeslot information and data block size, to the internal circular buffer.</p>
-<p>The <code>sdsThread</code> worker thread asynchronously writes the data to the SDS file via the underlying SDS I/O interface. For an explanation of how the SDS system selects and names the target SDS file, refer to <a href="../theory.html#filenames">Filenames section</a>. This asynchronous design enables efficient, non-blocking data handling and optimized performance.</p>
-<p>Before attempting to write, function verifies that the entire header and the complete data block, provided via the buffer pointer <code>buf</code> and its size <code>buf_size</code>, can fit within the available space in the internal SDS circular buffer. If insufficient space is available, the operation is aborted and the function returns <a href="group__SDS__Return__Codes.html#define-sds_no_space"><strong>SDS_NO_SPACE</strong></a>.</p>
+<p>The <code>sdsThread</code> worker thread asynchronously writes the data to the SDS file via the underlying SDSIO interface. For an explanation of how the SDS system selects and names the target SDS file, refer to <a href="../theory.html#filenames">Filenames section</a>. This asynchronous design enables efficient, non-blocking data handling and optimized performance.</p>
+<p>Before attempting to write, the function verifies that the entire header and the complete data block, provided via the buffer pointer <code>buf</code> and its size <code>buf_size</code>, can fit within the available space in the internal SDS circular buffer. If insufficient space is available, the operation is aborted and the function returns <a href="group__SDS__Return__Codes.html#define-sds_no_space"><strong>SDS_NO_SPACE</strong></a>.</p>
 <p>On success, the function writes the header and data block to the SDS circular buffer and returns the number of data bytes written, excluding the header.</p>
 <p>Thread safety is ensured by allowing only a single thread to write to a given stream at a time. However, multiple threads can concurrently write to different streams, enabling parallel operations across multiple streams. </p>
 <hr>

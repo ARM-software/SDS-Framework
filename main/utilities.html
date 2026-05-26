@@ -82,6 +82,8 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#streams">streams:</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#play">play:</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#flag-info">flag-info:</a>
@@ -198,12 +200,6 @@ Install <strong>Python</strong> and packages listed in file <code>/utilities/req
 <li><a href="#sds-check"><strong>SDS-Check:</strong></a> check SDS data files for correctness and consistency.</li>
 </ul>
 <h2 id="setup">Setup</h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul>
-<li>The example below uses version 3.0.0 of the SDS pack. Adapt the version to match the installed SDS pack on your computer.</li>
-</ul>
-</div>
 <p>Perform the following steps to setup the Python environment for using the SDS utilities.</p>
 <ul>
 <li><a href="https://www.python.org/downloads/">Install Python</a> or verify the version with:</li>
@@ -264,7 +260,12 @@ Install <strong>Python</strong> and packages listed in file <code>/utilities/req
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>metadir:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Directory for metadata files (default: <code>workdir</code>). This key is currently not used by SDSIO-Server or the VSI3 simulation interface.</td>
+<td style="text-align: left;">Directory for metadata files (default: <code>workdir</code>). This key is used by the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds">SDS extension for VS Code</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#streams"><code>streams:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Data stream information used by the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds">SDS extension for VS Code</a>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#play"><code>play:</code></a></td>
@@ -393,6 +394,29 @@ Install <strong>Python</strong> and packages listed in file <code>/utilities/req
 <li>The <code>ipaddr:</code> and <code>netif:</code> options are mutually exclusive.</li>
 </ul>
 </div>
+<h3 id="streams"><code>streams:</code></h3>
+<p>The <code>streams:</code> node provides additional information about the SDS data streams to the <a href="https://marketplace.visualstudio.com/">SDS extension for VS Code</a>. It provides the context between the data streams and the display format.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>streams:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Name of the data stream.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>view:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Format of the data stream for the viewer (signal, wav, video, heatmap, csv, csv2)</td>
+</tr>
+</tbody>
+</table>
 <h3 id="play"><code>play:</code></h3>
 <p>The <code>play:</code> node specifies one or more playback steps.
 Each playback step defines the list of labels to play back for each opened SDS stream.</p>
@@ -434,12 +458,6 @@ A pause (where the data stream needs to be closed and opened again by the firmwa
 </tr>
 </tbody>
 </table>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul>
-<li>The option name is <code>clearflags:</code> (older proposals used <code>clrflags:</code>).</li>
-</ul>
-</div>
 <h3 id="flag-info"><code>flag-info:</code></h3>
 <p>The <code>flag-info:</code> node provides human readable labels for the user flags 0..7.
 This information is currently not used by SDSIO-Server; it is intended for UI tooling.</p>

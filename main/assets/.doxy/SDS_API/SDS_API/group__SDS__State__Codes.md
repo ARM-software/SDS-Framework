@@ -91,7 +91,7 @@ _SDS State Codes._ [More...](#detailed-description)
 ## Detailed Description
 
 
-The following values are used by global variable [**sdsState**](group__SDS__Interface.md#variable-sdsstate). 
+The following values are used by global variable [**sdsState**](group__SDS__Stream__Interface.md#variable-sdsstate). 
 
 
     

@@ -117,7 +117,7 @@
 <para>SDS State Codes. </para>
     </briefdescription>
     <detaileddescription>
-<para>The following values are used by global variable <ref refid="group__SDS__Interface_1gac5fbc1c61d43606b0c54a482781a2ce9" kindref="member">sdsState</ref>. </para>
+<para>The following values are used by global variable <ref refid="group__SDS__Stream__Interface_1gac5fbc1c61d43606b0c54a482781a2ce9" kindref="member">sdsState</ref>. </para>
     </detaileddescription>
   </compounddef>
 </doxygen>

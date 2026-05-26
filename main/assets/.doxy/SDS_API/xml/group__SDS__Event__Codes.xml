@@ -20,7 +20,7 @@
         <name>SDS_EVENT_NO_SPACE</name>
         <initializer>(2UL)</initializer>
         <briefdescription>
-<para>Event triggered when <ref refid="group__SDS__Interface_1ga08ace9f59d5d5dcf5f671ec2738a174a" kindref="member">sdsWrite</ref> fails due to insufficient space in the SDS circular buffer. </para>
+<para>Event triggered when <ref refid="group__SDS__Stream__Interface_1ga08ace9f59d5d5dcf5f671ec2738a174a" kindref="member">sdsWrite</ref> fails due to insufficient space in the SDS circular buffer. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
@@ -32,7 +32,7 @@
         <name>SDS_EVENT_NO_DATA</name>
         <initializer>(4UL)</initializer>
         <briefdescription>
-<para>Event triggered when <ref refid="group__SDS__Interface_1gacb7b42f9087f9de9fe5021db3318751e" kindref="member">sdsRead</ref> fails due to insufficient data in the SDS circular buffer. </para>
+<para>Event triggered when <ref refid="group__SDS__Stream__Interface_1gacb7b42f9087f9de9fe5021db3318751e" kindref="member">sdsRead</ref> fails due to insufficient data in the SDS circular buffer. </para>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
@@ -45,7 +45,7 @@
 <para>SDS Event Codes. </para>
     </briefdescription>
     <detaileddescription>
-<para>The following values are passed as event value to the <ref refid="group__SDS__Interface_1ga9a26c990f6c41064d04a15401f24b902" kindref="member">sdsEvent_t</ref> callback function. </para>
+<para>The following values are passed as event value to the <ref refid="group__SDS__Stream__Interface_1ga9a26c990f6c41064d04a15401f24b902" kindref="member">sdsEvent_t</ref> callback function. </para>
     </detaileddescription>
   </compounddef>
 </doxygen>

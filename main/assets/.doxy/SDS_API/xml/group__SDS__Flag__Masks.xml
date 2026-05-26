@@ -69,7 +69,7 @@
 <para>SDS Flag Bitmasks. </para>
     </briefdescription>
     <detaileddescription>
-<para>The following values are used by function <ref refid="group__SDS__Interface_1gacc58cf2b724d52c75d118a5c5ddc81d0" kindref="member">sdsFlagsModify</ref> and global variable <ref refid="group__SDS__Interface_1ga5dc742cda7ce949a6b73105b0be095ca" kindref="member">sdsFlags</ref>. </para>
+<para>The following values are used by function <ref refid="group__SDS__Stream__Interface_1gacc58cf2b724d52c75d118a5c5ddc81d0" kindref="member">sdsFlagsModify</ref> and global variable <ref refid="group__SDS__Stream__Interface_1ga5dc742cda7ce949a6b73105b0be095ca" kindref="member">sdsFlags</ref>. </para>
     </detaileddescription>
   </compounddef>
 </doxygen>

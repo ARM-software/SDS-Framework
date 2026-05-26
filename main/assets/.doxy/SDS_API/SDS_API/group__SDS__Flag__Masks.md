@@ -87,7 +87,7 @@ _SDS Flag Bitmasks._ [More...](#detailed-description)
 ## Detailed Description
 
 
-The following values are used by function [**sdsFlagsModify**](group__SDS__Interface.md#function-sdsflagsmodify) and global variable [**sdsFlags**](group__SDS__Interface.md#variable-sdsflags). 
+The following values are used by function [**sdsFlagsModify**](group__SDS__Stream__Interface.md#function-sdsflagsmodify) and global variable [**sdsFlags**](group__SDS__Stream__Interface.md#variable-sdsflags). 
 
 
     
