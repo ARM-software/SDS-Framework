@@ -82,9 +82,9 @@
 
   <apis>
     <api Cclass="SDS" Cgroup="IO" Capiversion="3.0.0">
-      <description>I/O interface to read/write SDS files</description>
+      <description>SDSIO Client Interface to read/write SDS data files</description>
       <files>
-        <file category="doc"    name="docs/SDS_API/group__SDS__IO__Interface.html"/>
+        <file category="doc"    name="docs/SDS_API/group__SDSIO__Client__Interface.html"/>
         <file category="header" name="sds/sdsio/include/sdsio.h" />
       </files>
     </api>
@@ -93,12 +93,12 @@
   <components>
     <!-- SDS -->
     <component Cclass="SDS" Cgroup="Stream" Cvariant="CMSIS-RTOS2" Cversion="3.0.0" condition="SDS with CMSIS-RTOS2">
-      <description>SDS interface for data streams</description>
+      <description>SDS Stream Interface for record/playback data streams</description>
       <RTE_Components_h>
         #define RTE_SDS                                 /* Synchronous Data Stream */
       </RTE_Components_h>
       <files>
-        <file category="doc"    name="docs/SDS_API/group__SDS__Interface.html"/>
+        <file category="doc"    name="docs/SDS_API/group__SDS__Stream__Interface.html"/>
         <file category="header" name="sds/config/sds_config.h" attr="config" version="3.0.0"/>
         <file category="header" name="sds/include/sds.h"/>
         <file category="source" name="sds/sds.c"/>
