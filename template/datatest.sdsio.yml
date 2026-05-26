@@ -1,0 +1,23 @@
+sdsio:
+  interface:
+    usb:
+  workdir: ./datatest/SDS Recordings
+  metadir: ./datatest/SDS Recordings
+
+  # Data stream information used by VS Code extension
+  streams:
+    - name: Test_In
+      view: signal
+    - name: Test_Out
+      view: signal
+  
+  # Human readable labels for sdsFlag bits use by VS Code extension
+  flag-info:
+    - 0: User-Flag 0
+    - 1: User-Flag 1
+
+  # Defines a playback test sequence
+  play:
+    - step: Test 0
+      labels: 0
+    

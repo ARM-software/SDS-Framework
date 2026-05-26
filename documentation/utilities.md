@@ -15,9 +15,6 @@ Install **Python** and packages listed in file `/utilities/requirements.txt` to 
 
 ## Setup
 
-!!! Note
-    - The example below uses version 3.0.0 of the SDS pack. Adapt the version to match the installed SDS pack on your computer.
-
 Perform the following steps to setup the Python environment for using the SDS utilities.
 
 - [Install Python](https://www.python.org/downloads/) or verify the version with:
@@ -58,7 +55,8 @@ The SDSIO data file I/O can be configured using a YAML control file with the roo
 :-----------------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; [`interface:`](#interface)               |   Optional   | SDSIO-Server only: specifies the interface used to connect to the target firmware (default: `usb`).
 &nbsp;&nbsp;&nbsp; `workdir:`                               |   Optional   | Directory that stores `*.sds` files (default: current working directory). In AVH FVP simulation, relative paths are relative to the simulator working directory.
-&nbsp;&nbsp;&nbsp; `metadir:`                               |   Optional   | Directory for metadata files (default: `workdir`). This key is currently not used by SDSIO-Server or the VSI3 simulation interface.
+&nbsp;&nbsp;&nbsp; `metadir:`                               |   Optional   | Directory for metadata files (default: `workdir`). This key is used by the [SDS extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds).
+&nbsp;&nbsp;&nbsp; [`streams:`](#streams)                   |   Optional   | Data stream information used by the [SDS extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds).
 &nbsp;&nbsp;&nbsp; [`play:`](#play)                         |   Optional   | Playback step list that defines how `*.sds` files are played back (used in playback mode).
 &nbsp;&nbsp;&nbsp; [`flag-info:`](#flag-info)               |   Optional   | Human readable labels for user flags. This key is currently not used by SDSIO-Server or the VSI3 simulation interface.
 
@@ -99,6 +97,15 @@ The SDSIO data file I/O can be configured using a YAML control file with the roo
 !!! Note
     - The `ipaddr:` and `netif:` options are mutually exclusive.
 
+### `streams:`
+
+The `streams:` node provides additional information about the SDS data streams to the [SDS extension for VS Code](https://marketplace.visualstudio.com/). It provides the context between the data streams and the display format.
+
+`streams:`                                                  |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+`- name:`                                                   | **Required** | Name of the data stream.
+&nbsp;&nbsp;&nbsp; `view:`                                  |   Optional   | Format of the data stream for the viewer (signal, wav, video, heatmap, csv, csv2)
+
 ### `play:`
 
 The `play:` node specifies one or more playback steps.
@@ -114,9 +121,6 @@ A pause (where the data stream needs to be closed and opened again by the firmwa
 &nbsp;&nbsp;&nbsp; `setflags:`                              |   Optional   | Set user flags (bitmask); example: `0x01`.
 &nbsp;&nbsp;&nbsp; `clearflags:`                            |   Optional   | Clear user flags (bitmask); example: `0x01`.
 &nbsp;&nbsp;&nbsp; `labels:`                                |   Optional   | List of label names that define the playback sequence.
-
-!!! Note
-    - The option name is `clearflags:` (older proposals used `clrflags:`).
 
 ### `flag-info:`
 
