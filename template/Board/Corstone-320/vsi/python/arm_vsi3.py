@@ -37,6 +37,7 @@ from sdsio import (
     CMD_PING,
     CMD_READ,
     CMD_WRITE,
+    SDSIO_VSI_VERSION,
     sdsio_manager,
 )
 
@@ -112,6 +113,9 @@ def _load_sdsio_server_config(base_dir: str):
         except Exception as _e:
             logger.error(f"Failed to load control YAML: {_e}")
 
+    if _ctrl_data:
+        logger.info(f"SDSIO configuration YAML: {_cfg_path}")
+
     _work_dir = _ctrl_data.get("workdir", base_dir) if _ctrl_data else base_dir
     _work_dir = path.normpath(path.join(base_dir, _work_dir)) if not path.isabs(_work_dir) else path.normpath(_work_dir)
     _play_list = _ctrl_data.get("play", None) if _ctrl_data else None
@@ -130,7 +134,7 @@ def _build_sdsio_request(command: int, sid: int = 0, argument: int = 0, data: by
     _req.extend(data)
     return _req
 
-
+logger.info(f"SDSIO VSI version {SDSIO_VSI_VERSION}")
 _work_dir, _auto_playback, _play_list = _load_sdsio_server_config(os.getcwd())
 Stream = sdsio_manager(
     work_dir=_work_dir,
