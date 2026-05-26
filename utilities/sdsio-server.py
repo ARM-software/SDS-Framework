@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.21"
+SDSIO_SERVER_VERSION = "0.9.22"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -2360,8 +2360,10 @@ async def main():
     # Open and parse the control YAML if provided, and apply any configuration
     # CLI arguments will override YAML settings where applicable (e.g. server type)
     _ctrl_data = {}
+    _ctrl_yml_dir = os.getcwd()
     if _args.ctrl_yml:
         _ctrl_yml_path = os.path.abspath(_args.ctrl_yml)
+        _ctrl_yml_dir = path.dirname(_ctrl_yml_path)
         try:
             with open(_ctrl_yml_path, 'r') as _yml_file:
                 _yml_data = yaml.safe_load(_yml_file)
@@ -2417,8 +2419,13 @@ async def main():
     # Working directory
     if _args.work_dir:
         _work_dir = _args.work_dir
+    elif _ctrl_data and _ctrl_data.get('workdir'):
+        _work_dir = _ctrl_data.get('workdir')
+        if not path.isabs(_work_dir):
+            _work_dir = path.join(_ctrl_yml_dir, _work_dir)
+        _work_dir = path.normpath(_work_dir)
     else:
-        _work_dir = _ctrl_data.get('workdir', os.getcwd()) if _ctrl_data else os.getcwd()
+        _work_dir = os.getcwd()
     if not path.isdir(_work_dir):
         logger.error(f"Working directory does not exist: {_work_dir}")
         sys.exit(1)
