@@ -629,7 +629,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="Convert between SDS files and various file formats",
         epilog="Example: python sds-convert.py audio_wav -i <input_file> -o <output_file> -y <yaml_file>",
-        formatter_class=formatter)
+        formatter_class=formatter,
+        add_help=False)
+    parser.add_argument("-h", "--help", action="help", help="Show this help message and exit")
 
     subparsers = parser.add_subparsers(
         dest="convert_format",
@@ -645,7 +647,7 @@ def main():
                                              formatter_class=formatter, add_help=False)
     parser_audio_wav_options = parser_audio_wav.add_argument_group("options")
     parser_audio_wav_options.add_argument("-h", "--help", action="help",
-                                          help="show this help message and exit")
+                                          help="Show this help message and exit")
     parser_audio_wav_required = parser_audio_wav.add_argument_group("required")
     parser_audio_wav_required.add_argument("-i", dest="in_file", metavar="<input_file>",
                                            help="Input file", type=in_file, required=True)
@@ -661,7 +663,7 @@ def main():
                                               formatter_class=formatter, add_help=False)
     parser_simple_csv_options = parser_simple_csv.add_argument_group("options")
     parser_simple_csv_options.add_argument("-h", "--help", action="help",
-                                           help="show this help message and exit")
+                                           help="Show this help message and exit")
     parser_simple_csv_required = parser_simple_csv.add_argument_group("required")
     parser_simple_csv_required.add_argument("-i", dest="in_file", metavar="<input_file>",
                                             help="Input file", type=in_file, required=True)
@@ -686,7 +688,7 @@ def main():
                                                 formatter_class=formatter, add_help=False)
     parser_qeexo_v2_csv_options = parser_qeexo_v2_csv.add_argument_group("options")
     parser_qeexo_v2_csv_options.add_argument("-h", "--help", action="help",
-                                             help="show this help message and exit")
+                                             help="Show this help message and exit")
     parser_qeexo_v2_csv_required = parser_qeexo_v2_csv.add_argument_group("required")
     parser_qeexo_v2_csv_required.add_argument("-i", dest="in_file", metavar="<input_file>",
                                               help="Input files", nargs="+", type=in_file, required=True)
@@ -719,7 +721,7 @@ def main():
                                          formatter_class=formatter, add_help=False)
     parser_video_options = parser_video.add_argument_group("options")
     parser_video_options.add_argument("-h", "--help", action="help",
-                                      help="show this help message and exit")
+                                      help="Show this help message and exit")
     parser_video_required = parser_video.add_argument_group("required")
     parser_video_required.add_argument("-i", dest="in_file", metavar="<input_file>",
                                        help="Input file", type=in_file, required=True)
