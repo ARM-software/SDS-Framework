@@ -2416,7 +2416,8 @@ async def main():
     else:
         _work_dir = _ctrl_data.get('workdir', os.getcwd()) if _ctrl_data else os.getcwd()
     if not path.isdir(_work_dir):
-        raise ValueError("Working directory does not exist!")
+        logger.error(f"Working directory does not exist: {_work_dir}")
+        sys.exit(1)
 
     # Auto playback
     _auto_playback = _args.auto_playback if _args.auto_playback else False
