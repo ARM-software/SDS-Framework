@@ -190,7 +190,7 @@ The contents of `<name>.<label>[.p].sds` files are described by the metadata fil
 - Terminate the server by pressing `Ctrl+C` or the `X` key in the server application window.
 
 ```txt
-usage: sdsio-server.py [-h] [-V] [{socket | serial | usb} [if-opts]] [-c <*.sdsio.yml>] [general-opts]
+usage: sdsio-server.py [-h] [-V] [{socket | serial | usb} [if-opts]] [-c sdsio.yml] [general-opts]
 
 SDSIO-Server: record and playback SDS data stream files over USB, socket, or serial interface.
 Configure via *.sdsio.yml file or specify the interface parameters directly on the command line.
@@ -213,6 +213,7 @@ general-opts:
   --workdir <path>             Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
   --mon-port, -m <port>        Monitor control interface port
   --log, -l <file>             Redirect console output to a log file (typically for CI use)
+  --write-flush-size <bytes>   Force recorded SDS data to disk after this many bytes (0 disables explicit sync)
   --verbose, -v                Enable debug messages
   --high-priority              Increase process priority when using USB interface (requires elevated privileges)
 ```
@@ -330,6 +331,12 @@ Start SDSIO-Server using user specified working directory:
 
 ```bash
 python sdsio-server.py usb --workdir ./data
+```
+
+Start SDSIO-Server, forcing SDS file write flushes to disk when recording data exceeds 1 kB:
+
+```bash
+python sdsio-server.py usb --write-flush-size 1024
 ```
 
 !!! Note
