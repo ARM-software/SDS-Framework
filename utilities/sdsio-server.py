@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.20"
+SDSIO_SERVER_VERSION = "0.9.21"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -72,6 +72,8 @@ SDS_FLAG_MASK_START        = (1 << 31)
 SDS_FLAG_MASK_CI_TERMINATE = (1 << 30)
 SDS_FLAG_MASK_PLAYBACK_MODE= (1 << 29)
 SDS_FLAG_MASK_ALIVE        = (1 << 28)
+SDS_FLAG_MASK_RESET        = (1 << 27)
+
 # Mapping of human-readable parity names to pyserial constants
 PARITY_NAME_MAP = {
     'none':  serial.PARITY_NONE,
@@ -525,12 +527,14 @@ class sdsControlInput(threading.Thread):
 
         # Mapping of key characters to (set_mask, clear_mask, description)
         self._KEY_ACTIONS = {
-            'R': (SDS_FLAG_MASK_START,                              SDS_FLAG_MASK_PLAYBACK_MODE, "start recording"),
-            'r': (SDS_FLAG_MASK_START,                              SDS_FLAG_MASK_PLAYBACK_MODE, "start recording"),
-            'P': (SDS_FLAG_MASK_START | SDS_FLAG_MASK_PLAYBACK_MODE, 0,                         "start playback"),
-            'p': (SDS_FLAG_MASK_START | SDS_FLAG_MASK_PLAYBACK_MODE, 0,                         "start playback"),
-            'S': (0,                                                SDS_FLAG_MASK_START,         "stop"),
-            's': (0,                                                SDS_FLAG_MASK_START,         "stop"),
+            'R': (SDS_FLAG_MASK_START,                               SDS_FLAG_MASK_PLAYBACK_MODE, "start recording"),
+            'r': (SDS_FLAG_MASK_START,                               SDS_FLAG_MASK_PLAYBACK_MODE, "start recording"),
+            'P': (SDS_FLAG_MASK_START | SDS_FLAG_MASK_PLAYBACK_MODE, 0,                           "start playback"),
+            'p': (SDS_FLAG_MASK_START | SDS_FLAG_MASK_PLAYBACK_MODE, 0,                           "start playback"),
+            'S': (0,                                                 SDS_FLAG_MASK_START,         "stop"),
+            's': (0,                                                 SDS_FLAG_MASK_START,         "stop"),
+            'T': (SDS_FLAG_MASK_RESET,                               0,                           "reset target"),
+            't': (SDS_FLAG_MASK_RESET,                               0,                           "reset target"),
             'A': (1 << 0, 0,       "set flag 0"),   'a': (0, 1 << 0, "clear flag 0"),
             'B': (1 << 1, 0,       "set flag 1"),   'b': (0, 1 << 1, "clear flag 1"),
             'C': (1 << 2, 0,       "set flag 2"),   'c': (0, 1 << 2, "clear flag 2"),
