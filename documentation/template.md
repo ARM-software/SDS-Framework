@@ -138,6 +138,8 @@ The **DataTest** project validates the communication channel.
 
 ### Recording/playback on Simulation Model
 
+ToDo this needs review
+
 1. Select the target `AVH-SSE-300` (or `AVH-SSE-320`) with Project `DataTest` and Build Type `Debug` to record/playback SDS data files.
 2. Start the [SDSIO-Server](utilities.md#sdsio-server) for selected SDSIO communication interface.
 3. [Build and Run](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp/README.md) the application.

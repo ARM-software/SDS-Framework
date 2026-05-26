@@ -1,36 +1,34 @@
 /*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====*/
 /**
-\defgroup SDS_Interface SDS Interface
-\brief sds.h: Synchronous Data Stream Interface for writing and reading SDS files via communication or file I/O interface.
+\defgroup SDS_Stream_Interface SDS Stream Interface
+\brief sds.h: Synchronous Data Stream Interface for record (write) and playback (read) of SDS data streams via a SDSIO interface.
 \details
-The **SDS** system manages writing to and reading from SDS files through communication or file I/O interfaces.
-It supports recording and playback of real-world data for applications such as machine learning and data analysis.
-For details on I/O interfaces, refer to chapter [SDS IO Interface](../sdsio.md#).
+The **SDS Interface** manages recording (write) and playback (read) of SDS data streams through the [SDSIO Interface](../sdsio.md#).
+Data streams represent real-world I/O data for DSP and machine learning algorithms. 
 
-The system uses a dedicated worker thread (`sdsThread`) to handle file I/O asynchronously. User-facing APIs interact only
+The SDS system uses a dedicated worker thread (`sdsThread`) to handle data stream I/O asynchronously. User-facing APIs interact only
 with internal circular buffers, allowing efficient, non-blocking data operations.
 
-Each SDS stream is identified by a handle of type \ref sdsId_t, returned by \ref sdsOpen function,
-and is required for all subsequent operations on that stream.
+Each SDS stream is identified by a handle of type \ref sdsId_t, which is returned by the \ref sdsOpen function and is required
+for all subsequent operations on that stream.
 
 \b Thread \b Safety
 
-The SDS Interface functions are **thread-safe** for regular operation:
+The SDS Interface functions are **thread-safe** during normal operation:
 
-- A single thread may read from or write to a specific stream at a time.
-- Multiple streams can be used concurrently by separate threads without conflict.
+- A single thread may read from or write to a specific data stream at a time.
+- Multiple data streams can be used concurrently by separate threads without conflict.
 
-While operational calls are thread-safe, **improper reuse of closed streams can lead to data corruption**:
+While operational calls are thread-safe, **reuse of closed streams can lead to data corruption**:
 
-- When a stream is closed via \ref sdsClose, its internal control block may be **reallocated** if
-another stream is opened.
+- When a stream is closed via \ref sdsClose, its internal control block may be **reallocated** if another stream is opened.
 - If a `read` or `write` operation is still pending on a handle after it has been closed, and a new stream is opened
 that causes control block reuse, the pending operation may unexpectedly complete on the **newly opened stream**.
 
-To prevent such issues:
+To prevent these issues:
 
 - Avoid opening a new stream immediately after closing another unless you can guarantee that all references and asynchronous
-operations related to the previous stream have been fully completed or canceled.
+operations related to the previous stream have completed or have been canceled.
 @{
 */
 
@@ -118,17 +116,14 @@ It is triggered when an event such as insufficient data or space, or an error, o
 \var sdsFlags
 \brief Configuration options and control information
 \details
-The sdsFlags are used to store configuration and diagnostic information in a single word.
-The sdsFlags value can be modified by the SDS application (using the function \ref sdsFlagsModify) or by the SDSIO-Server.
+The sdsFlags variable stores configuration and diagnostic information in a single 32-bit word. This global variable can be directly read by the SDS application.
+To update the value from the SDS application use the function \ref sdsFlagsModify.
 
-The sdsFlags are a 32-bit *global variable* that contains a set of bits used for firmware control and feedback.
-The highest 8 bits are used by the SDS system (see \ref SDS_Flag_Masks) for control, and the lower 24 bits are available to the user.
-The user bits are useful for configuring algorithms in A/B tests (i.e. bypass a filter), but 
-can be also used to communicate status information to the host.
+The highest 8 bits are reserved for SDS control (see \ref SDS_Flag_Masks), and the lower 24 bits are available to the user.
+User bits can be used to configure algorithms in A/B tests (e.g., bypassing a filter) and to report status information to the SDSIO-Server.
 
-
-The host that runs the SDSIO-Server can update the sdsFlags on demand.
-The sdsFlags value is also sent to the host periodically (see \ref sdsExchange).
+The SDSIO-Server running on a host computer receives the sdsFlags value periodically (see \ref sdsExchange).
+The SDSIO server can also update the sdsFlags variable, for example to start recording or configure algorithms.
 */
 
 /**
@@ -154,8 +149,8 @@ This information is relayed to the host in real time as it occurs (see \ref sdsE
 \typedef sdsIdleRate
 \brief Idle rate information
 \details
-This *global variable* stores current value of idle rate in percents, value 0xFFFFFFFF is reserved for unknown value
-in case that idle time measurement is not available.
+This *global variable* stores the current idle rate as a percentage. The value 0xFFFFFFFF indicates an unknown value
+when idle time measurement is not available.
 
 This information is relayed to the host in real time periodically (see \ref sdsExchange).
 */
@@ -163,8 +158,10 @@ This information is relayed to the host in real time periodically (see \ref sdsE
 /**
 \fn          int32_t sdsInit (sdsEvent_t event_cb)
 \details
+\b Description:
+
 Initializes the SDS system. This function allocates resources, initializes underlying
-SDS I/O interface and creates the `sdsThread` worker thread. An optional callback function can be
+SDSIO interface, and creates the `sdsThread` worker thread. An optional callback function can be
 registered to receive notifications (e.g., I/O errors).  This function must be called once before opening
 SDS streams.
 */
@@ -172,6 +169,8 @@ SDS streams.
 /**
 \fn          int32_t sdsUninit (void)
 \details
+\b Description:
+
 De-initializes the SDS system. This function terminates the `sdsThread` worker thread,
 and releases the internal resources. All open SDS streams must be closed by the user before calling this function.
 After de-initialization, the system must be re-initialized before further use.
@@ -180,23 +179,25 @@ After de-initialization, the system must be re-initialized before further use.
 /**
 \fn          sdsId_t sdsOpen (const char *name, sdsMode_t mode, void *buf, uint32_t buf_size)
 \details
+\b Description:
+
 Opens an SDS stream for reading or writing timeslot information and data blocks to or from the SDS file. The `buf` parameter specifies
 a user-allocated memory region that serves as an internal circular buffer. The buffer must be large enough
 to hold at least the largest expected data block plus 8 bytes for header information.
 
-For opening stream in **write mode**:
+To open a stream in **write mode** (for recording):
 
 - The `name` parameter defines the base name for the SDS output file and is used to construct the full filename in the
   format `name.index.sds`. The `index` is an auto-incrementing value that ensures a unique filename is generated.
   If a file with the generated name already exists, the `index` is incremented until an unused name is found.
 
-For opening stream in **read mode**:
+To open a stream in **read mode** (for playback):
 
 - The `name` parameter specifies the base name of the SDS input file.
-  When SDS I/O is a file system then the function attempts to locate and open the file in the format
+  When SDSIO uses a file system, the function attempts to locate and open the file in the format
   `name.index.sds`, where `index` is an auto-incrementing value. If no matching file is found, the function returns an error.
-  When SDS I/O uses SDS I/O Client in conjunction with the SDS I/O Server, the filename is constructed by the SDS I/O Server
-  according to configuration specified in the `sdsio.yml` steering file.
+  When SDSIO uses an SDSIO Client in conjunction with the SDSIO-Server, the filename is constructed by the SDSIO-Server
+  according to the configuration specified in the `sdsio.yml` steering file.
 
 For details, refer to [Filenames section](../theory.md#filenames).
 
@@ -207,6 +208,8 @@ subsequent function calls to perform operations on the stream.
 /**
 \fn          int32_t sdsClose (sdsId_t id)
 \details
+\b Description:
+
 Closes an SDS stream and releases any internal resources associated with the stream handle.
 
 For closing a stream used in **write mode**:
@@ -224,13 +227,15 @@ Upon successful closure, the stream handle becomes invalid.
 /**
 \fn          int32_t sdsWrite (sdsId_t id, uint32_t timeslot, const void *buf, uint32_t buf_size)
 \details
+\b Description:
+
 Writes a data block, including a header containing the timeslot information and data block size, to the internal circular buffer.
 
-The `sdsThread` worker thread asynchronously writes the data to the SDS file via the underlying SDS I/O interface.
+The `sdsThread` worker thread asynchronously writes the data to the SDS file via the underlying SDSIO interface.
 For an explanation of how the SDS system selects and names the target SDS file, refer to [Filenames section](../theory.md#filenames).
 This asynchronous design enables efficient, non-blocking data handling and optimized performance.
 
-Before attempting to write, function verifies that the entire header and the complete data block, provided via the buffer
+Before attempting to write, the function verifies that the entire header and the complete data block, provided via the buffer
 pointer `buf` and its size `buf_size`, can fit within the available space in the internal SDS circular buffer.
 If insufficient space is available, the operation is aborted and the function returns \ref SDS_NO_SPACE.
 
@@ -244,9 +249,11 @@ However, multiple threads can concurrently write to different streams, enabling 
 /**
 \fn          int32_t sdsRead (sdsId_t id, uint32_t *timeslot, void *buf, uint32_t buf_size)
 \details
+\b Description:
+
 Reads a data block along with its associated timeslot from the internal SDS circular buffer.
 
-The `sdsThread` worker thread asynchronously reads the data from the SDS file using the underlying SDS I/O interface.
+The `sdsThread` worker thread asynchronously reads the data from the SDS file using the underlying SDSIO interface.
 For details on how the specific SDS file is selected, refer to  [Filenames section](../theory.md#filenames).
 The retrieved data is then written to the internal SDS circular buffer. This asynchronous design enables efficient,
 non-blocking data handling and ensures optimal performance.
@@ -270,7 +277,9 @@ However, multiple threads can concurrently read from different streams, enabling
 /**
 \fn          int32_t sdsGetSize (sdsId_t id)
 \details
-Function verifies that the entire header and the complete data block specified by the header are both present in the SDS circular buffer.
+\b Description:
+
+The function verifies that the entire header and the complete data block specified by the header are both present in the SDS circular buffer.
 It returns the size, in bytes, of the next available data block in the stream. If either the header is incomplete or the corresponding
 data block is not yet fully available, the function returns \ref  SDS_NO_DATA. If the end of the stream has been reached and no further
 data is available, the function returns \ref SDS_EOS.
@@ -279,14 +288,18 @@ data is available, the function returns \ref SDS_EOS.
 /**
 \fn          int32_t sdsExchange (void)
 \details
+\b Description:
+
 Exchanges SDS control information with the host.
-Update \ref sdsFlags if requested by the host, and send current sdsFlags
+Updates \ref sdsFlags if requested by the host, and sends the current sdsFlags
 value along with \ref sdsIdleRate and optional error information \ref sdsError to the host.
 */
 
 /**
 \fn          void sdsFlagsModify (uint32_t set_mask, uint32_t clear_mask)
 \details
+\b Description:
+
 Atomically sets and clears bits in the global `sdsFlags` control flags.
 Bits present in `set_mask` are set and bits present in `clear_mask` are cleared in the update, applied in that order.
 */
@@ -295,22 +308,22 @@ Bits present in `set_mask` are set and bits present in `clear_mask` are cleared 
 /**
 @}
 */
-// end group SDS_Interface
+// end group SDS_Stream_Interface
 
 
 /*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====*/
 /**
-\defgroup SDS_IO_Interface SDS I/O Interface
-\brief sdsio.h: Synchronous Data Stream I/O Interface for data streams.
+\defgroup SDSIO_Client_Interface SDSIO Client Interface
+\brief sdsio.h: Input/Output Interface for SDS data streams.
 \details
-The SDS I/O interface provides a generic mechanism for reading from and writing to `SDS file`s using several I/O backends.
+The SDSIO interface provides a generic mechanism for reading from and writing to `SDS files` using different SDSIO-Client implementations.
 
-Interface can operate over:
+An SDSIO-Client can operate over:
 
 - A local file system, such as an SD card or semihosting, where files are accessed directly.
-- A communication channel such as Ethernet, USB, or UART, where access to files is performed remotely via an SDS I/O Server.
+- A communication channel such as Ethernet, USB, or UART, where access to files is performed remotely via an SDSIO-Server.
 
-When using a communication channel, the embedded device runs an SDS I/O Client, which communicates with the SDS I/O Server
+When using a communication channel, the embedded device runs an SDSIO-Client, which communicates with the SDSIO-Server
 running on the host machine. This interaction is command-based (e.g., `SDSIO_CMD_OPEN`, `SDSIO_CMD_READ`, `SDSIO_CMD_WRITE`) and enables
 the embedded system to remotely open, read, write, and close files located on the host. For more details, refer to
 [SDSIO-Server Firmware Protocol](../theory.md#sdsio-server-firmware-protocol).
@@ -339,6 +352,8 @@ It is a parameter of the \ref sdsioOpen function.
 /**
 \fn          int32_t sdsioInit (void)
 \details
+\b Description:
+
 Initializes the SDS I/O interface. The interface may be a local file system (e.g., an SD card) or semihosting,
 or a communication channel such as Ethernet, USB or UART. In the case of a communication channel,
 the SDS I/O Client is used to interact with the SDS I/O Server running on a host machine.
@@ -349,6 +364,8 @@ the SDS I/O Server is active on the host.
 /**
 \fn          int32_t sdsioUninit (void)
 \details
+\b Description:
+
 De-initializes the SDS I/O interface. If a communication channel such as Ethernet, USB or USART is used,
 the corresponding communication interface is also de-initialized.
 */
@@ -356,6 +373,8 @@ the corresponding communication interface is also de-initialized.
 /**
 \fn          sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode)
 \details
+\b Description:
+
 Opens an SDS I/O stream for reading or writing. If the interface is a local file system or semihosting, the file is opened directly.
 For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends an open command (SDSIO_CMD_OPEN) to the SDS I/O Server to open
 the file on the host system. The function returns the handle to the SDS I/O stream; if the I/O stream could not be opened, it returns NULL.
@@ -364,6 +383,8 @@ the file on the host system. The function returns the handle to the SDS I/O stre
 /**
 \fn          int32_t sdsioClose (sdsioId_t id)
 \details
+\b Description:
+
 Closes an SDS I/O stream. If the interface is a local file system or semihosting, the file is closed directly.
 For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a close command (SDSIO_CMD_CLOSE)
 to the SDS I/O Server to close the file on the host system.
@@ -372,6 +393,8 @@ to the SDS I/O Server to close the file on the host system.
 /**
 \fn          int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size)
 \details
+\b Description:
+
 Attempts to write up to `buf_size` bytes from the memory pointed to `buf` to the SDS I/O stream identified by `id`.
 If the interface is a local file system or semihosting, data is written directly to the file.
 For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a write command (SDSIO_CMD_WRITE) along with the data to
@@ -387,6 +410,8 @@ The function may return before all data has been written, depending on the avail
 /**
 \fn          int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size)
 \details
+\b Description:
+
 Attempts to read up to `buf_size` bytes of data from the SDS I/O stream identified by `id` into the memory pointed to `buf`.
 If the interface is a local file system or semihosting, data is read directly from the file.
 For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO_CMD_READ) to the SDS I/O Server, which reads
@@ -405,4 +430,4 @@ The function attempts to read data and may block based on the behavior of the un
 /**
 @}
 */
-// end group SDS_IO_Interface
+// end group SDSIO_Client_Interface

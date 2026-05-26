@@ -14,13 +14,14 @@ The DSP or ML algorithms that are tested operate on blocks and are executed peri
 
 ![SDSIO Interface for Player and Recorder](images/SDS-InOut.png)
 
-The core of the SDS-Framework is a circular buffer handling (`sds_buffer.c/h`) that is controlled by the Stream interface functions (`sds.c/h`). This circular buffer is the queue for the file I/O communication (`sdsio_x.c / sdsio.h`). Using the Stream functions, the data stream under development may read and write data streams as shown in the diagram above.
+
+Using the SDS Stream Interface functions (`sds.c/h`), the data stream under development may read and write as shown above. The Stream Interface functions store data streams in a circular buffer (`sds_buffer.c/h`). This circular buffer is the I/O queue for the SDSIO-Client (`sdsio_x.c / sdsio.h`). 
 
 ![Implementation Files of SDS](images/Theory_of_Operation.png)
 
 ## Usage
 
-The following diagram shows the usage of the SDS functions (executed in `sdsThread`).  The `sdsControlThread` controls the overall execution. `AlgorithmThread` is the thread that executes Signal Conditioning (SC) and ML Model.
+The following diagram shows the usage of the SDS Stream Interface functions (executed in `sdsThread`).  The `sdsControlThread` controls the overall execution. `AlgorithmThread` is the thread that executes Signal Conditioning (SC) and ML Model.
 
 When `AlgorithmThread` starts, it first calls the `InitInputData` function, which initializes the input interfaces
 (for example, camera, microphone, accelerometer, etc.). It then calls `InitAlgorithm`, which is responsible for initializing the ML algorithm.
