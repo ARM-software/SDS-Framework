@@ -151,10 +151,10 @@ def processCOMMAND(command):
     cmd = { 1: "CMD_OPEN", 2: "CMD_CLOSE", 3: "CMD_WRITE", 4: "CMD_READ", 5: "CMD_PING", 6: "CMD_FLAGS", 7: "CMD_INFO" }
 
     if not command in cmd:
-        logger.info(f"ERROR:    Unknown COMMAND: {command}.")
+        logger.error(f"ERROR:    Unknown COMMAND: {command}.")
         return 0
 
-    logger.info(f"Processing {cmd[command]}")
+    logger.debug(f"Processing {cmd[command]}")
 
     try:
         if command == CMD_OPEN:
@@ -207,14 +207,14 @@ def processCOMMAND(command):
 ## Initialize
 #  @return None
 def init():
-    logger.info("Python function init() called")
+    logger.debug("Python function init() called")
 
 
 ## Read interrupt request (the VSI IRQ Status Register)
 #  @return value value read (32-bit)
 def rdIRQ():
     global IRQ_Status
-    logger.info("Python function rdIRQ() called")
+    logger.debug("Python function rdIRQ() called")
 
     value = IRQ_Status
     logger.debug(f"Read interrupt request: {value}")
@@ -227,7 +227,7 @@ def rdIRQ():
 #  @return value value written (32-bit)
 def wrIRQ(value):
     global IRQ_Status
-    logger.info("Python function wrIRQ() called")
+    logger.debug("Python function wrIRQ() called")
 
     IRQ_Status = value
     logger.debug(f"Write interrupt request: {value}")
@@ -241,7 +241,7 @@ def wrIRQ(value):
 #  @return value value written (32-bit)
 def wrTimer(index, value):
     global Timer_Control, Timer_Interval
-    logger.info("Python function wrTimer() called")
+    logger.debug("Python function wrTimer() called")
 
     if index == 0:
         Timer_Control = value
@@ -256,7 +256,7 @@ def wrTimer(index, value):
 ## Timer event (called at Timer Overflow)
 #  @return None
 def timerEvent():
-    logger.info("Python function timerEvent() called")
+    logger.debug("Python function timerEvent() called")
 
 
 ## Write DMA registers (the VSI DMA Registers)
@@ -265,7 +265,7 @@ def timerEvent():
 #  @return value value written (32-bit)
 def wrDMA(index, value):
     global DMA_Control
-    logger.info("Python function wrDMA() called")
+    logger.debug("Python function wrDMA() called")
 
     if index == 0:
         DMA_Control = value
@@ -279,7 +279,7 @@ def wrDMA(index, value):
 #  @return data data read (bytearray)
 def rdDataDMA(size):
     global Data
-    logger.info("Python function rdDataDMA() called")
+    logger.debug("Python function rdDataDMA() called")
 
     n = min(len(Data), size)
     data = bytearray(size)
@@ -295,7 +295,7 @@ def rdDataDMA(size):
 #  @return None
 def wrDataDMA(data, size):
     global Data
-    logger.info("Python function wrDataDMA() called")
+    logger.debug("Python function wrDataDMA() called")
 
     Data = data
     logger.debug(f"Write data ({size} bytes)")
@@ -308,7 +308,7 @@ def wrDataDMA(data, size):
 #  @return value value read (32-bit)
 def rdRegs(index):
     global Timer_Control, COMMAND, STREAM_ID, ARGUMENT, FLAGS_SET, FLAGS_CLR
-    logger.info("Python function rdRegs() called")
+    logger.debug("Python function rdRegs() called")
 
     if   index == 0:
         value = COMMAND
@@ -338,7 +338,7 @@ def rdRegs(index):
 #  @return value value written (32-bit)
 def wrRegs(index, value):
     global COMMAND, STREAM_ID, ARGUMENT, FLAGS_SET, FLAGS_CLR
-    logger.info("Python function wrRegs() called")
+    logger.debug("Python function wrRegs() called")
 
     if   index == 0:
         COMMAND = processCOMMAND(value)
