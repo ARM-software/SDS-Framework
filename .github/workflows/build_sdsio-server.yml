@@ -1,6 +1,12 @@
 name: Build sdsio-server
 on:
   workflow_dispatch:
+    inputs:
+      trigger_extension_build:
+        description: 'Trigger CMSIS SDS extension build as part of this workflow.'
+        required: false
+        default: false
+        type: boolean
   release:
     types:
       - published
@@ -73,3 +79,25 @@ jobs:
           name: ${{ matrix.artifact_name }}-${{ env.SDSIO_SERVER_VERSION }}
           path: dist/sdsio-server*
           retention-days: 7
+
+  # Triggers the CMSIS SDS extension nightly workflow
+  trigger-sds-extn:
+    needs: [ build ]
+    if: >-
+      success() && github.repository == 'ARM-software/SDS-Framework' &&
+      ((github.event_name == 'workflow_dispatch' && github.event.inputs.trigger_extension_build) || github.event_name == 'schedule')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Trigger vscode-cmsis-sds workflow
+        run: |
+          curl --fail-with-body --show-error --silent -X POST \
+            -H "Authorization: Bearer ${{ secrets.CROSS_REPO_SDS_EXTN_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Content-Type: application/json" \
+            https://api.github.com/repos/Open-CMSIS-Pack/vscode-cmsis-sds/actions/workflows/nightly.yml/dispatches \
+            -d '{"ref":"main"}'
