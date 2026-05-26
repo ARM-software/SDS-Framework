@@ -524,7 +524,7 @@ It communicates with the target using these <a href="https://github.com/ARM-soft
 <li>Configure via a YAML control file (<code>-c *.sdsio.yml</code>) or specify the interface directly on the command line.</li>
 <li>Terminate the server by pressing <code>Ctrl+C</code> or the <code>X</code> key in the server application window.</li>
 </ul>
-<pre><code class="language-txt">usage: sdsio-server.py [-h] [-V] [{socket | serial | usb} [if-opts]] [-c &lt;*.sdsio.yml&gt;] [general-opts]
+<pre><code class="language-txt">usage: sdsio-server.py [-h] [-V] [{socket | serial | usb} [if-opts]] [-c sdsio.yml] [general-opts]
 
 SDSIO-Server: record and playback SDS data stream files over USB, socket, or serial interface.
 Configure via *.sdsio.yml file or specify the interface parameters directly on the command line.
@@ -547,6 +547,7 @@ general-opts:
   --workdir &lt;path&gt;             Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
   --mon-port, -m &lt;port&gt;        Monitor control interface port
   --log, -l &lt;file&gt;             Redirect console output to a log file (typically for CI use)
+  --write-flush-size &lt;bytes&gt;   Force recorded SDS data to disk after this many bytes (0 disables explicit sync)
   --verbose, -v                Enable debug messages
   --high-priority              Increase process priority when using USB interface (requires elevated privileges)
 </code></pre>
@@ -661,6 +662,9 @@ if-opts (optional):
 </code></pre>
 <p>Start SDSIO-Server using user specified working directory:</p>
 <pre><code class="language-bash">python sdsio-server.py usb --workdir ./data
+</code></pre>
+<p>Start SDSIO-Server, forcing SDS file write flushes to disk when recording data exceeds 1 kB:</p>
+<pre><code class="language-bash">python sdsio-server.py usb --write-flush-size 1024
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
