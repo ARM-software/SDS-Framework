@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.22"
+SDSIO_SERVER_VERSION = "0.9.24"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -1275,11 +1275,15 @@ class sdsio_manager:
 #                            Async Socket Server                               #
 # ---------------------------------------------------------------------------- #
 class async_sdsio_server_socket:
-    def __init__(self, ip, port, manager: sdsio_manager):
+    def __init__(self, ip, port, connect_mode, connect_message, connect_time_ms, manager: sdsio_manager):
         self._ip = ip
         self._port = port
+        self._connect_mode = connect_mode
+        self._connect_message = connect_message
+        self._connect_time_ms = connect_time_ms
         self._manager = manager
         self.server = None
+        self._active_writer = None
         self._handler_tasks = set()
         self._shutting_down = False
 
@@ -1294,11 +1298,27 @@ class async_sdsio_server_socket:
         except Exception:
             pass
 
-    async def _handle_client(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+    async def _discard_initial_response(self, reader: asyncio.StreamReader, timeout_ms=50):
+        _deadline = asyncio.get_running_loop().time() + (timeout_ms / 1000)
+        while True:
+            _remaining = _deadline - asyncio.get_running_loop().time()
+            if _remaining <= 0:
+                break
+            try:
+                _data = await asyncio.wait_for(reader.read(4096), timeout=_remaining)
+                if _data:
+                    logger.debug(f"Discarding initial response data from host: {_data!r}")
+            except asyncio.TimeoutError:
+                break
+            if not _data:
+                break
+
+    async def _handle_connection(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
         _task = asyncio.current_task()
         self._handler_tasks.add(_task)
+        self._active_writer = writer
         try:
-            logger.info(f"SDSIO Client connected.")
+            logger.info("SDSIO Client connected.")
             while True:
                 # Send async FLAGS response periodically
                 _resp = self._manager.get_async_response()
@@ -1329,9 +1349,11 @@ class async_sdsio_server_socket:
             raise                          # re-raise per docs
         except (asyncio.IncompleteReadError, ConnectionResetError, OSError):
             if not self._shutting_down:
-                logger.info(f"SDSIO Client disconnected.")
+                logger.info("SDSIO Client disconnected.")
         finally:
             self._handler_tasks.discard(_task)
+            if self._active_writer is writer:
+                self._active_writer = None
             # Send shutdown flags (clear alive bit) before closing
             try:
                 writer.write(self._manager.get_shutdown_flags())
@@ -1342,10 +1364,63 @@ class async_sdsio_server_socket:
             # Clean up any streams
             self._manager.clean()
             if not self._shutting_down:
-                logger.info("Waiting for SDSIO Client to reconnect...")
+                if not self._connect_mode:
+                    logger.info("Waiting for SDSIO Client to reconnect...")
 
     async def start(self):
-        self.server = await asyncio.start_server(self._handle_client, self._ip, self._port)
+        if self._connect_mode:
+            await self._start_client()
+            return
+
+        await self._start_server()
+
+    async def _start_client(self):
+        try:
+            _log_connection_attempt = True
+            while True:
+                _writer = None
+                try:
+                    if _log_connection_attempt:
+                        logger.info(f"Connecting to socket host {self._ip}:{self._port}...")
+                    _reader, _writer = await asyncio.open_connection(self._ip, self._port)
+                    _log_connection_attempt = True
+                    if self._connect_message is not None:
+                        _writer.write(str(self._connect_message).encode("utf-8"))
+                        await _writer.drain()
+                        await self._discard_initial_response(_reader, self._connect_time_ms)
+                    await self._handle_connection(_reader, _writer)
+                except (ConnectionRefusedError, TimeoutError, OSError):
+                    if _writer:
+                        _writer.close()
+                        try:
+                            await _writer.wait_closed()
+                        except Exception:
+                            pass
+                    if self._shutting_down:
+                        break
+                    _log_connection_attempt = False
+                    self._manager.clean()
+                    await asyncio.sleep(1)
+                else:
+                    if self._shutting_down:
+                        break
+                    _log_connection_attempt = True
+                    await asyncio.sleep(1)
+        except KeyboardInterrupt:
+            # Python 3.9-3.10: KeyboardInterrupt raised directly (not as CancelledError)
+            pass
+        finally:
+            self._shutting_down = True
+            if self._active_writer:
+                self._active_writer.close()
+                try:
+                    await self._active_writer.wait_closed()
+                except Exception:
+                    pass
+                self._active_writer = None
+
+    async def _start_server(self):
+        self.server = await asyncio.start_server(self._handle_connection, self._ip, self._port)
         _addr = self.server.sockets[0].getsockname()
         logger.info(f"Socket server listening on {_addr[0]}:{_addr[1]}")
         try:
@@ -1372,9 +1447,9 @@ class async_sdsio_server_socket:
                 for _task in _pending:
                     _task.cancel()
 
-async def sdsio_server_socket_run_supervised(ip, port, manager):
+async def sdsio_server_socket_run_supervised(ip, port, connect_mode, connect_message, connect_time_ms, manager):
     while True:
-        _srv = async_sdsio_server_socket(ip, port, manager)
+        _srv = async_sdsio_server_socket(ip, port, connect_mode, connect_message, connect_time_ms, manager)
         try:
             await _srv.start()
             # If start() returns normally, break out
@@ -2138,6 +2213,7 @@ def parse_arguments():
         "  R/r  start recording      P/p  start playback\n"
         "  S/s  stop rec/play        X/x  terminate server\n"
         "  A-H  set user flags 0-7   a-h  clear user flags 0-7\n"
+        "  T/t  reset target\n"
         "\n"
         "examples:\n"
         "  %(prog)s -c sdsio.yml                     # Recommended: all config in YAML\n"
@@ -2221,18 +2297,27 @@ def parse_arguments():
     )
     _parser_socket.is_subparser = True
     _parser_socket.error_hint = "For help on how to use the socket server and its arguments, run: %(prog)s -h"
-    _parser_socket.usage = "%(prog)s [-h] [-V] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [general-opts]"
+    _parser_socket.usage = "%(prog)s [-h] [-V] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [--connect-mode] [--connect-message <message>] [--connect-time <ms>] [general-opts]"
     _add_info_opts(_parser_socket, version_text=f"{_parser.prog} {SDSIO_SERVER_VERSION}")
 
     _socket_group = _parser_socket.add_argument_group("if-opts (optional)")
     _socket_group.add_argument("--ipaddr", dest="ip", metavar="<IP>",
-                              help="Server IP address (example: 192.168.0.100), cannot be combined with 'netif'",
+                              help="Server IP address, or host IP address in connect mode (example: 192.168.0.100); mandatory with --connect-mode; cannot be combined with 'netif'",
                               type=ip_validator, default=None)
     _socket_group.add_argument("--netif", dest="interface", metavar="<Interface>",
                               help="Network interface (example: eth0), cannot be combined with 'ipaddr'",
                               type=interface_validator, default=None)
     _socket_group.add_argument("--port", dest="port", metavar="<TCP Port>",
                               help="TCP port number (default: 5050)", type=int, default=5050)
+    _socket_group.add_argument("--connect-mode", dest="connect_mode",
+                              help="Connect to the configured IP address instead of listening for incoming socket connections",
+                              action="store_true", default=False)
+    _socket_group.add_argument("--connect-message", dest="connect_message", metavar="<message>",
+                              help="Optional message sent when the connect-mode socket connection is established",
+                              default=None)
+    _socket_group.add_argument("--connect-time", dest="connect_time_ms", metavar="<ms>",
+                              help="Duration in milliseconds to discard incoming data after sending connect-message (default: 50)",
+                              type=non_negative_int, default=50)
     _add_general_opts(_parser_socket)
 
     # serial
@@ -2332,8 +2417,13 @@ def parse_arguments():
         _sub_ns, _ = _subparser.parse_known_args(_sub_args)
 
         # Manual mutual-exclusion for socket so both options appear in one group
-        if _top_ns.server_type == "socket" and _sub_ns.ip is not None and _sub_ns.interface is not None:
-            _subparser.error("options --ipaddr and --interface are mutually exclusive.")
+        if _top_ns.server_type == "socket":
+            if _sub_ns.ip is not None and _sub_ns.interface is not None:
+                _subparser.error("options --ipaddr and --netif are mutually exclusive.")
+            if _sub_ns.connect_mode and _sub_ns.interface is not None:
+                _subparser.error("option --connect-mode cannot be combined with --netif.")
+            if _sub_ns.connect_mode and _sub_ns.ip is None:
+                _subparser.error("option --connect-mode requires --ipaddr.")
 
         # Merge namespaces (global + subcommand) for downstream use
         for _k, _v in vars(_sub_ns).items():
@@ -2382,6 +2472,9 @@ async def main():
             _socket_iface = _args.interface
             _ip = _args.ip
             _port = _args.port
+            _connect_mode = _args.connect_mode
+            _connect_message = _args.connect_message
+            _connect_time_ms = _args.connect_time_ms
         elif _server_type == "serial":
             _port = _args.port
             _baudrate = _args.baudrate
@@ -2407,6 +2500,9 @@ async def main():
             _socket_iface = _iface_cfg.get('netif', None)
             _ip = _iface_cfg.get('ipaddr', None)
             _port = _iface_cfg.get('port', 5050)
+            _connect_mode = _iface_cfg.get('connect_mode', False)
+            _connect_message = _iface_cfg.get('connect_message', None)
+            _connect_time_ms = non_negative_int(_iface_cfg.get('connect_time', 50))
         elif _server_type == "serial":
             _port = _iface_cfg.get('port')
             _baudrate = _iface_cfg.get('baudrate', 115200)
@@ -2441,7 +2537,13 @@ async def main():
 
     try:
         if _server_type == "socket":
-            if not _ip and _socket_iface:
+            if _connect_mode and _socket_iface:
+                logger.error("Socket connect mode cannot use network interface selection; configure ipaddr instead.")
+                sys.exit(1)
+            if _connect_mode and not _ip:
+                logger.error("Socket connect mode requires ipaddr.")
+                sys.exit(1)
+            if not _connect_mode and not _ip and _socket_iface:
                 _adapters = ifaddr.get_adapters()
                 for _adapter in _adapters:
                     if _adapter.name == _socket_iface or _adapter.nice_name == _socket_iface:
@@ -2456,7 +2558,7 @@ async def main():
                         break
             if not _ip:
                 _ip = socket.gethostbyname(socket.gethostname())
-            await sdsio_server_socket_run_supervised(_ip, _port, _manager)
+            await sdsio_server_socket_run_supervised(_ip, _port, _connect_mode, _connect_message, _connect_time_ms, _manager)
 
         elif _server_type == "serial":
             sdsio_server_serial_run_supervised(_port, _baudrate, _parity,
