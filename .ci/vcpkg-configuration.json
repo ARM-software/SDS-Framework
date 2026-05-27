@@ -7,7 +7,7 @@
         }
     ],
     "requires": {
-        "arm:tools/open-cmsis-pack/cmsis-toolbox": "2.13.0",
+        "arm:tools/open-cmsis-pack/cmsis-toolbox": "^2.13.0",
         "arm:tools/kitware/cmake": "^3.31.5",
         "arm:tools/ninja-build/ninja": "^1.12.1",
         "arm:tools/arm/mdk-toolbox":" ^1.1.0",
