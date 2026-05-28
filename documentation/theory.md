@@ -76,7 +76,7 @@ The filename used when opening a stream depends on the presence of the `sdsio.ym
 If the steering file exists and contains `play` node, the filename follows the pattern `<name>.<label>.sds`, where `<label>` is specified in the corresponding
 `step` node in the `play` node. After playback or recording completes, processing continues with the next `step` node, if available, and the process repeats.
 
-The previous explanation applies only to playback; for recording, the file naming pattern is determined as follows.
+The previous explanation applies only to playback mode.
 
 If the steering file does not exist or does not contain `play` node, the filename follows the pattern `<name>.<label>.sds`, where for:
 

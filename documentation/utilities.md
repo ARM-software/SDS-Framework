@@ -347,7 +347,7 @@ python sdsio-server.py usb --write-flush-size 1024
 
 On **macOS**, the **libusb** system library is required. If not already installed, you can install it with [Homebrew](https://brew.sh/): `>brew install libusb`
 
-On **Linux**, access to USB devices from user space requires a udev rule by default. Create a udev rule file (e.g. `/etc/udev/rules.d/99-sdsio.rules`) with the vendor and product ID of the SDSIO Client device.
+On **Linux**, access to USB devices from user space requires a udev rule by default. Create a udev rule file (e.g. `/etc/udev/rules.d/99-sdsio.rules`) with the vendor and product ID of the SDSIO-Client device.
 
 ```bash
 SUBSYSTEM=="usb", ATTRS{idVendor}=="XXXX", ATTRS{idProduct}=="XXXX", MODE="0666"
