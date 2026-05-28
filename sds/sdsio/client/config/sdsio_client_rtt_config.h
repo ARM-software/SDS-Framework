@@ -32,12 +32,12 @@
 //   <o>RTT down-channel buffer size
 //   <i>Size of the down to target channel buffer in bytes
 //   <i>Default: 8192
-#define SDSIO_RTT_DOWN_BUF_SIZE 8192U
+#define SDSIO_RTT_DOWN_BUF_SIZE 16384U
 
 //   <o>RTT up-channel buffer size
 //   <i>Size of the up to host channel buffer in bytes
 //   <i>Default: 8192
-#define SDSIO_RTT_UP_BUF_SIZE   8192U
+#define SDSIO_RTT_UP_BUF_SIZE   16384U
 
 //   <o>RTT channel buffer alignment
 //   <i>Buffer alignment in bytes (must be a power of 2)

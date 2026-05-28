@@ -4,7 +4,7 @@ layer:
 
   packs:
     - pack: ARM::SDS@^3.0.0-0
-    - pack: SEGGER::RTT
+    - pack: SEGGER::RTT@^8.58.0
 
   connections:
     - connect: SDS
