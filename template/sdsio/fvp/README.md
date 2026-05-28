@@ -1,10 +1,10 @@
-# SDS with SDS I/O Interface via VSI (Simulator)
+# SDS with SDSIO via VSI (Simulator)
 
-This layer provides SDS with an I/O interface using the VSI Simulation interface on the Arm Virtual Hardware FVP model.
+This layer provides SDS with SDSIO using the VSI Simulation interface on the Arm Virtual Hardware FVP model.
 It is based on the following components:
 
-- [SDS](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__Interface.html) data streaming,
-- [SDS_IO](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__IO__Interface.html) SDS I/O interface,
+- [SDS](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__Stream__Interface.html) data streaming,
+- [SDSIO](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDSIO__Interface.html) SDSIO interface,
 - [VSI interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html) for simulation.
 
 ## SDS Configuration

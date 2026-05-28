@@ -1,11 +1,11 @@
-# SDS with SDS I/O Interface via RTT
+# SDS with SDSIO via RTT
 
-This layer provides SDS with an I/O interface using the RTT (Real Time Transfer) communication.
+This layer provides SDS with SDSIO using the RTT (Real Time Transfer) communication.
 It is implemented with the SEGGER RTT component.
 It is based on the following components:
 
-- [SDS](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__Interface.html) data streaming,
-- [SDS_IO](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__IO__Interface.html) SDS I/O interface,
+- [SDS](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDS__Stream__Interface.html) data streaming,
+- [SDSIO](https://arm-software.github.io/SDS-Framework/main/SDS_API/group__SDSIO__Interface.html) SDSIO interface,
 - [RTT](https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/) communication channel.
 
 ## SDS Configuration
