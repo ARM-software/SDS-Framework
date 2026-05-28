@@ -276,7 +276,7 @@ This callback function is registered by passing a pointer to it as a parameter t
 </para>
 <para>To open a stream in <bold>read mode</bold> (for playback):</para>
 <para><itemizedlist>
-<listitem><para>The <computeroutput>name</computeroutput> parameter specifies the base name of the SDS input file. When SDSIO uses a file system, the function attempts to locate and open the file in the format <computeroutput>name.index.sds</computeroutput>, where <computeroutput>index</computeroutput> is an auto-incrementing value. If no matching file is found, the function returns an error. When SDSIO uses an SDSIO Client in conjunction with the SDSIO-Server, the filename is constructed by the SDSIO-Server according to the configuration specified in the <computeroutput>sdsio.yml</computeroutput> steering file.</para>
+<listitem><para>The <computeroutput>name</computeroutput> parameter specifies the base name of the SDS input file. When SDSIO uses a file system, the function attempts to locate and open the file in the format <computeroutput>name.index.sds</computeroutput>, where <computeroutput>index</computeroutput> is an auto-incrementing value. If no matching file is found, the function returns an error. When SDSIO uses an SDSIO-Client in conjunction with the SDSIO-Server, the filename is constructed by the SDSIO-Server according to the configuration specified in the <computeroutput>sdsio.yml</computeroutput> steering file.</para>
 </listitem></itemizedlist>
 </para>
 <para>For details, refer to <ulink url="../theory.md#filenames">Filenames section</ulink>.</para>

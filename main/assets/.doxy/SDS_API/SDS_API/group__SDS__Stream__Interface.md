@@ -561,7 +561,7 @@ To open a stream in **read mode** (for playback):
 
 
 
-* The `name` parameter specifies the base name of the SDS input file. When SDSIO uses a file system, the function attempts to locate and open the file in the format `name.index.sds`, where `index` is an auto-incrementing value. If no matching file is found, the function returns an error. When SDSIO uses an SDSIO Client in conjunction with the SDSIO-Server, the filename is constructed by the SDSIO-Server according to the configuration specified in the `sdsio.yml` steering file.
+* The `name` parameter specifies the base name of the SDS input file. When SDSIO uses a file system, the function attempts to locate and open the file in the format `name.index.sds`, where `index` is an auto-incrementing value. If no matching file is found, the function returns an error. When SDSIO uses an SDSIO-Client in conjunction with the SDSIO-Server, the filename is constructed by the SDSIO-Server according to the configuration specified in the `sdsio.yml` steering file.
 
 
 

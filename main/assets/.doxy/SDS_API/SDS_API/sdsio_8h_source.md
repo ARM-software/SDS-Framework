@@ -36,9 +36,9 @@ extern "C"
 
 #include <stdint.h>
 
-// ==== Synchronous Data Stream Input/Output (SDS I/O) ====
+// ==== Synchronous Data Stream Input/Output (SDSIO) ====
 
-typedef void *sdsioId_t;        // Handle to SDS I/O stream
+typedef void *sdsioId_t;        // Handle to SDSIO stream
 
 // Open Mode
 typedef enum {

@@ -71,7 +71,7 @@ Here is a list of all modules:
 
 
 
-* [**SDSIO Client Interface**](group__SDSIO__Client__Interface.md) sdsio.h _: Input/Output Interface for SDS data streams._
+* [**SDSIO Interface**](group__SDSIO__Interface.md) sdsio.h _: Input/Output Interface for SDS data streams._
     
 
 

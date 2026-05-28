@@ -56,14 +56,14 @@
   <compound refid="sds_8txt" kind="file"><name>sds.txt</name>
   </compound>
   <compound refid="sdsio_8h" kind="file"><name>sdsio.h</name>
-    <member refid="group__SDSIO__Client__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kind="enum"><name>sdsioMode_t</name></member>
-    <member refid="group__SDSIO__Client__Interface_1ga98da0c4e985ba1602142116ec7b47526" kind="typedef"><name>sdsioId_t</name></member>
-    <member refid="group__SDSIO__Client__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" kind="function"><name>sdsioInit</name></member>
-    <member refid="group__SDSIO__Client__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" kind="function"><name>sdsioUninit</name></member>
-    <member refid="group__SDSIO__Client__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" kind="function"><name>sdsioOpen</name></member>
-    <member refid="group__SDSIO__Client__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" kind="function"><name>sdsioClose</name></member>
-    <member refid="group__SDSIO__Client__Interface_1gafb6b812114b27595ead2d18f2b151e6e" kind="function"><name>sdsioWrite</name></member>
-    <member refid="group__SDSIO__Client__Interface_1gaed816e11cb116354d8d95d97693a736c" kind="function"><name>sdsioRead</name></member>
+    <member refid="group__SDSIO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kind="enum"><name>sdsioMode_t</name></member>
+    <member refid="group__SDSIO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kind="typedef"><name>sdsioId_t</name></member>
+    <member refid="group__SDSIO__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" kind="function"><name>sdsioInit</name></member>
+    <member refid="group__SDSIO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" kind="function"><name>sdsioUninit</name></member>
+    <member refid="group__SDSIO__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" kind="function"><name>sdsioOpen</name></member>
+    <member refid="group__SDSIO__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" kind="function"><name>sdsioClose</name></member>
+    <member refid="group__SDSIO__Interface_1gafb6b812114b27595ead2d18f2b151e6e" kind="function"><name>sdsioWrite</name></member>
+    <member refid="group__SDSIO__Interface_1gaed816e11cb116354d8d95d97693a736c" kind="function"><name>sdsioRead</name></member>
   </compound>
   <compound refid="group__SDS__Stream__Interface" kind="group"><name>SDS_Stream_Interface</name>
     <member refid="group__SDS__Stream__Interface_1gad6d59026db360abedd94d82ab336ebbf" kind="typedef"><name>sdsId_t</name></member>
@@ -118,17 +118,17 @@
     <member refid="group__SDS__State__Codes_1gad98b7ed572340d850818401fe30c255b" kind="define"><name>SDS_STATE_RESET</name></member>
     <member refid="group__SDS__State__Codes_1gace7f9148e2614b1dd42cf6804f7b82e1" kind="define"><name>SDS_STATE_TERMINATE</name></member>
   </compound>
-  <compound refid="group__SDSIO__Client__Interface" kind="group"><name>SDSIO_Client_Interface</name>
-    <member refid="group__SDSIO__Client__Interface_1ga98da0c4e985ba1602142116ec7b47526" kind="typedef"><name>sdsioId_t</name></member>
-    <member refid="group__SDSIO__Client__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kind="enum"><name>sdsioMode_t</name></member>
-    <member refid="group__SDSIO__Client__Interface_1gac3a964db3af73a3457d3fe72a7922f41ae1e892569bf150769083e37f812029a3" kind="enumvalue"><name>sdsioModeRead</name></member>
-    <member refid="group__SDSIO__Client__Interface_1gac3a964db3af73a3457d3fe72a7922f41a2e552b9f633629884f6d5205e384ca94" kind="enumvalue"><name>sdsioModeWrite</name></member>
-    <member refid="group__SDSIO__Client__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" kind="function"><name>sdsioInit</name></member>
-    <member refid="group__SDSIO__Client__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" kind="function"><name>sdsioUninit</name></member>
-    <member refid="group__SDSIO__Client__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" kind="function"><name>sdsioOpen</name></member>
-    <member refid="group__SDSIO__Client__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" kind="function"><name>sdsioClose</name></member>
-    <member refid="group__SDSIO__Client__Interface_1gafb6b812114b27595ead2d18f2b151e6e" kind="function"><name>sdsioWrite</name></member>
-    <member refid="group__SDSIO__Client__Interface_1gaed816e11cb116354d8d95d97693a736c" kind="function"><name>sdsioRead</name></member>
+  <compound refid="group__SDSIO__Interface" kind="group"><name>SDSIO_Interface</name>
+    <member refid="group__SDSIO__Interface_1ga98da0c4e985ba1602142116ec7b47526" kind="typedef"><name>sdsioId_t</name></member>
+    <member refid="group__SDSIO__Interface_1gac3a964db3af73a3457d3fe72a7922f41" kind="enum"><name>sdsioMode_t</name></member>
+    <member refid="group__SDSIO__Interface_1gac3a964db3af73a3457d3fe72a7922f41ae1e892569bf150769083e37f812029a3" kind="enumvalue"><name>sdsioModeRead</name></member>
+    <member refid="group__SDSIO__Interface_1gac3a964db3af73a3457d3fe72a7922f41a2e552b9f633629884f6d5205e384ca94" kind="enumvalue"><name>sdsioModeWrite</name></member>
+    <member refid="group__SDSIO__Interface_1gab3fc1abd1e43a7c55f041ef48e987ad8" kind="function"><name>sdsioInit</name></member>
+    <member refid="group__SDSIO__Interface_1ga25f6c8ac6933a079e3b1b54aeb2c9e95" kind="function"><name>sdsioUninit</name></member>
+    <member refid="group__SDSIO__Interface_1ga72fafb50b91c2c6785efe902a3f0f344" kind="function"><name>sdsioOpen</name></member>
+    <member refid="group__SDSIO__Interface_1gaf1c30c0c47f12f033e556a6de01feb35" kind="function"><name>sdsioClose</name></member>
+    <member refid="group__SDSIO__Interface_1gafb6b812114b27595ead2d18f2b151e6e" kind="function"><name>sdsioWrite</name></member>
+    <member refid="group__SDSIO__Interface_1gaed816e11cb116354d8d95d97693a736c" kind="function"><name>sdsioRead</name></member>
   </compound>
   <compound refid="dir_d09908635ef304ba819d3349bcb716bf" kind="dir"><name>sds/include</name>
   </compound>
