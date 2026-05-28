@@ -16,13 +16,14 @@
  * limitations under the License.
  *
  * Name:    sdsio_client_rtt_config.h
- * Purpose: SDS IO via RTT (SEGGER:RTT) configuration options
+ * Purpose: SDSIO via RTT (SEGGER:RTT) configuration options
  * Rev.:    V3.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>SDS IO via RTT (SEGGER:RTT)
+// <h>SDSIO via RTT (SEGGER:RTT)
+// <i>SDSIO using SDSIO-Client to communicate with SDSIO-Server via the RTT interface
 
 //   <o>RTT channel
 //   <i>RTT channel number (0..31) to use for communication

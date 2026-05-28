@@ -16,13 +16,14 @@
  * limitations under the License.
  *
  * Name:    sdsio_client_socket_config.h
- * Purpose: SDS IO via Socket (IoT Utility:Socket) configuration options
+ * Purpose: SDSIO via Socket (IoT Utility:Socket) configuration options
  * Rev.:    V3.0.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>SDS IO via Socket (IoT Utility:Socket)
+// <h>SDSIO via Socket (IoT Utility:Socket)
+// <i>SDSIO using SDSIO-Client to communicate with SDSIO-Server via the Socket Interface
 
 //   <s.16>SDSIO-Server IP
 //   <i>SDSIO socket server IPv4 address
