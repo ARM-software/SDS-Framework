@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// SDS I/O Client
+// SDSIO-Client
 
 #include <stdbool.h>
 #include <string.h>
@@ -151,16 +151,16 @@ int32_t sdsioClientReceiveHeader (uint8_t *buf, uint32_t buf_size) {
 }
 
 
-// SDS I/O functions
+// SDSIO functions
 
 /**
-  Initialize SDS I/O interface.
+  Initialize SDSIO interface.
 */
 int32_t sdsioInit (void) {
   int32_t ret;
 
   if (sdsio_client_initialized != 0U) {
-    // SDS I/O Client already initialized.
+    // SDSIO-Client already initialized.
     return SDS_OK;
   }
 
@@ -179,12 +179,12 @@ int32_t sdsioInit (void) {
 }
 
 /**
-  Un-initialize SDS I/O interface.
+  Un-initialize SDSIO interface.
 */
 int32_t sdsioUninit (void) {
 
   if (sdsio_client_initialized == 0U) {
-    // SDS I/O Client not initialized.
+    // SDSIO-Client not initialized.
     return SDS_OK;
   }
   sdsioClientUninit();
@@ -195,7 +195,7 @@ int32_t sdsioUninit (void) {
 }
 
 /**
-  Open I/O stream.
+  Open SDSIO stream.
   Send:
     header: command   = SDSIO_CMD_OPEN
             sdsio_id  = not used
@@ -216,7 +216,7 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
   sdsio_header_t header;
 
   if (sdsio_client_initialized == 0U) {
-    // SDS I/O Client not initialized.
+    // SDSIO-Client not initialized.
     return NULL;
   }
 
@@ -254,7 +254,7 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
 }
 
 /**
-  Close I/O stream.
+  Close SDSIO stream.
   Send:
     header: command   = SDSIO_CMD_CLOSE
             sdsio_id  = sdsio identifier
@@ -267,7 +267,7 @@ int32_t sdsioClose (sdsioId_t id) {
   sdsio_header_t header;
 
   if (sdsio_client_initialized == 0U) {
-    // SDS I/O Client not initialized.
+    // SDSIO-Client not initialized.
     return SDS_ERROR_IO;
   }
 
@@ -298,7 +298,7 @@ int32_t sdsioClose (sdsioId_t id) {
 }
 
 /**
-  Write data to I/O stream.
+  Write data to SDSIO stream.
   Send:
     header: command   = SDSIO_CMD_WRITE
             sdsio_id  = sdsio identifier
@@ -311,7 +311,7 @@ int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
   sdsio_header_t header;
 
   if (sdsio_client_initialized == 0U) {
-    // SDS I/O Client not initialized.
+    // SDSIO-Client not initialized.
     return SDS_ERROR_IO;
   }
 
@@ -347,7 +347,7 @@ int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
 }
 
 /**
-  Read data from I/O stream.
+  Read data from SDSIO stream.
   Send:
     header: command   = SDSIO_CMD_READ
             sdsio_id  = sdsio identifier
@@ -367,7 +367,7 @@ int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
   sdsio_header_t header;
 
   if (sdsio_client_initialized == 0U) {
-    // SDS I/O Client not initialized.
+    // SDSIO-Client not initialized.
     return SDS_ERROR_IO;
   }
 
@@ -454,7 +454,7 @@ int32_t sdsExchange (void) {
   sdsio_header_t header;
 
   if (sdsio_client_initialized == 0U) {
-    // SDS I/O Client not initialized.
+    // SDSIO-Client not initialized.
     return SDS_ERROR_IO;
   }
 

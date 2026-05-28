@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  * Name:    sdsio_client_rtt_config.h
- * Purpose: SDS IO via RTT (SEGGER:RTT) configuration options
+ * Purpose: SDSIO via RTT (SEGGER:RTT) configuration options
  * Rev.:    V3.0.0
  */
 

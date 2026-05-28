@@ -64,7 +64,7 @@ volatile uint32_t         lock;             // Lock for atomic operations
          uint32_t         buf_size;         // Size of the buffer used for the stream
          uint32_t         threshold;        // Threshold value
          sdsBufferId_t    sds_buffer;       // SDS Buffer stream handle
-         sdsioId_t        sdsio;            // SDS I/O interface handle
+         sdsioId_t        sdsio;            // SDSIO interface handle
          dataBlockHead_t  head;             // Data block header information
 } sdsStream_t;
 
@@ -264,10 +264,10 @@ static void sdsWriteHandler (sdsStream_t *stream) {
     // Read data from the SDS Stream Buffer to intermediate buffer.
     sdsBufferRead(stream->sds_buffer, sdsDataBlockBuf, bytes_to_transfer);
 
-    // Write data from intermediate buffer to SDS I/O Interface.
+    // Write data from intermediate buffer to SDSIO Interface.
     sdsio_ret = sdsioWrite(stream->sdsio, sdsDataBlockBuf, bytes_to_transfer);
     if (sdsio_ret >= 0) {
-      // Number of bytes written to the SDS I/O interface
+      // Number of bytes written to the SDSIO interface
       bytes_transferred = sdsio_ret;
     } else {
       if (sdsEvent != NULL) {
@@ -288,7 +288,7 @@ static void sdsWriteHandler (sdsStream_t *stream) {
 
   if (state == SDS_STREAM_STATE_CLOSING) {
     // State of the stream is closing.
-    // All data has been successfully read from the stream buffer and written to the SDS I/O interface.
+    // All data has been successfully read from the stream buffer and written to the SDSIO interface.
 
     // Set the internal SDS_STREAM_HALT flag to mark that sdsThread has finished processing the closing state.
     stream->flags |= SDS_STREAM_HALT;
@@ -308,7 +308,7 @@ static void sdsReadHandler (sdsStream_t *stream) {
     return;
   }
   if (stream->state == SDS_STREAM_STATE_CLOSING) {
-    // State of the stream is closing. Thread sdsThread has stopped reading data from SDS I/O interface.
+    // State of the stream is closing. Thread sdsThread has stopped reading data from SDSIO interface.
     // Set the internal SDS_STREAM_HALT flag to mark that sdsThread has finished processing the closing state.
     stream->flags |= SDS_STREAM_HALT;
     // Notify the thread waiting for the event in the sdsClose function to finalize the closing of the read stream.
@@ -325,17 +325,17 @@ static void sdsReadHandler (sdsStream_t *stream) {
       bytes_to_transfer = sizeof(sdsDataBlockBuf);
     }
 
-    // Read data from the SDS I/O Interface to intermediate buffer.
+    // Read data from the SDSIO Interface to intermediate buffer.
     sdsio_ret = sdsioRead(stream->sdsio, sdsDataBlockBuf, bytes_to_transfer);
     if (sdsio_ret > 0) {
-      // Number of bytes read from the SDS I/O interface
+      // Number of bytes read from the SDSIO interface
       bytes_transferred = sdsio_ret;
     } else if (sdsio_ret == SDS_EOS) {
       // End of stream reached.
       bytes_transferred = 0U;
       stream->flags |= SDS_STREAM_EOS;
     } else {
-      // Error occurred during reading from the SDS I/O interface.
+      // Error occurred during reading from the SDSIO interface.
       if (sdsEvent != NULL) {
         // Notify the application about I/O error.
         sdsEvent(stream, SDS_EVENT_ERROR_IO);
@@ -351,9 +351,9 @@ static void sdsReadHandler (sdsStream_t *stream) {
 
     // Check if the stream is in the opening state and the processing of the state is not completed.
     if ((stream->state == SDS_STREAM_STATE_OPENING) && ((stream->flags & SDS_STREAM_INITIAL_FILL) == 0U)) {
-      // Check if SDS Stream Buffer is filled with data from the SDS I/O interface (at least to threshold or EOS).
+      // Check if SDS Stream Buffer is filled with data from the SDSIO interface (at least to threshold or EOS).
       if ((sdsBufferGetCount(stream->sds_buffer) >= (int32_t)stream->threshold) || ((stream->flags & SDS_STREAM_EOS) != 0U)) {
-        // Stream buffer is filled with data from the SDS I/O interface.
+        // Stream buffer is filled with data from the SDSIO interface.
         // Set the internal SDS_STREAM_INITIAL_FILL flag to mark that sdsReadHandler has finished processing the opening state.
         stream->flags |= SDS_STREAM_INITIAL_FILL;
         // Notify the thread waiting for the event in the sdsOpen function to finalize the opening of the read stream.
@@ -425,7 +425,7 @@ int32_t sdsInit (sdsEvent_t event_cb) {
   // Reset an array of pointers to stream control blocks.
   memset(psdsStreams, 0, sizeof(psdsStreams));
 
-  // Initialize SDS I/O interface.
+  // Initialize SDSIO interface.
   ret = sdsioInit();
 
   // Create SDS system thread.
@@ -461,7 +461,7 @@ int32_t sdsInit (sdsEvent_t event_cb) {
     sdsInitialized = 1U;
   } else {
     // Initialization failed:
-    // Terminate thread, delete event flags, and uninitialize SDS I/O interface.
+    // Terminate thread, delete event flags, and uninitialize SDSIO interface.
     if (sdsThreadId != NULL) {
       osThreadTerminate(sdsThreadId);
     }
@@ -498,7 +498,7 @@ int32_t sdsUninit (void) {
   // Clear event callback.
   sdsEvent = NULL;
 
-  // Uninitialize SDS I/O interface.
+  // Uninitialize SDSIO interface.
   sdsioUninit();
 
   return SDS_OK;
@@ -550,7 +550,7 @@ sdsId_t sdsOpen (const char *name, sdsMode_t mode, void *buf, uint32_t buf_size)
     // Set threshold to 1/3 of the buffer size.
     stream->threshold = buf_size / 3;
   } else {
-    // Set threshold to SDS I/O interface efficient transfer size.
+    // Set threshold to SDSIO interface efficient transfer size.
     stream->threshold = SDS_IO_TRANSFER_SIZE;
   }
 
@@ -582,7 +582,7 @@ sdsId_t sdsOpen (const char *name, sdsMode_t mode, void *buf, uint32_t buf_size)
       // Streams were successfully opened. Set state to opening.
       stream->state = SDS_STREAM_STATE_OPENING;
       // Read stream is in the opening state and the sdsThread should start
-      // reading data from the SDS I/O interface into the SDS Stream Buffer.
+      // reading data from the SDSIO interface into the SDS Stream Buffer.
       // Notify sdsThread to process this stream by setting the corresponding thread flag.
       osThreadFlagsSet(sdsThreadId, 1U << index);
 
@@ -662,8 +662,8 @@ int32_t sdsClose (sdsId_t id) {
   // Set state to closing.
   stream->state = SDS_STREAM_STATE_CLOSING;
 
-  // Before SDS stream is closed, sdsThread should send all data in SDS Stream Buffer via SDS I/O interface for write mode,
-  // for read mode sdsThread should stop reading data from SDS I/O interface.
+  // Before SDS stream is closed, sdsThread should send all data in SDS Stream Buffer via SDSIO interface for write mode,
+  // for read mode sdsThread should stop reading data from SDSIO interface.
   // Notify sdsThread to process this stream by setting the corresponding thread flag.
   event_mask = 1U << stream->index;
   osThreadFlagsSet(sdsThreadId, event_mask);

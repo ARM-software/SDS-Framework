@@ -22,7 +22,7 @@
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>SDS IO via File System (Keil::File System)
+// <h>SDSIO via File System (Keil::File System)
 
 //   <s.32>Drive
 //   <i>File System drive

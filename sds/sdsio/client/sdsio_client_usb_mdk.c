@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// SDS I/O Client via MDK-Middleware USB Custom Class (Keil::USB:Device:Custom Class)
+// SDSIO-Client via USB (Keil::USB:Device:Custom Class)
 
 #include <string.h>
 
@@ -143,7 +143,7 @@ static void USBD_Endpoint_Event (uint8_t ep_num, uint32_t event) {
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDSIO Client.
+  \brief       Initialize SDSIO-Client.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */
@@ -174,9 +174,9 @@ int32_t sdsioClientInit (void) {
   }
 
   if (ret == SDS_OK) {
-    SDS_PRINTF("SDS I/O USB interface initialized successfully\n");
+    SDS_PRINTF("SDSIO-Client USB interface initialized successfully\n");
   } else {
-    SDS_PRINTF("SDS I/O USB interface initialization failed!\n");
+    SDS_PRINTF("SDSIO-Client USB interface initialization failed!\n");
     SDS_PRINTF("Ensure that device is connected via USB to the host PC running SDSIO-Server, then restart the application!\n");
   }
 
@@ -185,7 +185,7 @@ int32_t sdsioClientInit (void) {
 
 /**
   \fn          int32_t sdsioClientUninit (void)
-  \brief       Un-Initialize SDSIO Client.
+  \brief       Un-Initialize SDSIO-Client.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */

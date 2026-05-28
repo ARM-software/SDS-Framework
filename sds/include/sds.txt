@@ -196,7 +196,7 @@ To open a stream in **read mode** (for playback):
 - The `name` parameter specifies the base name of the SDS input file.
   When SDSIO uses a file system, the function attempts to locate and open the file in the format
   `name.index.sds`, where `index` is an auto-incrementing value. If no matching file is found, the function returns an error.
-  When SDSIO uses an SDSIO Client in conjunction with the SDSIO-Server, the filename is constructed by the SDSIO-Server
+  When SDSIO uses an SDSIO-Client in conjunction with the SDSIO-Server, the filename is constructed by the SDSIO-Server
   according to the configuration specified in the `sdsio.yml` steering file.
 
 For details, refer to [Filenames section](../theory.md#filenames).
@@ -313,12 +313,12 @@ Bits present in `set_mask` are set and bits present in `clear_mask` are cleared 
 
 /*=======0=========1=========2=========3=========4=========5=========6=========7=========8=========9=========0=========1====*/
 /**
-\defgroup SDSIO_Client_Interface SDSIO Client Interface
+\defgroup SDSIO_Interface SDSIO Interface
 \brief sdsio.h: Input/Output Interface for SDS data streams.
 \details
-The SDSIO interface provides a generic mechanism for reading from and writing to `SDS files` using different SDSIO-Client implementations.
+The SDSIO interface provides a generic mechanism for reading from and writing to `SDS files` using different SDSIO implementations.
 
-An SDSIO-Client can operate over:
+An SDSIO can operate over:
 
 - A local file system, such as an SD card or semihosting, where files are accessed directly.
 - A communication channel such as Ethernet, USB, or UART, where access to files is performed remotely via an SDSIO-Server.
@@ -336,16 +336,16 @@ or as a transport layer for higher-level components.
 
 /**
 \typedef sdsioId_t
-\brief Handle to SDS I/O data stream
+\brief Handle to SDSIO data stream
 \details
-This *pointer* defines the handle to SDS I/O data stream. It is used to identify a data stream across the different functions.
+This *pointer* defines the handle to SDSIO data stream. It is used to identify a data stream across the different functions.
 */
 
 /**
 \typedef sdsioMode_t
-\brief SDS I/O stream open mode
+\brief SDSIO stream open mode
 \details
-This *enum* identifies the opening mode of an SDS I/O stream: read or write.
+This *enum* identifies the opening mode of an SDSIO stream: read or write.
 It is a parameter of the \ref sdsioOpen function.
 */
 
@@ -354,11 +354,11 @@ It is a parameter of the \ref sdsioOpen function.
 \details
 \b Description:
 
-Initializes the SDS I/O interface. The interface may be a local file system (e.g., an SD card) or semihosting,
+Initializes the SDSIO interface. The interface may be a local file system (e.g., an SD card) or semihosting,
 or a communication channel such as Ethernet, USB or UART. In the case of a communication channel,
-the SDS I/O Client is used to interact with the SDS I/O Server running on a host machine.
+the SDSIO-Client is used to interact with the SDSIO-Server running on a host machine.
 The initialization process includes setting up the communication interface and verifying that
-the SDS I/O Server is active on the host.
+the SDSIO-Server is active on the host.
 */
 
 /**
@@ -366,7 +366,7 @@ the SDS I/O Server is active on the host.
 \details
 \b Description:
 
-De-initializes the SDS I/O interface. If a communication channel such as Ethernet, USB or USART is used,
+De-initializes the SDSIO interface. If a communication channel such as Ethernet, USB or USART is used,
 the corresponding communication interface is also de-initialized.
 */
 
@@ -375,9 +375,9 @@ the corresponding communication interface is also de-initialized.
 \details
 \b Description:
 
-Opens an SDS I/O stream for reading or writing. If the interface is a local file system or semihosting, the file is opened directly.
-For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends an open command (SDSIO_CMD_OPEN) to the SDS I/O Server to open
-the file on the host system. The function returns the handle to the SDS I/O stream; if the I/O stream could not be opened, it returns NULL.
+Opens an SDSIO stream for reading or writing. If the interface is a local file system or semihosting, the file is opened directly.
+For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends an open command (SDSIO_CMD_OPEN) to the SDSIO-Server to open
+the file on the host system. The function returns the handle to the SDSIO stream; if the SDSIO stream could not be opened, it returns NULL.
 */
 
 /**
@@ -385,9 +385,9 @@ the file on the host system. The function returns the handle to the SDS I/O stre
 \details
 \b Description:
 
-Closes an SDS I/O stream. If the interface is a local file system or semihosting, the file is closed directly.
-For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a close command (SDSIO_CMD_CLOSE)
-to the SDS I/O Server to close the file on the host system.
+Closes an SDSIO stream. If the interface is a local file system or semihosting, the file is closed directly.
+For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends a close command (SDSIO_CMD_CLOSE)
+to the SDSIO-Server to close the file on the host system.
 */
 
 /**
@@ -395,16 +395,16 @@ to the SDS I/O Server to close the file on the host system.
 \details
 \b Description:
 
-Attempts to write up to `buf_size` bytes from the memory pointed to `buf` to the SDS I/O stream identified by `id`.
+Attempts to write up to `buf_size` bytes from the memory pointed to `buf` to the SDSIO stream identified by `id`.
 If the interface is a local file system or semihosting, data is written directly to the file.
-For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a write command (SDSIO_CMD_WRITE) along with the data to
-the SDS I/O Server, which then writes the data to a file on the host system.
+For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends a write command (SDSIO_CMD_WRITE) along with the data to
+the SDSIO-Server, which then writes the data to a file on the host system.
 
 The function may return before all data has been written, depending on the available interface bandwidth, buffer capacity, or timeout behavior:
 
 - If the write operation is successful, the function returns the number of bytes actually written. This value may be less than \a buf_size in case of partial write.
 - If no data could be written before the operation times out, the function returns \ref SDS_ERROR_TIMEOUT.
-- If an I/O interface or protocol error occurs, the function returns \ref SDS_ERROR_IO.
+- If an SDIO interface or protocol error occurs, the function returns \ref SDS_ERROR_IO.
 */
 
 /**
@@ -412,10 +412,10 @@ The function may return before all data has been written, depending on the avail
 \details
 \b Description:
 
-Attempts to read up to `buf_size` bytes of data from the SDS I/O stream identified by `id` into the memory pointed to `buf`.
+Attempts to read up to `buf_size` bytes of data from the SDSIO stream identified by `id` into the memory pointed to `buf`.
 If the interface is a local file system or semihosting, data is read directly from the file.
-For communication channels such as Ethernet, USB or USART, the SDS I/O Client sends a read command (SDSIO_CMD_READ) to the SDS I/O Server, which reads
-the file on the host system and returns the data to the Client.
+For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends a read command (SDSIO_CMD_READ) to the SDSIO-Server, which reads
+the file on the host system and returns the data to the SDSIO-Client.
 
 The function attempts to read data and may block based on the behavior of the underlying interface and data availability. It returns under the following conditions:
 
@@ -423,7 +423,7 @@ The function attempts to read data and may block based on the behavior of the un
 - If no data becomes available before the timeout expires, the function returns \ref SDS_ERROR_TIMEOUT.
 - If data is partially read but the timeout occurs before the full request is satisfied, the function returns the number of bytes read up to that point.
 - If the end of the stream is reached and no more data remains, the function returns \ref SDS_EOS to indicate that the end of file has been reached and no additional data is available.
-- If an I/O interface or protocol error occurs, the function returns \ref SDS_ERROR_IO.
+- If an SDSIO interface or protocol error occurs, the function returns \ref SDS_ERROR_IO.
 */
 
 

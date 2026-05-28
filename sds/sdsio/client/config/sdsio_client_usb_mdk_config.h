@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  * Name:    sdsio_client_usb_mdk_config.h
- * Purpose: SDS IO via USB (Keil::USB:Device:Custom) configuration options
+ * Purpose: SDSIO via USB (Keil::USB:Device:Custom) configuration options
  * Rev.:    V3.0.0
  */
 

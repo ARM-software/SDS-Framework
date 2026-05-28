@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// SDS I/O Client via Socket (IoT Utility:Socket)
+// SDSIO-Client via Socket (IoT Utility:Socket)
 
 #include <stdlib.h>
 #include <string.h>
@@ -60,7 +60,7 @@ static int32_t sdsioSocketGetIP(uint8_t *ip_buf, uint32_t buf_size) {
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDSIO Client.
+  \brief       Initialize SDSIO-Client.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */
@@ -102,14 +102,14 @@ int32_t sdsioClientInit (void) {
   }
 
   if ((err == 0) && (socket >= 0)) {
-    SDS_PRINTF("SDS I/O socket interface initialized successfully.\n");
+    SDS_PRINTF("SDSIO-Client socket interface initialized successfully.\n");
     SDS_PRINTF("Connection to SDSIO-Server established at %s:%d\n", SDSIO_SOCKET_SERVER_IP, SDSIO_SOCKET_SERVER_PORT);
     ret = SDS_OK;
   } else {
     if (strcmp(SDSIO_SOCKET_SERVER_IP, "0.0.0.0") == 0) {
       SDS_PRINTF("SDSIO_SOCKET_SERVER_IP address not configured (see sdsio_config_socket.h)!\n");
     } else {
-      SDS_PRINTF("SDS I/O Network interface initialization failed or 'sdsio-server socket' unavailable at %s:%d !\n", SDSIO_SOCKET_SERVER_IP, SDSIO_SOCKET_SERVER_PORT);
+      SDS_PRINTF("SDSIO-Client socket interface initialization failed or 'sdsio-server socket' unavailable at %s:%d !\n", SDSIO_SOCKET_SERVER_IP, SDSIO_SOCKET_SERVER_PORT);
       SDS_PRINTF("Ensure that SDSIO-Server is running, then restart the application!\n");
     }
     ret = SDS_ERROR_IO;
@@ -120,7 +120,7 @@ int32_t sdsioClientInit (void) {
 
 /**
   \fn          int32_t sdsioClientUninit (void)
-  \brief       Un-Initialize SDSIO Client.
+  \brief       Un-Initialize SDSIO-Client.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */

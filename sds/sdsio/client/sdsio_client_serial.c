@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// SDS I/O Client via Serial (CMSIS Driver:USART)
+// SDSIO-Client via Serial (CMSIS Driver:USART)
 
 #include <string.h>
 
@@ -67,7 +67,7 @@ static void USART_Callback (uint32_t event) {
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDSIO Client.
+  \brief       Initialize SDSIO-Client.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */
@@ -113,9 +113,9 @@ int32_t sdsioClientInit (void) {
   }
 
   if (ret == SDS_OK) {
-    SDS_PRINTF("SDS I/O USART interface initialized successfully\n");
+    SDS_PRINTF("SDSIO-Client USART interface initialized successfully\n");
   } else {
-    SDS_PRINTF("SDS I/O USART interface initialization failed!\n");
+    SDS_PRINTF("SDSIO-Client USART interface initialization failed!\n");
     SDS_PRINTF("Ensure that device is connected via USART to the host PC running SDSIO-Server, then restart the application!\n");
   }
 
@@ -124,7 +124,7 @@ int32_t sdsioClientInit (void) {
 
 /**
   \fn          int32_t sdsioClientUninit (void)
-  \brief       Un-Initialize SDSIO Client.
+  \brief       Un-Initialize SDSIO-Client.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */

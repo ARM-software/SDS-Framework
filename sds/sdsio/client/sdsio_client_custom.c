@@ -16,26 +16,26 @@
  * limitations under the License.
  */
 
-// SDS I/O Client: Template for custom implementation
+// SDSIO-Client: Template for custom interface implementation
 
 #include "sds.h"
 #include "sdsio_client.h"
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDSIO Client.
+  \brief       Initialize SDSIO-Client.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientInit (void) {
   int32_t ret = SDS_ERROR_IO;
 
-  // ToDo: Add code for SDS I/O Client initialization
+  // ToDo: Add code for SDSIO-Client initialization
 
   if (ret == SDS_OK) {
-    SDS_PRINTF("SDS I/O Custom interface initialized successfully\n");
+    SDS_PRINTF("SDSIO-Client custom interface initialized successfully\n");
   } else {
-    SDS_PRINTF("SDS I/O Custom interface initialization failed!\n");
+    SDS_PRINTF("SDSIO-Client custom interface initialization failed!\n");
     SDS_PRINTF("Ensure that device is connected via Custom interface to the host PC running SDSIO-Server!\n");
   }
 
@@ -44,13 +44,13 @@ int32_t sdsioClientInit (void) {
 
 /**
   \fn          int32_t sdsioClientUninit (void)
-  \brief       Un-Initialize SDSIO Client.
+  \brief       Un-Initialize SDSIO-Client.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */
 int32_t sdsioClientUninit (void) {
 
-  // ToDo: Add code for SDS I/O Client de-initialization
+  // ToDo: Add code for SDSIO-Client de-initialization
 
   return SDS_OK;
 }

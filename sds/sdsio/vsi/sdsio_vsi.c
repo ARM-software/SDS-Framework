@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// SDS I/O interface via VSI
+// SDSIO via VSI
 
 #include <stddef.h>
 
@@ -50,11 +50,11 @@
 static osSemaphoreId_t lock_id = NULL;
 static uint8_t         error_data[SDSIO_VSI_ERROR_MAX_DATA_SIZE];
 
-// SDS I/O functions
+// SDSIO functions
 
 /**
   \fn          int32_t sdsioInit (void)
-  \brief       Initialize SDS I/O interface.
+  \brief       Initialize SDSIO interface.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */
@@ -66,17 +66,17 @@ int32_t sdsioInit (void) {
 
   lock_id = osSemaphoreNew (1, 1, NULL);
   if (lock_id == NULL) {
-    SDS_PRINTF("SDS I/O VSI interface initialization failed!\n");
+    SDS_PRINTF("SDSIO VSI interface initialization failed!\n");
     return SDS_ERROR_IO;
   }
 
-  SDS_PRINTF("SDS I/O VSI interface initialized successfully\n");
+  SDS_PRINTF("SDSIO VSI interface initialized successfully\n");
   return SDS_OK;
 }
 
 /**
   \fn          int32_t sdsioUninit (void)
-  \brief       Un-initialize SDS I/O interface.
+  \brief       Un-initialize SDSIO interface.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */
@@ -93,10 +93,10 @@ int32_t sdsioUninit (void) {
 
 /**
   \fn          sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode)
-  \brief       Open I/O stream.
+  \brief       Open SDSIO stream.
   \param[in]   name           stream name (pointer to NULL terminated string)
   \param[in]   mode           \ref sdsioMode_t open mode
-  \return      \ref sdsioId_t Handle to SDS I/O stream, or NULL if operation failed
+  \return      \ref sdsioId_t Handle to SDSIO stream, or NULL if operation failed
 */
 sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
   sdsioId_t id;
@@ -133,8 +133,8 @@ sdsioId_t sdsioOpen (const char *name, sdsioMode_t mode) {
 
 /**
   \fn          int32_t sdsioClose (sdsioId_t id)
-  \brief       Close I/O stream.
-  \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
+  \brief       Close SDSIO stream.
+  \param[in]   id             \ref sdsioId_t handle to SDSIO stream
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */
@@ -158,8 +158,8 @@ int32_t sdsioClose (sdsioId_t id) {
 
 /**
   \fn          int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size)
-  \brief       Write data to I/O stream.
-  \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
+  \brief       Write data to SDSIO stream.
+  \param[in]   id             \ref sdsioId_t handle to SDSIO stream
   \param[in]   buf            pointer to buffer with data to write
   \param[in]   buf_size       buffer size in bytes
   \return      number of bytes successfully written or
@@ -203,8 +203,8 @@ int32_t sdsioWrite (sdsioId_t id, const void *buf, uint32_t buf_size) {
 
 /**
   \fn          int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size)
-  \brief       Read data from I/O stream.
-  \param[in]   id             \ref sdsioId_t handle to SDS I/O stream
+  \brief       Read data from SDSIO stream.
+  \param[in]   id             \ref sdsioId_t handle to SDSIO stream
   \param[out]  buf            pointer to buffer for data to read
   \param[in]   buf_size       buffer size in bytes
   \return      number of bytes successfully read, or

@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  * Name:    sdsio_client_serial_config.h
- * Purpose: SDS IO via Serial Port (CMSIS Driver:USART) configuration options
+ * Purpose: SDSIO via Serial (CMSIS Driver:USART) configuration options
  * Rev.:    V3.0.0
  */
 

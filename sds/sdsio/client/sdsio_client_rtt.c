@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-// SDS I/O Client via RTT
+// SDSIO-Client via RTT
 
 #include "cmsis_os2.h"
 #include "cmsis_compiler.h"
@@ -32,7 +32,7 @@ static uint8_t rttUpBuffer  [SDSIO_RTT_UP_BUF_SIZE]   __ALIGNED(SDSIO_RTT_BUF_AL
 
 /**
   \fn          int32_t sdsioClientInit (void)
-  \brief       Initialize SDSIO Client.
+  \brief       Initialize SDSIO-Client.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */
@@ -47,7 +47,7 @@ int32_t sdsioClientInit (void) {
 
 /**
   \fn          int32_t sdsioClientUninit (void)
-  \brief       Un-Initialize SDSIO Client.
+  \brief       Un-Initialize SDSIO-Client.
   \return      SDS_OK on success or
                a negative value on error (see \ref SDS_Return_Codes)
 */
