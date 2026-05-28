@@ -18,6 +18,5 @@ sdsio:
 
   # Defines a playback test sequence
   play:
-    - step: Test 0
-      labels: 0
-    
+    - step: "Test 0"
+      labels: [ 0 ]
