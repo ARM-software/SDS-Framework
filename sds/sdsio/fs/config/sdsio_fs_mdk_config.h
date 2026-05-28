@@ -16,7 +16,7 @@
  * limitations under the License.
  *
  * Name:    sdsio_fs_mdk_config.h
- * Purpose: SDS IO via File System (Keil::File System) configuration options
+ * Purpose: SDSIO via File System (Keil::File System) configuration options
  * Rev.:    V3.0.0
  */
 

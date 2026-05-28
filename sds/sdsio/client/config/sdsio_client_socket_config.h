@@ -22,7 +22,8 @@
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>SDS IO via Socket (IoT Utility:Socket)
+// <h>SDSIO via Socket (IoT Utility:Socket)
+// <i>SDSIO using SDSIO-Client to communicate with SDSIO-Server via the Socket Interface
 
 //   <s.16>SDSIO-Server IP
 //   <i>SDSIO socket server IPv4 address

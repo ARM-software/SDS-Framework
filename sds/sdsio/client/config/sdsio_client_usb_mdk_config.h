@@ -22,7 +22,8 @@
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>SDS IO via USB (Keil::USB:Device:Custom Class)
+// <h>SDSIO via USB (Keil::USB:Device:Custom Class)
+// <i>SDSIO using SDSIO-Client to communicate with SDSIO-Server via the USB Interface
 
 //   <o>USB Device index <0-3>
 //   <i>Index of USB Device

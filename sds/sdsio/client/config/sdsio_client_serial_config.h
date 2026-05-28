@@ -22,7 +22,8 @@
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
-// <h>SDS IO via Serial Port (CMSIS Driver:USART)
+// <h>SDSIO via Serial (CMSIS Driver:USART)
+// <i>SDSIO using SDSIO-Client to communicate with SDSIO-Server via the Serial Interface
 
 //   <o>USART driver number (Driver_USART#) <0-255>
 //   <i>Exported USART driver control block number (Driver_USART#)
