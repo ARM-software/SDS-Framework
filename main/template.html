@@ -80,7 +80,7 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#using-datatest">Using DataTest</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#recordingplayback-on-simulation-model">Recording/playback on Simulation Model</a>
+    <li class="toctree-l3"><a class="reference internal" href="#playback-on-simulation-model">Playback on Simulation Model</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#recordingplayback-on-hardware-target">Recording/playback on Hardware Target</a>
     </li>
@@ -144,21 +144,21 @@
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD060 -->
 
-<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template">SDS template application</a> is a test framework for DSP and ML algorithms. It allows recording and playback of real-world data streams using physical hardware or on simulation models using <a href="https://github.com/ARM-software/AVH">(Arm Virtual Hardware - FVP)</a> to an user algorithm under test. The real-world data streams are captured in SDS data files. This enables multiple uses cases:</p>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template">SDS template application</a> is a test framework for DSP and ML algorithms. It allows recording and playback of real-world data streams using physical hardware or on simulation models using <a href="https://github.com/ARM-software/AVH">(Arm Virtual Hardware - FVP)</a> to an user algorithm under test. The real-world data streams are captured in SDS data files. This enables multiple use cases:</p>
 <ul>
-<li>Validate and Optimize Algorithms using playback. This allows to repeat test cases with the same data streams.</li>
+<li>Validate and optimize algorithms using playback. This allows to repeat test cases with the same data stream.</li>
 <li>The captured data streams can be labeled and used as training data set for AI Models in MLOps systems.</li>
 </ul>
-<p>The SDS template application is implemented as <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/">CMSIS-Toolbox Reference Application</a>. It is hardware agnostic and requires a <code>SDSIO-Layer</code> and a <code>Board-Layer</code> with drivers for the specific target hardware.</p>
+<p>The SDS template application is implemented as <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/">CMSIS-Toolbox Reference Application</a>. It is hardware agnostic and requires an <code>SDSIO-Layer</code> and a <code>Board-Layer</code> with drivers for the specific target hardware.</p>
 <p>The <code>SDSIO-Layer</code> connects the SDS template application to a communication interface for SDS file I/O operations.
 The following <a href="sdsio.html">SDSIO interfaces</a> are pre-configured:</p>
 <ul>
 <li><a href="sdsio.html#layer-sdsio_network">Ethernet Interface</a> using the MDK-Middleware Network component.</li>
 <li><a href="sdsio.html#layer-sdsio_usb">USB Bulk Interface</a> using the MDK-Middleware USB component.</li>
 <li><a href="sdsio.html#layer-sdsio_rtt">RTT (Real-Time Transfer)</a> using the SEGGER RTT component for I/O via the debug adapter.</li>
-<li><a href="sdsio.html#layer-sdsio_fs">Memory Card Interface</a> using the MDK-Middleware File System component.
-With a custom SDSIO interface, alternative I/O configurations are possible.</li>
+<li><a href="sdsio.html#layer-sdsio_fs">Memory Card Interface</a> using the MDK-Middleware File System component.</li>
 </ul>
+<p>With a custom SDSIO interface, alternative I/O configurations are possible.</p>
 <h2 id="sds-template-structure">SDS Template Structure</h2>
 <p>The structure of the SDS template application is shown below. Two projects let you choose between a data communication test and a user algorithm test. Two target types let you deploy the test application either on hardware (evaluation board) or on an AVH FVP (simulation model).</p>
 <p>A standard board layer, provided by several BSPs, implements the hardware interface. For communication, the SDSIO layer uses the MDK-Middleware or (for the AVH FVP target) a virtual simulation interface (VSI).</p>
@@ -231,8 +231,8 @@ Because the input data stream can be repeated, it enables consistent verificatio
 <p>When such a board layer is not available, it is possible to <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#structure">create a compatible board layer</a>.</p>
 </div>
 <h3 id="using-vs-code">Using VS Code</h3>
-<p>This section explains how to use SDS template application with the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution</a> for VS Code. This extension is for example part of <a href="https://www.keil.arm.com/">Keil Studio</a>.</p>
-<p>For the example below the <a href="https://www.keil.arm.com/packs/stm32f746g-disco_bsp-keil">STM32F746G-DISCO</a> board is used that provides interfaces for all SDSIO communication interfaces.</p>
+<p>This section explains how to use SDS template application with the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution</a> for VS Code. This extension is for example part of the <a href="https://www.keil.arm.com/">Keil Studio</a>.</p>
+<p>The example below uses the <a href="https://www.keil.arm.com/packs/stm32f746g-disco_bsp-keil">STM32F746G-DISCO</a> board, which provides interfaces for all SDSIO communication interfaces.</p>
 <h4 id="install-required-packs">Install Required Packs</h4>
 <p>To make the software components available, install the SDS pack and the pack for the select evaluation board, for example with:</p>
 <pre><code class="language-shell">&gt;cpackget add ARM::SDS
@@ -251,7 +251,7 @@ Because the input data stream can be repeated, it enables consistent verificatio
 </ul>
 </div>
 <h4 id="build-the-template-application">Build the Template Application</h4>
-<p>The SDS template applications contains two targets (evaluation board, AVH FVP simulation model) and two projects:</p>
+<p>The SDS template applications contains three targets (evaluation board and two AVH FVP simulation models) and two projects:</p>
 <ul>
 <li><strong>DataTest</strong> is a data communication test between target and SDSIO-Server or file system.</li>
 <li><strong>AlgorithmTest</strong> allows to add the DSP or ML algorithm that should be tested.</li>
@@ -268,8 +268,8 @@ Because the input data stream can be repeated, it enables consistent verificatio
     - type: MyHardware
       device: STM32U535CBTx
       variables:
-        - Board-Layer: $SolutionDir()$\Board\MyHardware\Board.clayer.yml
-        - SDSIO-Layer: $SolutionDir()$\layer\usb\sdsio_usb.clayer.yml
+        - Board-Layer: $SolutionDir()$/Board/MyHardware/Board.clayer.yml
+        - SDSIO-Layer: $SolutionDir()$/sdsio/usb/sdsio_usb.clayer.yml
 </code></pre>
 <ul>
 <li>Add a board layer that implements the API interfaces described above.</li>
@@ -283,29 +283,25 @@ Because the input data stream can be repeated, it enables consistent verificatio
 </div>
 <h2 id="using-datatest">Using DataTest</h2>
 <p>The <strong>DataTest</strong> project validates the communication channel.</p>
-<h3 id="recordingplayback-on-simulation-model">Recording/playback on Simulation Model</h3>
-<p>ToDo this needs review</p>
+<h3 id="playback-on-simulation-model">Playback on Simulation Model</h3>
 <ol>
-<li>Select the target <code>AVH-SSE-300</code> (or <code>AVH-SSE-320</code>) with Project <code>DataTest</code> and Build Type <code>Debug</code> to record/playback SDS data files.</li>
-<li>Start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> for selected SDSIO communication interface.</li>
+<li>Select the target <code>AVH-SSE-300</code> (or <code>AVH-SSE-320</code>) with Project <code>DataTest</code> and Build Type <code>Debug</code> to playback SDS data files.</li>
 <li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp/README.md">Build and Run</a> the application.</li>
-<li>Use <a href="utilities.html#sds-check">SDS-Check</a> to verify correctness of the recording.</li>
+<li>Use <a href="utilities.html#sds-check">SDS-Check</a> to verify correctness of the files recorded during playback.</li>
 </ol>
-<p><strong>Recording</strong></p>
-<p>Activate the recording from the SDSIO-Server by pressing <code>R</code> key. To stop the recording press the <code>S</code> key.</p>
-<p>This run should generate the files <code>Test_In.0.sds</code> and <code>Test_Out.0.sds</code> in the solution folder. The <code>DataTest</code> project is configured to record 1000 data records at an interval of 10 ms.</p>
-<p>To verify correctness of the recording using SDS-Check utility use the following commands:</p>
-<pre><code class="language-bash">python sds-check.py -s Test_In.0.sds
-python sds-check.py -s Test_Out.0.sds
-</code></pre>
-<p>When the project is restarted, new files with different names are created: <code>Test_In.1.sds</code> and <code>Test_Out.1.sds</code>.</p>
-<p><strong>Playback</strong></p>
-<p>Activate the playback from the SDSIO-Server by pressing the <code>P</code> key.</p>
-<p>This run should read the <code>Test_In.0.sds</code> file and generate the <code>Test_Out.0.p.sds</code> file.</p>
+<p>By default, the Template application includes a <code>datatest.sdsio.yml</code> configuration file that specifies playback of the <code>Test_In.0.sds</code> file,
+while new output recordings are stored in the <code>Test_Out.0.p.sds</code> file.</p>
+<p>For details about the <strong>sdsio.yml</strong> file, please refer to the documentation in <a href="utilities.html#sdsio-control-file-sdsioyml">sdsio.yml</a>.</p>
 <p>To verify correctness of the recording using SDS-Check utility use the following command:</p>
-<pre><code class="language-bash">python sds-check.py -s Test_Out.0.p.sds
+<pre><code class="language-bash">python sds-check.py -i Test_Out.0.p.sds
 </code></pre>
 <p>Compare the output files <code>Test_Out.0.sds</code> and <code>Test_Out.0.p.sds</code> with any program that can compare binary files. If the communication is correct, the files should be identical.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>Recording mode is not available when using Simulation Model.</li>
+</ul>
+</div>
 <h3 id="recordingplayback-on-hardware-target">Recording/playback on Hardware Target</h3>
 <ol>
 <li>Select the <code>STM32F746G-DISCO</code> target with Project <code>DataTest</code> and Build Type <code>Debug</code> to record/playback SDS data files.</li>
@@ -318,8 +314,8 @@ python sds-check.py -s Test_Out.0.sds
 Alternatively the recording can be started or stopped by pressing the user button on the board.</p>
 <p>This run should generate the files <code>Test_In.0.sds</code> and <code>Test_Out.0.sds</code> in the solution folder. The <code>DataTest</code> project is configured to record 1000 data records at an interval of 10 ms.</p>
 <p>To verify correctness of the recording using SDS-Check utility use the following commands:</p>
-<pre><code class="language-bash">python sds-check.py -s Test_In.0.sds
-python sds-check.py -s Test_Out.0.sds
+<pre><code class="language-bash">python sds-check.py -i Test_In.0.sds
+python sds-check.py -i Test_Out.0.sds
 </code></pre>
 <p>When the project is restarted, new files with different names are created: <code>Test_In.1.sds</code> and <code>Test_Out.1.sds</code>.</p>
 <div class="admonition note">
@@ -332,7 +328,7 @@ python sds-check.py -s Test_Out.0.sds
 <p>Activate the playback from the SDSIO-Server by pressing the <code>P</code> key.</p>
 <p>This run should read the <code>Test_In.0.sds</code> file and generate the <code>Test_Out.0.p.sds</code> file.</p>
 <p>To verify correctness of the recording using SDS-Check utility use the following command:</p>
-<pre><code class="language-bash">python sds-check.py -s Test_Out.0.p.sds
+<pre><code class="language-bash">python sds-check.py -i Test_Out.0.p.sds
 </code></pre>
 <p>Compare the output files <code>Test_Out.0.sds</code> and <code>Test_Out.0.p.sds</code> with any program that can compare binary files. If the communication is correct, the files should be identical.</p>
 <h3 id="configure-bandwidth-for-datatest">Configure Bandwidth for DataTest</h3>

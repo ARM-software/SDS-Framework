@@ -177,7 +177,7 @@ Opening a stream in <code>sdsModeRead</code> mode is used for playback and openi
 <p>The filename used when opening a stream depends on the presence of the <code>sdsio.yml</code> steering file and its <code>play</code> node.</p>
 <p>If the steering file exists and contains <code>play</code> node, the filename follows the pattern <code>&lt;name&gt;.&lt;label&gt;.sds</code>, where <code>&lt;label&gt;</code> is specified in the corresponding
 <code>step</code> node in the <code>play</code> node. After playback or recording completes, processing continues with the next <code>step</code> node, if available, and the process repeats.</p>
-<p>The previous explanation applies only to playback; for recording, the file naming pattern is determined as follows.</p>
+<p>The previous explanation applies only to playback mode.</p>
 <p>If the steering file does not exist or does not contain <code>play</code> node, the filename follows the pattern <code>&lt;name&gt;.&lt;label&gt;.sds</code>, where for:</p>
 <p><strong>Recording:</strong></p>
 <p><code>&lt;label&gt;</code> is a sequential number starting at 0 and incremented by 1. The first value for which no corresponding file exists is used to create a new file.

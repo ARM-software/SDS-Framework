@@ -678,7 +678,7 @@ if-opts (optional):
 </ul>
 </div>
 <p>On <strong>macOS</strong>, the <strong>libusb</strong> system library is required. If not already installed, you can install it with <a href="https://brew.sh/">Homebrew</a>: <code>&gt;brew install libusb</code></p>
-<p>On <strong>Linux</strong>, access to USB devices from user space requires a udev rule by default. Create a udev rule file (e.g. <code>/etc/udev/rules.d/99-sdsio.rules</code>) with the vendor and product ID of the SDSIO Client device.</p>
+<p>On <strong>Linux</strong>, access to USB devices from user space requires a udev rule by default. Create a udev rule file (e.g. <code>/etc/udev/rules.d/99-sdsio.rules</code>) with the vendor and product ID of the SDSIO-Client device.</p>
 <pre><code class="language-bash">SUBSYSTEM==&quot;usb&quot;, ATTRS{idVendor}==&quot;XXXX&quot;, ATTRS{idProduct}==&quot;XXXX&quot;, MODE=&quot;0666&quot;
 </code></pre>
 <p>Then reload rules with <code>sudo udevadm control --reload &amp;&amp; sudo udevadm trigger</code>.  Use <code>dmesg</code> before and after plugging in the device to find the vendor/product IDs.</p>
