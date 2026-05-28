@@ -24,7 +24,7 @@
       - Updated SDSIO layers
       - Enhanced and updated documentation
       SDSIO-Server:
-      - Added support for control data exchange with the SDSIO Client
+      - Added support for control data exchange with the SDSIO-Client
       - Introduced a keyboard-based user interface for controlling firmware application flags
       - Added monitor data exchange support for the SDS VS Code extension
       - Introduced configuration via the sdsio.yml file
@@ -38,35 +38,35 @@
   </releases>
 
   <conditions>
-    <condition id="SDS IO via VSI">
-      <description>SDS IO via VSI</description>
+    <condition id="SDSIO via VSI">
+      <description>SDSIO via VSI</description>
       <require Cclass="CMSIS" Cgroup="RTOS2"/>
     </condition>
-    <condition id="SDS IO via Socket">
-      <description>SDS IO via Socket (IoT Socket)</description>
+    <condition id="SDSIO via Socket">
+      <description>SDSIO via Socket (IoT Socket)</description>
       <require Cclass="CMSIS"        Cgroup="RTOS2"/>
       <require Cclass="IoT Utility"  Cgroup="Socket"/>
     </condition>
-    <condition id="SDS IO via RTT">
-      <description>SDS IO via RTT (SEGGER RTT)</description>
+    <condition id="SDSIO via RTT">
+      <description>SDSIO via RTT (SEGGER RTT)</description>
       <require Cclass="SEGGER" Cgroup="RTT"/>
     </condition>
-    <condition id="SDS IO via USB - MDK USB">
-      <description>SDS IO via USB (MDK USB)</description>
+    <condition id="SDSIO via USB - MDK USB">
+      <description>SDSIO via USB (MDK USB)</description>
       <require Cclass="CMSIS" Cgroup="RTOS2"/>
       <require Cvendor="Keil" Cclass="USB" Cgroup="Device" Csub="Custom Class"/>
     </condition>
-    <condition id="SDS IO via Serial - CMSIS USART">
-      <description>SDS IO via Serial (CMSIS Driver USART)</description>
+    <condition id="SDSIO via USART - CMSIS USART">
+      <description>SDSIO via USART (CMSIS USART)</description>
       <require Cclass="CMSIS"        Cgroup="RTOS2"/>
       <require Cclass="CMSIS Driver" Cgroup="USART"/>
     </condition>
-    <condition id="SDS IO via File System - MDK FS">
-      <description>SDS IO via File System (MDK FS)</description>
+    <condition id="SDSIO via File System - MDK FS">
+      <description>SDSIO via File System (MDK FS)</description>
       <require Cvendor="Keil" Cclass="File System" Cgroup="Drive"/>
     </condition>
-    <condition id="SDS IO via File System - Semihosting">
-      <description>SDS IO via File System (Semihosting)</description>
+    <condition id="SDSIO via File System - Semihosting">
+      <description>SDSIO via File System (Semihosting)</description>
       <require Cclass="CMSIS-View" Cgroup="Event Recorder" Cvariant="Semihosting"/>
     </condition>
     <condition id="SDS with CMSIS-RTOS2">
@@ -82,9 +82,9 @@
 
   <apis>
     <api Cclass="SDS" Cgroup="IO" Capiversion="3.0.0">
-      <description>SDSIO Client Interface to read/write SDS data files</description>
+      <description>SDSIO Interface to read/write SDS data files</description>
       <files>
-        <file category="doc"    name="docs/SDS_API/group__SDSIO__Client__Interface.html"/>
+        <file category="doc"    name="docs/SDS_API/group__SDSIO__Interface.html"/>
         <file category="header" name="sds/sdsio/include/sdsio.h" />
       </files>
     </api>
@@ -95,7 +95,7 @@
     <component Cclass="SDS" Cgroup="Stream" Cvariant="CMSIS-RTOS2" Cversion="3.0.0" condition="SDS with CMSIS-RTOS2">
       <description>SDS Stream Interface for record/playback data streams</description>
       <RTE_Components_h>
-        #define RTE_SDS                                 /* Synchronous Data Stream */
+        #define RTE_SDS                                 /* Synchronous Data Stream (SDS) */
       </RTE_Components_h>
       <files>
         <file category="doc"    name="docs/SDS_API/group__SDS__Stream__Interface.html"/>
@@ -106,12 +106,12 @@
       </files>
     </component>
 
-    <!-- SDS I/O (VSI) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="VSI" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via VSI">
-      <description>I/O via VSI</description>
+    <!-- SDSIO via VSI -->
+    <component Cclass="SDS" Cgroup="IO" Csub="VSI" Capiversion="3.0.0" Cversion="3.0.0" condition="SDSIO via VSI">
+      <description>SDSIO via Virtual Streaming Interface (VSI)</description>
       <RTE_Components_h>
-        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
-        #define RTE_SDS_IO_VSI                          /* Synchronous Data Stream Input/Output (VSI) */
+        #define RTE_SDS_IO                              /* SDSIO */
+        #define RTE_SDS_IO_VSI                          /* SDSIO via VSI */
       </RTE_Components_h>
       <files>
         <file category="doc"    name="docs/sdsio.html"/>
@@ -119,13 +119,13 @@
       </files>
     </component>
 
-    <!-- SDS I/O (Socket) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="Socket" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via Socket">
-      <description>I/O via Socket interface to SDSIO-Server (using component MDK-Packs::IoT Utility:Socket)</description>
+    <!-- SDSIO via Socket -->
+    <component Cclass="SDS" Cgroup="IO" Csub="Socket" Capiversion="3.0.0" Cversion="3.0.0" condition="SDSIO via Socket">
+      <description>SDSIO via Socket using SDSIO-Server (using component MDK-Packs::IoT Utility:Socket)</description>
       <RTE_Components_h>
-        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
-        #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
-        #define RTE_SDS_IO_CLIENT_SOCKET                /* Synchronous Data Stream Input/Output Client via Socket */
+        #define RTE_SDS_IO                              /* SDSIO */
+        #define RTE_SDS_IO_CLIENT                       /* SDSIO-Client */
+        #define RTE_SDS_IO_CLIENT_SOCKET                /* SDSIO-Client via Socket */
       </RTE_Components_h>
       <files>
         <file category="doc"    name="docs/sdsio.html"/>
@@ -135,13 +135,13 @@
       </files>
     </component>
 
-    <!-- SDS I/O (RTT) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="RTT" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via RTT">
-      <description>I/O via RTT to SDSIO-Server (using component SEGGER:RTT)</description>
+    <!-- SDSIO via RTT -->
+    <component Cclass="SDS" Cgroup="IO" Csub="RTT" Capiversion="3.0.0" Cversion="3.0.0" condition="SDSIO via RTT">
+      <description>SDSIO via RTT using SDSIO-Server (using component SEGGER:RTT)</description>
       <RTE_Components_h>
-        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
-        #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
-        #define RTE_SDS_IO_CLIENT_RTT                   /* Synchronous Data Stream Input/Output Client via RTT */
+        #define RTE_SDS_IO                              /* SDSIO */
+        #define RTE_SDS_IO_CLIENT                       /* SDSIO-Client */
+        #define RTE_SDS_IO_CLIENT_RTT                   /* SDSIO-Client via RTT */
       </RTE_Components_h>
       <files>
         <file category="doc"    name="docs/sdsio.html"/>
@@ -151,14 +151,14 @@
       </files>
     </component>
 
-    <!-- SDS I/O (USB - MDK_USB) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="USB" Cvariant="MDK USB" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via USB - MDK USB">
-      <description>I/O via USB interface to SDSIO-Server (using component Keil::USB:Device:Custom Class)</description>
+    <!-- SDSIO via USB (MDK USB) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="USB" Cvariant="MDK USB" Capiversion="3.0.0" Cversion="3.0.0" condition="SDSIO via USB - MDK USB">
+      <description>SDSIO via USB using SDSIO-Server (using component Keil::USB:Device:Custom Class)</description>
       <RTE_Components_h>
-        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
-        #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
-        #define RTE_SDS_IO_CLIENT_USB                   /* Synchronous Data Stream Input/Output Client via USB */
-        #define RTE_SDS_IO_CLIENT_USB_MDK               /* Synchronous Data Stream Input/Output Client via USB - MDK-Middleware USB */
+        #define RTE_SDS_IO                              /* SDSIO */
+        #define RTE_SDS_IO_CLIENT                       /* SDSIO-Client */
+        #define RTE_SDS_IO_CLIENT_USB                   /* SDSIO-Client via USB */
+        #define RTE_SDS_IO_CLIENT_USB_MDK               /* SDSIO-Client via USB - MDK-Middleware USB */
       </RTE_Components_h>
       <files>
         <file category="doc"    name="docs/index.html"/>
@@ -168,14 +168,14 @@
       </files>
     </component>
 
-    <!-- SDS I/O (Serial - CMSIS USART) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="Serial" Cvariant="CMSIS USART" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via Serial - CMSIS USART">
-      <description>I/O via USART interface to SDSIO-Server (using component CMSIS Driver:USART)</description>
+    <!-- SDSIO via USART (CMSIS USART) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="Serial" Cvariant="CMSIS USART" Capiversion="3.0.0" Cversion="3.0.0" condition="SDSIO via USART - CMSIS USART">
+      <description>SDSIO via USART using SDSIO-Server (using component CMSIS Driver:USART)</description>
       <RTE_Components_h>
-        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
-        #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
-        #define RTE_SDS_IO_CLIENT_SERIAL                /* Synchronous Data Stream Input/Output Client via Serial */
-        #define RTE_SDS_IO_CLIENT_SERIAL_CMSIS_USART    /* Synchronous Data Stream Input/Output Client via Serial - CMSIS USART */
+        #define RTE_SDS_IO                              /* SDSIO */
+        #define RTE_SDS_IO_CLIENT                       /* SDSIO-Client */
+        #define RTE_SDS_IO_CLIENT_SERIAL                /* SDSIO-Client via Serial */
+        #define RTE_SDS_IO_CLIENT_SERIAL_CMSIS_USART    /* SDSIO-Client via Serial - CMSIS USART */
       </RTE_Components_h>
       <files>
         <file category="doc"    name="docs/sdsio.html"/>
@@ -185,13 +185,13 @@
       </files>
     </component>
 
-    <!-- SDS I/O (Custom client) -->
+    <!-- SDSIO via Custom Interface -->
     <component Cclass="SDS" Cgroup="IO" Csub="Custom" Capiversion="3.0.0" Cversion="3.0.0">
-      <description>I/O via Custom interface to SDSIO-Server</description>
+      <description>SDSIO via Custom Interface using SDSIO-Server</description>
       <RTE_Components_h>
-        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
-        #define RTE_SDS_IO_CLIENT                       /* Synchronous Data Stream Input/Output Client */
-        #define RTE_SDS_IO_CLIENT_CUSTOM                /* Synchronous Data Stream Input/Output Client via Custom I/O */
+        #define RTE_SDS_IO                              /* SDSIO */
+        #define RTE_SDS_IO_CLIENT                       /* SDSIO-Client */
+        #define RTE_SDS_IO_CLIENT_CUSTOM                /* SDSIO-Client via Custom Interface */
       </RTE_Components_h>
       <files>
         <file category="doc"    name="docs/sdsio.html"/>
@@ -200,13 +200,13 @@
       </files>
     </component>
 
-    <!-- SDS I/O (File System - MDK FS) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="MDK FS" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via File System - MDK FS">
-      <description>I/O via File System (using component Keil::File System)</description>
+    <!-- SDSIO via File System (MDK FS) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="MDK FS" Capiversion="3.0.0" Cversion="3.0.0" condition="SDSIO via File System - MDK FS">
+      <description>SDSIO via File System (using component Keil::File System)</description>
       <RTE_Components_h>
-        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
-        #define RTE_SDS_IO_FILE_SYSTEM                  /* Synchronous Data Stream Input/Output via File System */
-        #define RTE_SDS_IO_FILE_SYSTEM_MDK              /* Synchronous Data Stream Input/Output via File System - MDK-Middleware FS */
+        #define RTE_SDS_IO                              /* SDSIO */
+        #define RTE_SDS_IO_FILE_SYSTEM                  /* SDSIO via File System */
+        #define RTE_SDS_IO_FILE_SYSTEM_MDK              /* SDSIO via File System - MDK-Middleware FS */
       </RTE_Components_h>
       <files>
         <file category="doc"    name="docs/sdsio.html"/>
@@ -215,13 +215,13 @@
       </files>
     </component>
 
-    <!-- SDS I/O (File System - Semihosting) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="3.0.0" Cversion="3.0.0" condition="SDS IO via File System - Semihosting">
-      <description>I/O via File System (using Semihosting)</description>
+    <!-- SDSIO via File System (Semihosting) -->
+    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="3.0.0" Cversion="3.0.0" condition="SDSIO via File System - Semihosting">
+      <description>SDSIO via File System (using Semihosting)</description>
       <RTE_Components_h>
-        #define RTE_SDS_IO                              /* Synchronous Data Stream Input/Output */
-        #define RTE_SDS_IO_FILE_SYSTEM                  /* Synchronous Data Stream Input/Output via File System */
-        #define RTE_SDS_IO_FILE_SYSTEM_SEMIHOSTING      /* Synchronous Data Stream Input/Output via File System (Semihosting) */
+        #define RTE_SDS_IO                              /* SDSIO */
+        #define RTE_SDS_IO_FILE_SYSTEM                  /* SDSIO via File System */
+        #define RTE_SDS_IO_FILE_SYSTEM_SEMIHOSTING      /* SDSIO via File System (Semihosting) */
       </RTE_Components_h>
       <files>
         <file category="doc"    name="docs/sdsio.html"/>
