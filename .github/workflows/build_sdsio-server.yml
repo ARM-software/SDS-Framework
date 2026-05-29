@@ -17,6 +17,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build on ${{ matrix.os }}
@@ -24,23 +27,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest, ubuntu-24.04-arm]
+        os: [windows-2025, ubuntu-24.04, macos-15, ubuntu-24.04-arm]
         include:
-          - os: windows-latest
+          - os: windows-2025
             artifact_name: sdsio-server-windows
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             artifact_name: sdsio-server-linux
-          - os: macos-latest
+          - os: macos-15
             artifact_name: sdsio-server-macos
           - os: ubuntu-24.04-arm
             artifact_name: sdsio-server-linux-arm64
 
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: "3.11"
 
@@ -74,7 +82,7 @@ jobs:
           }
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: ${{ matrix.artifact_name }}-${{ env.SDSIO_SERVER_VERSION }}
           path: dist/sdsio-server*
