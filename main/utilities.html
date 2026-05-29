@@ -68,34 +68,24 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#sdsio-control-file-sdsioyml">SDSIO Control File: *.sdsio.yml</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#sdsio">sdsio:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#interface">interface:</a>
-        <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#usb">usb:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#serial">serial:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#socket">socket:</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#streams">streams:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#play">play:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#flag-info">flag-info:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#example">Example</a>
-    </li>
-        </ul>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#sdsio-server">SDSIO-Server</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#sdsio-control-file-sdsioyml">SDSIO Control File: *.sdsio.yml</a>
         <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#sdsio">sdsio:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#interface">interface:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#streams">streams:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#play">play:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#flag-info">flag-info:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#example">Example</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#usb-mode">USB Mode</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#socket-mode">Socket Mode</a>
@@ -193,7 +183,6 @@
 <p>The SDS-Framework pack includes in the folder <code>/utilities</code> several utilities that are implemented in Python.
 Install <strong>Python</strong> and packages listed in file <code>/utilities/requirements.txt</code> to run these utilities:</p>
 <ul>
-<li><a href="#sdsio-control-file-sdsioyml"><strong>SDSIO Control File</strong>: <code>*.sdsio.yml</code></a> options for SDSIO-Server and for the AVH FVP VSI3 simulation interface (<code>sdsio.yml</code>).</li>
 <li><a href="#sdsio-server"><strong>SDSIO-Server:</strong></a> enables recording and playback of SDS data files via USB, socket (TCP/IP) or serial (UART) connection.</li>
 <li><a href="#sds-view"><strong>SDS-View:</strong></a> graphical data viewer for SDS data files.</li>
 <li><a href="#sds-convert"><strong>SDS-Convert:</strong></a> convert SDS data files into CSV, Qeexo V2 CSV, or WAV format.</li>
@@ -231,281 +220,6 @@ Install <strong>Python</strong> and packages listed in file <code>/utilities/req
 <li>When the <strong>Path</strong> environment variable is configured, you may simply start the utilities by using its name. For example entering <code>&gt;sdsio-server</code> starts the utility.</li>
 </ul>
 </div>
-<h2 id="sdsio-control-file-sdsioyml">SDSIO Control File: <code>*.sdsio.yml</code></h2>
-<p>The SDSIO data file I/O can be configured using a YAML control file with the root node <code>sdsio:</code>.</p>
-<ul>
-<li>For <a href="#sdsio-server">SDSIO-Server</a>, the control file is specified with <code>--control &lt;*.sdsio.yml&gt;</code>.</li>
-<li>For AVH FVP simulation (VSI3), the simulator reads <code>sdsio.yml</code> (or <code>*.sdsio.yml</code>) from the simulator working directory. See <a href="sdsio.html#layer-sdsio_fvp">SDSIO Interface</a>.</li>
-</ul>
-<h3 id="sdsio"><code>sdsio:</code></h3>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>sdsio:</code></th>
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#interface"><code>interface:</code></a></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">SDSIO-Server only: specifies the interface used to connect to the target firmware (default: <code>usb</code>).</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>workdir:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Directory that stores <code>*.sds</code> files (default: current working directory). In AVH FVP simulation, relative paths are relative to the simulator working directory.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>metadir:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Directory for metadata files (default: <code>workdir</code>). This key is used by the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds">SDS extension for VS Code</a>.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#streams"><code>streams:</code></a></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Data stream information used by the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds">SDS extension for VS Code</a>.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#play"><code>play:</code></a></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Playback step list that defines how <code>*.sds</code> files are played back (used in playback mode).</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#flag-info"><code>flag-info:</code></a></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Human readable labels for user flags. This key is currently not used by SDSIO-Server or the VSI3 simulation interface.</td>
-</tr>
-</tbody>
-</table>
-<h3 id="interface"><code>interface:</code></h3>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul>
-<li>The <code>interface:</code> settings are used by SDSIO-Server. The AVH FVP VSI3 simulation interface ignores <code>interface:</code>.</li>
-</ul>
-</div>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>interface:</code></th>
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#usb"><code>usb:</code></a></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Configure USB bulk interface.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#serial"><code>serial:</code></a></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Configure serial (UART) interface.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#socket"><code>socket:</code></a></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Configure TCP socket interface.</td>
-</tr>
-</tbody>
-</table>
-<h4 id="usb"><code>usb:</code></h4>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>usb:</code></th>
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>high_priority:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">SDSIO-Server only: increase process priority (default: <code>false</code>).</td>
-</tr>
-</tbody>
-</table>
-<h4 id="serial"><code>serial:</code></h4>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>serial:</code></th>
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
-<td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Port name (examples: <code>COM3</code>, <code>ttyS0</code>, <code>ttyUSB1</code>, ...).</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>baudrate:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Baudrate (default: <code>115200</code>).</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>parity:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Parity bit: <code>none</code>, <code>even</code>, <code>odd</code>, <code>mark</code>, <code>space</code> (default: <code>none</code>).</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>stopbits:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Stop bits: <code>1</code>, <code>1.5</code>, <code>2</code> (default: <code>1</code>).</td>
-</tr>
-</tbody>
-</table>
-<h4 id="socket"><code>socket:</code></h4>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>socket:</code></th>
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ipaddr:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">IPv4 address to bind to (example: <code>192.168.0.100</code>); cannot be used with <code>netif</code>.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>netif:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Network interface name (example: <code>eth0</code>); cannot be used with <code>ipaddr</code>.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">TCP port number (default: <code>5050</code>).</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul>
-<li>The <code>ipaddr:</code> and <code>netif:</code> options are mutually exclusive.</li>
-</ul>
-</div>
-<h3 id="streams"><code>streams:</code></h3>
-<p>The <code>streams:</code> node provides additional information about the SDS data streams to the <a href="https://marketplace.visualstudio.com/">SDS extension for VS Code</a>. It provides the context between the data streams and the display format.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>streams:</code></th>
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>- name:</code></td>
-<td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Name of the data stream.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>view:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Format of the data stream for the viewer (signal, wav, video, heatmap, csv, csv2)</td>
-</tr>
-</tbody>
-</table>
-<h3 id="play"><code>play:</code></h3>
-<p>The <code>play:</code> node specifies one or more playback steps.
-Each playback step defines the list of labels to play back for each opened SDS stream.</p>
-<p>For one playback step, all files of the <code>labels:</code> list are concatenated and appear as one data stream for the firmware.
-A pause (where the data stream needs to be closed and opened again by the firmware) is created with another <code>- step:</code> section.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>play:</code></th>
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>- step:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Descriptive text for the playback step.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>recdir:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Recording directory for generated <code>*.p.sds</code> files during playback; relative paths are relative to <code>workdir:</code>.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>setflags:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Set user flags (bitmask); example: <code>0x01</code>.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clearflags:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Clear user flags (bitmask); example: <code>0x01</code>.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>labels:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">List of label names that define the playback sequence.</td>
-</tr>
-</tbody>
-</table>
-<h3 id="flag-info"><code>flag-info:</code></h3>
-<p>The <code>flag-info:</code> node provides human readable labels for the user flags 0..7.
-This information is currently not used by SDSIO-Server; it is intended for UI tooling.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>flag-info:</code></th>
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>- &lt;flag-bit&gt;:</code></td>
-<td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Maps the user flag bit position <code>0..7</code> to a human readable label.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Example:</strong></p>
-<pre><code class="language-yml">sdsio:
-  flag-info:
-    - 0: Skip Algorithm A
-    - 1: Test error occurred
-    - 7: Reserved
-</code></pre>
-<h3 id="example">Example</h3>
-<pre><code class="language-yml">sdsio:
-  interface:
-    socket:
-      port: 5050
-
-  workdir: ./SDS Recordings
-  metadir: ./SDS Recordings
-
-  play:
-    - step: &quot;Step 1&quot;
-      labels: [ case1, case2, case3 ]
-
-    - step: &quot;Step 2&quot;
-      recdir: test1
-      setflags: 0x01
-      clearflags: 0x02
-      labels:
-        - case1
-        - case4
-        - case3
-</code></pre>
 <h2 id="sdsio-server">SDSIO-Server</h2>
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDSIO-Server</strong></a> enables recording and playback of SDS data files via USB, socket (TCP/IP) or serial (UART) connection.
 It communicates with the target using these <a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client">SDSIO-Client interfaces</a>:</p>
@@ -586,6 +300,281 @@ general-opts:
 </tr>
 </tbody>
 </table>
+<h3 id="sdsio-control-file-sdsioyml">SDSIO Control File: <code>*.sdsio.yml</code></h3>
+<p>The SDSIO data file I/O can be configured using a YAML control file with the root node <code>sdsio:</code>.</p>
+<ul>
+<li>For <a href="#sdsio-server">SDSIO-Server</a>, the control file is specified with <code>--control &lt;*.sdsio.yml&gt;</code>.</li>
+<li>For AVH FVP simulation (VSI3), the simulator reads <code>sdsio.yml</code> (or <code>*.sdsio.yml</code>) from the simulator working directory. See <a href="sdsio.html#layer-sdsio_fvp">SDSIO Interface</a>.</li>
+</ul>
+<h4 id="sdsio"><code>sdsio:</code></h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>sdsio:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#interface"><code>interface:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">SDSIO-Server only: specifies the interface used to connect to the target firmware (default: <code>usb</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>workdir:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Directory containing <code>*.sds</code> files (default: current working directory). Relative paths are interpreted relative to the location of the <code>*.sdsio.yml</code> file. In AVH FVP simulations, the <code>*.sdsio.yml</code> file must reside in the simulator working directory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>metadir:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Directory for metadata files (default: <code>workdir</code>). This key is used by the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds">SDS extension for VS Code</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#streams"><code>streams:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Data stream information used by the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds">SDS extension for VS Code</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#play"><code>play:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Playback step list that defines how <code>*.sds</code> files are played back (used in playback mode).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#flag-info"><code>flag-info:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Human readable labels for user flags. This key is currently not used by SDSIO-Server or the VSI3 simulation interface.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="interface"><code>interface:</code></h4>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The <code>interface:</code> settings are used by SDSIO-Server. The AVH FVP VSI3 simulation interface ignores <code>interface:</code>.</li>
+</ul>
+</div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>interface:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#usb"><code>usb:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Configure USB bulk interface.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#serial"><code>serial:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Configure serial (UART) interface.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#socket"><code>socket:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Configure TCP socket interface.</td>
+</tr>
+</tbody>
+</table>
+<h5 id="usb"><code>usb:</code></h5>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>usb:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>high_priority:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">SDSIO-Server only: increase process priority (default: <code>false</code>).</td>
+</tr>
+</tbody>
+</table>
+<h5 id="serial"><code>serial:</code></h5>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>serial:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Port name (examples: <code>COM3</code>, <code>ttyS0</code>, <code>ttyUSB1</code>, ...).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>baudrate:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Baudrate (default: <code>115200</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>parity:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Parity bit: <code>none</code>, <code>even</code>, <code>odd</code>, <code>mark</code>, <code>space</code> (default: <code>none</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>stopbits:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Stop bits: <code>1</code>, <code>1.5</code>, <code>2</code> (default: <code>1</code>).</td>
+</tr>
+</tbody>
+</table>
+<h5 id="socket"><code>socket:</code></h5>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>socket:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ipaddr:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">IPv4 address to bind to (example: <code>192.168.0.100</code>); cannot be used with <code>netif</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>netif:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Network interface name (example: <code>eth0</code>); cannot be used with <code>ipaddr</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">TCP port number (default: <code>5050</code>).</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The <code>ipaddr:</code> and <code>netif:</code> options are mutually exclusive.</li>
+</ul>
+</div>
+<h4 id="streams"><code>streams:</code></h4>
+<p>The <code>streams:</code> node provides additional information about the SDS data streams to the <a href="https://marketplace.visualstudio.com/">SDS extension for VS Code</a>. It provides the context between the data streams and the display format.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>streams:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Name of the data stream.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>view:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Format of the data stream for the viewer (signal, wav, video, heatmap, csv, csv2)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="play"><code>play:</code></h4>
+<p>The <code>play:</code> node specifies one or more playback steps.
+Each playback step defines the list of labels to play back for each opened SDS stream.</p>
+<p>For one playback step, all files of the <code>labels:</code> list are concatenated and appear as one data stream for the firmware.
+A pause (where the data stream needs to be closed and opened again by the firmware) is created with another <code>- step:</code> section.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>play:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- step:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Descriptive text for the playback step.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>recdir:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Recording directory for generated <code>*.p.sds</code> files during playback; relative paths are relative to <code>workdir:</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>setflags:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Set user flags (bitmask); example: <code>0x01</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clearflags:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Clear user flags (bitmask); example: <code>0x01</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>labels:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">List of label names that define the playback sequence.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="flag-info"><code>flag-info:</code></h4>
+<p>The <code>flag-info:</code> node provides human readable labels for the user flags 0..7.
+This information is currently not used by SDSIO-Server; it is intended for UI tooling.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>flag-info:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- &lt;flag-bit&gt;:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Maps the user flag bit position <code>0..7</code> to a human readable label.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">sdsio:
+  flag-info:
+    - 0: Skip Algorithm A
+    - 1: Inject fault condition
+    - 7: Reserved
+</code></pre>
+<h4 id="example">Example</h4>
+<pre><code class="language-yml">sdsio:
+  interface:
+    socket:
+      port: 5050
+
+  workdir: ./SDS Recordings
+  metadir: ./SDS Recordings
+
+  play:
+    - step: &quot;Step 1&quot;
+      labels: [ case1, case2, case3 ]
+
+    - step: &quot;Step 2&quot;
+      recdir: test1
+      setflags: 0x01
+      clearflags: 0x02
+      labels:
+        - case1
+        - case4
+        - case3
+</code></pre>
 <h4 id="usb-mode">USB Mode</h4>
 <pre><code class="language-txt">usage: sdsio-server.py usb [-h] [general-opts]
 
