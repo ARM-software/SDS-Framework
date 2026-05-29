@@ -33,19 +33,24 @@ jobs:
         ]
 
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@ab7a9404c0f3da075243ca237b5fac12c98deaa5 # v2.19.3
+        with:
+          egress-policy: audit
+
       - name: Checkout this repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Install tools
-        uses: ARM-software/cmsis-actions/vcpkg@v1
+        uses: ARM-software/cmsis-actions/vcpkg@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1.2
         with:
           config: "./.ci/vcpkg-configuration.json"
 
       - name: Activate Arm tool license
-        uses: ARM-software/cmsis-actions/armlm@v1
+        uses: ARM-software/cmsis-actions/armlm@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1.2
 
       - name: Cache CMSIS packs
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           key: cmsis-packs-${{ hashFiles('**/*.csolution.yml', '**/*.cproject.yml', '**/*.clayer.yml') }}
           restore-keys: |
