@@ -122,7 +122,7 @@ These data streams are stored in files.</p>
 using <a href="https://github.com/Arm-software/AVH">Arm Virtual Hardware - Fixed Virtual Platform</a>.</p>
 <p><img alt="Workflow for simulation" src="images/Workflow.png" /></p>
 <p>The <a href="sdsio.html"><strong>SDS Interface</strong></a> is integrated into the target application and runs on the microcontroller.
-It enables data streaming into SDS data files via various interfaces such as USB, Ethernet, RTT, UART, or File System.
+It enables data streaming into SDS data files via various interfaces such as USB, Ethernet, RTT, UART or File System.
 The I/O implementation included in SDS utilizes the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil/overview/">MDK-Middleware</a>,
 however custom interfaces to other middleware or different communication channels can also be used.</p>
 <p>The <a href="utilities.html#sdsio-server"><strong>SDSIO-Server</strong></a> running on a host computer captures the recorded data stream and stores it in SDS data files.
@@ -130,7 +130,7 @@ Each recording creates one set of SDS data files that are indicated by a sequent
 The SDS data files are in binary format and may be described using a <a href="https://github.com/ARM-software/SDS-Framework/tree/main/schema">YAML metadata file</a>.
 With this information, other tools can utilize the content of the SDS data files as shown in the picture below.</p>
 <p><img alt="Analysis of SDS data files" src="images/Analyse.png" /></p>
-<p>In a simulation environment, the <strong>SDS Interface</strong> streams the SDS data files back to the algorithm under test. With this interface, the algorithm receives
+<p>In a simulation environment, the <a href="sdsio.html#layer-sdsio_fvp"><strong>SDS Interface</strong></a> streams the SDS data files back to the algorithm under test. With this interface, the algorithm receives
 the same data stream as in the physical hardware. The setup can therefore be used for validation, performance optimizations, and runs even in CI environments
 for test automation.</p>
 <h2 id="sds-performance-measurements">SDS Performance Measurements</h2>
@@ -161,9 +161,9 @@ for test automation.</p>
 </tbody>
 </table>
 <p>Performance measurements were obtained using the <a href="https://arm-software.github.io/SDS-Framework/main/template.html#using-datatest">DataTest</a> project,
-which validates captured data streams on the available board interfaces (Ethernet and USB Bulk).
+which validates captured data streams on the available board interfaces (Ethernet and USB).
 SDS data files were verified using the <a href="https://arm-software.github.io/SDS-Framework/main/utilities.html#sds-check">SDS-Check</a> utility.
-With user configurable parameters (Bandwidth and Internal buffers size), the Idle rate (when CPU is not executing the application code) was measured.</p>
+In addition to transfer performance, CPU idle time was measured to estimate the processing capacity available while communication was active.</p>
               
             </div>
           </div><footer>
