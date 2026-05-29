@@ -113,12 +113,13 @@ def _load_sdsio_server_config(base_dir: str):
         except Exception as _e:
             logger.error(f"Failed to load control YAML: {_e}")
 
-    if _ctrl_data:
-        logger.info(f"SDSIO configuration YAML: {_cfg_path}")
-
     _work_dir = _ctrl_data.get("workdir", base_dir) if _ctrl_data else base_dir
     _work_dir = path.normpath(path.join(base_dir, _work_dir)) if not path.isabs(_work_dir) else path.normpath(_work_dir)
     _play_list = _ctrl_data.get("play", None) if _ctrl_data else None
+
+    logger.info(f"Working directory: {path.abspath(_work_dir)}.")
+    if _ctrl_data:
+        logger.info(f"SDSIO configuration YAML: {path.abspath(_cfg_path)}")
 
     # auto-playback is always enabled on VSI
     _auto_playback = True
