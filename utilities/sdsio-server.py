@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.25"
+SDSIO_SERVER_VERSION = "0.9.26"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -343,15 +343,15 @@ class sdsMonitorInterface():
             if _cmd == SDSIO_MON_FLAGS:
                 _set_flags  = int.from_bytes(self._recv_buf[4:8],  'little')
                 _clear_flags = int.from_bytes(self._recv_buf[8:12], 'little')
-                logger.info(f"Monitor command received: SDSIO_MON_FLAGS (set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X})")
+                logger.info(f"Monitor command received: SDSIO_MON_FLAGS (set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}).")
                 if self._flags:
                     self._flags.apply(_set_flags, _clear_flags)
             elif _cmd == SDSIO_MON_SHUTDOWN:
-                logger.info("Monitor command received: SDSIO_MON_SHUTDOWN")
+                logger.info("Monitor command received: SDSIO_MON_SHUTDOWN.")
                 del self._recv_buf[:16]
                 return True
             else:
-                logger.warning(f"Unknown monitor command received: {_cmd}")
+                logger.warning(f"Unknown monitor command received: {_cmd}.")
             del self._recv_buf[:16]
         return False
 
@@ -548,7 +548,7 @@ class sdsControlInput(threading.Thread):
         self.start()
 
     def _request_shutdown(self, source: str):
-        logger.info(f"sdsControl: terminate ({source})")
+        logger.info(f"sdsControl: terminate ({source}).")
         if self._shutdown_event:
             self._shutdown_event.set()
         if self._loop and self._main_task:
@@ -579,7 +579,7 @@ class sdsControlInput(threading.Thread):
             if _action:
                 _set_mask, _clear_mask, _desc = _action
                 self._flags.apply(_set_mask, _clear_mask)
-                logger.info(f"sdsControl: {_desc} ('{_ch}')")
+                logger.info(f"sdsControl: {_desc} ('{_ch}').")
 
     def stop(self):
         self._quit.set()
@@ -754,18 +754,18 @@ class sdsio_manager:
                         try:
                             os.remove(_sds_file_path + ".bak")
                         except Exception:
-                            logger.warning(f"Could not delete backup file '{_sds_file_path}.bak'")
+                            logger.warning(f"Could not delete backup file '{_sds_file_path}.bak'.")
                     try:
                         os.rename(_sds_file_path, _sds_file_path + ".bak")
                     except Exception:
-                        logger.warning(f"Could not create backup for existing file '{_sds_file_path}'")
+                        logger.warning(f"Could not create backup for existing file '{_sds_file_path}'.")
 
                 _eof_reached = False
                 with open(_sds_file_path, "wb") as _file_obj:
                     _bytes_since_flush = 0
                     if _index > 0:
                         # First file open was already notified in _open(); notify for subsequent files here
-                        logger.info(f"Record:   {_stream.name} ({_sds_file_path})")
+                        logger.info(f"Record:   {_stream.name} ({_sds_file_path}).")
                         if self._monitor:
                             self._monitor.send_open_msg(_sds_file_path, 1)
                         self.opened_streams[sid] = self.opened_streams[sid]._replace(file_idx=_index)
@@ -830,13 +830,13 @@ class sdsio_manager:
                         os.fsync(_file_obj.fileno())
                 # Last file close is handled in close(); send close only for non-last files
                 if not _eof_reached and _index < len(_stream.file_paths) - 1:
-                    logger.info(f"Closed:   {name} ({_sds_file_path})")
+                    logger.info(f"Closed:   {name} ({_sds_file_path}).")
                     if self._monitor:
                         self._monitor.send_close_msg(_sds_file_path)
                 if _eof_reached:
                     break
         except Exception:
-            logger.exception(f"Writer {sid} error")
+            logger.exception(f"Writer {sid} error.")
 
     def _file_read_worker(self, sid, name, buf: ByteStreamBuffer, stop_evt):
         _chunk_size = 128 * 1024
@@ -854,7 +854,7 @@ class sdsio_manager:
                             break  # EOF on this file, move to next label
                 # Close notifications are tracked via remaining_file_sizes in read(); last close is in close()
         except Exception:
-            logger.exception(f"Reader {sid} error")
+            logger.exception(f"Reader {sid} error.")
         finally:
             buf.set_eof()
 
@@ -887,10 +887,10 @@ class sdsio_manager:
             return
         if self._has_next_auto_playback_step():
             if self._flags.request_auto_playback_start():
-                logger.info(f"sdsControl: auto playback step {self._play_step_index}")
+                logger.info(f"sdsControl: auto playback step {self._play_step_index}.")
         elif self._flags.auto_playback and self._last_playback_stream_name:
             if self._flags.request_auto_playback_terminate():
-                logger.info("sdsControl: auto playback terminate")
+                logger.info("sdsControl: auto playback terminate.")
 
     def _open(self, mode, name):
         _cmd = CMD_OPEN
@@ -903,11 +903,11 @@ class sdsio_manager:
 
         # validate name
         if len(name) == 0:
-            logger.info(f"Invalid stream name: {name}")
+            logger.info(f"Invalid stream name: {name}.")
             return _resp_err
         _invalid_chars = [chr(_i) for _i in range(0x00, 0x10)] + [chr(0x7F), '"', '*', '/', ':', '<', '>', '?', '\\', '|']
         if any(_ch in name for _ch in _invalid_chars):
-            logger.info(f"Invalid stream name: {name}")
+            logger.info(f"Invalid stream name: {name}.")
             return _resp_err
 
         # ensure not already open
@@ -941,7 +941,7 @@ class sdsio_manager:
                     _clear_flags = 0
 
                 if _set_flags or _clear_flags:
-                    logger.debug(f"Applying flags for playback stream '{name}': set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}")
+                    logger.debug(f"Applying flags for playback stream '{name}': set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}.")
                     self._flags.apply(_set_flags, _clear_flags)
 
                 # Create label list
@@ -974,7 +974,7 @@ class sdsio_manager:
             _file_paths = self._build_stream_file_paths(name, mode)
             # validate if recdir exsist
             if _file_paths and not path.exists(path.dirname(_file_paths[0])):
-                logger.error(f"Recording directory does not exist for stream '{name}': {path.dirname(_file_paths[0])}")
+                logger.error(f"Recording directory does not exist for stream '{name}': {path.dirname(_file_paths[0])}.")
                 return _resp_err
 
             # allocate new sid
@@ -995,7 +995,7 @@ class sdsio_manager:
             self._write_stop[_sid]   = _stop_evt
             # Notify monitor for the first file; subsequent files are notified in the write worker
             if _file_paths:
-                logger.info(f"Record:   {name} ({_file_paths[0]})")
+                logger.info(f"Record:   {name} ({_file_paths[0]}).")
                 if self._monitor:
                     self._monitor.send_open_msg(_file_paths[0], 1)
 
@@ -1004,7 +1004,7 @@ class sdsio_manager:
             # Validate that files for all labels exist
             for _sds_file_path in _file_paths:
                 if not path.exists(_sds_file_path):
-                    logger.error(f"Missing file for playback stream '{name}': {_sds_file_path}")
+                    logger.error(f"Missing file for playback stream '{name}': {_sds_file_path}.")
                     return _resp_err
 
             if not self._timestamp_boundaries:
@@ -1033,7 +1033,7 @@ class sdsio_manager:
             self._read_stop[_sid]  = _stop_evt
             # Notify monitor for the first file; subsequent files are notified in the read worker
             if _file_paths:
-                logger.info(f"Playback: {name} ({_file_paths[0]})")
+                logger.info(f"Playback: {name} ({_file_paths[0]}).")
                 if self._monitor:
                     self._monitor.send_open_msg(_file_paths[0], 0)
             self._last_playback_stream_name = name
@@ -1064,7 +1064,7 @@ class sdsio_manager:
                 _last_idx = _last_stream.file_idx
                 if _last_idx < len(_last_stream.file_paths):
                     _sds_file_path = _last_stream.file_paths[_last_idx]
-                    logger.info(f"Closed:   {_name} ({_sds_file_path})")
+                    logger.info(f"Closed:   {_name} ({_sds_file_path}).")
                     if self._monitor:
                         self._monitor.send_close_msg(_sds_file_path)
             self._write_threads.pop(sid)
@@ -1079,7 +1079,7 @@ class sdsio_manager:
                 _last_idx = _last_stream.file_idx
                 if _last_idx < len(_last_stream.file_paths):
                     _sds_file_path = _last_stream.file_paths[_last_idx]
-                    logger.info(f"Closed:   {_name} ({_sds_file_path})")
+                    logger.info(f"Closed:   {_name} ({_sds_file_path}).")
                     if self._monitor:
                         self._monitor.send_close_msg(_sds_file_path)
             self._read_buffers.pop(sid)
@@ -1101,7 +1101,7 @@ class sdsio_manager:
         _resp = bytearray()
         _buf = self._write_buffers.get(sid)
         if not _buf:
-            logger.info(f"Not opened for write: {sid}")
+            logger.info(f"Not opened for write: {sid}.")
             return _resp
         _buf.write(data)
 
@@ -1152,7 +1152,7 @@ class sdsio_manager:
                         if _stream.file_paths and _f_idx < len(_stream.file_paths) - 1:
                             # Non-last file fully drained: report close and advance to next file
                             _sds_file_path = _stream.file_paths[_f_idx]
-                            logger.info(f"Closed:   {_stream.name} ({_sds_file_path})")
+                            logger.info(f"Closed:   {_stream.name} ({_sds_file_path}).")
                             if self._monitor:
                                 self._monitor.send_close_msg(_sds_file_path)
                             self.opened_streams[sid] = self.opened_streams[sid]._replace(file_idx=_f_idx + 1)
@@ -1160,7 +1160,7 @@ class sdsio_manager:
                             if _next_idx < len(_stream.file_paths):
                                 # First file open was already notified in _open(); notify for subsequent files here
                                 _sds_file_path = _stream.file_paths[_next_idx]
-                                logger.info(f"Playback: {_stream.name} ({_sds_file_path})")
+                                logger.info(f"Playback: {_stream.name} ({_sds_file_path}).")
                                 if self._monitor:
                                     self._monitor.send_open_msg(_sds_file_path, 0)
                             continue
@@ -1193,11 +1193,11 @@ class sdsio_manager:
         self._flags.update_from_target(flags)
         self._request_auto_playback_if_needed(flags)
         if self._info_flags != flags:
-            logger.info(f"sdsFlags = 0x{flags:08X}")
+            logger.info(f"sdsFlags = 0x{flags:08X}.")
             self._info_flags = flags
         if idle_rate and self._info_IdleRate != idle_rate:
             if idle_rate != 0xFFFFFFFF:
-                logger.info(f"{idle_rate}% idle")
+                logger.info(f"{idle_rate}% idle.")
             self._info_IdleRate = idle_rate
         if err_data:
             _status = int.from_bytes(err_data[0:4],'little')
@@ -1307,7 +1307,7 @@ class async_sdsio_server_socket:
             try:
                 _data = await asyncio.wait_for(reader.read(4096), timeout=_remaining)
                 if _data:
-                    logger.debug(f"Discarding initial response data from host: {_data!r}")
+                    logger.debug(f"Discarding initial response data from host: {_data!r}.")
             except asyncio.TimeoutError:
                 break
             if not _data:
@@ -1365,7 +1365,7 @@ class async_sdsio_server_socket:
             self._manager.clean()
             if not self._shutting_down:
                 if not self._connect_mode:
-                    logger.info("Waiting for SDSIO-Client to reconnect...")
+                    logger.info("SDSIO-Server waiting for SDSIO-Client to reconnect...")
 
     async def start(self):
         if self._connect_mode:
@@ -1381,7 +1381,7 @@ class async_sdsio_server_socket:
                 _writer = None
                 try:
                     if _log_connection_attempt:
-                        logger.info(f"Connecting to socket host {self._ip}:{self._port}...")
+                        logger.info(f"SDSIO-Server connecting to socket host {self._ip}:{self._port}...")
                     _reader, _writer = await asyncio.open_connection(self._ip, self._port)
                     _log_connection_attempt = True
                     if self._connect_message is not None:
@@ -1422,7 +1422,7 @@ class async_sdsio_server_socket:
     async def _start_server(self):
         self.server = await asyncio.start_server(self._handle_connection, self._ip, self._port)
         _addr = self.server.sockets[0].getsockname()
-        logger.info(f"Socket server listening on {_addr[0]}:{_addr[1]}")
+        logger.info(f"SDSIO-Server listening on {_addr[0]}:{_addr[1]}...")
         try:
             # Block until cancelled (start_server already accepts connections)
             await asyncio.Event().wait()
@@ -1453,11 +1453,11 @@ async def sdsio_server_socket_run_supervised(ip, port, connect_mode, connect_mes
         try:
             await _srv.start()
             # If start() returns normally, break out
-            logger.info("Server shut down cleanly.")
+            logger.info("SDSIO-Server shut down cleanly.")
             break
         except Exception:
-            logger.info(f"Server fatal error.")
-            logger.info("Server restarting...")
+            logger.info("SDSIO-Server fatal error.")
+            logger.info("SDSIO-Server restarting...")
             # Clean up any streams
             manager.clean()
             # Close the listener socket if it’s open
@@ -1482,7 +1482,6 @@ class sdsio_server_serial:
 
     def _open(self):
         _first_attempt = True
-        logger.info(f"Serial Port: {self._port}")
         try:
             self._ser = serial.Serial()
             if sys.platform != "darwin":
@@ -1507,7 +1506,7 @@ class sdsio_server_serial:
                 return True
             except Exception:
                 if _first_attempt:
-                    logger.info(f"Waiting for Client on {self._port}...")
+                    logger.info(f"SDSIO-Server waiting for serial SDSIO-Client on {self._port}...")
                     _first_attempt = False
                 if self._connect_timeout and (time.time() - _start_time >= self._connect_timeout):
                     logger.info(f"Serial port open failed after {self._connect_timeout} seconds.")
@@ -1525,14 +1524,14 @@ class sdsio_server_serial:
         try:
             return self._ser.read(size)
         except Exception:
-            logger.info("Serial read error")
+            logger.info("Serial read error.")
             raise
 
     def _write(self, data):
         try:
             return self._ser.write(data)
         except Exception:
-            logger.info("Serial write error")
+            logger.info("Serial write error.")
             raise
 
     def start(self):
@@ -1596,12 +1595,12 @@ def sdsio_server_serial_run_supervised(port, baudrate, parity, stop_bits, connec
             if manager.shutdown_requested.is_set():
                 break
             # start() returned normally (e.g., invalid command)
-            logger.info("Server restarting...")
+            logger.info("SDSIO-Server restarting...")
         except Exception:
             if manager.shutdown_requested.is_set():
                 break
-            logger.info(f"Server fatal error.")
-            logger.info("Server restarting...")
+            logger.info("SDSIO-Server fatal error.")
+            logger.info("SDSIO-Server restarting...")
             # Reset all open streams
             manager.clean()
             # Try to close the port if it's still open
@@ -1672,7 +1671,7 @@ class sdsio_server_usb:
                         continue
                 if _usb_dev is None:
                     if _first_attempt:
-                        logger.info("Waiting for SDSIO-Client USB device...")
+                        logger.info("SDSIO-Server waiting for USB SDSIO-Client...")
                         _first_attempt = False
                     await asyncio.sleep(0.5)
 
@@ -1940,7 +1939,7 @@ class sdsio_server_usb:
             if not _silent_reconnect:
                 logger.info(f"SDSIO-Client USB device connected.")
             else:
-                logger.debug("USB session re-established.")
+                logger.debug("USB connection re-established.")
                 _silent_reconnect = False
 
             # start polling thread
@@ -1998,7 +1997,7 @@ class sdsio_server_usb:
                     _silent_reconnect = True
                     continue
                 else:
-                    logger.info("USB device disconnected.")
+                    logger.info("USB SDSIO-Client disconnected.")
 
             # On protocol error, wait for device to be physically reset
             if _protocol_err:
@@ -2032,13 +2031,13 @@ class sdsio_server_usb:
                 return False
 
             # Wait for device to disappear
-            logger.info("Waiting for SDSIO-Client USB device to disconnect...")
+            logger.info("SDSIO-Server waiting for USB SDSIO-Client device to disconnect...")
             while _device_present():
                 if self._shutdown_event.wait(0.5):
                     return
 
             # Wait for device to reappear
-            logger.info("Waiting for SDSIO-Client USB device to reconnect...")
+            logger.info("SDSIO-Server waiting for USB SDSIO-Client device to reconnect...")
             while not _device_present():
                 if self._shutdown_event.wait(0.5):
                     return
@@ -2462,7 +2461,7 @@ async def main():
             else:
                 raise ValueError("Invalid control YAML.")
         except Exception as _e:
-            logger.error(f"Failed to load control YAML: {_e}")
+            logger.error(f"Failed to load control YAML: {_e}.")
 
     # Server type
     if _args.server_type is not None:
@@ -2523,7 +2522,7 @@ async def main():
     else:
         _work_dir = os.getcwd()
     if not path.isdir(_work_dir):
-        logger.error(f"Working directory does not exist: {_work_dir}")
+        logger.error(f"Working directory does not exist: {_work_dir}.")
         sys.exit(1)
 
     # Auto playback
@@ -2567,7 +2566,6 @@ async def main():
         elif _server_type == "usb":
             _loop = asyncio.get_running_loop()
             _srv = sdsio_server_usb(_manager, _loop, high_priority=_high_priority)
-            logger.info("Starting USB Server...")
             await _srv.start()
 
     except (KeyboardInterrupt, asyncio.CancelledError):
@@ -2581,4 +2579,4 @@ if __name__ == "__main__":
         asyncio.run(main())
     except (KeyboardInterrupt, asyncio.CancelledError):
         logger.info("Ctrl+C received, shutting down.")
-    logger.info("Server stopped.")
+    logger.info("SDSIO-Server stopped.")
