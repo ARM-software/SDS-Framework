@@ -196,7 +196,7 @@
       <files>
         <file category="doc"    name="docs/sdsio.html"/>
         <file category="source" name="sds/sdsio/client/sdsio_client.c"/>
-        <file category="source" name="sds/sdsio/client/sdsio_client_custom.c" attr="template" select="Custom SDS I/O Client Driver"/>
+        <file category="source" name="sds/sdsio/client/sdsio_client_custom.c" attr="template" select="Custom SDSIO-Client Driver"/>
       </files>
     </component>
 
