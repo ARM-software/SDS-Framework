@@ -1,7 +1,7 @@
 name: Bug Report
 description: File a bug report.
 title: "[Bug]: "
-labels: ["bug", "triage"]
+type: Bug
 projects: ["ARM-software/15"]
 
 body:
@@ -14,14 +14,8 @@ body:
         required: true
   - type: textarea
     attributes:
-      label: Current Behavior
-      description: A concise description of what you're experiencing.
-    validations:
-      required: false
-  - type: textarea
-    attributes:
-      label: Expected Behavior
-      description: A concise description of what you expected to happen.
+      label: Problem statement
+      description: A concise description of what you're experiencing and what you would expect
     validations:
       required: false
   - type: textarea
@@ -35,10 +29,3 @@ body:
         1. See error...
     validations:
       required: false
-  - type: checkboxes
-    attributes:
-      label: Blocker
-      description: Indicate that this bug is blocking the use and there is no viable workaround available?
-      options:
-        - label: blocker
-          required: false
