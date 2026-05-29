@@ -25,7 +25,7 @@ using [Arm Virtual Hardware - Fixed Virtual Platform](https://github.com/Arm-sof
 ![Workflow for simulation](images/Workflow.png)
 
 The [**SDS Interface**](sdsio.md) is integrated into the target application and runs on the microcontroller.
-It enables data streaming into SDS data files via various interfaces such as USB, Ethernet, RTT, UART, or File System.
+It enables data streaming into SDS data files via various interfaces such as USB, Ethernet, RTT, UART or File System.
 The I/O implementation included in SDS utilizes the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil/overview/),
 however custom interfaces to other middleware or different communication channels can also be used.
 
@@ -36,7 +36,7 @@ With this information, other tools can utilize the content of the SDS data files
 
 ![Analysis of SDS data files](images/Analyse.png)
 
-In a simulation environment, the **SDS Interface** streams the SDS data files back to the algorithm under test. With this interface, the algorithm receives
+In a simulation environment, the [**SDS Interface**](sdsio.md#layer-sdsio_fvp) streams the SDS data files back to the algorithm under test. With this interface, the algorithm receives
 the same data stream as in the physical hardware. The setup can therefore be used for validation, performance optimizations, and runs even in CI environments
 for test automation.
 
@@ -49,6 +49,6 @@ for test automation.
 | STMicroelectronics B-U585I-IOT02A (@ 160 MHz) | 1.1 MB/s   (86 % idle) |                        |
 
 Performance measurements were obtained using the [DataTest](https://arm-software.github.io/SDS-Framework/main/template.html#using-datatest) project,
-which validates captured data streams on the available board interfaces (Ethernet and USB Bulk).
+which validates captured data streams on the available board interfaces (Ethernet and USB).
 SDS data files were verified using the [SDS-Check](https://arm-software.github.io/SDS-Framework/main/utilities.html#sds-check) utility.
-With user configurable parameters (Bandwidth and Internal buffers size), the Idle rate (when CPU is not executing the application code) was measured.
+In addition to transfer performance, CPU idle time was measured to estimate the processing capacity available while communication was active.
