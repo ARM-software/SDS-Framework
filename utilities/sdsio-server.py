@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.27"
+SDSIO_SERVER_VERSION = "0.9.28"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -629,7 +629,7 @@ class sdsio_manager:
         auto_playback=False,
         play_list: Optional[list] = None,
         mon_port: Optional[int] = None,
-        write_flush_size: int = 0,
+        write_flush_count: Optional[int] = None,
         status_bar_factory=None,
         monitor_factory=None,
         control_input_factory=None,
@@ -663,7 +663,7 @@ class sdsio_manager:
         self._playback_mode = False
         self._play_list = play_list
         self._mon_port = mon_port
-        self._write_flush_size = write_flush_size
+        self._write_flush_count = write_flush_count
         # SDS Control Flags
         self.shutdown_requested = threading.Event()
         self._flags = sdsFlags(auto_playback)
@@ -772,7 +772,7 @@ class sdsio_manager:
 
                 _eof_reached = False
                 with open(_sds_file_path, "wb") as _file_obj:
-                    _bytes_since_flush = 0
+                    _records_since_flush = 0
                     if _index > 0:
                         # First file open was already notified in _open(); notify for subsequent files here
                         logger.info(f"Record:   {_stream.name} ({self._format_path(_sds_file_path)}).")
@@ -829,13 +829,14 @@ class sdsio_manager:
                             else:
                                 # Complete record: write and reset for next record
                                 _file_obj.write(_data)
-                                _bytes_since_flush += len(_data)
-                                if self._write_flush_size and _bytes_since_flush >= self._write_flush_size:
-                                    _file_obj.flush()
-                                    os.fsync(_file_obj.fileno())
-                                    _bytes_since_flush = 0
+                                _records_since_flush += 1
+                                if self._write_flush_count is not None:
+                                    if _records_since_flush >= self._write_flush_count:
+                                        _file_obj.flush()
+                                        os.fsync(_file_obj.fileno())
+                                        _records_since_flush = 0
                                 _data = bytearray()
-                    if self._write_flush_size and _bytes_since_flush:
+                    if self._write_flush_count is not None:
                         _file_obj.flush()
                         os.fsync(_file_obj.fileno())
                 # Last file close is handled in close(); send close only for non-last files
@@ -2286,8 +2287,8 @@ def parse_arguments():
         _g.add_argument("--log", "-l", dest="log_file", metavar="<file>",
                        help="Redirect console output to a log file (typically for CI use)",
                        type=log_file_path, default=argparse.SUPPRESS)
-        _g.add_argument("--write-flush-size", dest="write_flush_size", metavar="<bytes>",
-                       help="Force recorded SDS data to disk after this many bytes (0 disables explicit sync)",
+        _g.add_argument("--write-flush-count", dest="write_flush_count", metavar="<count>",
+                       help="Force recorded SDS data to disk after this many records (0 = after every record; default: disabled)",
                        type=non_negative_int, default=argparse.SUPPRESS)
         _g.add_argument("--verbose", "-v", action="store_true",
                        help="Enable debug messages", default=argparse.SUPPRESS)
@@ -2388,9 +2389,9 @@ def parse_arguments():
                         help="Monitor control interface port", type=int, default=None)
     _general.add_argument("--log",     "-l", dest="log_file", metavar="<file>",
                         help="Redirect console output to a log file (typically for CI use)", type=log_file_path, default=None)
-    _general.add_argument("--write-flush-size", dest="write_flush_size", metavar="<bytes>",
-                        help="Force recorded SDS data to disk after this many bytes (0 disables explicit sync)",
-                        type=non_negative_int, default=0)
+    _general.add_argument("--write-flush-count", dest="write_flush_count", metavar="<count>",
+                        help="Force recorded SDS data to disk after this many records (0 = after every record; default: disabled)",
+                        type=non_negative_int, default=None)
     _general.add_argument("--verbose", "-v", action="store_true", help="Enable debug messages")
     _general.add_argument("--high-priority", dest="high_priority",
                         help="Increase process priority when using USB interface (requires elevated privileges)", action="store_true", default=False)
@@ -2552,7 +2553,7 @@ async def main():
                 _step['recdir'] = path.normpath(path.join(_work_dir, _recdir))
 
     _manager = sdsio_manager(work_dir=_work_dir, auto_playback=_auto_playback, play_list=_play_list,
-                             mon_port=_args.monitor_port, write_flush_size=_args.write_flush_size)
+                             mon_port=_args.monitor_port, write_flush_count=_args.write_flush_count)
 
     try:
         if _server_type == "socket":
