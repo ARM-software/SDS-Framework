@@ -133,7 +133,7 @@
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/network"><code>layer/sdsio/network/sdsio_network.clayer.yml</code></a> is configured for recording and playback via the Ethernet interface. It uses the  <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> Network component.</p>
 <p>For <a href="theory.html#sds-data-files">SDS data file</a> access the <a href="utilities.html#sdsio-server">SDSIO-Server</a> is started on the Host computer as shown below.  This output an IP address as shown below:</p>
 <pre><code class="language-bash">&gt;python sdsio-server.py socket
-Press Ctrl+C to exit.
+Press 'Ctrl+C' or 'X' to exit.
 Socket server listening on 172.20.10.2:5050
 </code></pre>
 <p>This is the IP address that the target hardware needs to connect to and it is required to configure this IP address in the file <code>./layer/sdsio/network/RTE/SDS/sdsio_client_socket_config.h</code> with  the define <code>SDSIO_SOCKET_SERVER_IP</code>.</p>
@@ -141,7 +141,7 @@ Socket server listening on 172.20.10.2:5050
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/usb"><code>layer/sdsio/usb/sdsio_usb.clayer.yml</code></a> is configured for recording and playback via the USB Device interface. It uses the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> USB Device component and connects via a USB interface to a Host computer.</p>
 <p>For <a href="theory.html#sds-data-files">SDS data file</a> access start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> on the Host computer with:</p>
 <pre><code class="language-bash">&gt;sdsio-server.py usb
-Press Ctrl+C to exit.
+Press 'Ctrl+C' or 'X' to exit.
 Starting USB Server...
 Waiting for SDSIO Client USB device...
 </code></pre>
