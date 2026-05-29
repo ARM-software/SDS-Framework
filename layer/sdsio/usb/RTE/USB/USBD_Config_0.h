@@ -87,7 +87,7 @@
 
 //     <s.126>Product String
 //     <i>String Descriptor describing Product.
-#define USBD0_STR_DESC_PROD_RAW         "SDSIO Client"
+#define USBD0_STR_DESC_PROD_RAW         "SDSIO-Client"
 
 //     <e.0>Serial Number String
 //     <i>Enable Serial Number String.
