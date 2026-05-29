@@ -25,16 +25,119 @@ The following SEGGER RTT software components are required:
   - component: SEGGER:RTT
 ```
 
+The RTT channel number used for SDSIO is configured in
+`./RTE/SDS/sdsio_client_rtt_config.h` with the `SDSIO_RTT_CHANNEL` define (default: `1`).
+
 ## Starting SDSIO-Server
 
-The **SDSIO-Server** is a Python-based utility for PC, which is included in the
-[SDS-Framework](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) pack.
+The SDSIO layer communicates with the host PC via an RTT socket exposed by the
+debug probe software. The [SDSIO-Server](https://arm-software.github.io/SDS-Framework/main/utilities.html#sdsio-server)
+runs on the host and connects to the debug probe socket using
+[socket connect mode](https://arm-software.github.io/SDS-Framework/main/utilities.html#socket-mode).
 
-To start the SDSIO-Server, run it from the `./utilities` directory with:
+Any debug probe software that exposes RTT data over a TCP socket can be used.
+Examples are provided below for **SEGGER J-Link** and **pyOCD**.
 
-```txt
-python sdsio-server.py socket --ipaddr 127.0.0.1
+---
+
+### SEGGER J-Link
+
+J-Link exposes RTT data via a TELNET-like TCP socket on `localhost`, port **19021**
+(default), while a J-Link connection is active (e.g., during a debug session).
+
+After connecting, the client has **100 ms** to send a
+[SEGGER TELNET Config String](https://kb.segger.com/J-Link_RTT_TELNET_Channel) that selects
+the RTT channel. The SDSIO-Server should sends this string automatically via `--connect-message`,
+and discards any initial response from J-Link during the `--connect-time` window.
+
+#### Start SDSIO-Server for J-Link
+
+Replace `<channel>` with the value of `SDSIO_RTT_CHANNEL` (default: `1`):
+
+```bash
+python sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 --connect-mode \
+    --connect-message "$$SEGGER_TELNET_ConfigStr=RTTCh;<channel>$$"
 ```
 
-Further information about the SDSIO-Server application can be found in the
-[SDS-Framework documentation](https://github.com/ARM-software/SDS-Framework/tree/main/documentation/utilities.md#sdsio-server).
+Example for the default channel 1:
+
+```bash
+python sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 --connect-mode \
+    --connect-message "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
+```
+
+#### SDSIO control file for J-Link
+
+Alternatively, configure via an `sdsio.yml` control file (see
+[SDSIO Control File](https://arm-software.github.io/SDS-Framework/main/utilities.html#sdsio-control-file-sdsioyml)):
+
+```yml
+sdsio:
+  interface:
+    socket:
+      ipaddr: 127.0.0.1
+      port: 19021
+      connect_mode: true
+      connect_message: "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
+      connect_time: 100
+
+  workdir: ./SDS Recordings
+```
+
+Then start the server with:
+
+```bash
+python sdsio-server.py -c sdsio.yml
+```
+
+---
+
+### pyOCD
+
+pyOCD can expose each RTT channel as a TCP socket server. No connect message is required.
+The RTT channel can be configured via a `*.cbuild-run.yml` file, CLI options, or a `pyocd.yml`
+session options file — refer to the
+[pyOCD RTT documentation](https://open-cmsis-pack.github.io/cmsis-toolbox/pyOCD-Debugger/#rtt)
+for details. The `channel:` list must include an entry for the SDSIO channel
+(`SDSIO_RTT_CHANNEL`, default: `1`) with `mode: server` and a free TCP port:
+
+```yml
+rtt:
+  - control-block:
+      auto-detect: true
+    channel:
+      - number: 1     # must match SDSIO_RTT_CHANNEL in sdsio_client_rtt_config.h
+        mode: server
+        port: 5100    # any free TCP port on localhost
+```
+
+Run the target with pyOCD (RTT is active during `pyocd run`):
+
+```bash
+pyocd run --cbuild-run out/<name>+<target-type>.cbuild-run.yml --eot
+```
+
+#### Start SDSIO-Server for pyOCD
+
+```bash
+python sdsio-server.py socket --ipaddr 127.0.0.1 --port 5100 --connect-mode
+```
+
+#### SDSIO control file for pyOCD
+
+```yml
+sdsio:
+  interface:
+    socket:
+      ipaddr: 127.0.0.1
+      port: 5100       # must match the port configured in *.csolution.yml
+      connect_mode: true
+
+  workdir: ./SDS Recordings
+```
+
+Then start the server with:
+
+```bash
+python sdsio-server.py -c sdsio.yml
+```

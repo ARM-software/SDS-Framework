@@ -26,7 +26,7 @@ For [SDS data file](theory.md#sds-data-files) access the [SDSIO-Server](utilitie
 
 ```bash
 >python sdsio-server.py socket
-Press Ctrl+C to exit.
+Press 'Ctrl+C' or 'X' to exit.
 Socket server listening on 172.20.10.2:5050
 ```
 
@@ -40,7 +40,7 @@ For [SDS data file](theory.md#sds-data-files) access start the [SDSIO-Server](ut
 
 ```bash
 >sdsio-server.py usb
-Press Ctrl+C to exit.
+Press 'Ctrl+C' or 'X' to exit.
 Starting USB Server...
 Waiting for SDSIO Client USB device...
 ```
