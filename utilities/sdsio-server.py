@@ -1267,7 +1267,7 @@ class sdsio_manager:
             return self._info(_flags, _idle_rate, _err_data)
 
         else:
-            logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
+            logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client.")
             return bytearray()
 
 
@@ -1318,7 +1318,7 @@ class async_sdsio_server_socket:
         self._handler_tasks.add(_task)
         self._active_writer = writer
         try:
-            logger.info("SDSIO Client connected.")
+            logger.info("SDSIO-Client connected.")
             while True:
                 # Send async FLAGS response periodically
                 _resp = self._manager.get_async_response()
@@ -1335,8 +1335,8 @@ class async_sdsio_server_socket:
                 # validate command before reading payload
                 _cmd = int.from_bytes(_hdr[0:4],'little')
                 if _cmd not in CMD_ALL:
-                    logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
-                    logger.info("Closing SDSIO Client connection...")
+                    logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client.")
+                    logger.info("Closing SDSIO-Client connection...")
                     break
 
                 _sz  = int.from_bytes(_hdr[12:16],'little')
@@ -1349,7 +1349,7 @@ class async_sdsio_server_socket:
             raise                          # re-raise per docs
         except (asyncio.IncompleteReadError, ConnectionResetError, OSError):
             if not self._shutting_down:
-                logger.info("SDSIO Client disconnected.")
+                logger.info("SDSIO-Client disconnected.")
         finally:
             self._handler_tasks.discard(_task)
             if self._active_writer is writer:
@@ -1365,7 +1365,7 @@ class async_sdsio_server_socket:
             self._manager.clean()
             if not self._shutting_down:
                 if not self._connect_mode:
-                    logger.info("Waiting for SDSIO Client to reconnect...")
+                    logger.info("Waiting for SDSIO-Client to reconnect...")
 
     async def start(self):
         if self._connect_mode:
@@ -1562,7 +1562,7 @@ class sdsio_server_serial:
                     # validate command before reading payload
                     _cmd = int.from_bytes(_header[0:4], 'little')
                     if _cmd not in CMD_ALL:
-                        logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
+                        logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client.")
                         _buffer.clear()
                         return  # Exit start(), finally block will clean up
 
@@ -1672,7 +1672,7 @@ class sdsio_server_usb:
                         continue
                 if _usb_dev is None:
                     if _first_attempt:
-                        logger.info("Waiting for SDSIO Client USB device...")
+                        logger.info("Waiting for SDSIO-Client USB device...")
                         _first_attempt = False
                     await asyncio.sleep(0.5)
 
@@ -1828,7 +1828,7 @@ class sdsio_server_usb:
                 # validate command before reading payload
                 _cmd = int.from_bytes(_hdr[0:4],'little')
                 if _cmd not in CMD_ALL:
-                    logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO Client.")
+                    logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client.")
                     self._protocol_error = True
                     self._running = False
                     self._rx_buf.clear()
@@ -1938,7 +1938,7 @@ class sdsio_server_usb:
             # Mark server active in the normal path too (hotplug working)
             self._running = True
             if not _silent_reconnect:
-                logger.info(f"SDSIO Client USB device connected.")
+                logger.info(f"SDSIO-Client USB device connected.")
             else:
                 logger.debug("USB session re-established.")
                 _silent_reconnect = False
@@ -2032,13 +2032,13 @@ class sdsio_server_usb:
                 return False
 
             # Wait for device to disappear
-            logger.info("Waiting for SDSIO Client USB device to disconnect...")
+            logger.info("Waiting for SDSIO-Client USB device to disconnect...")
             while _device_present():
                 if self._shutdown_event.wait(0.5):
                     return
 
             # Wait for device to reappear
-            logger.info("Waiting for SDSIO Client USB device to reconnect...")
+            logger.info("Waiting for SDSIO-Client USB device to reconnect...")
             while not _device_present():
                 if self._shutdown_event.wait(0.5):
                     return
