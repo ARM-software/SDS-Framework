@@ -9,7 +9,7 @@ The **Synchronous Data Stream (SDS) Framework** implements a data stream managem
 
 ## Examples
 
-The [SDS template application](https://arm-software.github.io/SDS-Framework/main/template.html) demonstarte the recording and playback of real-world data streams using physical hardware or simulation via [Arm Virtual Hardware - FVP](https://github.com/ARM-software/AVH). Simulation enables cost-effective, automated regression testing on desktops or in cloud-based CI/MLOps pipelines. The real-world data streams are captured in [SDS data files](https://arm-software.github.io/SDS-Framework/main/theory.html#sds-data-files).
+The [SDS template application](https://arm-software.github.io/SDS-Framework/main/template.html) demonstrate the recording and playback of real-world data streams using physical hardware or simulation via [Arm Virtual Hardware - FVP](https://github.com/ARM-software/AVH). Simulation enables cost-effective, automated regression testing on desktops or in cloud-based CI/MLOps pipelines. The real-world data streams are captured in [SDS data files](https://arm-software.github.io/SDS-Framework/main/theory.html#sds-data-files).
 
 Refer to [Overview](./overview/README.md) for more details.
 
