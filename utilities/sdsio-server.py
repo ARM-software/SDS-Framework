@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.28"
+SDSIO_SERVER_VERSION = "0.9.29"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -897,8 +897,7 @@ class sdsio_manager:
         if self.opened_streams:
             return
         if self._has_next_auto_playback_step():
-            if self._flags.request_auto_playback_start():
-                logger.info(f"sdsControl: auto playback step {self._play_step_index}.")
+            self._flags.request_auto_playback_start()
         elif self._flags.auto_playback and self._last_playback_stream_name:
             if self._flags.request_auto_playback_terminate():
                 logger.info("sdsControl: auto playback terminate.")
@@ -937,6 +936,9 @@ class sdsio_manager:
                 if self._play_list:
                     if self._play_step_index < len(self._play_list):
                         _step = self._play_list[self._play_step_index]
+                        _step_desc = _step.get('step', '')
+                        _desc_suffix = f": {_step_desc}" if _step_desc else ""
+                        logger.info(f"Playback step {self._play_step_index + 1}/{len(self._play_list)}{_desc_suffix}.")
                         _set_flags = _step.get('setflags', 0)
                         _clear_flags = _step.get('clearflags', 0)
                         _recdir = _step.get('recdir', None)
