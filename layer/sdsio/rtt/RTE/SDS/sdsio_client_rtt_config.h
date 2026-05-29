@@ -23,7 +23,7 @@
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 
 // <h>SDSIO via RTT (SEGGER:RTT)
-// <i>SDSIO using SDSIO-Client to communicate with SDSIO-Server via the RTT interface
+// <i>SDSIO using SDSIO-Client to communicate with SDSIO-Server via the RTT Interface
 
 //   <o>RTT channel
 //   <i>RTT channel number (0..31) to use for communication
