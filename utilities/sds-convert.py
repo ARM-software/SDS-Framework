@@ -256,14 +256,16 @@ def write_SDS_SimpleCSV(args, data, meta_data):
             # Normalize output timeslots
             if normalize:
                 csv_timeslot -= timeslot[0]
+            # Get number of samples in this record
+            n_samples = len(record_row[0])
             # Interpolate timeslots if there is more than one data point in this record
-            if len(record_row[0]) > 1:
-                # Get number of samples in this record
-                n_samples = len(record_row[0])
-
+            if n_samples > 1:
                 # Reuse previous time difference to interpolate timeslots for final record
                 if cnt == (cnt_max-1):
-                    csv_timeslot_next = csv_timeslot + (csv_timeslot - csv_timeslot_previous)
+                    if cnt == 0:
+                        csv_timeslot_next = csv_timeslot
+                    else:
+                        csv_timeslot_next = csv_timeslot + (csv_timeslot - csv_timeslot_previous)
                 else:
                     csv_timeslot_next = timeslot[cnt + 1]
                     if normalize:
@@ -271,26 +273,19 @@ def write_SDS_SimpleCSV(args, data, meta_data):
 
                 # Interpolate timeslots between current and next record, based on the number of
                 # data points in current record
-                tmp_time = np.linspace(csv_timeslot, csv_timeslot_next,  n_samples + 1)[:-1]
+                sample_times = np.linspace(csv_timeslot, csv_timeslot_next,  n_samples + 1)[:-1]
                 csv_timeslot_previous = csv_timeslot
-
-                # Write generated CSV row to output file
-                for t in range(0, len(tmp_time)):
-                    # If start/stop timeslot parameters are specified, write to output file
-                    # when timeslots are between selected boundaries
-                    if (csv_start_timeslot is None) or (tmp_time[t] >= csv_start_timeslot):
-                        if (csv_stop_timeslot is None) or (csv_stop_timeslot > tmp_time[t]):
-                            tmp_record_row = [record_row[i][t] for i in range(len(record_row))]
-                            writer.writerow([float(tmp_time[t])] + tmp_record_row)
-                        else:
-                            break
             else:
+                sample_times = [csv_timeslot]
+
+            # Write generated CSV row to output file
+            for sample_idx, sample_time in enumerate(sample_times):
                 # If start/stop timeslot parameters are specified, write to output file
                 # when timeslots are between selected boundaries
-                if (csv_start_timeslot is None) or (csv_timeslot >= csv_start_timeslot):
-                    if (csv_stop_timeslot is None) or (csv_stop_timeslot > csv_timeslot):
-                        # Write generated CSV row to output file
-                        writer.writerow([float(csv_timeslot)] + record_row[0])
+                if (csv_start_timeslot is None) or (sample_time >= csv_start_timeslot):
+                    if (csv_stop_timeslot is None) or (csv_stop_timeslot > sample_time):
+                        tmp_record_row = [record_row[i][sample_idx] for i in range(len(record_row))]
+                        writer.writerow([float(sample_time)] + tmp_record_row)
                     else:
                         break
             cnt += 1
