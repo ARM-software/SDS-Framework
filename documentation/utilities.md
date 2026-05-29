@@ -7,7 +7,6 @@
 The SDS-Framework pack includes in the folder `/utilities` several utilities that are implemented in Python.
 Install **Python** and packages listed in file `/utilities/requirements.txt` to run these utilities:
 
-- [**SDSIO Control File**: `*.sdsio.yml`](#sdsio-control-file-sdsioyml) options for SDSIO-Server and for the AVH FVP VSI3 simulation interface (`sdsio.yml`).
 - [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via USB, socket (TCP/IP) or serial (UART) connection.
 - [**SDS-View:**](#sds-view) graphical data viewer for SDS data files.
 - [**SDS-Convert:**](#sds-convert) convert SDS data files into CSV, Qeexo V2 CSV, or WAV format.
@@ -41,130 +40,6 @@ Perform the following steps to setup the Python environment for using the SDS ut
 
 !!! Tip
     - When the **Path** environment variable is configured, you may simply start the utilities by using its name. For example entering `>sdsio-server` starts the utility.
-
-## SDSIO Control File: `*.sdsio.yml`
-
-The SDSIO data file I/O can be configured using a YAML control file with the root node `sdsio:`.
-
-- For [SDSIO-Server](#sdsio-server), the control file is specified with `--control <*.sdsio.yml>`.
-- For AVH FVP simulation (VSI3), the simulator reads `sdsio.yml` (or `*.sdsio.yml`) from the simulator working directory. See [SDSIO Interface](sdsio.md#layer-sdsio_fvp).
-
-### `sdsio:`
-
-`sdsio:`                                                    |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; [`interface:`](#interface)               |   Optional   | SDSIO-Server only: specifies the interface used to connect to the target firmware (default: `usb`).
-&nbsp;&nbsp;&nbsp; `workdir:`                               |   Optional   | Directory that stores `*.sds` files (default: current working directory). In AVH FVP simulation, relative paths are relative to the simulator working directory.
-&nbsp;&nbsp;&nbsp; `metadir:`                               |   Optional   | Directory for metadata files (default: `workdir`). This key is used by the [SDS extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds).
-&nbsp;&nbsp;&nbsp; [`streams:`](#streams)                   |   Optional   | Data stream information used by the [SDS extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds).
-&nbsp;&nbsp;&nbsp; [`play:`](#play)                         |   Optional   | Playback step list that defines how `*.sds` files are played back (used in playback mode).
-&nbsp;&nbsp;&nbsp; [`flag-info:`](#flag-info)               |   Optional   | Human readable labels for user flags. This key is currently not used by SDSIO-Server or the VSI3 simulation interface.
-
-### `interface:`
-
-!!! Note
-    - The `interface:` settings are used by SDSIO-Server. The AVH FVP VSI3 simulation interface ignores `interface:`.
-
-`interface:`                                                |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; [`usb:`](#usb)                           |   Optional   | Configure USB bulk interface.
-&nbsp;&nbsp;&nbsp; [`serial:`](#serial)                     |   Optional   | Configure serial (UART) interface.
-&nbsp;&nbsp;&nbsp; [`socket:`](#socket)                     |   Optional   | Configure TCP socket interface.
-
-#### `usb:`
-
-`usb:`                                                      |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `high_priority:`                         |   Optional   | SDSIO-Server only: increase process priority (default: `false`).
-
-#### `serial:`
-
-`serial:`                                                   |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `port:`                                  | **Required** | Port name (examples: `COM3`, `ttyS0`, `ttyUSB1`, ...).
-&nbsp;&nbsp;&nbsp; `baudrate:`                              |   Optional   | Baudrate (default: `115200`).
-&nbsp;&nbsp;&nbsp; `parity:`                                |   Optional   | Parity bit: `none`, `even`, `odd`, `mark`, `space` (default: `none`).
-&nbsp;&nbsp;&nbsp; `stopbits:`                              |   Optional   | Stop bits: `1`, `1.5`, `2` (default: `1`).
-
-#### `socket:`
-
-`socket:`                                                   |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `ipaddr:`                                |   Optional   | IPv4 address to bind to (example: `192.168.0.100`); cannot be used with `netif`.
-&nbsp;&nbsp;&nbsp; `netif:`                                 |   Optional   | Network interface name (example: `eth0`); cannot be used with `ipaddr`.
-&nbsp;&nbsp;&nbsp; `port:`                                  |   Optional   | TCP port number (default: `5050`).
-
-!!! Note
-    - The `ipaddr:` and `netif:` options are mutually exclusive.
-
-### `streams:`
-
-The `streams:` node provides additional information about the SDS data streams to the [SDS extension for VS Code](https://marketplace.visualstudio.com/). It provides the context between the data streams and the display format.
-
-`streams:`                                                  |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-`- name:`                                                   | **Required** | Name of the data stream.
-&nbsp;&nbsp;&nbsp; `view:`                                  |   Optional   | Format of the data stream for the viewer (signal, wav, video, heatmap, csv, csv2)
-
-### `play:`
-
-The `play:` node specifies one or more playback steps.
-Each playback step defines the list of labels to play back for each opened SDS stream.
-
-For one playback step, all files of the `labels:` list are concatenated and appear as one data stream for the firmware.
-A pause (where the data stream needs to be closed and opened again by the firmware) is created with another `- step:` section.
-
-`play:`                                                     |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-`- step:`                                                   |   Optional   | Descriptive text for the playback step.
-&nbsp;&nbsp;&nbsp; `recdir:`                                |   Optional   | Recording directory for generated `*.p.sds` files during playback; relative paths are relative to `workdir:`.
-&nbsp;&nbsp;&nbsp; `setflags:`                              |   Optional   | Set user flags (bitmask); example: `0x01`.
-&nbsp;&nbsp;&nbsp; `clearflags:`                            |   Optional   | Clear user flags (bitmask); example: `0x01`.
-&nbsp;&nbsp;&nbsp; `labels:`                                |   Optional   | List of label names that define the playback sequence.
-
-### `flag-info:`
-
-The `flag-info:` node provides human readable labels for the user flags 0..7.
-This information is currently not used by SDSIO-Server; it is intended for UI tooling.
-
-`flag-info:`                                                |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-`- <flag-bit>:`                                             | **Required** | Maps the user flag bit position `0..7` to a human readable label.
-
-**Example:**
-
-```yml
-sdsio:
-  flag-info:
-    - 0: Skip Algorithm A
-    - 1: Test error occurred
-    - 7: Reserved
-```
-
-### Example
-
-```yml
-sdsio:
-  interface:
-    socket:
-      port: 5050
-
-  workdir: ./SDS Recordings
-  metadir: ./SDS Recordings
-
-  play:
-    - step: "Step 1"
-      labels: [ case1, case2, case3 ]
-
-    - step: "Step 2"
-      recdir: test1
-      setflags: 0x01
-      clearflags: 0x02
-      labels:
-        - case1
-        - case4
-        - case3
-```
 
 ## SDSIO-Server
 
@@ -228,6 +103,130 @@ S/s | Stop  recording/playback
 A-H | Set user flags 0-7
 a-h | Clear user flags 0-7
 X/x | Terminate server
+
+### SDSIO Control File: `*.sdsio.yml`
+
+The SDSIO data file I/O can be configured using a YAML control file with the root node `sdsio:`.
+
+- For [SDSIO-Server](#sdsio-server), the control file is specified with `--control <*.sdsio.yml>`.
+- For AVH FVP simulation (VSI3), the simulator reads `sdsio.yml` (or `*.sdsio.yml`) from the simulator working directory. See [SDSIO Interface](sdsio.md#layer-sdsio_fvp).
+
+#### `sdsio:`
+
+`sdsio:`                                                    |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; [`interface:`](#interface)               |   Optional   | SDSIO-Server only: specifies the interface used to connect to the target firmware (default: `usb`).
+&nbsp;&nbsp;&nbsp; `workdir:`                               |   Optional   | Directory containing `*.sds` files (default: current working directory). Relative paths are interpreted relative to the location of the `*.sdsio.yml` file. In AVH FVP simulations, the `*.sdsio.yml` file must reside in the simulator working directory.
+&nbsp;&nbsp;&nbsp; `metadir:`                               |   Optional   | Directory for metadata files (default: `workdir`). This key is used by the [SDS extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds).
+&nbsp;&nbsp;&nbsp; [`streams:`](#streams)                   |   Optional   | Data stream information used by the [SDS extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds).
+&nbsp;&nbsp;&nbsp; [`play:`](#play)                         |   Optional   | Playback step list that defines how `*.sds` files are played back (used in playback mode).
+&nbsp;&nbsp;&nbsp; [`flag-info:`](#flag-info)               |   Optional   | Human readable labels for user flags. This key is currently not used by SDSIO-Server or the VSI3 simulation interface.
+
+#### `interface:`
+
+!!! Note
+    - The `interface:` settings are used by SDSIO-Server. The AVH FVP VSI3 simulation interface ignores `interface:`.
+
+`interface:`                                                |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; [`usb:`](#usb)                           |   Optional   | Configure USB bulk interface.
+&nbsp;&nbsp;&nbsp; [`serial:`](#serial)                     |   Optional   | Configure serial (UART) interface.
+&nbsp;&nbsp;&nbsp; [`socket:`](#socket)                     |   Optional   | Configure TCP socket interface.
+
+##### `usb:`
+
+`usb:`                                                      |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `high_priority:`                         |   Optional   | SDSIO-Server only: increase process priority (default: `false`).
+
+##### `serial:`
+
+`serial:`                                                   |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `port:`                                  | **Required** | Port name (examples: `COM3`, `ttyS0`, `ttyUSB1`, ...).
+&nbsp;&nbsp;&nbsp; `baudrate:`                              |   Optional   | Baudrate (default: `115200`).
+&nbsp;&nbsp;&nbsp; `parity:`                                |   Optional   | Parity bit: `none`, `even`, `odd`, `mark`, `space` (default: `none`).
+&nbsp;&nbsp;&nbsp; `stopbits:`                              |   Optional   | Stop bits: `1`, `1.5`, `2` (default: `1`).
+
+##### `socket:`
+
+`socket:`                                                   |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `ipaddr:`                                |   Optional   | IPv4 address to bind to (example: `192.168.0.100`); cannot be used with `netif`.
+&nbsp;&nbsp;&nbsp; `netif:`                                 |   Optional   | Network interface name (example: `eth0`); cannot be used with `ipaddr`.
+&nbsp;&nbsp;&nbsp; `port:`                                  |   Optional   | TCP port number (default: `5050`).
+
+!!! Note
+    - The `ipaddr:` and `netif:` options are mutually exclusive.
+
+#### `streams:`
+
+The `streams:` node provides additional information about the SDS data streams to the [SDS extension for VS Code](https://marketplace.visualstudio.com/). It provides the context between the data streams and the display format.
+
+`streams:`                                                  |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+`- name:`                                                   | **Required** | Name of the data stream.
+&nbsp;&nbsp;&nbsp; `view:`                                  |   Optional   | Format of the data stream for the viewer (signal, wav, video, heatmap, csv, csv2)
+
+#### `play:`
+
+The `play:` node specifies one or more playback steps.
+Each playback step defines the list of labels to play back for each opened SDS stream.
+
+For one playback step, all files of the `labels:` list are concatenated and appear as one data stream for the firmware.
+A pause (where the data stream needs to be closed and opened again by the firmware) is created with another `- step:` section.
+
+`play:`                                                     |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+`- step:`                                                   |   Optional   | Descriptive text for the playback step.
+&nbsp;&nbsp;&nbsp; `recdir:`                                |   Optional   | Recording directory for generated `*.p.sds` files during playback; relative paths are relative to `workdir:`.
+&nbsp;&nbsp;&nbsp; `setflags:`                              |   Optional   | Set user flags (bitmask); example: `0x01`.
+&nbsp;&nbsp;&nbsp; `clearflags:`                            |   Optional   | Clear user flags (bitmask); example: `0x01`.
+&nbsp;&nbsp;&nbsp; `labels:`                                |   Optional   | List of label names that define the playback sequence.
+
+#### `flag-info:`
+
+The `flag-info:` node provides human readable labels for the user flags 0..7.
+This information is currently not used by SDSIO-Server; it is intended for UI tooling.
+
+`flag-info:`                                                |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+`- <flag-bit>:`                                             | **Required** | Maps the user flag bit position `0..7` to a human readable label.
+
+**Example:**
+
+```yml
+sdsio:
+  flag-info:
+    - 0: Skip Algorithm A
+    - 1: Inject fault condition
+    - 7: Reserved
+```
+
+#### Example
+
+```yml
+sdsio:
+  interface:
+    socket:
+      port: 5050
+
+  workdir: ./SDS Recordings
+  metadir: ./SDS Recordings
+
+  play:
+    - step: "Step 1"
+      labels: [ case1, case2, case3 ]
+
+    - step: "Step 2"
+      recdir: test1
+      setflags: 0x01
+      clearflags: 0x02
+      labels:
+        - case1
+        - case4
+        - case3
+```
 
 #### USB Mode
 

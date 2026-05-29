@@ -71,12 +71,12 @@ Each data stream is stored in a separate SDS data file. In the diagram below `SC
 The `sdsOpen` function takes `<name>` and the stream opening mode as input parameters.
 Opening a stream in `sdsModeRead` mode is used for playback and opening stream in `sdsModeWrite` is used for recording.
 
-The filename used when opening a stream depends on the presence of the `sdsio.yml` steering file and its `play` node.
+The filename used when opening a stream depends on the presence of the [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml) and its `play` node.
 
-If the steering file exists and contains `play` node, the filename follows the pattern `<name>.<label>.sds`, where `<label>` is specified in the corresponding
+If the `*.sdsio.yml` file exists and contains `play` node, the filename follows the pattern `<name>.<label>.sds`, where `<label>` is specified in the corresponding
 `step` node in the `play` node. After playback or recording completes, processing continues with the next `step` node, if available, and the process repeats.
 
-The previous explanation applies only to playback mode.
+The previous explanation applies only to playback mode only.
 
 If the steering file does not exist or does not contain `play` node, the filename follows the pattern `<name>.<label>.sds`, where for:
 
