@@ -84,6 +84,8 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#buffer-size">Buffer Size</a>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#sdsio-server-protocols">SDSIO-Server Protocols</a>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#sdsio-server-firmware-protocol">SDSIO-Server Firmware Protocol</a>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#sdsio-server-monitor-interface">SDSIO-Server Monitor Interface</a>
@@ -483,6 +485,12 @@ int32_t  n;                     // number of bytes written to data stream
 </ul>
 <p>As a guideline, the buffer size should be at least <strong>(2 × block size) + 2 KB</strong>.<br/>
 The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
+<h2 id="sdsio-server-protocols">SDSIO-Server Protocols</h2>
+<p>SDSIO-Server communicates with the firmware using the <a href="theory.html#sdsio-server-firmware-protocol">SDSIO-Server Firmware Protocol</a> over supported physical interfaces,
+including Ethernet, Wi-Fi, USB, debugger, and serial (USART) connections.
+It communicates with the Monitor program through the <a href="theory.html#sdsio-server-monitor-interface">Monitor Interface</a> over a network connection,
+typically via the loopback (localhost) interface.</p>
+<p><img alt="SDSIO-Server Protocols" src="images/SDSIO-Server-Protocols.png"/></p>
 <h2 id="sdsio-server-firmware-protocol">SDSIO-Server Firmware Protocol</h2>
 <p>The <a href="utilities.html#sdsio-server">SDSIO-Server</a> uses a simple protocol for data exchange between a host computer and the embedded target that integrates an <a href="sdsio.html">SDSIO Interface</a>. The protocol assumes that the correct communication to the SDSIO-Server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.</p>
 <p>The following conventions describe the <strong>command semantic</strong> used in the following documentation:</p>
