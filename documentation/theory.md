@@ -263,6 +263,15 @@ The size of the data stream buffer depends on several factors such as:
 As a guideline, the buffer size should be at least **(2 × block size) + 2 KB**.  
 The minimum recommended buffer size is **0x1000 (4 KB)**.
 
+## SDSIO-Server Protocols
+
+SDSIO-Server communicates with the firmware using the [SDSIO-Server Firmware Protocol](theory.md#sdsio-server-firmware-protocol) over supported physical interfaces,
+including Ethernet, Wi-Fi, USB, debugger, and serial (USART) connections.
+It communicates with the Monitor program through the [Monitor Interface](theory.md#sdsio-server-monitor-interface) over a network connection,
+typically via the loopback (localhost) interface.
+
+![SDSIO-Server Protocols](images/SDSIO-Server-Protocols.png)
+
 ## SDSIO-Server Firmware Protocol
 
 The [SDSIO-Server](utilities.md#sdsio-server) uses a simple protocol for data exchange between a host computer and the embedded target that integrates an [SDSIO Interface](sdsio.md). The protocol assumes that the correct communication to the SDSIO-Server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.
