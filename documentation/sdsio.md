@@ -73,14 +73,15 @@ The [`template/sdsio/fvp/sdsio_fvp.clayer.yml`](https://github.com/ARM-software/
 
 ### Configuration File: sdsio.yml
 
-The SDSIO VSI interface can be configured using a [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml) located in the simulator working directory.
+The SDSIO VSI interface can be configured using a [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml).
 
-The VSI3 Python script (`arm_vsi3.py`) searches for a control file using the following order (first match wins):
+The VSI3 Python script (`arm_vsi3.py`) locates the control file as follows:
 
-- `sdsio.yml`
-- `sdsio.yaml`
-- the first file (alphabetical order) matching `*.sdsio.yml`
-- the first file (alphabetical order) matching `*.sdsio.yaml`
+- If the environment variable `SDSIO_FVP` is set, it must be an **absolute path** to either a config file or a directory:
+  - **File** — used directly as the config file.
+  - **Directory** — searched for a config file in this order: `sdsio.yml`, `sdsio.yaml`, first `*.sdsio.yml` (alphabetical), first `*.sdsio.yaml` (alphabetical).
+  - If the path does not exist or is not absolute, the search falls back to the working directory.
+- If `SDSIO_FVP` is not set (or falls back), the **simulator working directory** is searched using the same file order: `sdsio.yml`, `sdsio.yaml`, first `*.sdsio.yml` (alphabetical), first `*.sdsio.yaml` (alphabetical).
 
 If a control file is found, the script reads the `sdsio:` root node. If `workdir:` is a relative path, it is interpreted relative to the simulator working directory.
 
