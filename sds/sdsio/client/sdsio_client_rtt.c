@@ -75,7 +75,8 @@ int32_t sdsioClientSend (const uint8_t *buf, uint32_t buf_size) {
     num += res;
     if (num >= buf_size) {
       break;
-    } 
+    }
+    osDelay(1U);
   } while ((osKernelGetTickCount() - tick) < SDSIO_RTT_TIMEOUT);
 
   if (num < buf_size) {
@@ -114,7 +115,8 @@ int32_t sdsioClientReceive (uint8_t *buf, uint32_t buf_size, sdsioReceiveMode_t 
     num += res;
     if (num >= buf_size) {
       break;
-    } 
+    }
+    osDelay(1U);
   } while ((osKernelGetTickCount() - tick) < SDSIO_RTT_TIMEOUT);
 
   if (num < buf_size) {
