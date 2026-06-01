@@ -18,10 +18,10 @@
     <member refid="group__SDS__Event__Codes_1ga7c2482f9b5c93e6a51f3b13c8621963b" kind="define"><name>SDS_EVENT_ERROR_IO</name></member>
     <member refid="group__SDS__Event__Codes_1ga88867f7d5275af88378fd59c4790603a" kind="define"><name>SDS_EVENT_NO_SPACE</name></member>
     <member refid="group__SDS__Event__Codes_1gacd2820b46a0b739dcdf507a144bcbf20" kind="define"><name>SDS_EVENT_NO_DATA</name></member>
-    <member refid="sds_8h_1ab49a1d146174d0ac652399b25df599da" kind="define"><name>SDS_ERROR_CHECK</name></member>
-    <member refid="sds_8h_1a8b1e982c7a64eab772efa739830f3039" kind="define"><name>SDS_ASSERT</name></member>
     <member refid="sds_8h_1aced5a492c220c6dd9bd22484fb94dc9d" kind="define"><name>SDS_STDIO</name></member>
     <member refid="sds_8h_1af7c466279d56b70f7a26e4c96c8fea2b" kind="define"><name>SDS_PRINTF</name></member>
+    <member refid="sds_8h_1ab49a1d146174d0ac652399b25df599da" kind="define"><name>SDS_ERROR_CHECK</name></member>
+    <member refid="sds_8h_1a8b1e982c7a64eab772efa739830f3039" kind="define"><name>SDS_ASSERT</name></member>
     <member refid="group__SDS__Flag__Masks_1ga232e6df52024368cc29a897d21780039" kind="define"><name>SDS_FLAG_START</name></member>
     <member refid="group__SDS__Flag__Masks_1ga25462727626bbc463cfb9abd839d3d9d" kind="define"><name>SDS_FLAG_TERMINATE</name></member>
     <member refid="group__SDS__Flag__Masks_1gad0eb45bd3ad461042a817db48664e137" kind="define"><name>SDS_FLAG_PLAYBACK</name></member>

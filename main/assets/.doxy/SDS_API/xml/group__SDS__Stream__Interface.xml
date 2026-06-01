@@ -103,7 +103,7 @@ This callback function is registered by passing a pointer to it as a parameter t
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="199" column="26" declfile="sds/include/sds.h" declline="199" declcolumn="26"/>
+        <location file="sds/include/sds.h" line="201" column="26" declfile="sds/include/sds.h" declline="201" declcolumn="26"/>
       </memberdef>
       <memberdef kind="variable" id="group__SDS__Stream__Interface_1gac5fbc1c61d43606b0c54a482781a2ce9" prot="public" static="no" extern="yes" mutable="no">
         <type>volatile uint32_t</type>
@@ -119,7 +119,7 @@ This callback function is registered by passing a pointer to it as a parameter t
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="213" column="26" declfile="sds/include/sds.h" declline="213" declcolumn="26"/>
+        <location file="sds/include/sds.h" line="215" column="26" declfile="sds/include/sds.h" declline="215" declcolumn="26"/>
       </memberdef>
       <memberdef kind="variable" id="group__SDS__Stream__Interface_1ga67fcecf8a20781854b399b5107417526" prot="public" static="no" extern="yes" mutable="no">
         <type><ref refid="structsdsError__t" kindref="compound">sdsError_t</ref></type>
@@ -135,7 +135,7 @@ This callback function is registered by passing a pointer to it as a parameter t
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="145" column="19" declfile="sds/include/sds.h" declline="145" declcolumn="19"/>
+        <location file="sds/include/sds.h" line="161" column="19" declfile="sds/include/sds.h" declline="161" declcolumn="19"/>
       </memberdef>
       <memberdef kind="variable" id="group__SDS__Stream__Interface_1ga7c5a17f56f2d24b1453f0d198f2c572d" prot="public" static="no" extern="yes" mutable="no">
         <type>volatile uint32_t</type>
@@ -151,7 +151,7 @@ This callback function is registered by passing a pointer to it as a parameter t
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="216" column="26" declfile="sds/include/sds.h" declline="216" declcolumn="26"/>
+        <location file="sds/include/sds.h" line="218" column="26" declfile="sds/include/sds.h" declline="218" declcolumn="26"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -522,7 +522,7 @@ This callback function is registered by passing a pointer to it as a parameter t
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="224" column="9" declfile="sds/include/sds.h" declline="224" declcolumn="9"/>
+        <location file="sds/include/sds.h" line="226" column="9" declfile="sds/include/sds.h" declline="226" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="group__SDS__Stream__Interface_1gacc58cf2b724d52c75d118a5c5ddc81d0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type>void</type>
@@ -563,7 +563,7 @@ This callback function is registered by passing a pointer to it as a parameter t
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="232" column="6" declfile="sds/include/sds.h" declline="232" declcolumn="6"/>
+        <location file="sds/include/sds.h" line="234" column="6" declfile="sds/include/sds.h" declline="234" declcolumn="6"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

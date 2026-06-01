@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="190" column="9" bodyfile="sds/include/sds.h" bodystart="190" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="192" column="9" bodyfile="sds/include/sds.h" bodystart="192" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__SDS__Flag__Masks_1ga25462727626bbc463cfb9abd839d3d9d" prot="public" static="no">
         <name>SDS_FLAG_TERMINATE</name>
@@ -26,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="191" column="9" bodyfile="sds/include/sds.h" bodystart="191" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="193" column="9" bodyfile="sds/include/sds.h" bodystart="193" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__SDS__Flag__Masks_1gad0eb45bd3ad461042a817db48664e137" prot="public" static="no">
         <name>SDS_FLAG_PLAYBACK</name>
@@ -38,7 +38,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="192" column="9" bodyfile="sds/include/sds.h" bodystart="192" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="194" column="9" bodyfile="sds/include/sds.h" bodystart="194" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__SDS__Flag__Masks_1ga1895aa890cc25c079b60d4a92589dbf9" prot="public" static="no">
         <name>SDS_FLAG_ALIVE</name>
@@ -50,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="193" column="9" bodyfile="sds/include/sds.h" bodystart="193" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="195" column="9" bodyfile="sds/include/sds.h" bodystart="195" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__SDS__Flag__Masks_1ga133028b3ccc0fd0bf85b7a8923c061d9" prot="public" static="no">
         <name>SDS_FLAG_RESET</name>
@@ -62,7 +62,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="194" column="9" bodyfile="sds/include/sds.h" bodystart="194" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="196" column="9" bodyfile="sds/include/sds.h" bodystart="196" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

@@ -14,7 +14,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="202" column="9" bodyfile="sds/include/sds.h" bodystart="202" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="204" column="9" bodyfile="sds/include/sds.h" bodystart="204" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__SDS__State__Codes_1gaf024399c5bc1c5039781344237c0b131" prot="public" static="no">
         <name>SDS_STATE_CONNECTED</name>
@@ -26,7 +26,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="203" column="9" bodyfile="sds/include/sds.h" bodystart="203" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="205" column="9" bodyfile="sds/include/sds.h" bodystart="205" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__SDS__State__Codes_1gaf3dbe95252bc1daf54149780fa3b534b" prot="public" static="no">
         <name>SDS_STATE_START</name>
@@ -38,7 +38,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="204" column="9" bodyfile="sds/include/sds.h" bodystart="204" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="206" column="9" bodyfile="sds/include/sds.h" bodystart="206" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__SDS__State__Codes_1ga644145791174ce37a634c8a4849117ea" prot="public" static="no">
         <name>SDS_STATE_ACTIVE</name>
@@ -50,7 +50,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="205" column="9" bodyfile="sds/include/sds.h" bodystart="205" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="207" column="9" bodyfile="sds/include/sds.h" bodystart="207" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__SDS__State__Codes_1ga075dd3c7ac9d29ad30b24568c0734374" prot="public" static="no">
         <name>SDS_STATE_STOP_REQ</name>
@@ -62,7 +62,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="206" column="9" bodyfile="sds/include/sds.h" bodystart="206" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="208" column="9" bodyfile="sds/include/sds.h" bodystart="208" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__SDS__State__Codes_1ga4163f8773a87c556109c184f118ee833" prot="public" static="no">
         <name>SDS_STATE_STOP_DONE</name>
@@ -74,7 +74,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="207" column="9" bodyfile="sds/include/sds.h" bodystart="207" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="209" column="9" bodyfile="sds/include/sds.h" bodystart="209" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__SDS__State__Codes_1ga53d987b53be4e6630c55f0ecc5550851" prot="public" static="no">
         <name>SDS_STATE_END</name>
@@ -86,7 +86,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="208" column="9" bodyfile="sds/include/sds.h" bodystart="208" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="210" column="9" bodyfile="sds/include/sds.h" bodystart="210" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__SDS__State__Codes_1gad98b7ed572340d850818401fe30c255b" prot="public" static="no">
         <name>SDS_STATE_RESET</name>
@@ -98,7 +98,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="209" column="9" bodyfile="sds/include/sds.h" bodystart="209" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="211" column="9" bodyfile="sds/include/sds.h" bodystart="211" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__SDS__State__Codes_1gace7f9148e2614b1dd42cf6804f7b82e1" prot="public" static="no">
         <name>SDS_STATE_TERMINATE</name>
@@ -110,7 +110,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="210" column="9" bodyfile="sds/include/sds.h" bodystart="210" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="212" column="9" bodyfile="sds/include/sds.h" bodystart="212" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

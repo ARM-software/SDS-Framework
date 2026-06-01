@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="138" column="11" bodyfile="sds/include/sds.h" bodystart="138" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="154" column="11" bodyfile="sds/include/sds.h" bodystart="154" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structsdsError__t_1a855d0a5dc827f2142765345545a9d4d2" prot="public" static="no" mutable="no">
         <type>const char *</type>
@@ -31,7 +31,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="139" column="14" bodyfile="sds/include/sds.h" bodystart="139" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="155" column="14" bodyfile="sds/include/sds.h" bodystart="155" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structsdsError__t_1aabe87ecb25a1fbef68a3fb263b848acd" prot="public" static="no" mutable="no">
         <type>uint32_t</type>
@@ -46,7 +46,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="140" column="12" bodyfile="sds/include/sds.h" bodystart="140" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="156" column="12" bodyfile="sds/include/sds.h" bodystart="156" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structsdsError__t_1aa12bcf3aa1d6c2cfb0b269f6ce68070b" prot="public" static="no" mutable="no">
         <type>uint8_t</type>
@@ -61,14 +61,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="sds/include/sds.h" line="141" column="11" bodyfile="sds/include/sds.h" bodystart="141" bodyend="-1"/>
+        <location file="sds/include/sds.h" line="157" column="11" bodyfile="sds/include/sds.h" bodystart="157" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="sds/include/sds.h" line="137" column="1" bodyfile="sds/include/sds.h" bodystart="137" bodyend="142"/>
+    <location file="sds/include/sds.h" line="153" column="1" bodyfile="sds/include/sds.h" bodystart="153" bodyend="158"/>
     <listofallmembers>
       <member refid="structsdsError__t_1a855d0a5dc827f2142765345545a9d4d2" prot="public" virt="non-virtual"><scope>sdsError_t</scope><name>file</name></member>
       <member refid="structsdsError__t_1aabe87ecb25a1fbef68a3fb263b848acd" prot="public" virt="non-virtual"><scope>sdsError_t</scope><name>line</name></member>

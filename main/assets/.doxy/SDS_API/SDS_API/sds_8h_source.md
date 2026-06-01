@@ -81,6 +81,22 @@ int32_t sdsGetSize (sdsId_t id);
 
 // ==== SDS Control Interface ====
 
+#ifndef SDS_STDIO
+#define SDS_STDIO               1
+#endif
+
+#ifndef SDS_PRINTF
+
+#if     SDS_STDIO == 1
+// Print messages to STDIO
+#define SDS_PRINTF(...)                         \
+  printf(__VA_ARGS__)
+#else
+#define SDS_PRINTF(...)
+#endif
+
+#endif
+
 // Error information structure
 typedef struct {                    
   int32_t status;                       
@@ -101,6 +117,7 @@ extern sdsError_t sdsError;
     sdsError.file = __FILE__;                                   \
     sdsError.line = __LINE__;                                   \
     sdsError.occurred = 1U;                                     \
+    SDS_PRINTF("Error: SDS_ERROR_CHECK status = %i: %s: %u\n", sds_status, sdsError.file, sdsError.line); \
   }
 
 #endif
@@ -114,23 +131,8 @@ extern sdsError_t sdsError;
     sdsError.file = __FILE__;                   \
     sdsError.line = __LINE__;                   \
     sdsError.occurred = 1U;                     \
+    SDS_PRINTF("Error: SDS_ASSERT failed: %s: %u\n", sdsError.file, sdsError.line); \
   }
-
-#endif
-
-#ifndef SDS_STDIO
-#define SDS_STDIO               1
-#endif
-
-#ifndef SDS_PRINTF
-
-#if     SDS_STDIO == 1
-// Print messages to STDIO
-#define SDS_PRINTF(...)                         \
-  printf(__VA_ARGS__)
-#else
-#define SDS_PRINTF(...)
-#endif
 
 #endif
 
