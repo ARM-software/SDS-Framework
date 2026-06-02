@@ -1,26 +1,21 @@
 # SDS Template Application
 
-The SDS template application is a test framework for DSP and ML algorithms. It allows recording and playback of real-world data streams
-using physical hardware or on simulation models using (Arm Virtual Hardware - FVP) to an user algorithm under test.
-The real-world data streams are captured in SDS data files.
-
-The SDSIO-Layer connects the SDS template application to a communication interface with the SDSIO-Server for SDS file I/O operations.
-The following SDSIO interfaces are pre-configured:
-
-- Ethernet Interface using the MDK-Middleware Network component.
-- USB Bulk Interface using the MDK-Middleware USB component.
-- RTT (Real-Time Transfer using the SEGGER RTT component for I/O via the debug adapter.
-- Memory Card Interface using the MDK-Middleware File System component.
-- For AVH-FVP target VSI communication to SDSIO-Server.
-
-Note: With a custom SDSIO interface alternative file I/O configurations are possible.
+The [SDS template application](https://arm-software.github.io/SDS-Framework/main/template.html) is a test framework for DSP and ML algorithms.
+It allows recording and playback of real-world data streams using physical hardware and supports playback on FVP simulation models to an user algorithm under test.
 
 The template contains two projects:
 
 - **DataTest.cproject.yml** check the SDSIO interface with SDS test data files. Use `algorithm_config.h` to configure parameters.
 - **AlgorithmTest.cproject.yml** verify an user algorithm with recording and playback of SDS data files.
 
-For more information refer to [SDS Template Application](https://arm-software.github.io/SDS-Framework/main/template.html) in the documentation.
+The SDSIO-Layer implements the [SDSIO interface](https://arm-software.github.io/SDS-Framework/main/sdsio.html) that connects to the SDSIO-Server, File System, or VSI3 FVP simulation interface.
+For more information refer to:
+
+- [Using USB Interface](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_usb) for connected to SDSIO-Server via USB.
+- [Using Network Interface](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_network) for connected to SDSIO-Server via Ethernet.
+- [Using RTT Interface](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_rtt) for connected to SDSIO-Server via a debug adapter.
+- [Using File System](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_fs) for connected to SDSIO-Server via a debug adapter.
+- [Using FVP Simulation Models](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_fvp) for regression tests with simulation models.
 
 ## Measuring CPU load
 
