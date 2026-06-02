@@ -1,4 +1,4 @@
-# Copyright (c) 2023-2026 Arm Limited. All rights reserved.
+ï»¿# Copyright (c) 2023-2026 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -556,7 +556,7 @@ class sdsControlInput(threading.Thread):
             # server's shutdown-flags path runs on all platforms.
             self._loop.call_soon_threadsafe(self._main_task.cancel)
         else:
-            # Fallback for non-asyncio usage (serial-only, tests, …)
+            # Fallback for non-asyncio usage (serial-only, tests, ...)
             os.kill(os.getpid(), signal.SIGINT)
 
     def run(self):
@@ -788,12 +788,12 @@ class sdsio_manager:
                             if _chunk:
                                 _data += _chunk
                             elif buf.eof:
-                                # Incomplete header at EOF — discard fragment and stop
+                                # Incomplete header at EOF - discard fragment and stop
                                 _data = bytearray()
                                 _eof_reached = True
                                 break
                             elif stop_evt.is_set():
-                                # Read timed out and stream was closed — no more data expected
+                                # Read timed out and stream was closed - no more data expected
                                 _data = bytearray()
                                 _eof_reached = True
                                 break
@@ -807,7 +807,7 @@ class sdsio_manager:
                             # Check if this record marks the boundary of the next label
                             if self._timestamp_boundaries and _index + 1 < len(self._timestamp_boundaries):
                                 if _timestamp == self._timestamp_boundaries[_index + 1]:
-                                    break  # keep data — it will be written to the next label file
+                                    break  # keep data - it will be written to the next label file
 
                             _needed = 8 + _data_block_size
                             if _data_sz < _needed:
@@ -816,12 +816,12 @@ class sdsio_manager:
                                 if _chunk:
                                     _data += _chunk
                                 elif buf.eof:
-                                    # Incomplete record at EOF — discard and stop
+                                    # Incomplete record at EOF - discard and stop
                                     _data = bytearray()
                                     _eof_reached = True
                                     break
                                 elif stop_evt.is_set():
-                                    # Read timed out and stream was closed — no more data expected
+                                    # Read timed out and stream was closed - no more data expected
                                     _data = bytearray()
                                     _eof_reached = True
                                     break
@@ -1474,7 +1474,7 @@ async def sdsio_server_socket_run_supervised(ip, port, connect_mode, connect_mes
             logger.info("SDSIO-Server restarting...")
             # Clean up any streams
             manager.clean()
-            # Close the listener socket if it’s open
+            # Close the listener socket if it's open
             if _srv.server:
                 _srv.server.close()
                 await _srv.server.wait_closed()
@@ -1758,7 +1758,7 @@ class sdsio_server_usb:
     def _signal_disconnect(self):
         """Thread-safe: stop session and wake coroutines.
 
-        Does NOT print any message — the caller in start() determines
+        Does NOT print any message - the caller in start() determines
         whether the device is truly gone after gather() exits.
         """
         with self._disconnect_lock:
@@ -1904,7 +1904,7 @@ class sdsio_server_usb:
             try:
                 await self._open()
             except asyncio.CancelledError:
-                # Ctrl+C while waiting for device — close USB context to avoid leak
+                # Ctrl+C while waiting for device - close USB context to avoid leak
                 try:
                     self._ctx.close()
                 except Exception:
@@ -2005,7 +2005,7 @@ class sdsio_server_usb:
                         pass
 
                 if _device_present:
-                    # Transient USB failure — device is still plugged in.
+                    # Transient USB failure - device is still plugged in.
                     # Loop back and silently reconnect.
                     logger.debug("USB transfers interrupted; reconnecting...")
                     _silent_reconnect = True

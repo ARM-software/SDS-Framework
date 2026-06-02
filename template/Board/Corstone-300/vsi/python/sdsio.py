@@ -377,12 +377,12 @@ class sdsio_manager:
                             if _chunk:
                                 _data += _chunk
                             elif buf.eof:
-                                # Incomplete header at EOF — discard fragment and stop
+                                # Incomplete header at EOF - discard fragment and stop
                                 _data = bytearray()
                                 _eof_reached = True
                                 break
                             elif stop_evt.is_set():
-                                # Read timed out and stream was closed — no more data expected
+                                # Read timed out and stream was closed - no more data expected
                                 _data = bytearray()
                                 _eof_reached = True
                                 break
@@ -396,7 +396,7 @@ class sdsio_manager:
                             # Check if this record marks the boundary of the next label
                             if self._timestamp_boundaries and _index + 1 < len(self._timestamp_boundaries):
                                 if _timestamp == self._timestamp_boundaries[_index + 1]:
-                                    break  # keep data — it will be written to the next label file
+                                    break  # keep data - it will be written to the next label file
 
                             _needed = 8 + _data_block_size
                             if _data_sz < _needed:
@@ -405,12 +405,12 @@ class sdsio_manager:
                                 if _chunk:
                                     _data += _chunk
                                 elif buf.eof:
-                                    # Incomplete record at EOF — discard and stop
+                                    # Incomplete record at EOF - discard and stop
                                     _data = bytearray()
                                     _eof_reached = True
                                     break
                                 elif stop_evt.is_set():
-                                    # Read timed out and stream was closed — no more data expected
+                                    # Read timed out and stream was closed - no more data expected
                                     _data = bytearray()
                                     _eof_reached = True
                                     break
