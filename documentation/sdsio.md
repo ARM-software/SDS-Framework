@@ -1,6 +1,6 @@
 # SDSIO Interface
 
-The SDSIO components offer flexible SDS communication interfaces. You may choose between these interface components that are stored in the folders: `./sds/sdsio/client`, `./sds/sdsio/fs` or `./sds/sdsio/vsi`. These interfaces can be accessed as CMSIS software components for integration into the target system:
+The SDSIO components offer flexible SDS communication interfaces. You may choose between these interface components that are stored in the folders: `./sds/sdsio/client`, `./sds/sdsio/fs` or `./sds/sdsio/vsi`. You may use one of the following CMSIS software components for integration of the SDSIO interface into the target system:
 
 ```yml
   - component: SDS:IO:Socket                     # IoT Socket Interface (Ethernet or WiFi)
@@ -13,7 +13,7 @@ The SDSIO components offer flexible SDS communication interfaces. You may choose
   - component: SDS:IO:Custom                     # Source code template for custom implementation
 ```
 
-To simplify usage further, the following pre-configured SDS interface layers in *csolution project format* are available. These connect via various interfaces to the SDSIO-Server, which provides read/write access to SDS data files.
+To simplify usage further, pre-configured SDS interface layers in *csolution project format* are available. These connect via various interfaces to the SDSIO-Server, which provides read/write access to SDS data files. The following SDS interface layers are available in the pack [`ARM::SDS`](https://www.keil.arm.com/packs/sds-arm):
 
 - [Ethernet Interface](#layer-sdsio_network) using the MDK-Middleware Network component.
 - [USB Bulk Interface](#layer-sdsio_usb) using the MDK-Middleware USB component.

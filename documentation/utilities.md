@@ -337,7 +337,7 @@ if-opts (optional):
 python sdsio-server.py serial --port COM0 --baudrate 115200 --workdir ./work_dir
 ```
 
-#### Examples of using general options:
+#### Examples of using general options
 
 Start SDSIO-Server with all configuration provided via the `sdsio.yml` file:
 
