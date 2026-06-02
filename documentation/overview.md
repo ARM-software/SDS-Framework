@@ -19,12 +19,11 @@ The captured data streams are useful in various steps of the development cycle, 
 
 ## Data Capturing and Playback
 
-The following diagram shows the data capturing in a microcontroller system using a network communication and the playback in simulation
-using [Arm Virtual Hardware - Fixed Virtual Platform](https://github.com/Arm-software/AVH).
+The following diagram shows the workflow for recording (physical data capture) and playback (regression testing). SDS supports recording and playback on target hardware, and playback on the [FVP simulation model](https://github.com/Arm-software/avh).
 
-![Workflow for simulation](images/Workflow.png)
+![Workflow](images/Workflow.png)
 
-The [**SDS Interface**](sdsio.md) is integrated into the target application and runs on the microcontroller.
+The [**SDSIO Interface**](sdsio.md) is integrated into the target application and runs on the microcontroller.
 It enables data streaming into SDS data files via various interfaces such as USB, Ethernet, RTT, UART or File System.
 The I/O implementation included in SDS utilizes the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil/overview/),
 however custom interfaces to other middleware or different communication channels can also be used.
@@ -36,9 +35,8 @@ With this information, other tools can utilize the content of the SDS data files
 
 ![Analysis of SDS data files](images/Analyse.png)
 
-In a simulation environment, the [**SDS Interface**](sdsio.md#layer-sdsio_fvp) streams the SDS data files back to the algorithm under test. With this interface, the algorithm receives
-the same data stream as in the physical hardware. The setup can therefore be used for validation, performance optimizations, and runs even in CI environments
-for test automation.
+On target hardware or in a FVP simulation environment, the [**SDSIO Interface**](sdsio.md#layer-sdsio_fvp) streams the SDS data files back to the algorithm under test. With this interface, the algorithm receives
+the same data stream as captured in the physical hardware. The setup can therefore be used for validation, performance optimizations, and runs even in CI environments for test automation.
 
 ## SDS Performance Measurements
 
@@ -48,7 +46,7 @@ for test automation.
 | STMicroelectronics STM32N6570-DK  (@ 600 MHz) |  13 MB/s   (55 % idle) |                        |
 | STMicroelectronics B-U585I-IOT02A (@ 160 MHz) | 1.1 MB/s   (86 % idle) |                        |
 
-Performance measurements were obtained using the [DataTest](https://arm-software.github.io/SDS-Framework/main/template.html#using-datatest) project,
-which validates captured data streams on the available board interfaces (Ethernet and USB).
-SDS data files were verified using the [SDS-Check](https://arm-software.github.io/SDS-Framework/main/utilities.html#sds-check) utility.
-In addition to transfer performance, CPU idle time was measured to estimate the processing capacity available while communication was active.
+!!! Note
+    - Performance measurements were obtained using the [DataTest](https://arm-software.github.io/SDS-Framework/main/template.html#using-datatest) project, which validates captured data streams on the available board interfaces (Ethernet and USB).
+    - SDS data files were verified using the [SDS-Check](https://arm-software.github.io/SDS-Framework/main/utilities.html#sds-check) utility.
+    - In addition to transfer performance, CPU idle time was measured to estimate the processing capacity available while communication was active.

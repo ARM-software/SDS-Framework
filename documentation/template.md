@@ -68,7 +68,8 @@ CMSIS_USB_Device            | [CMSIS-Driver USB Device](https://arm-software.git
 CMSIS_VIO, STDOUT, STDERR   | For user button and printf output. |
 
 !!! Note
-    When such a board layer is not available, it is possible to [create a compatible board layer](https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#structure).
+    - RTT has no API interface requirements to a board layer and may be used when no compatible board layer is available.
+    - When no board layer is available, it is possible to [create a compatible board layer](https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#structure).
 
 ### Using VS Code
 
