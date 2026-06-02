@@ -108,9 +108,12 @@ def _load_sdsio_server_config(base_dir: str):
 
     _env_fvp = os.environ.get("SDSIO_FVP")
     if _env_fvp is not None:
+        logger.info(f"SDSIO_FVP environment variable: '{_env_fvp}'.")
         if not path.isabs(_env_fvp):
             logger.info(f"SDSIO_FVP is not an absolute path: '{_env_fvp}'. Ignoring.")
             _env_fvp = None
+    else:
+        logger.info("SDSIO_FVP environment variable not set.")
 
     if _env_fvp is not None:
         if path.isfile(_env_fvp):
@@ -164,7 +167,7 @@ def _load_sdsio_server_config(base_dir: str):
 
     logger.info(f"Working directory: {path.abspath(_work_dir)}.")
     if _ctrl_data:
-        logger.info(f"SDSIO configuration YAML: {path.abspath(_cfg_path)}")
+        logger.info(f"SDSIO configuration YAML: {path.abspath(_cfg_path)}.")
 
     # auto-playback is always enabled on VSI
     _auto_playback = True
