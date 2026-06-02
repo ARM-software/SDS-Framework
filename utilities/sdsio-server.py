@@ -1,4 +1,4 @@
-ï»¿# Copyright (c) 2023-2026 Arm Limited. All rights reserved.
+# Copyright (c) 2023-2026 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -556,7 +556,7 @@ class sdsControlInput(threading.Thread):
             # server's shutdown-flags path runs on all platforms.
             self._loop.call_soon_threadsafe(self._main_task.cancel)
         else:
-            # Fallback for non-asyncio usage (serial-only, tests, â€¦)
+            # Fallback for non-asyncio usage (serial-only, tests, …)
             os.kill(os.getpid(), signal.SIGINT)
 
     def run(self):
@@ -788,12 +788,12 @@ class sdsio_manager:
                             if _chunk:
                                 _data += _chunk
                             elif buf.eof:
-                                # Incomplete header at EOF â€” discard fragment and stop
+                                # Incomplete header at EOF — discard fragment and stop
                                 _data = bytearray()
                                 _eof_reached = True
                                 break
                             elif stop_evt.is_set():
-                                # Read timed out and stream was closed â€” no more data expected
+                                # Read timed out and stream was closed — no more data expected
                                 _data = bytearray()
                                 _eof_reached = True
                                 break
@@ -807,7 +807,7 @@ class sdsio_manager:
                             # Check if this record marks the boundary of the next label
                             if self._timestamp_boundaries and _index + 1 < len(self._timestamp_boundaries):
                                 if _timestamp == self._timestamp_boundaries[_index + 1]:
-                                    break  # keep data â€” it will be written to the next label file
+                                    break  # keep data — it will be written to the next label file
 
                             _needed = 8 + _data_block_size
                             if _data_sz < _needed:
@@ -816,12 +816,12 @@ class sdsio_manager:
                                 if _chunk:
                                     _data += _chunk
                                 elif buf.eof:
-                                    # Incomplete record at EOF â€” discard and stop
+                                    # Incomplete record at EOF — discard and stop
                                     _data = bytearray()
                                     _eof_reached = True
                                     break
                                 elif stop_evt.is_set():
-                                    # Read timed out and stream was closed â€” no more data expected
+                                    # Read timed out and stream was closed — no more data expected
                                     _data = bytearray()
                                     _eof_reached = True
                                     break
@@ -1400,6 +1400,7 @@ class async_sdsio_server_socket:
                     if self._connect_message is not None:
                         _writer.write(str(self._connect_message).encode("utf-8"))
                         await _writer.drain()
+                    if self._connect_time_ms:
                         await self._discard_initial_response(_reader, self._connect_time_ms)
                     await self._handle_connection(_reader, _writer)
                 except (ConnectionRefusedError, TimeoutError, OSError):
@@ -1473,7 +1474,7 @@ async def sdsio_server_socket_run_supervised(ip, port, connect_mode, connect_mes
             logger.info("SDSIO-Server restarting...")
             # Clean up any streams
             manager.clean()
-            # Close the listener socket if itâ€™s open
+            # Close the listener socket if it’s open
             if _srv.server:
                 _srv.server.close()
                 await _srv.server.wait_closed()
@@ -1757,7 +1758,7 @@ class sdsio_server_usb:
     def _signal_disconnect(self):
         """Thread-safe: stop session and wake coroutines.
 
-        Does NOT print any message â€” the caller in start() determines
+        Does NOT print any message — the caller in start() determines
         whether the device is truly gone after gather() exits.
         """
         with self._disconnect_lock:
@@ -1903,7 +1904,7 @@ class sdsio_server_usb:
             try:
                 await self._open()
             except asyncio.CancelledError:
-                # Ctrl+C while waiting for device â€” close USB context to avoid leak
+                # Ctrl+C while waiting for device — close USB context to avoid leak
                 try:
                     self._ctx.close()
                 except Exception:
@@ -1930,14 +1931,14 @@ class sdsio_server_usb:
                 )
                 self._monitor_thread.start()
 
-            # prepare OUTâ€URB pool
+            # prepare OUT-URB pool
             for _ in range(self._XFER_NUM):
                 _x = self._handle.getTransfer()
                 _x.setBulk(self._out_ep, bytearray(self._XFER_SIZE),
                           callback=self._on_out_complete, timeout=0)
                 self._out_pool.append(_x)
 
-            # fire INâ€URBs
+            # fire IN-URBs
             for _ in range(self._XFER_NUM):
                 _x = self._handle.getTransfer()
                 _x.setBulk(self._in_ep, bytearray(self._XFER_SIZE),
@@ -2004,7 +2005,7 @@ class sdsio_server_usb:
                         pass
 
                 if _device_present:
-                    # Transient USB failure â€” device is still plugged in.
+                    # Transient USB failure — device is still plugged in.
                     # Loop back and silently reconnect.
                     logger.debug("USB transfers interrupted; reconnecting...")
                     _silent_reconnect = True
@@ -2309,26 +2310,23 @@ def parse_arguments():
     )
     _parser_socket.is_subparser = True
     _parser_socket.error_hint = "For help on how to use the socket server and its arguments, run: %(prog)s -h"
-    _parser_socket.usage = "%(prog)s [-h] [-V] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [--connect-mode] [--connect-message <message>] [--connect-time <ms>] [general-opts]"
+    _parser_socket.usage = "%(prog)s [-h] [-V] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [--connect [<message>]] [--connect-time <ms>] [general-opts]"
     _add_info_opts(_parser_socket, version_text=f"{_parser.prog} {SDSIO_SERVER_VERSION}")
 
     _socket_group = _parser_socket.add_argument_group("if-opts (optional)")
     _socket_group.add_argument("--ipaddr", dest="ip", metavar="<IP>",
-                              help="Server IP address, or host IP address in connect mode (example: 192.168.0.100); mandatory with --connect-mode; cannot be combined with 'netif'",
+                              help="Server IP address, or host IP address in connect mode (example: 192.168.0.100); mandatory with --connect; cannot be combined with 'netif'",
                               type=ip_validator, default=None)
     _socket_group.add_argument("--netif", dest="interface", metavar="<Interface>",
                               help="Network interface (example: eth0), cannot be combined with 'ipaddr'",
                               type=interface_validator, default=None)
     _socket_group.add_argument("--port", dest="port", metavar="<TCP Port>",
                               help="TCP port number (default: 5050)", type=int, default=5050)
-    _socket_group.add_argument("--connect-mode", dest="connect_mode",
-                              help="Connect to the configured IP address instead of listening for incoming socket connections",
-                              action="store_true", default=False)
-    _socket_group.add_argument("--connect-message", dest="connect_message", metavar="<message>",
-                              help="Optional message sent when the connect-mode socket connection is established",
-                              default=None)
+    _socket_group.add_argument("--connect", dest="connect", metavar="<message>", nargs="?",
+                              help="Connect to existing IP port instead of listening for incoming connections;\noptionally send <message> to establish the connection",
+                              const="", default=None)
     _socket_group.add_argument("--connect-time", dest="connect_time_ms", metavar="<ms>",
-                              help="Duration in milliseconds to discard incoming data after sending connect-message (default: 50)",
+                              help="Duration in milliseconds to discard incoming data after the connection is established (default: 50)",
                               type=non_negative_int, default=50)
     _add_general_opts(_parser_socket)
 
@@ -2432,10 +2430,10 @@ def parse_arguments():
         if _top_ns.server_type == "socket":
             if _sub_ns.ip is not None and _sub_ns.interface is not None:
                 _subparser.error("options --ipaddr and --netif are mutually exclusive.")
-            if _sub_ns.connect_mode and _sub_ns.interface is not None:
-                _subparser.error("option --connect-mode cannot be combined with --netif.")
-            if _sub_ns.connect_mode and _sub_ns.ip is None:
-                _subparser.error("option --connect-mode requires --ipaddr.")
+            if _sub_ns.connect is not None and _sub_ns.interface is not None:
+                _subparser.error("option --connect cannot be combined with --netif.")
+            if _sub_ns.connect is not None and _sub_ns.ip is None:
+                _subparser.error("option --connect requires --ipaddr.")
 
         # Merge namespaces (global + subcommand) for downstream use
         for _k, _v in vars(_sub_ns).items():
@@ -2485,8 +2483,8 @@ async def main():
             _socket_iface = _args.interface
             _ip = _args.ip
             _port = _args.port
-            _connect_mode = _args.connect_mode
-            _connect_message = _args.connect_message
+            _connect_mode = _args.connect is not None
+            _connect_message = _args.connect if _args.connect else None
             _connect_time_ms = _args.connect_time_ms
         elif _server_type == "serial":
             _port = _args.port
@@ -2513,9 +2511,10 @@ async def main():
             _socket_iface = _iface_cfg.get('netif', None)
             _ip = _iface_cfg.get('ipaddr', None)
             _port = _iface_cfg.get('port', 5050)
-            _connect_mode = _iface_cfg.get('connect_mode', False)
-            _connect_message = _iface_cfg.get('connect_message', None)
-            _connect_time_ms = non_negative_int(_iface_cfg.get('connect_time', 50))
+            _connect_mode = 'connect' in _iface_cfg
+            _connect = _iface_cfg.get('connect', None)
+            _connect_message = _connect if _connect else None
+            _connect_time_ms = non_negative_int(_iface_cfg.get('connect-time', 50))
         elif _server_type == "serial":
             _port = _iface_cfg.get('port')
             _baudrate = _iface_cfg.get('baudrate', 115200)

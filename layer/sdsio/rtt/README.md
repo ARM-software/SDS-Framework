@@ -47,7 +47,7 @@ J-Link exposes RTT data via a TELNET-like TCP socket on `localhost`, port **1902
 
 After connecting, the client has **100 ms** to send a
 [SEGGER TELNET Config String](https://kb.segger.com/J-Link_RTT_TELNET_Channel) that selects
-the RTT channel. The SDSIO-Server should sends this string automatically via `--connect-message`,
+the RTT channel. The SDSIO-Server should sends this string automatically via `--connect`,
 and discards any initial response from J-Link during the `--connect-time` window.
 
 #### Start SDSIO-Server for J-Link
@@ -55,15 +55,15 @@ and discards any initial response from J-Link during the `--connect-time` window
 Replace `<channel>` with the value of `SDSIO_RTT_CHANNEL` (default: `1`):
 
 ```bash
-python sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 --connect-mode \
-    --connect-message "$$SEGGER_TELNET_ConfigStr=RTTCh;<channel>$$"
+python sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 \
+    --connect "$$SEGGER_TELNET_ConfigStr=RTTCh;<channel>$$"
 ```
 
 Example for the default channel 1:
 
 ```bash
-python sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 --connect-mode \
-    --connect-message "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
+python sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 \
+    --connect "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
 ```
 
 #### SDSIO control file for J-Link
@@ -77,9 +77,8 @@ sdsio:
     socket:
       ipaddr: 127.0.0.1
       port: 19021
-      connect_mode: true
-      connect_message: "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
-      connect_time: 100
+      connect: "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
+      connect-time: 100
 
   workdir: ./SDS Recordings
 ```
@@ -120,7 +119,7 @@ pyocd run --cbuild-run out/<name>+<target-type>.cbuild-run.yml --eot
 #### Start SDSIO-Server for pyOCD
 
 ```bash
-python sdsio-server.py socket --ipaddr 127.0.0.1 --port 5100 --connect-mode
+python sdsio-server.py socket --ipaddr 127.0.0.1 --port 5100 --connect
 ```
 
 #### SDSIO control file for pyOCD
@@ -131,7 +130,7 @@ sdsio:
     socket:
       ipaddr: 127.0.0.1
       port: 5100       # must match the port configured in *.csolution.yml
-      connect_mode: true
+      connect:
 
   workdir: ./SDS Recordings
 ```

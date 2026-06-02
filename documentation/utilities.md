@@ -153,16 +153,15 @@ The SDSIO data file I/O can be configured using a YAML control file with the roo
 
 `socket:`                                                   |              | Content
 :-----------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `ipaddr:`                                |   Optional   | IPv4 address to bind to in listen mode, or host address to connect to in connect mode (example: `192.168.0.100`); mandatory with `connect_mode`; cannot be used with `netif`.
+&nbsp;&nbsp;&nbsp; `ipaddr:`                                |   Optional   | IPv4 address to bind to in listen mode, or host address to connect to in connect mode (example: `192.168.0.100`); mandatory with `connect`; cannot be used with `netif`.
 &nbsp;&nbsp;&nbsp; `netif:`                                 |   Optional   | Network interface name (example: `eth0`); cannot be used with `ipaddr`.
 &nbsp;&nbsp;&nbsp; `port:`                                  |   Optional   | TCP port number (default: `5050`).
-&nbsp;&nbsp;&nbsp; `connect_mode:`                          |   Optional   | When `true`, connect to `ipaddr` instead of listening for connections (default: `false`).
-&nbsp;&nbsp;&nbsp; `connect_message:`                       |   Optional   | Message sent to the host when the connect-mode connection is established (default: none).
-&nbsp;&nbsp;&nbsp; `connect_time:`                          |   Optional   | Milliseconds to discard incoming data after sending `connect_message` (default: `50`).
+&nbsp;&nbsp;&nbsp; `connect:`                               |   Optional   | When present, connect to `ipaddr` instead of listening; optional value is a message sent to the host when the connection is established (default: none).
+&nbsp;&nbsp;&nbsp; `connect-time:`                          |   Optional   | Milliseconds to discard incoming data after the connection is established (default: `50`).
 
 !!! Note
     - The `ipaddr:` and `netif:` options are mutually exclusive.
-    - `connect_mode: true` requires `ipaddr:` and cannot be used with `netif:`.
+    - `connect:` requires `ipaddr:` and cannot be used with `netif:`.
 
 #### `streams:`
 
@@ -253,35 +252,35 @@ python sdsio-server.py usb --workdir ./work_dir
 The socket server can operate in two modes:
 
 - **Listen mode** (default): SDSIO-Server binds to a local IP address and waits for the target device to connect.
-- **Connect mode** (`--connect-mode`): SDSIO-Server actively connects to the specified IP address.
+- **Connect mode** (`--connect`): SDSIO-Server actively connects to the specified IP address.
 
 Connect mode is typically used with the [SDSIO-RTT layer](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/rtt),
 where the debug probe software (e.g., J-Link or pyOCD) exposes RTT data over a local TCP socket and
 SDSIO-Server connects to it directly — no network configuration on the target is required.
 
 ```txt
-usage: sdsio-server.py socket [-h] [-V] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [--connect-mode] [--connect-message <message>] [--connect-time <ms>] [general-opts]
+usage: sdsio-server.py socket [-h] [-V] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [--connect [<message>]] [--connect-time <ms>] [general-opts]
 
 options:
   -h, --help                        Show this help message and exit
 
 if-opts (optional):
   --ipaddr <IP>                     Server IP address in listen mode, or host IP address in connect mode
-                                    (example: 192.168.0.100); mandatory with --connect-mode;
+                                    (example: 192.168.0.100); mandatory with --connect;
                                     cannot be combined with 'netif'
   --netif <Interface>               Network interface (example: eth0), cannot be combined with 'ipaddr'
   --port <TCP Port>                 TCP port number (default: 5050)
-  --connect-mode                    Connect to the configured IP address instead of listening for
-                                    incoming socket connections
-  --connect-message <message>       Optional message sent to the host when the connection is established
-  --connect-time <ms>               Duration in milliseconds to discard incoming data after sending connect-message
-                                    (default: 50)
+  --connect [<message>]             Connect to the configured IP address instead of listening for
+                                    incoming socket connections; optional message sent to the host
+                                    when the connection is established
+  --connect-time <ms>               Duration in milliseconds to discard incoming data after the connection
+                                    is established (default: 50)
 ```
 
 !!! Note
     - The `--ipaddr` and `--netif` options are mutually exclusive.
     - SDSIO-Server only supports IPv4 addresses.
-    - `--connect-mode` requires `--ipaddr` and cannot be combined with `--netif`.
+    - `--connect` requires `--ipaddr` and cannot be combined with `--netif`.
 
 !!! Note
     - The target device and the host computer must be connected to the same network. With a standard network installation, the DHCP server assigns IP addresses automatically.
@@ -305,13 +304,13 @@ python sdsio-server.py socket --netif eth0 --workdir ./work_dir
 **Example (connect mode):**
 
 ```bash
-python sdsio-server.py socket --ipaddr 192.168.0.1 --port 5050 --connect-mode
+python sdsio-server.py socket --ipaddr 192.168.0.1 --port 5050 --connect
 ```
 
 **Example (connect mode with a message):**
 
 ```bash
-python sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 --connect-mode --connect-message "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
+python sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 --connect "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
 ```
 
 #### Serial Mode
