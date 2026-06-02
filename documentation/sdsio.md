@@ -25,6 +25,15 @@ To simplify usage further, pre-configured SDS interface layers in *csolution pro
 
 The [`layer/sdsio/network/sdsio_network.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/network) is configured for recording and playback via the Ethernet interface. It uses the  [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) Network component.
 
+!!! Note
+    - The target device and the host computer must be connected to the same network. With a standard network installation, the DHCP server assigns IP addresses automatically.
+    - On **Windows**, a firewall may restrict socket connections. To allow the SDSIO-Server through the Windows Defender Firewall:
+        - Open **Windows Security - Firewall & network protection - Allow an app through firewall**.
+        - Click **Change settings**, then allow your Python runtime (`python.exe`) on the network profile you use (usually Private).
+        - On a managed corporate PC, Group Policy or endpoint security may still block connections. Your IT administrator may need to whitelist the IP address and port.
+
+### Using Network Interface
+
 To access [SDS data files](theory.md#sds-data-files), start the [SDSIO-Server](utilities.md#sdsio-server) on the host computer with:
 
 ```bash
@@ -41,6 +50,8 @@ by editing the `SDSIO_SOCKET_SERVER_IP` macro.
 
 The [`layer/sdsio/usb/sdsio_usb.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/usb) is configured for recording and playback via the USB interface. It uses the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) USB Device component and connects to a host computer through a USB interface.
 
+### Using USB Interface
+
 To access [SDS data files](theory.md#sds-data-files), start the [SDSIO-Server](utilities.md#sdsio-server) on the host computer with:
 
 ```bash
@@ -53,6 +64,8 @@ Waiting for SDSIO Client USB device...
 ## Layer: sdsio_rtt
 
 The [`layer/sdsio/rtt/sdsio_rtt.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/rtt) is configured for recording and playback using the SEGGER RTT component for I/O via a debug adapter.
+
+### Using RTT Interface
 
 To access [SDS data files](theory.md#sds-data-files) using RTT with J-Link, start the [SDSIO-Server](utilities.md#sdsio-server) on the host computer with:
 
@@ -67,25 +80,33 @@ Waiting for SDSIO Client USB device...
 
 The [`layer/sdsio/filesystem/sdsio_fs.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem) is configured for recording to a Memory Card. It uses the MDK-Middleware File System component.
 
+### Using File System
+
+ToDo
+
+## Layer: sdsio_fs
+
+The [`layer/sdsio/filesystem/sdsio_fs.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem) is configured for recording to a Memory Card. It uses the MDK-Middleware File System component.
+
 ## Layer: sdsio_fvp
 
 The [`template/sdsio/fvp/sdsio_fvp.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp) targets AVH FVP simulation and is configured for playback from the host computer. It uses the [SDSIO VSI interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html) implemented by the file `vsi/python/arm_vsi3.py`, which is loaded by the FVP simulation model. Since the SDSIO-Server functionality is implemented in `arm_vsi3.py`, no separate SDSIO-Server is required.
 
-### Configuration File: sdsio.yml
+### Using FVP Simulation Models
 
 The SDSIO VSI interface can be configured using a [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml).
 
 The VSI3 Python script (`arm_vsi3.py`) locates the control file as follows:
 
 - If the environment variable `SDSIO_FVP` is set, it must be an **absolute path** to either a config file or a directory:
-  - **File** — used directly as the config file.
-  - **Directory** — searched for a config file in this order: `sdsio.yml`, `sdsio.yaml`, first `*.sdsio.yml` (alphabetical), first `*.sdsio.yaml` (alphabetical).
-  - If the path does not exist or is not absolute, the search falls back to the working directory.
+    - **File** — used directly as the config file.
+    - **Directory** — searched for a config file in this order: `sdsio.yml`, `sdsio.yaml`, first `*.sdsio.yml` (alphabetical), first `*.sdsio.yaml` (alphabetical).
+    - If the path does not exist or is not absolute, the search falls back to the working directory.
 - If `SDSIO_FVP` is not set (or falls back), the **simulator working directory** is searched using the same file order: `sdsio.yml`, `sdsio.yaml`, first `*.sdsio.yml` (alphabetical), first `*.sdsio.yaml` (alphabetical).
 
 If a control file is found, the script reads the `sdsio:` root node. If `workdir:` is a relative path, it is interpreted relative to the simulator working directory.
 
-### Log File: sdsio.log
+**Log File: `sdsio.log`:**
 
 During FVP simulation, an `sdsio.log` file is generated that records all [SDS data file](theory.md#sds-data-files) access operations.
 

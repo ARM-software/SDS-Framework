@@ -68,17 +68,10 @@ Each data stream is stored in a separate SDS data file. In the diagram below `SC
 
 ### Filenames
 
-The `sdsOpen` function takes `<name>` and the stream opening mode as input parameters.
+The `sdsOpen` function takes `<name>` for the stream and the opening mode as input parameters.
 Opening a stream in `sdsModeRead` mode is used for playback and opening stream in `sdsModeWrite` is used for recording.
 
-The filename used when opening a stream depends on the presence of the [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml) and its `play` node.
-
-If the `*.sdsio.yml` file exists and contains `play` node, the filename follows the pattern `<name>.<label>.sds`, where `<label>` is specified in the corresponding
-`step` node in the `play` node. After playback or recording completes, processing continues with the next `step` node, if available, and the process repeats.
-
-The previous explanation applies only to playback mode only.
-
-If the steering file does not exist or does not contain `play` node, the filename follows the pattern `<name>.<label>.sds`, where for:
+The actual files used when opening a stream depends on the presence of the [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml) and its `play` node.
 
 **Recording:**
 
@@ -87,7 +80,10 @@ After recording completes, the process continues from the last `<label>` value.
 
 **Playback:**
 
-`<label>` is a sequential number starting at 0. If the corresponding file does not exist, the open operation fails.
+When a [`*.sdsio.yml` control file](utilities.md#sdsio-control-file) is used and contains [`play:`](utilities.md#play) node, the filename follows the pattern `<stream-name>.<label>.sds`, where `<label>` is specified in the corresponding
+[`step:`](utilities.md#play).
+
+When no `*.sdsio.yml` control file is used, the `<label>` is a sequential number starting at 0. If the corresponding file does not exist, the open operation fails.
 After playback completes, the process repeats with the `<label>` incremented by one.
 
 !!! Note

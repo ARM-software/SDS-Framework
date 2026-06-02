@@ -38,15 +38,26 @@ With this information, other tools can utilize the content of the SDS data files
 On target hardware or in a FVP simulation environment, the [**SDSIO Interface**](sdsio.md#layer-sdsio_fvp) streams the SDS data files back to the algorithm under test. With this interface, the algorithm receives
 the same data stream as captured in the physical hardware. The setup can therefore be used for validation, performance optimizations, and runs even in CI environments for test automation.
 
-## SDS Performance Measurements
+## SDS Recording Performance
 
-| Interface                                     | USB                    | Ethernet               |
+The following section lists the communication speed that can be achieved on different targets with various interfaces.
+
+!!! Note
+    - Performance measurements were obtained using the [DataTest](https://arm-software.github.io/SDS-Framework/main/template.html#using-datatest) project, which validates captured data streams on the available interfaces.
+    - SDS data files were verified using the [SDS-Check](https://arm-software.github.io/SDS-Framework/main/utilities.html#sds-check) utility.
+    - In addition to transfer performance, CPU idle time was measured to estimate the processing capacity available while communication was active.
+    - When using playback, the transfer performance is uncritical as the algorithm will be only executed when data is available.
+
+Using [USB](sdsio.md#using-usb-interface) or [Network](sdsio.md#using-network-interface) interface on different target hardware:
+
+| Interface                                     | USB                    | Network                |
 |-----------------------------------------------|------------------------|------------------------|
-| Alif Semiconductor DevKit-E8      (@ 400 MHz) |**20 MB/s** (55 % idle) | **8 MB/s** (66 % idle) |
+| Alif Semiconductor DevKit-E8      (@ 400 MHz) |  20 MB/s   (55 % idle) |  8 MB/s (66 % idle)    |
 | STMicroelectronics STM32N6570-DK  (@ 600 MHz) |  13 MB/s   (55 % idle) |                        |
 | STMicroelectronics B-U585I-IOT02A (@ 160 MHz) | 1.1 MB/s   (86 % idle) |                        |
 
-!!! Note
-    - Performance measurements were obtained using the [DataTest](https://arm-software.github.io/SDS-Framework/main/template.html#using-datatest) project, which validates captured data streams on the available board interfaces (Ethernet and USB).
-    - SDS data files were verified using the [SDS-Check](https://arm-software.github.io/SDS-Framework/main/utilities.html#sds-check) utility.
-    - In addition to transfer performance, CPU idle time was measured to estimate the processing capacity available while communication was active.
+Using [RTT](sdsio.md#using-rtt-interface) interface on STM32F769I-EVAL board (with maximum SWD clock 12MHz that is imposed by hardware):
+
+- ST-Link (SWD clock: 10MHZ): 130kB/s
+- ULINKplus (SWD clock: 10MHz): 250kB/s
+- J-Link Pro (SWD clock auto): 800kB/s
