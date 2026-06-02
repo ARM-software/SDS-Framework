@@ -5,13 +5,13 @@
 <!-- markdownlint-disable MD024 -->
 
 The SDS-Framework pack includes in the folder `/utilities` several utilities that are implemented in Python.
-Install **Python** and packages listed in file `/utilities/requirements.txt` to run these utilities:
+Install **Python** and the packages listed in the file `/utilities/requirements.txt` to run these utilities:
 
 - [**SDSIO Control File `*.sdsio.yml`:**](#sdsio-control-file-sdsioyml) configures the SDSIO-Server or the FVP VSI3 simulation interface.
 - [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via USB, socket (TCP/IP) or serial (UART) connection.
 - [**SDS-View:**](#sds-view) graphical data viewer for SDS data files.
-- [**SDS-Convert:**](#sds-convert) convert SDS data files into CSV, Qeexo V2 CSV, or WAV format.
-- [**SDS-Check:**](#sds-check) check SDS data files for correctness and consistency.
+- [**SDS-Convert:**](#sds-convert) converts SDS data files into CSV, Qeexo V2 CSV, or WAV format.
+- [**SDS-Check:**](#sds-check) checks SDS data files for correctness and consistency.
 
 ## Setup
 
@@ -23,7 +23,7 @@ Perform the following steps to setup the Python environment for using the SDS ut
 >python --version
 ```
 
-- Navigate in the folder `SDS/<version>/utilities` and install the required Python packages with `pip`:
+- Navigate to the folder `SDS/<version>/utilities` and install the required Python packages with `pip`:
 
 ```bash
 >cd %CMSIS_PACK_ROOT%/ARM/SDS/3.0.0/utilities
@@ -37,10 +37,10 @@ Perform the following steps to setup the Python environment for using the SDS ut
 
 ### Windows
 
-- On Windows, ensure that the  environment variable **PATHEXT** contains the extension `.PY`.
+- On Windows, ensure that the environment variable **PATHEXT** contains the extension `.PY`.
 
 !!! Tip
-    - When the **Path** environment variable is configured, you may simply start the utilities by using its name. For example entering `>sdsio-server` starts the utility.
+    - When the **Path** environment variable is configured, you may simply start the utilities by using its name. For example, entering `>sdsio-server` starts the utility.
 
 ## SDSIO Control File: `*.sdsio.yml`
 
@@ -48,7 +48,7 @@ The SDSIO control file `*.sdsio.yml` configures:
 
 - For the [SDSIO-Server](#sdsio-server), the interface, workdir and steps for playback mode.
 - For the [FVP simulation models (VSI3)](sdsio.md#layer-sdsio_fvp), the interface, workdir, and steps for playback.
-- For the [SDS extension for VS Code](https://marketplace.visualstudio.com/) it configures the SDSIO-Server and the user interface.
+- For the [SDS extension for VS Code](https://marketplace.visualstudio.com/), it configures the SDSIO-Server and the user interface.
 
 ### `sdsio:`
 
@@ -109,7 +109,7 @@ sdsio:
 
 `socket:`                                                   |              | Content
 :-----------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `ipaddr:`                                |   Optional   | IPv4 address to bind to in listen mode, or host address to connect to in connect mode (example: `192.168.0.100`); mandatory with `connect`; cannot be used with `netif`.
+&nbsp;&nbsp;&nbsp; `ipaddr:`                                |   Optional   | IPv4 address to bind to in listen mode, or host address when using `connect:` (example: `192.168.0.100`); default for `connect:` is localhost `127.0.0.1`.
 &nbsp;&nbsp;&nbsp; `netif:`                                 |   Optional   | Network interface name (example: `eth0`); cannot be used with `ipaddr`.
 &nbsp;&nbsp;&nbsp; `port:`                                  |   Optional   | TCP port number (default: `5050`).
 &nbsp;&nbsp;&nbsp; `connect:`                               |   Optional   | When present, connect to `ipaddr` instead of listening; optional value is a message sent to the host when the connection is established (default: none).
@@ -118,6 +118,7 @@ sdsio:
 !!! Note
     - The `ipaddr:` and `netif:` options are mutually exclusive.
     - `connect:` requires `ipaddr:` and cannot be used with `netif:`.
+    - `netif:` cannot be used in combination with `connect:`.
 
 **Example:**
 
@@ -137,7 +138,6 @@ sdsio:
     socket:             # configure for RTT interface
       connect: "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
       port: 19021
-      ipaddr: 127.0.0.1
 ```
 
 ### `streams:`
@@ -218,7 +218,7 @@ SDS data streams are stored in `*.sds` files with the following naming conventio
 
 `<stream-name>.<label>[.p].sds`  (`[.p]` is added when the SDS data stream is recorded during the playback)
 
-For more details see [Filenames section](theory.md#filenames)
+For more details, see the [Filenames section](theory.md#filenames).
 
 The contents of `<name>.<label>[.p].sds` files are described by the metadata file `<name>.sds.yml` in [YAML format](https://github.com/ARM-software/SDS-Framework/tree/main/schema).
 
@@ -265,7 +265,7 @@ Key | Action
 :--:|:------------------
 R/r | Start recording
 P/p | Start playback
-S/s | Stop  recording/playback
+S/s | Stop recording/playback
 T/t | Reset target
 A-H | Set user flags 0-7
 a-h | Clear user flags 0-7
@@ -275,7 +275,7 @@ X/x | Terminate server
 
 It is recommended to use a [SDSIO control file (`*.sdsio.yml`)](#sdsio-control-file-sdsioyml) that configures project parameters such as interface, workdir and steps for playback mode. With command line options the parameters of the `*.sdsio.yml` file can be overwritten.  It is also possible to use additional [general options](#using-general-options).
 
-Start SDSIO-Server in `playback` mode:
+Start SDSIO-Server using a control file:
 
 ```bash
 python sdsio-server.py -c myproject.sdsio.yml
@@ -347,19 +347,19 @@ Start in listen mode with default IP address of the host computer:
 python sdsio-server.py socket --workdir ./work_dir
 ```
 
-Start in listen mode with a specific interface (for Linux or MacOS):**
+Start in listen mode with a specific interface (for Linux or macOS):
 
 ```bash
 python sdsio-server.py socket --netif eth0 --workdir ./work_dir
 ```
 
-Start in connect mode using local host and message for SEGGER J-Link:
+Start in `connect` mode using local host (default setting) and message for SEGGER J-Link:
 
 ```bash
-python sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 --connect "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
+python sdsio-server.py socket --port 19021 --connect "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
 ```
 
-Start in connect mode with a connection to a specific IP address and IP port.
+Start in `connect` mode with a connection to a specific IP address and IP port.
 
 ```bash
 python sdsio-server.py socket --ipaddr 192.168.0.1 --port 5050 --connect
@@ -397,7 +397,7 @@ Start SDSIO-Server with monitor server waiting on the port `6060`:
 python sdsio-server.py -c sdsio.yml --mon-port 6060
 ```
 
-Start SDSIO-Server using user specified working directory:
+Start SDSIO-Server using a user-specified working directory:
 
 ```bash
 python sdsio-server.py usb --workdir ./data
@@ -431,13 +431,13 @@ The Python utility [**SDS-View**](https://github.com/ARM-software/SDS-Framework/
 from data recorded in SDS files (`<name>.<label>.sds`) using the metadata provided in `<name>.sds.yml`.
 
 The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description.
-All plots form a single recording will be displayed on the same figure (shared vertical scale).
+All plots from a single recording are displayed on the same figure (shared vertical scale).
 
 If there are 3 values described in the metadata file, an optional 3D view may be displayed.
 
 ### Limitations
 
-- Data in recording must all be of the same type (float, uint32_t, uint16_t, ...)
+- All data in a recording must be of the same type (float, uint32_t, uint16_t, ...)
 
 ### Usage
 
@@ -481,7 +481,7 @@ selected output format based on the descriptions provided in the metadata (YAML)
 ### Usage
 
 - [Setup](#setup) the Python environment.
-- Depending on the required format use the tool as shown below.
+- Depending on the required format, use the tool as shown below.
 
 #### Audio WAV
 
@@ -509,7 +509,7 @@ required:
 ```
 
 !!! Note
-    - The tool expects the SDS file to contain strictly audio data - no header markers or custom formatting.
+    - The tool expects the SDS file to contain strictly audio data; no header markers or custom formatting.
 
 **Example of metadata yml file for mono microphone:**
 
@@ -627,7 +627,7 @@ Users may specify a time range selection of the input data to be processed using
 
 By default, the output file will have raw timeslots in integer format, in milliseconds.
 The default output timeslot interval is set to `50 ms`.
-To override this setting use the `--interval <ms>` parameter, where `<ms>` is the desired interval in milliseconds.
+To override this setting, use the `--interval <ms>` parameter, where `<ms>` is the desired interval in milliseconds.
 
 An optional label can be added to the output by providing a string argument to the `--label <text>` parameter.
 This `<text>` will populate the label column in the output file.
@@ -705,8 +705,8 @@ python sds-convert.py qeexo_v2_csv -i Accelerometer.csv -o Accelerometer.sds
 
 #### Video
 
-The `video` mode converts SDS file (`.sds`) containing video frames into a standard MP4 (H.264) file (`.mp4`).
-Video frame format shall be specified in the YAML metadata file (`.yml`), where pixel format,
+The `video` mode converts an SDS file (`.sds`) containing video frames into a standard MP4 (H.264) file (`.mp4`).
+Video frame format must be specified in the YAML metadata file (`.yml`), where pixel format,
 resolution and frame stride shall be properly specified.
 
 ```txt
@@ -727,7 +727,7 @@ required:
 ```
 
 !!! Note
-    - The tool expects the SDS file to contain strictly video frames - no header markers or custom formatting.
+    - The tool expects the SDS file to contain strictly video frames; no header markers or custom formatting.
 
 **Example of metadata yml file for RGB888 video stream:**
 

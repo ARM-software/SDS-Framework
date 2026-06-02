@@ -3,9 +3,9 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-The Synchronous Data Stream (SDS) Framework implements a data stream management, provides methods and utilities for developing and optimizing embedded
-applications that use DSP, ML, or Edge AI algorithms. The SDS-Framework allows you to capture simultaneously multiple data streams from
-different sources (sensors, audio, and video inputs) or the results of algorithms in real-time directly in target hardware.
+The Synchronous Data Stream (SDS) Framework implements data stream management and provides methods and utilities for developing and optimizing embedded
+applications that use DSP, ML, or Edge AI algorithms. The SDS-Framework allows you to simultaneously capture multiple data streams from
+different sources (sensors, audio, and video inputs) or the results of algorithms in real time directly on target hardware.
 These data streams are stored in files.
 
 ![SDS-Recorder connected to different sources](images/SDS-Recording.png)
@@ -29,35 +29,35 @@ The I/O implementation included in SDS utilizes the [MDK-Middleware](https://www
 however custom interfaces to other middleware or different communication channels can also be used.
 
 The [**SDSIO-Server**](utilities.md#sdsio-server) running on a host computer captures the recorded data stream and stores it in SDS data files.
-Each recording creates one set of SDS data files that are indicated by a sequential number.
+Each recording creates one set of SDS data files that are identified by a sequential number.
 The SDS data files are in binary format and may be described using a [YAML metadata file](https://github.com/ARM-software/SDS-Framework/tree/main/schema).
 With this information, other tools can utilize the content of the SDS data files as shown in the picture below.
 
 ![Analysis of SDS data files](images/Analyse.png)
 
 On target hardware or in a FVP simulation environment, the [**SDSIO Interface**](sdsio.md#layer-sdsio_fvp) streams the SDS data files back to the algorithm under test. With this interface, the algorithm receives
-the same data stream as captured in the physical hardware. The setup can therefore be used for validation, performance optimizations, and runs even in CI environments for test automation.
+the same data stream as captured on physical hardware. The setup can therefore be used for validation, performance optimization, and can run in CI environments for test automation.
 
 ## SDS Recording Performance
 
-The following section lists the communication speed that can be achieved on different targets with various interfaces.
+The following section lists the communication speeds that can be achieved on different targets with various interfaces.
 
 !!! Note
     - Performance measurements were obtained using the [DataTest](https://arm-software.github.io/SDS-Framework/main/template.html#using-datatest) project, which validates captured data streams on the available interfaces.
     - SDS data files were verified using the [SDS-Check](https://arm-software.github.io/SDS-Framework/main/utilities.html#sds-check) utility.
     - In addition to transfer performance, CPU idle time was measured to estimate the processing capacity available while communication was active.
-    - When using playback, the transfer performance is uncritical as the algorithm will be only executed when data is available.
+    - When using playback, the transfer performance is not critical, as the algorithm will only be executed when data is available.
 
-Using [USB](sdsio.md#using-usb-interface) or [Network](sdsio.md#using-network-interface) interface on different target hardware:
+Using the [USB](sdsio.md#using-usb-interface) or [Network](sdsio.md#using-network-interface) interface on different target hardware:
 
 | Interface                                     | USB                    | Network                |
 |-----------------------------------------------|------------------------|------------------------|
-| Alif Semiconductor DevKit-E8      (@ 400 MHz) |  20 MB/s   (55 % idle) |  8 MB/s (66 % idle)    |
-| STMicroelectronics STM32N6570-DK  (@ 600 MHz) |  13 MB/s   (55 % idle) |                        |
-| STMicroelectronics B-U585I-IOT02A (@ 160 MHz) | 1.1 MB/s   (86 % idle) |                        |
+| Alif Semiconductor DevKit-E8      (@ 400 MHz) | 20 MB/s (55% idle)     | 8 MB/s (66% idle)      |
+| STMicroelectronics STM32N6570-DK  (@ 600 MHz) | 13 MB/s (55% idle)     |                        |
+| STMicroelectronics B-U585I-IOT02A (@ 160 MHz) | 1.1 MB/s (86% idle)    |                        |
 
-Using [RTT](sdsio.md#using-rtt-interface) interface on STM32F769I-EVAL board (with maximum SWD clock 12MHz that is imposed by hardware):
+Using the [RTT](sdsio.md#using-rtt-interface) interface on the STM32F769I-EVAL board (with maximum SWD clock 12 MHz that is imposed by hardware):
 
-- ST-Link (SWD clock: 10MHZ): 130kB/s
-- ULINKplus (SWD clock: 10MHz): 250kB/s
-- J-Link Pro (SWD clock auto): 800kB/s
+- ST-Link (SWD clock: 10 MHz): 130 kB/s
+- ULINKplus (SWD clock: 10 MHz): 250 kB/s
+- J-Link Pro (SWD clock: auto): 800 kB/s
