@@ -228,7 +228,10 @@ Because the input data stream can be repeated, it enables consistent verificatio
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>When such a board layer is not available, it is possible to <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#structure">create a compatible board layer</a>.</p>
+<ul>
+<li>RTT has no API interface requirements to a board layer and may be used when no compatible board layer is available.</li>
+<li>When no board layer is available, it is possible to <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#structure">create a compatible board layer</a>.</li>
+</ul>
 </div>
 <h3 id="using-vs-code">Using VS Code</h3>
 <p>This section explains how to use SDS template application with the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution</a> for VS Code. This extension is for example part of the <a href="https://www.keil.arm.com/">Keil Studio</a>.</p>

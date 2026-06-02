@@ -114,7 +114,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="sdsio-interface">SDSIO Interface</h1>
-<p>The SDSIO components offer flexible SDS communication interfaces. You may choose between these interface components that are stored in the folders: <code>./sds/sdsio/client</code>, <code>./sds/sdsio/fs</code> or <code>./sds/sdsio/vsi</code>. These interfaces can be accessed as CMSIS software components for integration into the target system:</p>
+<p>The SDSIO components offer flexible SDS communication interfaces. You may choose between these interface components that are stored in the folders: <code>./sds/sdsio/client</code>, <code>./sds/sdsio/fs</code> or <code>./sds/sdsio/vsi</code>. You may use one of the following CMSIS software components for integration of the SDSIO interface into the target system:</p>
 <pre><code class="language-yml">  - component: SDS:IO:Socket                     # IoT Socket Interface (Ethernet or WiFi)
   - component: SDS:IO:USB&amp;MDK USB                # USB Interface
   - component: SDS:IO:RTT                        # RTT Interface
@@ -124,7 +124,7 @@
   - component: SDS:IO:VSI                        # VSI Simulation interface of an AVH FVP
   - component: SDS:IO:Custom                     # Source code template for custom implementation
 </code></pre>
-<p>To simplify usage further, the following pre-configured SDS interface layers in <em>csolution project format</em> are available. These connect via various interfaces to the SDSIO-Server, which provides read/write access to SDS data files.</p>
+<p>To simplify usage further, pre-configured SDS interface layers in <em>csolution project format</em> are available. These connect via various interfaces to the SDSIO-Server, which provides read/write access to SDS data files. The following SDS interface layers are available in the pack <a href="https://www.keil.arm.com/packs/sds-arm"><code>ARM::SDS</code></a>:</p>
 <ul>
 <li><a href="#layer-sdsio_network">Ethernet Interface</a> using the MDK-Middleware Network component.</li>
 <li><a href="#layer-sdsio_usb">USB Bulk Interface</a> using the MDK-Middleware USB component.</li>
