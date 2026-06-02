@@ -103,6 +103,21 @@ def _get_non_negative_int(value, name: str):
     return _value
 
 
+def _get_bool(value, name: str):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, int) and value in (0, 1):
+        return bool(value)
+    if isinstance(value, str):
+        _value = value.strip().lower()
+        if _value in ("true", "yes", "on", "1"):
+            return True
+        if _value in ("false", "no", "off", "0"):
+            return False
+    logger.error(f"Invalid boolean value for {name}: {value}.")
+    return False
+
+
 def _load_sdsio_server_config(base_dir: str):
     _cfg_path = None
 
@@ -164,6 +179,9 @@ def _load_sdsio_server_config(base_dir: str):
     _write_flush_records = None
     if _ctrl_data and _ctrl_data.get("write-flush-records") is not None:
         _write_flush_records = _get_non_negative_int(_ctrl_data.get("write-flush-records"), "write-flush-records")
+    _verbose = False
+    if _ctrl_data and _ctrl_data.get("verbose") is not None:
+        _verbose = _get_bool(_ctrl_data.get("verbose"), "verbose")
 
     logger.info(f"Working directory: {path.abspath(_work_dir)}.")
     if _ctrl_data:
@@ -171,7 +189,7 @@ def _load_sdsio_server_config(base_dir: str):
 
     # auto-playback is always enabled on VSI
     _auto_playback = True
-    return _work_dir, _auto_playback, _play_list, _write_flush_records
+    return _work_dir, _auto_playback, _play_list, _write_flush_records, _verbose
 
 
 def _build_sdsio_request(command: int, sid: int = 0, argument: int = 0, data: bytes = b"") -> bytearray:
@@ -184,7 +202,8 @@ def _build_sdsio_request(command: int, sid: int = 0, argument: int = 0, data: by
     return _req
 
 logger.info(f"SDSIO VSI version {SDSIO_VSI_VERSION}")
-_work_dir, _auto_playback, _play_list, _write_flush_records = _load_sdsio_server_config(os.getcwd())
+_work_dir, _auto_playback, _play_list, _write_flush_records, _verbose = _load_sdsio_server_config(os.getcwd())
+logger.setLevel(logging.DEBUG if _verbose else logging.INFO)
 os.makedirs(_work_dir, exist_ok=True)
 _log_handler = logging.FileHandler(path.join(_work_dir, "sdsio.log"), mode="w", encoding="utf-8")
 _log_handler.setFormatter(logging.Formatter("%(message)s"))
