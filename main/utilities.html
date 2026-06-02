@@ -257,13 +257,13 @@ configuration:
   --control, -c &lt;*.sdsio.yml&gt;  Configure interface, SDS file directories, and playback steps
 
 general-opts:
-  --playback, -p               Start SDSIO-Server in playback mode (typically used in CI tests)
-  --workdir &lt;path&gt;             Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
-  --mon-port, -m &lt;port&gt;        Monitor control interface port
-  --log, -l &lt;file&gt;             Redirect console output to a log file (typically for CI use)
-  --write-flush-size &lt;bytes&gt;   Force recorded SDS data to disk after this many bytes (0 disables explicit sync)
-  --verbose, -v                Enable debug messages
-  --high-priority              Increase process priority when using USB interface (requires elevated privileges)
+  --playback, -p                   Start SDSIO-Server in playback mode (typically used in CI tests)
+  --workdir &lt;path&gt;                 Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
+  --mon-port, -m &lt;port&gt;            Monitor control interface port
+  --log, -l &lt;file&gt;                 Redirect console output to a log file (typically for CI use)
+  --write-flush-records &lt;records&gt;  Force recorded SDS data to disk after this many records (0 = after every record; default: disabled)
+  --verbose, -v                    Enable debug messages
+  --high-priority                  Increase process priority when using USB interface (requires elevated privileges)
 </code></pre>
 <p><strong>Keyboard input (in the server application window):</strong></p>
 <table>
@@ -329,6 +329,11 @@ general-opts:
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>workdir:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Directory containing <code>*.sds</code> files (default: current working directory). Relative paths are interpreted relative to the location of the <code>*.sdsio.yml</code> file. In AVH FVP simulations, the <code>*.sdsio.yml</code> file must reside in the simulator working directory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>write-flush-records:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Force recorded SDS data to disk after this many records (<code>0</code> = after every record; default: disabled). The SDSIO-Server <code>--write-flush-records</code> command-line option overrides this setting.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>metadir:</code></td>
@@ -575,6 +580,7 @@ This information is currently not used by SDSIO-Server; it is intended for UI to
       port: 5050
 
   workdir: ./SDS Recordings
+  write-flush-records: 100
   metadir: ./SDS Recordings
 
   play:
@@ -688,8 +694,8 @@ if-opts (optional):
 <p>Start SDSIO-Server using user specified working directory:</p>
 <pre><code class="language-bash">python sdsio-server.py usb --workdir ./data
 </code></pre>
-<p>Start SDSIO-Server, forcing SDS file write flushes to disk when recording data exceeds 1 kB:</p>
-<pre><code class="language-bash">python sdsio-server.py usb --write-flush-size 1024
+<p>Start SDSIO-Server, forcing SDS file write flushes to disk after every 100 records:</p>
+<pre><code class="language-bash">python sdsio-server.py usb --write-flush-records 100
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
