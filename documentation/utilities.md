@@ -110,7 +110,7 @@ X/x | Terminate server
 The SDSIO data file I/O can be configured using a YAML control file with the root node `sdsio:`.
 
 - For [SDSIO-Server](#sdsio-server), the control file is specified with `--control <*.sdsio.yml>`.
-- For AVH FVP simulation (VSI3), the simulator reads `sdsio.yml` (or `*.sdsio.yml`) from the simulator working directory. See [SDSIO Interface](sdsio.md#layer-sdsio_fvp).
+- For AVH FVP simulation (VSI3), the config file path is defined by the `SDSIO_FVP` environment variable (absolute path to a file or directory); if not set, it is searched in the simulator working directory. See [SDSIO Interface](sdsio.md#layer-sdsio_fvp).
 
 #### `sdsio:`
 
