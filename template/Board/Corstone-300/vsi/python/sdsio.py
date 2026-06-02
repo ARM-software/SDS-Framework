@@ -267,7 +267,7 @@ class sdsio_manager:
             if control_input_factory is None:
                 control_input_factory = sdsControlInput
             if control_input_factory:
-                logger.info("Starting SDS Control Flags thread. R=record, P=playback, S/s=stop, X/x=terminate, A-H=set flags 0-7, a-h=clear flags 0-7.")
+                logger.info("SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.")
                 self._ctrl_input = control_input_factory(self._flags, self._monitor, self.shutdown_requested)
 
         self._info_flags: int = 0
