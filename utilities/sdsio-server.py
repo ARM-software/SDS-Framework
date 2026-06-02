@@ -2314,10 +2314,10 @@ def parse_arguments():
 
     _socket_group = _parser_socket.add_argument_group("if-opts (optional)")
     _socket_group.add_argument("--ipaddr", dest="ip", metavar="<IP>",
-                              help="Server IP address, or host IP address in connect mode (example: 192.168.0.100); mandatory with --connect; cannot be combined with 'netif'",
+                              help="Server IP address; cannot be combined with 'netif',\nor host IP address in connect mode (default: 127.0.0.1 / localhost)",
                               type=ip_validator, default=None)
     _socket_group.add_argument("--netif", dest="interface", metavar="<Interface>",
-                              help="Network interface (example: eth0), cannot be combined with 'ipaddr'",
+                              help="Network interface (example: eth0), cannot be combined with '--ipaddr' or '--connect'",
                               type=interface_validator, default=None)
     _socket_group.add_argument("--port", dest="port", metavar="<TCP Port>",
                               help="TCP port number (default: 5050)", type=int, default=5050)
@@ -2431,8 +2431,6 @@ def parse_arguments():
                 _subparser.error("options --ipaddr and --netif are mutually exclusive.")
             if _sub_ns.connect is not None and _sub_ns.interface is not None:
                 _subparser.error("option --connect cannot be combined with --netif.")
-            if _sub_ns.connect is not None and _sub_ns.ip is None:
-                _subparser.error("option --connect requires --ipaddr.")
 
         # Merge namespaces (global + subcommand) for downstream use
         for _k, _v in vars(_sub_ns).items():
@@ -2569,8 +2567,8 @@ async def main():
                 logger.error("Socket connect mode cannot use network interface selection; configure ipaddr instead.")
                 sys.exit(1)
             if _connect_mode and not _ip:
-                logger.error("Socket connect mode requires ipaddr.")
-                sys.exit(1)
+                # Default to localhost
+                _ip = "127.0.0.1"
             if not _connect_mode and not _ip and _socket_iface:
                 _adapters = ifaddr.get_adapters()
                 for _adapter in _adapters:
