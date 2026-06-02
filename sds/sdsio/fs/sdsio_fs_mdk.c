@@ -225,8 +225,12 @@ int32_t sdsioRead (sdsioId_t id, void *buf, uint32_t buf_size) {
 }
 
 /**
-  This function cannot be implemented in system using SDSIO interface via file system.
+  Exchange information with the host.
 */
 int32_t sdsExchange (void) {
-  return SDS_ERROR_IO;
+
+  // Emulate that host is alive. 
+  sdsFlagsModify(SDS_FLAG_ALIVE, 0U);
+
+  return SDS_OK;
 }

@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.31"
+SDSIO_SERVER_VERSION = "0.9.32"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -1551,7 +1551,6 @@ class sdsio_server_serial:
     def start(self):
         if not self._open():
             return
-        logger.info("Serial Server started.")
         _buffer = bytearray()
 
         try:
@@ -2232,8 +2231,8 @@ def parse_arguments():
         "  %(prog)s -c sdsio.yml                     # Recommended: all config in YAML\n"
         "  %(prog)s -c sdsio.yml --playback          # Playback mode\n"
         "  %(prog)s -c sdsio.yml --mon-port 6060     # With VS Code SDS extension monitor\n"
-        "  %(prog)s usb --workdir ./data             # USB server, explicit work dir\n"
-        "  %(prog)s socket --port 5050               # TCP socket server\n"
+        "  %(prog)s usb --workdir ./data             # USB interface, explicit work dir\n"
+        "  %(prog)s socket --port 5050               # Socket interface\n"
         "  %(prog)s serial --port COM3 --baudrate 115200\n"
         "\n"
         "server type help:\n"
@@ -2305,11 +2304,11 @@ def parse_arguments():
         prog=f"{_parser.prog} socket",
         formatter_class=_formatter,
         add_help=False,
-        help="Run TCP socket server",
+        help="Run SDSIO-Server using socket interface",
         epilog="",  # keep subcommand help clean
     )
     _parser_socket.is_subparser = True
-    _parser_socket.error_hint = "For help on how to use the socket server and its arguments, run: %(prog)s -h"
+    _parser_socket.error_hint = "For help on how to use the socket interface and its arguments, run: %(prog)s -h"
     _parser_socket.usage = "%(prog)s [-h] [-V] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [--connect [<message>]] [--connect-time <ms>] [general-opts]"
     _add_info_opts(_parser_socket, version_text=f"{_parser.prog} {SDSIO_SERVER_VERSION}")
 
@@ -2336,11 +2335,11 @@ def parse_arguments():
         prog=f"{_parser.prog} serial",
         formatter_class=_formatter,
         add_help=False,
-        help="Run serial server",
+        help="Run SDSIO-Server using serial interface",
         epilog="",  # keep subcommand help clean
     )
     _parser_serial.is_subparser = True
-    _parser_serial.error_hint = "For help on how to use the serial server and its arguments, run: %(prog)s -h"
+    _parser_serial.error_hint = "For help on how to use the serial interface and its arguments, run: %(prog)s -h"
     _parser_serial.usage = "%(prog)s [-h] [-V] --port <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>] [general-opts]"
     _add_info_opts(_parser_serial, version_text=f"{_parser.prog} {SDSIO_SERVER_VERSION}")
 
@@ -2371,11 +2370,11 @@ def parse_arguments():
         prog=f"{_parser.prog} usb",
         formatter_class=_formatter,
         add_help=False,
-        help="Run USB bulk server",
+        help="Run SDSIO-Server using USB interface",
         epilog="",  # keep subcommand help clean
     )
     _parser_usb.is_subparser = True
-    _parser_usb.error_hint = "For help on how to use the usb server and its arguments, run: %(prog)s -h"
+    _parser_usb.error_hint = "For help on how to use the USB interface and its arguments, run: %(prog)s -h"
     _parser_usb.usage = "%(prog)s [-h] [-V] [general-opts]"
     _add_info_opts(_parser_usb, version_text=f"{_parser.prog} {SDSIO_SERVER_VERSION}")
     _add_general_opts(_parser_usb)
