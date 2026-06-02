@@ -4,18 +4,17 @@
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD060 -->
 
-The SDS Framework enables to record and playback one or more data streams to an application that is under development as shown in the diagram below. With the SDSIO Interface the data streams are connected to SDS data files. The file storage can be either embedded within the system and accessed by a file system or external on a host computer and accessed by a communication interface such as Ethernet or USB.
+The SDS Framework enables recording and playback of one or more data streams for an application under development, as shown in the diagram below. With the SDSIO interface, the data streams are connected to SDS data files. The file storage can be either embedded within the system and accessed via a file system, or external (on a host computer) and accessed via a communication interface such as Ethernet or USB.
 
 The DSP or ML algorithms that are tested operate on blocks and are executed periodically. This documentation uses these terms:
 
-- **Data Block**: is a set of input or output data which is processed in one step by a DSP or ML compute note.
+- **Data Block**: is a set of input or output data which is processed in one step by a DSP or ML compute node.
 - **Block size**: is the number of bytes of a data block.
 - **Interval**: is the periodic time interval at which the compute node executes.
 
 ![SDSIO Interface for Player and Recorder](images/SDS-InOut.png)
 
-
-Using the SDS Stream Interface functions (`sds.c/h`), the data stream under development may read and write as shown above. The Stream Interface functions store data streams in a circular buffer (`sds_buffer.c/h`). This circular buffer is the I/O queue for the SDSIO-Client (`sdsio_x.c / sdsio.h`). 
+Using the SDS Stream Interface functions (`sds.c/h`), the data stream under development may read and write as shown above. The Stream Interface functions store data streams in a circular buffer (`sds_buffer.c/h`). This circular buffer is the I/O queue for the SDSIO-Client (`sdsio_x.c / sdsio.h`).
 
 ![Implementation Files of SDS](images/Theory_of_Operation.png)
 
@@ -59,7 +58,7 @@ sequenceDiagram
 
 ## SDS Data Files
 
-Each data stream is stored in a separate SDS data file. In the diagram below `SCinput.0.sds` is the input to Signal Conditioning, `SCoutput.0.sds` is the output of Signal Conditioning, and `MLoutput.0.sds` is the output of the ML Model. Each execution of the algorithm is represented in a data block with a `timeslot`. The `timeslot` allows to correlate the blocks of different streams. In the above example, all blocks of one algorithm execution have the same timeslot value.
+Each data stream is stored in a separate SDS data file. In the diagram below `SCinput.0.sds` is the input to Signal Conditioning, `SCoutput.0.sds` is the output of Signal Conditioning, and `MLoutput.0.sds` is the output of the ML Model. Each execution of the algorithm is represented in a data block with a `timeslot`. The `timeslot` allows correlating blocks from different streams. In the example above, all blocks of one algorithm execution have the same timeslot value.
 
 ![SDS Files](images/SDS-Files.png)
 
@@ -68,17 +67,10 @@ Each data stream is stored in a separate SDS data file. In the diagram below `SC
 
 ### Filenames
 
-The `sdsOpen` function takes `<name>` and the stream opening mode as input parameters.
+The `sdsOpen` function takes `<name>` for the stream and the opening mode as input parameters.
 Opening a stream in `sdsModeRead` mode is used for playback and opening stream in `sdsModeWrite` is used for recording.
 
-The filename used when opening a stream depends on the presence of the [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml) and its `play` node.
-
-If the `*.sdsio.yml` file exists and contains `play` node, the filename follows the pattern `<name>.<label>.sds`, where `<label>` is specified in the corresponding
-`step` node in the `play` node. After playback or recording completes, processing continues with the next `step` node, if available, and the process repeats.
-
-The previous explanation applies only to playback mode only.
-
-If the steering file does not exist or does not contain `play` node, the filename follows the pattern `<name>.<label>.sds`, where for:
+The actual files used when opening a stream depend on the presence of the [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml) and its `play` node.
 
 **Recording:**
 
@@ -87,7 +79,10 @@ After recording completes, the process continues from the last `<label>` value.
 
 **Playback:**
 
-`<label>` is a sequential number starting at 0. If the corresponding file does not exist, the open operation fails.
+When a [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml) is used and contains a [`play:`](utilities.md#play) node, the filename follows the pattern `<stream-name>.<label>.sds`, where `<label>` is specified in the corresponding
+[`step:`](utilities.md#play).
+
+When no `*.sdsio.yml` control file is used, the `<label>` is a sequential number starting at 0. If the corresponding file does not exist, the open operation fails.
 After playback completes, the process repeats with the `<label>` incremented by one.
 
 !!! Note
@@ -110,7 +105,7 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 
 ### File Format
 
-The **SDS Framework** uses a binary data file format to store the individual data streams. It supports the recording and playback of multiple data streams that may have jitters.  Therefore each stream contains timeslot information that allows to correlate the data streams as it is for example required in a sensor fusion application.
+The **SDS Framework** uses a binary data file format to store the individual data streams. It supports recording and playback of multiple data streams that may have jitter. Therefore, each stream contains timeslot information that allows correlating data streams, as required, for example, in sensor fusion applications.
 
 The binary data format (stored in `*.sds` data files) has a record structure with a variable size. Each record has the following format:
 
@@ -159,7 +154,7 @@ This example defines a data stream with the name "sensorX" that contains the val
 
 ![image](./images/SDS-Metainfo.png)
 
-The binary data that are coming form these sensors are stored in data files with the following file format: `<sensor-name>.<index>.sds`. In this example the files names could be:
+The binary data coming from these sensors are stored in data files with the following file format: `<sensor-name>.<index>.sds`. In this example, the filenames could be:
 
 ```yml
    sensorX.0.sds   # capture 0
@@ -196,7 +191,7 @@ sds:                   # describes a synchronous data stream
 
 #### Image Metadata Format
 
-The `pixel_format` values listed in `sds.schema.json` map to the following template files located in the folder `schema\image_format` and Linux V4L2 references.
+The `pixel_format` values listed in `sds.schema.json` map to the following template files located in `schema/image_format` and use Linux V4L2 references.
 
 `pixel_format:` | Template file | V4L2 reference page
 :---------------------|:--------------|:------------------
@@ -265,18 +260,18 @@ The minimum recommended buffer size is **0x1000 (4 KB)**.
 
 ## SDSIO-Server Protocols
 
-SDSIO-Server communicates with the firmware using the [SDSIO-Server Firmware Protocol](theory.md#sdsio-server-firmware-protocol) over supported physical interfaces,
+The SDSIO-Server communicates with the firmware using the [SDSIO-Server Firmware Protocol](#sdsio-server-firmware-protocol) over supported physical interfaces,
 including Ethernet, Wi-Fi, USB, debugger, and serial (USART) connections.
-It communicates with the Monitor program through the [Monitor Interface](theory.md#sdsio-server-monitor-interface) over a network connection,
+It communicates with the monitor program through the [Monitor Interface](#sdsio-server-monitor-interface) over a network connection,
 typically via the loopback (localhost) interface.
 
 ![SDSIO-Server Protocols](images/SDSIO-Server-Protocols.png)
 
 ## SDSIO-Server Firmware Protocol
 
-The [SDSIO-Server](utilities.md#sdsio-server) uses a simple protocol for data exchange between a host computer and the embedded target that integrates an [SDSIO Interface](sdsio.md). The protocol assumes that the correct communication to the SDSIO-Server is already ensured by the underlying technology (TCP/IP or USB) and therefore no extra check is implemented.
+The [SDSIO-Server](utilities.md#sdsio-server) uses a simple protocol for data exchange between a host computer and the embedded target that integrates an [SDSIO Interface](sdsio.md). The protocol assumes that communication to the SDSIO-Server is ensured by the underlying transport technology (TCP/IP or USB); therefore, no additional checks are implemented.
 
-The following conventions describe the **command semantic** used in the following documentation:
+The following conventions describe the **command semantics** used in the following documentation:
 
 Symbol     | Description
 :----------|:----------------------
@@ -312,7 +307,7 @@ as the Command and may contain **additional data**.
 The Command with ID = **1** (SDSIO_CMD_OPEN) opens an SDS data file on the host computer.
 `Mode` defines `read` (value = 0) or `write` (value = 1) operation. `Len of Stream Name` is the size of the string in bytes.
 
-SDS data filenames use the following file format: `<name>.<label>.sds`, where `<name>` is the stream name used as base filename
+SDS data filenames use the following file format: `<name>.<label>.sds`, where `<name>` is the stream name used as the base filename
 of the SDS data file and `<label>` is a user label or index depending on usage (for details see section [Filenames](#filenames)).
 
 ```txt
@@ -431,11 +426,11 @@ The Command with ID = **7** (SDSIO_CMD_INFO) sends control information (sdsFlags
 
 ## SDSIO-Server Monitor Interface
 
-The [SDSIO-Server](utilities.md#sdsio-server) provides an additional TCP socket that maybe used by a Monitor program to observe
+The [SDSIO-Server](utilities.md#sdsio-server) provides an additional TCP socket that may be used by a monitor program to observe
 SDS file activity and control `sdsFlags` in the firmware.
 The monitor interface is enabled with command line option `--mon-port <port>`.
 
-The following conventions describe the **command and message semantic** used in the following documentation:
+The following conventions describe the **command and message semantics** used in the following documentation:
 
 Symbol     | Description
 :----------|:----------------------
@@ -546,7 +541,7 @@ It contains the following threads that execute on the target.
 - **SDSIO-Server**: SDSIO-Server running on the host computer.
 
 !!! Note
-    - The command `SDSIO_CMD_FLAGS` is sent asynchronous by the SDSIO-Server.
+    - The command `SDSIO_CMD_FLAGS` is sent asynchronously by the SDSIO-Server.
 
 The `sdsControlThread` handles a state machine with the following states:
 
@@ -560,7 +555,6 @@ SDS_STATE_STOP_REQ       | Request to stop streaming and close open streams
 SDS_STATE_STOP_DONE      | Streaming has stopped
 SDS_STATE_END            | Request to end streaming (e.g., no more playback data is available)
 SDS_STATE_RESET          | Request to reset the device
-SDS_STATE_END            | Request to terminate the active session
 
 The following flowcharts show the state transition in context with the messages that are exchanged with the `SDSIO-Server`.
 
@@ -587,8 +581,8 @@ sequenceDiagram
 ```
 
 !!! Note
-    - When the command `SDS_CMD_FLAGS` sets SDS_FLAG_ALIVE the sdsControlThread transitions into the SDS_STATE_CONNECTED.
-    - When `SDSIO_CMD_INFO` is sent more than 10 times without a `SDSIO_CMD_FLAGS` response the sdsControlThread transitions into the SDS_STATE_INACTIVE.
+    - When the command `SDSIO_CMD_FLAGS` sets SDS_FLAG_ALIVE, the `sdsControlThread` transitions into the SDS_STATE_CONNECTED.
+    - When `SDSIO_CMD_INFO` is sent more than 10 times without a `SDSIO_CMD_FLAGS` response, the `sdsControlThread` transitions into the SDS_STATE_INACTIVE.
 
 **Recording start flowchart**
 

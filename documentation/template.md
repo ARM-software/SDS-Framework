@@ -4,12 +4,12 @@
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD060 -->
 
-The [SDS template application](https://github.com/ARM-software/SDS-Framework/tree/main/template) is a test framework for DSP and ML algorithms. It allows recording and playback of real-world data streams using physical hardware or on simulation models using [(Arm Virtual Hardware - FVP)](https://github.com/ARM-software/AVH) to an user algorithm under test. The real-world data streams are captured in SDS data files. This enables multiple use cases:
+The [SDS template application](https://github.com/ARM-software/SDS-Framework/tree/main/template) is a test framework for DSP and ML algorithms. It supports recording and playback of real-world data streams on physical hardware or simulation models using [Arm Virtual Hardware (FVP)](https://github.com/ARM-software/AVH), feeding a user algorithm under test. The real-world data streams are captured in SDS data files. This enables multiple use cases:
 
-- Validate and optimize algorithms using playback. This allows to repeat test cases with the same data stream.
-- The captured data streams can be labeled and used as training data set for AI Models in MLOps systems.
+- Validate and optimize algorithms using playback. This makes it possible to repeat test cases with the same data stream.
+- The captured data streams can be labeled and used as a training dataset for AI models in MLOps systems.
 
-The SDS template application is implemented as [CMSIS-Toolbox Reference Application](https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/). It is hardware agnostic and requires an `SDSIO-Layer` and a `Board-Layer` with drivers for the specific target hardware.
+The SDS template application is implemented as a [CMSIS-Toolbox Reference Application](https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/). It is hardware-agnostic and requires an `SDSIO-Layer` and a `Board-Layer` with drivers for the target hardware.
 
 The `SDSIO-Layer` connects the SDS template application to a communication interface for SDS file I/O operations.
 The following [SDSIO interfaces](sdsio.md) are pre-configured:
@@ -33,7 +33,7 @@ The `Debug` and `Release` build types differ only in the optimization level and 
 Both build types support recording and playback, controlled via `sdsFlags`. The `sdsFlags` value can be modified by the SDS application (using the function `sdsFlagsModify`) or by the SDSIO-Server, making it easy to switch between Record Mode and Playback Mode.
 
 !!! Note
-    Implementations using file system support only recording mode.
+    Implementations using a file system support only recording mode.
 
 ### Record Mode
 
@@ -79,7 +79,7 @@ The example below uses the [STM32F746G-DISCO](https://www.keil.arm.com/packs/stm
 
 #### Install Required Packs
 
-To make the software components available, install the SDS pack and the pack for the select evaluation board, for example with:
+To make the software components available, install the SDS pack and the pack for the selected evaluation board, for example with:
 
 ```shell
 >cpackget add ARM::SDS
@@ -88,11 +88,14 @@ To make the software components available, install the SDS pack and the pack for
 
 #### Create New Solution
 
-The SDS template application is selected in the **Create a new solution** <!--- [Create a new solution](https://developer.arm.com/documentation/108029/latest/Arm-CMSIS-Solution-extension/Create-a-solution) --> dialog for boards with layers in the BSP.
+In the [**Create a new solution**](https://mdk-packs.github.io/vscode-cmsis-solution-docs/create_app.html) dialog, select the target board and the SDS reference application.
 
 ![Select Reference Application](images/SelectReferenceApplication.png)
 
-Once the *csolution project* is loaded the VS Code IDE presents you with a dialog that lets you select a compatible software layer and a compiler toolchain that is available on your computer.
+After the *csolution project* loads, VS Code displays a dialog where you can select a compatible software layer and an installed compiler toolchain.
+
+!!! Note
+    - If no compatible software layer is available for SDS, use the `V2M-MPS3-SSE-300-FVP` board. Then adapt `sds.csolution.yml` and create a software layer for your target hardware as outlined in [Compile for Custom Hardware](#compile-for-custom-hardware). The [layer: sdsio_rtt](sdsio.md#layer-sdsio_rtt) has minimal requirements because it uses the debug adapter as the communication interface to the SDSIO-Server.
 
 ![Configure Solution](images/ConfigureSolution.png)
 
@@ -102,16 +105,16 @@ Once the *csolution project* is loaded the VS Code IDE presents you with a dialo
 
 #### Build the Template Application
 
-The SDS template applications contains three targets (evaluation board and two AVH FVP simulation models) and two projects:
+The SDS template application contains three targets (an evaluation board and two AVH FVP simulation models) and two projects:
 
 - **DataTest** is a data communication test between target and SDSIO-Server or file system.
-- **AlgorithmTest** allows to add the DSP or ML algorithm that should be tested.
+- **AlgorithmTest** allows you to add the DSP or ML algorithm that should be tested.
 
-Use the command `CMSIS:Manage Solution Settings` to choose a one project that you want to explore.  Start with the **DataTest** first that should work "out-of-the box" on target hardware.
+Use the `CMSIS:Manage Solution Settings` command to select the project you want to explore. Start with **DataTest**, which should work out of the box on target hardware.
 
 ![Select Project](images/SelectProject.png)
 
-Once the configuration is selected, click `Save` and use the build command to generate the template application. Then download the application to the selected target.
+Once the project is selected and the debug adapter is configured, save the solution and use the build command to generate the template application. Then download the application to the selected target.
 
 ### Compile for Custom Hardware
 
@@ -120,12 +123,15 @@ The steps to add a custom hardware configuration are:
 - Open the `*.csolution.yml` file and add a new `target-type`.
 
 ```yml
-    target-types:
+    packs:
+    - pack: <DFP for your hardware> # use keil.arm.com/packs to search for packs
+
+  target-types:
     - type: MyHardware
       device: STM32U535CBTx
       variables:
         - Board-Layer: $SolutionDir()$/Board/MyHardware/Board.clayer.yml
-        - SDSIO-Layer: $SolutionDir()$/sdsio/usb/sdsio_usb.clayer.yml
+        - SDSIO-Layer: $SolutionDir()$/sdsio/rtt/sdsio_rtt.clayer.yml
 ```
 
 - Add a board layer that implements the API interfaces described above.
@@ -138,61 +144,40 @@ The steps to add a custom hardware configuration are:
 
 The **DataTest** project validates the communication channel.
 
-### Playback on Simulation Model
-
-1. Select the target `AVH-SSE-300` (or `AVH-SSE-320`) with Project `DataTest` and Build Type `Debug` to playback SDS data files.
-2. [Build and Run](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp/README.md) the application.
-3. Use [SDS-Check](utilities.md#sds-check) to verify correctness of the files recorded during playback.
-
-By default, the Template application includes a `datatest.sdsio.yml` configuration file that specifies playback of the `Test_In.0.sds` file,
-while new output recordings are stored in the `Test_Out.0.p.sds` file.
-
-For details about the **sdsio.yml** file, please refer to the documentation in [sdsio.yml](utilities.md#sdsio-control-file-sdsioyml).
-
-To verify correctness of the recording using SDS-Check utility use the following command:
-
-```bash
-python sds-check.py -i Test_Out.0.p.sds
-```
-
-Compare the output files `Test_Out.0.sds` and `Test_Out.0.p.sds` with any program that can compare binary files. If the communication is correct, the files should be identical.
-
-!!! Note
-    - Recording mode is not available when using Simulation Model.
-
 ### Recording/playback on Hardware Target
 
 1. Select the `STM32F746G-DISCO` target with Project `DataTest` and Build Type `Debug` to record/playback SDS data files.
-2. Start the [SDSIO-Server](utilities.md#sdsio-server) for selected SDSIO communication interface.
-3. Build and Run the application.
-4. Use [SDS-Check](utilities.md#sds-check) to verify correctness of the recording.
+2. Configure the file `datatest.sdsio.yml` for your selected [communication interface](utilities.md#interface).
+3. Start the [SDSIO-Server](utilities.md#sdsio-server) with `python sdsio-server.py -c datatest.sdsio.yml`.
+4. Build and Run the application.
+5. Use [SDS-Check](utilities.md#sds-check) to verify correctness of the recording.
 
 **Recording**
 
-Activate the recording from the SDSIO-Server by pressing `R` key. To stop the recording press the `S` key.
-Alternatively the recording can be started or stopped by pressing the user button on the board.
+Activate recording from the SDSIO-Server by pressing the `R` key. To stop recording, press the `S` key.
+Alternatively, recording can be started or stopped by pressing the user button on the board.
 
-This run should generate the files `Test_In.0.sds` and `Test_Out.0.sds` in the solution folder. The `DataTest` project is configured to record 1000 data records at an interval of 10 ms.
+This run should generate the files `Test_In.1.sds` and `Test_Out.1.sds` in the folder `datatest\SDS Recordings`. The `DataTest` project is configured to record 1000 data records at an interval of 10 ms.
 
-To verify correctness of the recording using SDS-Check utility use the following commands:
+To verify correctness of the recording using the SDS-Check utility, use the following commands:
 
 ```bash
-python sds-check.py -i Test_In.0.sds
-python sds-check.py -i Test_Out.0.sds
+python sds-check.py -i Test_In.1.sds
+python sds-check.py -i Test_Out.1.sds
 ```
 
-When the project is restarted, new files with different names are created: `Test_In.1.sds` and `Test_Out.1.sds`.
+When recording is started again, new files with different names are created: `Test_In.2.sds` and `Test_Out.2.sds`.
 
 !!! Note
-    - The [algorithm for naming](https://arm-software.github.io/SDS-Framework/main/theory.html#filenames) the SDS files determines the names of the subsequent data files.
+    - Refer to [Theory of Operation - Filenames](theory.md#filenames) for more information.
 
 **Playback**
 
 Activate the playback from the SDSIO-Server by pressing the `P` key.
 
-This run should read the `Test_In.0.sds` file and generate the `Test_Out.0.p.sds` file.
+This run should read the `Test_In.0.sds` file and generate the `Test_Out.0.p.sds` file in the folder `datatest\SDS Recordings`. The `Test_Out.0.sds` file generated during recording is identical to `Test_Out.0.p.sds`, which is generated in playback mode.
 
-To verify correctness of the recording using SDS-Check utility use the following command:
+To verify correctness of the recording using the SDS-Check utility, use the following command:
 
 ```bash
 python sds-check.py -i Test_Out.0.p.sds
@@ -202,15 +187,38 @@ Compare the output files `Test_Out.0.sds` and `Test_Out.0.p.sds` with any progra
 
 ### Configure Bandwidth for DataTest
 
-The **DataTest** project uses a fixed algorithm to verify the communication interface. With the file `datatest/algorithm_config.h` it is possible to configure bandwidth and interval to match the requirements of the algorithm that should be tested.
+The **DataTest** project uses a fixed algorithm to verify the communication interface. In `datatest/algorithm_config.h`, you can configure bandwidth and interval to match the requirements of the algorithm under test.
+
+### Playback on Simulation Model
+
+1. Select the target `SSE-300-U55` (or `SSE-320-U85`) with Project `DataTest` and Build Type `Debug` to play back SDS data files.
+2. [Build and Run](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp/README.md) the application.
+3. Use [SDS-Check](utilities.md#sds-check) to verify correctness of the files recorded during playback.
+
+By default, the Template application includes a `datatest.sdsio.yml` configuration file that specifies playback of the `Test_In.0.sds` file,
+while new output recordings are stored in the `Test_Out.0.p.sds` file.
+
+Refer to [SDSIO control file: `sdsio.yml`](utilities.md#sdsio-control-file-sdsioyml) for more information and configuration of playback files using the [`play:`](utilities.md#play) node.
+
+To verify correctness of the recording using the SDS-Check utility, use the following command:
+
+```bash
+python sds-check.py -i Test_Out.0.p.sds
+```
+
+!!! Tip
+    Compare the output files `Test_Out.0.sds` and `Test_Out.0.p.sds` with any program that can compare binary files. If the communication is correct, the files should be identical.
+
+!!! Note
+    - Recording mode is not available when using Simulation Model.
 
 ## Using AlgorithmTest
 
-The project **AlgorithmTest** allows to add custom algorithms for testing. It is prepared for recording and playback of SDS data files.
+The **AlgorithmTest** project allows you to add custom algorithms for testing. It is prepared for recording and playback of SDS data files.
 
 ### Add User Algorithm
 
-In the SDS template application these files require changes to interface with the DSP and ML algorithm that is tested:
+In the SDS template application, these files must be modified to integrate the DSP/ML algorithm under test:
 
 - `algorithm/algorithm_config.h` configures the block size of data streams.
 - `algorithm/algorithm_user.c` is the interface to the DSP/ML algorithm under test.
@@ -220,4 +228,4 @@ In the SDS template application these files require changes to interface with th
 
 Configured variants of the SDS template application are provided in a separate [GitHub repository github.com/Arm-Examples/sds-examples](https://github.com/Arm-Examples/sds-examples). These examples show the usage of the SDS-Framework with real-world devices and use cases.
 
-For details refer to **README.md** files that are included with the example configurations.
+For details, refer to the **README.md** files included with the example configurations.

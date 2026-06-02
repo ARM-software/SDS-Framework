@@ -1,6 +1,16 @@
 sdsio:
   interface:
+# Remove when using a different interface
     usb:
+
+# Uncomment to use Network interface
+#   socket:        
+
+# Uncomment to use RTT interface
+#   socket:             # configure for RTT interface
+#     connect: "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
+#     port: 19021
+
   workdir: ./datatest/SDS Recordings
   metadir: ./datatest/SDS Recordings
 

@@ -5,12 +5,13 @@
 <!-- markdownlint-disable MD024 -->
 
 The SDS-Framework pack includes in the folder `/utilities` several utilities that are implemented in Python.
-Install **Python** and packages listed in file `/utilities/requirements.txt` to run these utilities:
+Install **Python** and the packages listed in the file `/utilities/requirements.txt` to run these utilities:
 
+- [**SDSIO Control File `*.sdsio.yml`:**](#sdsio-control-file-sdsioyml) configures the SDSIO-Server or the FVP VSI3 simulation interface.
 - [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via USB, socket (TCP/IP) or serial (UART) connection.
 - [**SDS-View:**](#sds-view) graphical data viewer for SDS data files.
-- [**SDS-Convert:**](#sds-convert) convert SDS data files into CSV, Qeexo V2 CSV, or WAV format.
-- [**SDS-Check:**](#sds-check) check SDS data files for correctness and consistency.
+- [**SDS-Convert:**](#sds-convert) converts SDS data files into CSV, Qeexo V2 CSV, or WAV format.
+- [**SDS-Check:**](#sds-check) checks SDS data files for correctness and consistency.
 
 ## Setup
 
@@ -22,7 +23,7 @@ Perform the following steps to setup the Python environment for using the SDS ut
 >python --version
 ```
 
-- Navigate in the folder `SDS/<version>/utilities` and install the required Python packages with `pip`:
+- Navigate to the folder `SDS/<version>/utilities` and install the required Python packages with `pip`:
 
 ```bash
 >cd %CMSIS_PACK_ROOT%/ARM/SDS/3.0.0/utilities
@@ -36,25 +37,188 @@ Perform the following steps to setup the Python environment for using the SDS ut
 
 ### Windows
 
-- On Windows, ensure that the  environment variable **PATHEXT** contains the extension `.PY`.
+- On Windows, ensure that the environment variable **PATHEXT** contains the extension `.PY`.
 
 !!! Tip
-    - When the **Path** environment variable is configured, you may simply start the utilities by using its name. For example entering `>sdsio-server` starts the utility.
+    - When the **Path** environment variable is configured, you may simply start the utilities by using its name. For example, entering `>sdsio-server` starts the utility.
+
+## SDSIO Control File: `*.sdsio.yml`
+
+The SDSIO control file `*.sdsio.yml` configures:
+
+- For the [SDSIO-Server](#sdsio-server), the interface, workdir and steps for playback mode.
+- For the [FVP simulation models (VSI3)](sdsio.md#layer-sdsio_fvp), the interface, workdir, and steps for playback.
+- For the [SDS extension for VS Code](https://marketplace.visualstudio.com/), it configures the SDSIO-Server and the user interface.
+
+### `sdsio:`
+
+`sdsio:`                                                    |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; [`interface:`](#interface)               |   Optional   | SDSIO-Server only: specifies the interface used to connect to the target firmware (default: `usb`).
+&nbsp;&nbsp;&nbsp; `workdir:`                               |   Optional   | Directory containing `*.sds` files (default: current working directory). Relative paths are interpreted relative to the location of the `*.sdsio.yml` file. In AVH FVP simulations, the `*.sdsio.yml` file must reside in the simulator working directory.
+&nbsp;&nbsp;&nbsp; `write-flush-records:`                   |   Optional   | Force recorded SDS data to disk after this many records (`0` = after every record; default: disabled). The SDSIO-Server `--write-flush-records` command-line option overrides this setting.
+&nbsp;&nbsp;&nbsp; `metadir:`                               |   Optional   | Directory for metadata files (default: `workdir`). This key is used by the [SDS extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds).
+&nbsp;&nbsp;&nbsp; [`streams:`](#streams)                   |   Optional   | Data stream information used by the [SDS extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds).
+&nbsp;&nbsp;&nbsp; [`play:`](#play)                         |   Optional   | Playback step list that defines how `*.sds` files are played back (used in playback mode).
+&nbsp;&nbsp;&nbsp; [`flag-info:`](#flag-info)               |   Optional   | Human readable labels for user flags. This key is currently not used by SDSIO-Server or the VSI3 simulation interface.
+
+### `interface:`
+
+!!! Note
+    - The `interface:` settings are used by SDSIO-Server. The AVH FVP VSI3 simulation interface ignores `interface:`.
+
+`interface:`                                                |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; [`usb:`](#usb)                           |   Optional   | Configure USB bulk interface.
+&nbsp;&nbsp;&nbsp; [`serial:`](#serial)                     |   Optional   | Configure serial (UART) interface.
+&nbsp;&nbsp;&nbsp; [`socket:`](#socket)                     |   Optional   | Configure TCP socket interface.
+
+#### `usb:`
+
+`usb:`                                                      |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `high_priority:`                         |   Optional   | SDSIO-Server only: increase process priority (default: `false`).
+
+**Example:**
+
+```yml
+sdsio:
+  interface:
+    usb:                # configure for USB interface
+```
+
+#### `serial:`
+
+`serial:`                                                   |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `port:`                                  | **Required** | Port name (examples: `COM3`, `ttyS0`, `ttyUSB1`, ...).
+&nbsp;&nbsp;&nbsp; `baudrate:`                              |   Optional   | Baudrate (default: `115200`).
+&nbsp;&nbsp;&nbsp; `parity:`                                |   Optional   | Parity bit: `none`, `even`, `odd`, `mark`, `space` (default: `none`).
+&nbsp;&nbsp;&nbsp; `stopbits:`                              |   Optional   | Stop bits: `1`, `1.5`, `2` (default: `1`).
+
+**Example:**
+
+```yml
+sdsio:
+  interface:
+    serial:             # configure for Serial interface with baudrate 230400 bps.
+      baudrate: 230400
+```
+
+#### `socket:`
+
+`socket:`                                                   |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `ipaddr:`                                |   Optional   | IPv4 address to bind to in listen mode, or host address when using `connect:` (example: `192.168.0.100`); default for `connect:` is localhost `127.0.0.1`.
+&nbsp;&nbsp;&nbsp; `netif:`                                 |   Optional   | Network interface name (example: `eth0`); cannot be used with `ipaddr`.
+&nbsp;&nbsp;&nbsp; `port:`                                  |   Optional   | TCP port number (default: `5050`).
+&nbsp;&nbsp;&nbsp; `connect:`                               |   Optional   | When present, connect to `ipaddr` instead of listening; optional value is a message sent to the host when the connection is established (default: none).
+&nbsp;&nbsp;&nbsp; `connect-time:`                          |   Optional   | Milliseconds to discard incoming data after the connection is established (default: `50`).
+
+!!! Note
+    - The `ipaddr:` and `netif:` options are mutually exclusive.
+    - `connect:` requires `ipaddr:` and cannot be used with `netif:`.
+    - `netif:` cannot be used in combination with `connect:`.
+
+**Example:**
+
+Configure for Network interface.
+
+```yml
+sdsio:
+  interface:
+    socket:             # configure for Network interface with default port
+```
+
+Configure for RTT interface via J-Link debug adapter.
+
+```yml
+sdsio:
+  interface:
+    socket:             # configure for RTT interface
+      connect: "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
+      port: 19021
+```
+
+### `streams:`
+
+The `streams:` node provides additional information about the SDS data streams to the [SDS extension for VS Code](https://marketplace.visualstudio.com/). It provides the context between the data streams and the display format.
+
+`streams:`                                                  |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+`- name:`                                                   | **Required** | Name of the data stream.
+&nbsp;&nbsp;&nbsp; `view:`                                  |   Optional   | Format of the data stream for the viewer (signal, wav, video, heatmap, csv, csv2)
+
+### `play:`
+
+The `play:` node specifies one or more playback steps.
+Each playback step defines the list of labels to play back for each opened SDS stream.
+
+For one playback step, all files of the `labels:` list are concatenated and appear as one data stream for the firmware.
+A pause (where the data stream needs to be closed and opened again by the firmware) is created with another `- step:` section.
+
+`play:`                                                     |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+`- step:`                                                   |   Optional   | Descriptive text for the playback step.
+&nbsp;&nbsp;&nbsp; `recdir:`                                |   Optional   | Recording directory for generated `*.p.sds` files during playback; relative paths are relative to `workdir:`.
+&nbsp;&nbsp;&nbsp; `setflags:`                              |   Optional   | Set user flags (bitmask); example: `0x01`.
+&nbsp;&nbsp;&nbsp; `clearflags:`                            |   Optional   | Clear user flags (bitmask); example: `0x01`.
+&nbsp;&nbsp;&nbsp; `labels:`                                |   Optional   | List of label names that define the playback sequence.
+
+**Example:**
+
+```yml
+sdsio:
+  interface:
+    usb:
+  workdir: ./algorithm/SDS Recordings
+  metadir: ./algorithm/SDS Recordings
+
+  play:             # Playback script
+    - step: "Playback: ML_In.0"
+      labels: [ 0 ]
+    - step: "Playback: ML_In.rock.1.sds + ML_In.rock.2.sds + ML_In.rock.3.sds"
+      setflags: 0x02
+      clearflags: 0x01
+      labels: 
+        - rock.1
+        - rock.2
+        - rock.3
+```
+
+### `flag-info:`
+
+The `flag-info:` node provides human readable labels for the user flags 0..7.
+This information is currently not used by SDSIO-Server; it is intended for UI tooling.
+
+`flag-info:`                                                |              | Content
+:-----------------------------------------------------------|:-------------|:------------------------------------
+`- <flag-bit>:`                                             | **Required** | Maps the user flag bit position `0..23` to a human readable label.
+
+**Example:**
+
+```yml
+sdsio:
+  flag-info:
+    - 0: Skip Algorithm A
+    - 1: Inject fault condition
+    - 7: Reserved
+```
 
 ## SDSIO-Server
 
 The Python utility [**SDSIO-Server**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) enables recording and playback of SDS data files via USB, socket (TCP/IP) or serial (UART) connection.
-It communicates with the target using these [SDSIO-Client interfaces](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client):
+It communicates with the target using a [SDSIO-Client interface](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client). Refer to the following sections for using the different client interfaces:
 
-- [usb](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_usb_mdk.c) for communication via USB using MDK-Middleware.
-- [socket](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_socket.c) for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.
-- [serial](https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_serial.c) for serial communication via CMSIS-Driver USART.
+- [USB](sdsio.md#using-usb-interface) for communication via USB using MDK-Middleware.
+- [RTT](sdsio.md#using-rtt-interface) for communication via the RTT interface of a debug adapter (J-Link or pyOCD).
+- [Network](sdsio.md#using-network-interface) for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.
 
-The SDS data stream is recorded to and played back from `*.sds` files with the following naming convention:
+SDS data streams are stored in `*.sds` files with the following naming convention:
 
-`<name>.<label>[.p].sds`  (where `[.p]` is optional and present only for files recorded during the playback)
+`<stream-name>.<label>[.p].sds`  (`[.p]` is added when the SDS data stream is recorded during the playback)
 
-For more details see [Filenames section](theory.md#filenames)
+For more details, see the [Filenames section](theory.md#filenames).
 
 The contents of `<name>.<label>[.p].sds` files are described by the metadata file `<name>.sds.yml` in [YAML format](https://github.com/ARM-software/SDS-Framework/tree/main/schema).
 
@@ -84,157 +248,52 @@ configuration:
   --control, -c <*.sdsio.yml>  Configure interface, SDS file directories, and playback steps
 
 general-opts:
-  --playback, -p                   Start SDSIO-Server in playback mode (typically used in CI tests)
-  --workdir <path>                 Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
-  --mon-port, -m <port>            Monitor control interface port
-  --log, -l <file>                 Redirect console output to a log file (typically for CI use)
-  --write-flush-records <records>  Force recorded SDS data to disk after this many records (0 = after every record; default: disabled)
-  --verbose, -v                    Enable debug messages
-  --high-priority                  Increase process priority when using USB interface (requires elevated privileges)
+  --playback, -p               Start SDSIO-Server in playback mode (typically used in CI tests)
+  --workdir <path>             Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
+  --mon-port, -m <port>        Monitor control interface port
+  --log, -l <file>             Redirect console output to a log file (typically for CI use)
+  --write-flush-size <bytes>   Force recorded SDS data to disk after this many bytes (0 disables explicit sync)
+  --verbose, -v                Enable debug messages
+  --high-priority              Increase process priority when using USB interface (requires elevated privileges)
 ```
 
-**Keyboard input (in the server application window):**
+**Console input for SDSIO-Server:**
+
+The SDSIO-Server accepts directly on the console the following keyboard entries:
 
 Key | Action
 :--:|:------------------
 R/r | Start recording
 P/p | Start playback
-S/s | Stop  recording/playback
+S/s | Stop recording/playback
 T/t | Reset target
 A-H | Set user flags 0-7
 a-h | Clear user flags 0-7
 X/x | Terminate server
 
-### SDSIO Control File: `*.sdsio.yml`
+#### SDSIO Control File
 
-The SDSIO data file I/O can be configured using a YAML control file with the root node `sdsio:`.
+It is recommended to use a [SDSIO control file (`*.sdsio.yml`)](#sdsio-control-file-sdsioyml) that configures project parameters such as interface, workdir and steps for playback mode. With command line options the parameters of the `*.sdsio.yml` file can be overwritten.  It is also possible to use additional [general options](#using-general-options).
 
-- For [SDSIO-Server](#sdsio-server), the control file is specified with `--control <*.sdsio.yml>`.
-- For AVH FVP simulation (VSI3), the config file path is defined by the `SDSIO_FVP` environment variable (absolute path to a file or directory); if not set, it is searched in the simulator working directory. See [SDSIO Interface](sdsio.md#layer-sdsio_fvp).
+Start SDSIO-Server using a control file:
 
-#### `sdsio:`
-
-`sdsio:`                                                    |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; [`interface:`](#interface)               |   Optional   | SDSIO-Server only: specifies the interface used to connect to the target firmware (default: `usb`).
-&nbsp;&nbsp;&nbsp; `workdir:`                               |   Optional   | Directory containing `*.sds` files (default: current working directory). Relative paths are interpreted relative to the location of the `*.sdsio.yml` file. In AVH FVP simulations, the `*.sdsio.yml` file must reside in the simulator working directory.
-&nbsp;&nbsp;&nbsp; `write-flush-records:`                   |   Optional   | Force recorded SDS data to disk after this many records (`0` = after every record; default: disabled). The SDSIO-Server `--write-flush-records` command-line option overrides this setting.
-&nbsp;&nbsp;&nbsp; `metadir:`                               |   Optional   | Directory for metadata files (default: `workdir`). This key is used by the [SDS extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds).
-&nbsp;&nbsp;&nbsp; [`streams:`](#streams)                   |   Optional   | Data stream information used by the [SDS extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds).
-&nbsp;&nbsp;&nbsp; [`play:`](#play)                         |   Optional   | Playback step list that defines how `*.sds` files are played back (used in playback mode).
-&nbsp;&nbsp;&nbsp; [`flag-info:`](#flag-info)               |   Optional   | Human readable labels for user flags. This key is currently not used by SDSIO-Server or the VSI3 simulation interface.
-
-#### `interface:`
-
-!!! Note
-    - The `interface:` settings are used by SDSIO-Server. The AVH FVP VSI3 simulation interface ignores `interface:`.
-
-`interface:`                                                |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; [`usb:`](#usb)                           |   Optional   | Configure USB bulk interface.
-&nbsp;&nbsp;&nbsp; [`serial:`](#serial)                     |   Optional   | Configure serial (UART) interface.
-&nbsp;&nbsp;&nbsp; [`socket:`](#socket)                     |   Optional   | Configure TCP socket interface.
-
-##### `usb:`
-
-`usb:`                                                      |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `high_priority:`                         |   Optional   | SDSIO-Server only: increase process priority (default: `false`).
-
-##### `serial:`
-
-`serial:`                                                   |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `port:`                                  | **Required** | Port name (examples: `COM3`, `ttyS0`, `ttyUSB1`, ...).
-&nbsp;&nbsp;&nbsp; `baudrate:`                              |   Optional   | Baudrate (default: `115200`).
-&nbsp;&nbsp;&nbsp; `parity:`                                |   Optional   | Parity bit: `none`, `even`, `odd`, `mark`, `space` (default: `none`).
-&nbsp;&nbsp;&nbsp; `stopbits:`                              |   Optional   | Stop bits: `1`, `1.5`, `2` (default: `1`).
-
-##### `socket:`
-
-`socket:`                                                   |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `ipaddr:`                                |   Optional   | IPv4 address to bind to in listen mode, or host address to connect to in connect mode (example: `192.168.0.100`); mandatory with `connect`; cannot be used with `netif`.
-&nbsp;&nbsp;&nbsp; `netif:`                                 |   Optional   | Network interface name (example: `eth0`); cannot be used with `ipaddr`.
-&nbsp;&nbsp;&nbsp; `port:`                                  |   Optional   | TCP port number (default: `5050`).
-&nbsp;&nbsp;&nbsp; `connect:`                               |   Optional   | When present, connect to `ipaddr` instead of listening; optional value is a message sent to the host when the connection is established (default: none).
-&nbsp;&nbsp;&nbsp; `connect-time:`                          |   Optional   | Milliseconds to discard incoming data after the connection is established (default: `50`).
-
-!!! Note
-    - The `ipaddr:` and `netif:` options are mutually exclusive.
-    - `connect:` requires `ipaddr:` and cannot be used with `netif:`.
-
-#### `streams:`
-
-The `streams:` node provides additional information about the SDS data streams to the [SDS extension for VS Code](https://marketplace.visualstudio.com/). It provides the context between the data streams and the display format.
-
-`streams:`                                                  |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-`- name:`                                                   | **Required** | Name of the data stream.
-&nbsp;&nbsp;&nbsp; `view:`                                  |   Optional   | Format of the data stream for the viewer (signal, wav, video, heatmap, csv, csv2)
-
-#### `play:`
-
-The `play:` node specifies one or more playback steps.
-Each playback step defines the list of labels to play back for each opened SDS stream.
-
-For one playback step, all files of the `labels:` list are concatenated and appear as one data stream for the firmware.
-A pause (where the data stream needs to be closed and opened again by the firmware) is created with another `- step:` section.
-
-`play:`                                                     |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-`- step:`                                                   |   Optional   | Descriptive text for the playback step.
-&nbsp;&nbsp;&nbsp; `recdir:`                                |   Optional   | Recording directory for generated `*.p.sds` files during playback; relative paths are relative to `workdir:`.
-&nbsp;&nbsp;&nbsp; `setflags:`                              |   Optional   | Set user flags (bitmask); example: `0x01`.
-&nbsp;&nbsp;&nbsp; `clearflags:`                            |   Optional   | Clear user flags (bitmask); example: `0x01`.
-&nbsp;&nbsp;&nbsp; `labels:`                                |   Optional   | List of label names that define the playback sequence.
-
-#### `flag-info:`
-
-The `flag-info:` node provides human readable labels for the user flags 0..7.
-This information is currently not used by SDSIO-Server; it is intended for UI tooling.
-
-`flag-info:`                                                |              | Content
-:-----------------------------------------------------------|:-------------|:------------------------------------
-`- <flag-bit>:`                                             | **Required** | Maps the user flag bit position `0..7` to a human readable label.
-
-**Example:**
-
-```yml
-sdsio:
-  flag-info:
-    - 0: Skip Algorithm A
-    - 1: Inject fault condition
-    - 7: Reserved
+```bash
+python sdsio-server.py -c myproject.sdsio.yml
 ```
 
-#### Example
+Start SDSIO-Server in `playback` mode:
 
-```yml
-sdsio:
-  interface:
-    socket:
-      port: 5050
-
-  workdir: ./SDS Recordings
-  write-flush-records: 100
-  metadir: ./SDS Recordings
-
-  play:
-    - step: "Step 1"
-      labels: [ case1, case2, case3 ]
-
-    - step: "Step 2"
-      recdir: test1
-      setflags: 0x01
-      clearflags: 0x02
-      labels:
-        - case1
-        - case4
-        - case3
+```bash
+python sdsio-server.py -c sdsio.yml --playback
 ```
 
-#### USB Mode
+Start SDSIO-Server in `playback` mode and overwrite the `workdir:` node.
+
+```bash
+python sdsio-server.py -c myproject.sdsio.yml --workdir ./mytest2
+```
+
+#### USB Mode (command line)
 
 ```txt
 usage: sdsio-server.py usb [-h] [general-opts]
@@ -249,16 +308,12 @@ options:
 python sdsio-server.py usb --workdir ./work_dir
 ```
 
-#### Socket Mode
+#### Socket Mode (command line)
 
 The socket server can operate in two modes:
 
-- **Listen mode** (default): SDSIO-Server binds to a local IP address and waits for the target device to connect.
-- **Connect mode** (`--connect`): SDSIO-Server actively connects to the specified IP address.
-
-Connect mode is typically used with the [SDSIO-RTT layer](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/rtt),
-where the debug probe software (e.g., J-Link or pyOCD) exposes RTT data over a local TCP socket and
-SDSIO-Server connects to it directly — no network configuration on the target is required.
+- **Listen mode** (default): SDSIO-Server binds to a local IP address and waits for the target device to connect. The listen mode is used with the [Layer: SDSIO-Network](sdsio.md#layer-sdsio_network). This mode requires network configuration.
+- **Connect mode** (`--connect`): SDSIO-Server actively connects to the specified IP address. The connect mode is used with the [Layer: SDSIO-RTT](sdsio.md#layer-sdsio_rtt), where the debug adapter (J-Link or pyOCD) exposes RTT data over a local TCP socket. No network configuration is required.
 
 ```txt
 usage: sdsio-server.py socket [-h] [-V] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [--connect [<message>]] [--connect-time <ms>] [general-opts]
@@ -284,38 +339,33 @@ if-opts (optional):
     - SDSIO-Server only supports IPv4 addresses.
     - `--connect` requires `--ipaddr` and cannot be combined with `--netif`.
 
-!!! Note
-    - The target device and the host computer must be connected to the same network. With a standard network installation, the DHCP server assigns IP addresses automatically.
-    - On **Windows**, a firewall may restrict socket connections. To allow the SDSIO-Server through the Windows Defender Firewall:
-        - Open **Windows Security - Firewall & network protection - Allow an app through firewall**.
-        - Click **Change settings**, then allow your Python runtime (`python.exe`) on the network profile you use (usually Private).
-        - On a managed corporate PC, Group Policy or endpoint security may still block connections. Your IT administrator may need to whitelist the IP address and port.
+**Examples:**
 
-**Example (listen mode, Windows, default computer IP):**
+Start in listen mode with default IP address of the host computer:
 
 ```bash
 python sdsio-server.py socket --workdir ./work_dir
 ```
 
-**Example (listen mode, Linux, specific interface):**
+Start in listen mode with a specific interface (for Linux or macOS):
 
 ```bash
 python sdsio-server.py socket --netif eth0 --workdir ./work_dir
 ```
 
-**Example (connect mode):**
+Start in `connect` mode using local host (default setting) and message for SEGGER J-Link:
+
+```bash
+python sdsio-server.py socket --port 19021 --connect "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
+```
+
+Start in `connect` mode with a connection to a specific IP address and IP port.
 
 ```bash
 python sdsio-server.py socket --ipaddr 192.168.0.1 --port 5050 --connect
 ```
 
-**Example (connect mode with a message):**
-
-```bash
-python sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 --connect "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
-```
-
-#### Serial Mode
+#### Serial Mode (command line)
 
 ```txt
 usage: sdsio-server.py serial [-h] --port <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>] [general-opts]
@@ -339,19 +389,7 @@ if-opts (optional):
 python sdsio-server.py serial --port COM0 --baudrate 115200 --workdir ./work_dir
 ```
 
-#### Examples of using general options
-
-Start SDSIO-Server with all configuration provided via the `sdsio.yml` file:
-
-```bash
-python sdsio-server.py -c sdsio.yml
-```
-
-Start SDSIO-Server and automatically start `playback`:
-
-```bash
-python sdsio-server.py -c sdsio.yml --playback
-```
+#### Using general options
 
 Start SDSIO-Server with monitor server waiting on the port `6060`:
 
@@ -359,7 +397,7 @@ Start SDSIO-Server with monitor server waiting on the port `6060`:
 python sdsio-server.py -c sdsio.yml --mon-port 6060
 ```
 
-Start SDSIO-Server using user specified working directory:
+Start SDSIO-Server using a user-specified working directory:
 
 ```bash
 python sdsio-server.py usb --workdir ./data
@@ -393,13 +431,13 @@ The Python utility [**SDS-View**](https://github.com/ARM-software/SDS-Framework/
 from data recorded in SDS files (`<name>.<label>.sds`) using the metadata provided in `<name>.sds.yml`.
 
 The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description.
-All plots form a single recording will be displayed on the same figure (shared vertical scale).
+All plots from a single recording are displayed on the same figure (shared vertical scale).
 
 If there are 3 values described in the metadata file, an optional 3D view may be displayed.
 
 ### Limitations
 
-- Data in recording must all be of the same type (float, uint32_t, uint16_t, ...)
+- All data in a recording must be of the same type (float, uint32_t, uint16_t, ...)
 
 ### Usage
 
@@ -443,7 +481,7 @@ selected output format based on the descriptions provided in the metadata (YAML)
 ### Usage
 
 - [Setup](#setup) the Python environment.
-- Depending on the required format use the tool as shown below.
+- Depending on the required format, use the tool as shown below.
 
 #### Audio WAV
 
@@ -471,7 +509,7 @@ required:
 ```
 
 !!! Note
-    - The tool expects the SDS file to contain strictly audio data - no header markers or custom formatting.
+    - The tool expects the SDS file to contain strictly audio data; no header markers or custom formatting.
 
 **Example of metadata yml file for mono microphone:**
 
@@ -589,7 +627,7 @@ Users may specify a time range selection of the input data to be processed using
 
 By default, the output file will have raw timeslots in integer format, in milliseconds.
 The default output timeslot interval is set to `50 ms`.
-To override this setting use the `--interval <ms>` parameter, where `<ms>` is the desired interval in milliseconds.
+To override this setting, use the `--interval <ms>` parameter, where `<ms>` is the desired interval in milliseconds.
 
 An optional label can be added to the output by providing a string argument to the `--label <text>` parameter.
 This `<text>` will populate the label column in the output file.
@@ -667,8 +705,8 @@ python sds-convert.py qeexo_v2_csv -i Accelerometer.csv -o Accelerometer.sds
 
 #### Video
 
-The `video` mode converts SDS file (`.sds`) containing video frames into a standard MP4 (H.264) file (`.mp4`).
-Video frame format shall be specified in the YAML metadata file (`.yml`), where pixel format,
+The `video` mode converts an SDS file (`.sds`) containing video frames into a standard MP4 (H.264) file (`.mp4`).
+Video frame format must be specified in the YAML metadata file (`.yml`), where pixel format,
 resolution and frame stride shall be properly specified.
 
 ```txt
@@ -689,7 +727,7 @@ required:
 ```
 
 !!! Note
-    - The tool expects the SDS file to contain strictly video frames - no header markers or custom formatting.
+    - The tool expects the SDS file to contain strictly video frames; no header markers or custom formatting.
 
 **Example of metadata yml file for RGB888 video stream:**
 
