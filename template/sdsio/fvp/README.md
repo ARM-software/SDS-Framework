@@ -18,17 +18,26 @@ The following SDS software components are required:
 
 ## FVP Configuration
 
-The Arm Virtual Hardware is configured with the [fvp_config.txt](https://github.com/ARM-software/SDS-Framework/blob/main/template/Board/Corstone-300/fvp_config.txt). You can leave the configuration settings at their default values, a change is not necessary.
+The Arm Virtual Hardware is configured for **Corstone-300** with the [fvp_config.txt](https://github.com/ARM-software/SDS-Framework/blob/main/template/Board/Corstone-300/fvp_config.txt) and for **Corstone-320** with the with the [fvp_config.txt](https://github.com/ARM-software/SDS-Framework/blob/main/template/Board/Corstone-320/fvp_config.txt).
+You can leave the configuration settings at their default values, a change is not necessary.
 
 An important configuration setting is the path to the Python simulation scripts. The path refers to the solution folder:
 
-```txt
-mps3_board.v_path=Board/Corstone-300/vsi/python/
-```
+- For **Corstone-300 with Ethos-U55**:
+
+  ```txt
+  mps3_board.v_path=./Board/Corstone-300/vsi/python/
+  ```
+
+- For **Corstone-320 with Ethos-U85**:
+
+  ```
+  mps4_board.v_path=./Board/Corstone-320/vsi/python/
+  ```
 
 ## Project Configuration
 
-During the simulation, the SDS files are saved on or read from the Host computer. The following steps are required to configure the project for execution on the AVH-FVP simulator:
+During the simulation, the SDS files are saved on or read from the host computer. The following steps are required to configure the project for execution on the AVH-FVP simulator:
 
 - create a [New Solution](https://arm-software.github.io/SDS-Framework/main/template.html#create-new-solution) named `SDS` in an empty folder with VS Code IDE.
-- select the active target `AVH-SSE-300` build and run the application.
+- select the active target `SSE-300-U55` or `SSE-320-U85`, build and run the application.
