@@ -65,10 +65,6 @@
       <description>SDSIO via File System (MDK FS)</description>
       <require Cvendor="Keil" Cclass="File System" Cgroup="Drive"/>
     </condition>
-    <condition id="SDSIO via File System - Semihosting">
-      <description>SDSIO via File System (Semihosting)</description>
-      <require Cclass="CMSIS-View" Cgroup="Event Recorder" Cvariant="Semihosting"/>
-    </condition>
     <condition id="SDS with CMSIS-RTOS2">
       <description>SDS with CMSIS-RTOS2</description>
       <require Cclass="CMSIS" Cgroup="RTOS2"/>
@@ -216,7 +212,7 @@
     </component>
 
     <!-- SDSIO via File System (Semihosting) -->
-    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="3.0.0" Cversion="3.0.0" condition="SDSIO via File System - Semihosting">
+    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="3.0.0" Cversion="3.0.0">
       <description>SDSIO via File System (using Semihosting)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* SDSIO */
