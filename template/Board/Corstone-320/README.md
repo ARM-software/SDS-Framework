@@ -32,6 +32,11 @@ This layer works for:
 VIO driver interfaces with the `arm_vio.py` Python stub implementation which
 stores and loads signal values.
 
+### VSI3 Interface
+
+The board layer includes in the `arm_vsi3.py` interface that implements a playback 
+interface for SDS data files using a [Virtual Streaming Interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html). Refer to [Using FVP Simulation Models](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_fvp) for more information.
+
 ### FVP Configuration File
 
 | File               | Description

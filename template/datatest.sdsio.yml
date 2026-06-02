@@ -7,7 +7,7 @@ sdsio:
 #   socket:        
 
 # Uncomment to use RTT interface
-#   socket:             # configure for RTT interface
+#   socket:
 #     connect: "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
 #     port: 19021
 
