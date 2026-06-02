@@ -308,7 +308,7 @@ general-opts:
 <p>The SDSIO data file I/O can be configured using a YAML control file with the root node <code>sdsio:</code>.</p>
 <ul>
 <li>For <a href="#sdsio-server">SDSIO-Server</a>, the control file is specified with <code>--control &lt;*.sdsio.yml&gt;</code>.</li>
-<li>For AVH FVP simulation (VSI3), the simulator reads <code>sdsio.yml</code> (or <code>*.sdsio.yml</code>) from the simulator working directory. See <a href="sdsio.html#layer-sdsio_fvp">SDSIO Interface</a>.</li>
+<li>For AVH FVP simulation (VSI3), the config file path is defined by the <code>SDSIO_FVP</code> environment variable (absolute path to a file or directory); if not set, it is searched in the simulator working directory. See <a href="sdsio.html#layer-sdsio_fvp">SDSIO Interface</a>.</li>
 </ul>
 <h4 id="sdsio"><code>sdsio:</code></h4>
 <table>
@@ -447,7 +447,7 @@ general-opts:
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ipaddr:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">IPv4 address to bind to in listen mode, or host address to connect to in connect mode (example: <code>192.168.0.100</code>); mandatory with <code>connect_mode</code>; cannot be used with <code>netif</code>.</td>
+<td style="text-align: left;">IPv4 address to bind to in listen mode, or host address to connect to in connect mode (example: <code>192.168.0.100</code>); mandatory with <code>connect</code>; cannot be used with <code>netif</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>netif:</code></td>
@@ -460,19 +460,14 @@ general-opts:
 <td style="text-align: left;">TCP port number (default: <code>5050</code>).</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>connect_mode:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>connect:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">When <code>true</code>, connect to <code>ipaddr</code> instead of listening for connections (default: <code>false</code>).</td>
+<td style="text-align: left;">When present, connect to <code>ipaddr</code> instead of listening; optional value is a message sent to the host when the connection is established (default: none).</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>connect_message:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>connect-time:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Message sent to the host when the connect-mode connection is established (default: none).</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>connect_time:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Milliseconds to discard incoming data after sending <code>connect_message</code> (default: <code>50</code>).</td>
+<td style="text-align: left;">Milliseconds to discard incoming data after the connection is established (default: <code>50</code>).</td>
 </tr>
 </tbody>
 </table>
@@ -480,7 +475,7 @@ general-opts:
 <p class="admonition-title">Note</p>
 <ul>
 <li>The <code>ipaddr:</code> and <code>netif:</code> options are mutually exclusive.</li>
-<li><code>connect_mode: true</code> requires <code>ipaddr:</code> and cannot be used with <code>netif:</code>.</li>
+<li><code>connect:</code> requires <code>ipaddr:</code> and cannot be used with <code>netif:</code>.</li>
 </ul>
 </div>
 <h4 id="streams"><code>streams:</code></h4>
@@ -608,34 +603,34 @@ options:
 <p>The socket server can operate in two modes:</p>
 <ul>
 <li><strong>Listen mode</strong> (default): SDSIO-Server binds to a local IP address and waits for the target device to connect.</li>
-<li><strong>Connect mode</strong> (<code>--connect-mode</code>): SDSIO-Server actively connects to the specified IP address.</li>
+<li><strong>Connect mode</strong> (<code>--connect</code>): SDSIO-Server actively connects to the specified IP address.</li>
 </ul>
 <p>Connect mode is typically used with the <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/rtt">SDSIO-RTT layer</a>,
 where the debug probe software (e.g., J-Link or pyOCD) exposes RTT data over a local TCP socket and
 SDSIO-Server connects to it directly — no network configuration on the target is required.</p>
-<pre><code class="language-txt">usage: sdsio-server.py socket [-h] [-V] [--ipaddr &lt;IP&gt; | --netif &lt;Interface&gt;] [--port &lt;TCP Port&gt;] [--connect-mode] [--connect-message &lt;message&gt;] [--connect-time &lt;ms&gt;] [general-opts]
+<pre><code class="language-txt">usage: sdsio-server.py socket [-h] [-V] [--ipaddr &lt;IP&gt; | --netif &lt;Interface&gt;] [--port &lt;TCP Port&gt;] [--connect [&lt;message&gt;]] [--connect-time &lt;ms&gt;] [general-opts]
 
 options:
   -h, --help                        Show this help message and exit
 
 if-opts (optional):
   --ipaddr &lt;IP&gt;                     Server IP address in listen mode, or host IP address in connect mode
-                                    (example: 192.168.0.100); mandatory with --connect-mode;
+                                    (example: 192.168.0.100); mandatory with --connect;
                                     cannot be combined with 'netif'
   --netif &lt;Interface&gt;               Network interface (example: eth0), cannot be combined with 'ipaddr'
   --port &lt;TCP Port&gt;                 TCP port number (default: 5050)
-  --connect-mode                    Connect to the configured IP address instead of listening for
-                                    incoming socket connections
-  --connect-message &lt;message&gt;       Optional message sent to the host when the connection is established
-  --connect-time &lt;ms&gt;               Duration in milliseconds to discard incoming data after sending connect-message
-                                    (default: 50)
+  --connect [&lt;message&gt;]             Connect to the configured IP address instead of listening for
+                                    incoming socket connections; optional message sent to the host
+                                    when the connection is established
+  --connect-time &lt;ms&gt;               Duration in milliseconds to discard incoming data after the connection
+                                    is established (default: 50)
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
 <li>The <code>--ipaddr</code> and <code>--netif</code> options are mutually exclusive.</li>
 <li>SDSIO-Server only supports IPv4 addresses.</li>
-<li><code>--connect-mode</code> requires <code>--ipaddr</code> and cannot be combined with <code>--netif</code>.</li>
+<li><code>--connect</code> requires <code>--ipaddr</code> and cannot be combined with <code>--netif</code>.</li>
 </ul>
 </div>
 <div class="admonition note">
@@ -657,10 +652,10 @@ if-opts (optional):
 <pre><code class="language-bash">python sdsio-server.py socket --netif eth0 --workdir ./work_dir
 </code></pre>
 <p><strong>Example (connect mode):</strong></p>
-<pre><code class="language-bash">python sdsio-server.py socket --ipaddr 192.168.0.1 --port 5050 --connect-mode
+<pre><code class="language-bash">python sdsio-server.py socket --ipaddr 192.168.0.1 --port 5050 --connect
 </code></pre>
 <p><strong>Example (connect mode with a message):</strong></p>
-<pre><code class="language-bash">python sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 --connect-mode --connect-message &quot;$$SEGGER_TELNET_ConfigStr=RTTCh;1$$&quot;
+<pre><code class="language-bash">python sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 --connect &quot;$$SEGGER_TELNET_ConfigStr=RTTCh;1$$&quot;
 </code></pre>
 <h4 id="serial-mode">Serial Mode</h4>
 <pre><code class="language-txt">usage: sdsio-server.py serial [-h] --port &lt;Serial Port&gt; [--baudrate &lt;Baudrate&gt;] [--parity &lt;Parity&gt;] [--stopbits &lt;Stop bits&gt;] [--connect-timeout &lt;Timeout&gt;] [general-opts]

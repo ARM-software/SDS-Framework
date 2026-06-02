@@ -163,13 +163,14 @@ Waiting for SDSIO Client USB device...
 <h2 id="layer-sdsio_fvp">Layer: sdsio_fvp</h2>
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp"><code>template/sdsio/fvp/sdsio_fvp.clayer.yml</code></a> targets AVH FVP simulation and is configured for playback from the host computer. It uses the <a href="https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html">SDSIO VSI interface</a> implemented by the file <code>vsi/python/arm_vsi3.py</code>, which is loaded by the FVP simulation model. Since the SDSIO-Server functionality is implemented in <code>arm_vsi3.py</code>, no separate SDSIO-Server is required.</p>
 <h3 id="configuration-file-sdsioyml">Configuration File: sdsio.yml</h3>
-<p>The SDSIO VSI interface can be configured using a <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a> located in the simulator working directory.</p>
-<p>The VSI3 Python script (<code>arm_vsi3.py</code>) searches for a control file using the following order (first match wins):</p>
+<p>The SDSIO VSI interface can be configured using a <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a>.</p>
+<p>The VSI3 Python script (<code>arm_vsi3.py</code>) locates the control file as follows:</p>
 <ul>
-<li><code>sdsio.yml</code></li>
-<li><code>sdsio.yaml</code></li>
-<li>the first file (alphabetical order) matching <code>*.sdsio.yml</code></li>
-<li>the first file (alphabetical order) matching <code>*.sdsio.yaml</code></li>
+<li>If the environment variable <code>SDSIO_FVP</code> is set, it must be an <strong>absolute path</strong> to either a config file or a directory:</li>
+<li><strong>File</strong> — used directly as the config file.</li>
+<li><strong>Directory</strong> — searched for a config file in this order: <code>sdsio.yml</code>, <code>sdsio.yaml</code>, first <code>*.sdsio.yml</code> (alphabetical), first <code>*.sdsio.yaml</code> (alphabetical).</li>
+<li>If the path does not exist or is not absolute, the search falls back to the working directory.</li>
+<li>If <code>SDSIO_FVP</code> is not set (or falls back), the <strong>simulator working directory</strong> is searched using the same file order: <code>sdsio.yml</code>, <code>sdsio.yaml</code>, first <code>*.sdsio.yml</code> (alphabetical), first <code>*.sdsio.yaml</code> (alphabetical).</li>
 </ul>
 <p>If a control file is found, the script reads the <code>sdsio:</code> root node. If <code>workdir:</code> is a relative path, it is interpreted relative to the simulator working directory.</p>
 <h3 id="log-file-sdsiolog">Log File: sdsio.log</h3>
