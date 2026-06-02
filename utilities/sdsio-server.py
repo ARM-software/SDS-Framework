@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.29"
+SDSIO_SERVER_VERSION = "0.9.30"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -1630,7 +1630,7 @@ def sdsio_server_serial_run_supervised(port, baudrate, parity, stop_bits, connec
 #                       Async USB-Bulk Server (usb1)                           #
 # ---------------------------------------------------------------------------- #
 class sdsio_server_usb:
-    _PRODUCT_STR = "SDSIO-Client"
+    _PRODUCT_STR = ("SDSIO-Client", "SDSIO Client")
     _XFER_NUM    = 32
     _XFER_SIZE   = 8 * 1024  # 8 KiB per transfer
 
@@ -1678,7 +1678,7 @@ class sdsio_server_usb:
             while _usb_dev is None:
                 for _dev in self._ctx.getDeviceList(skip_on_error=True):
                     try:
-                        if _dev.getProduct() == self._PRODUCT_STR:
+                        if _dev.getProduct() in self._PRODUCT_STR:
                             _usb_dev = _dev
                             break
                     except usb1.USBError:
