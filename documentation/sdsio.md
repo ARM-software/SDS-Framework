@@ -23,7 +23,9 @@ To simplify usage further, pre-configured SDS interface layers in *csolution pro
 
 ## Layer: sdsio_network
 
-The [`layer/sdsio/network/sdsio_network.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/network) is configured for recording and playback via the Ethernet interface. It uses the  [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) Network component.
+The [`layer/sdsio/network/sdsio_network.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/network) is configured for recording and playback via the Ethernet interface. It uses the  [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) Network component. Both the target hardware and the SDSIO-Server are connected to a local LAN.
+
+![SDS-Firmware with Network interface](images/Network-interface.png)
 
 !!! Note
     - The target device and the host computer must be connected to the same network. With a standard network installation, the DHCP server assigns IP addresses automatically.
@@ -34,10 +36,10 @@ The [`layer/sdsio/network/sdsio_network.clayer.yml`](https://github.com/ARM-soft
 
 ### Using Network Interface
 
-To access [SDS data files](theory.md#sds-data-files), start the [SDSIO-Server](utilities.md#sdsio-server) on the host computer with:
+To access [SDS data files](theory.md#sds-data-files), configure the `*.sdsio.yml` file with the [`interface - socket:`](utilities.md#socket) node and start the [SDSIO-Server](utilities.md#sdsio-server) on the host computer with:
 
 ```bash
->python sdsio-server.py socket
+>python sdsio-server.py -c myproject.sdsio.yml
 Press 'Ctrl+C' or 'X' to exit.
 Socket server listening on 172.20.10.2:5050
 ```
@@ -49,6 +51,8 @@ by editing the `SDSIO_SOCKET_SERVER_IP` macro.
 ## Layer: sdsio_usb
 
 The [`layer/sdsio/usb/sdsio_usb.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/usb) is configured for recording and playback via the USB interface. It uses the [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) USB Device component and connects to a host computer through a USB interface.
+
+![SDS-Firmware with USB interface](images/USB-interface.png)
 
 ### Using USB Interface
 
@@ -64,6 +68,8 @@ Waiting for SDSIO Client USB device...
 ## Layer: sdsio_rtt
 
 The [`layer/sdsio/rtt/sdsio_rtt.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/rtt) is configured for recording and playback using the SEGGER RTT component for I/O via a debug adapter.
+
+![SDS-Firmware with RTT interface](images/RTT-interface.png)
 
 ### Using RTT Interface
 

@@ -79,6 +79,14 @@ The SDSIO control file `*.sdsio.yml` configures:
 :-----------------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `high_priority:`                         |   Optional   | SDSIO-Server only: increase process priority (default: `false`).
 
+**Example:**
+
+```yml
+sdsio:
+  interface:
+    usb:                # configure for USB interface
+```
+
 #### `serial:`
 
 `serial:`                                                   |              | Content
@@ -87,6 +95,15 @@ The SDSIO control file `*.sdsio.yml` configures:
 &nbsp;&nbsp;&nbsp; `baudrate:`                              |   Optional   | Baudrate (default: `115200`).
 &nbsp;&nbsp;&nbsp; `parity:`                                |   Optional   | Parity bit: `none`, `even`, `odd`, `mark`, `space` (default: `none`).
 &nbsp;&nbsp;&nbsp; `stopbits:`                              |   Optional   | Stop bits: `1`, `1.5`, `2` (default: `1`).
+
+**Example:**
+
+```yml
+sdsio:
+  interface:
+    serial:             # configure for Serial interface with baudrate 230400 bps.
+      baudrate: 230400
+```
 
 #### `socket:`
 
@@ -102,13 +119,25 @@ The SDSIO control file `*.sdsio.yml` configures:
     - The `ipaddr:` and `netif:` options are mutually exclusive.
     - `connect:` requires `ipaddr:` and cannot be used with `netif:`.
 
-### Example
+**Example:**
+
+Configure for Network interface.
 
 ```yml
 sdsio:
   interface:
-    socket:
-      port: 5050
+    socket:             # configure for Network interface with default port
+```
+
+Configure for RTT interface via J-Link debug adapter.
+
+```yml
+sdsio:
+  interface:
+    socket:             # configure for RTT interface
+      connect: "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
+      port: 19021
+      ipaddr: 127.0.0.1
 ```
 
 ### `streams:`
