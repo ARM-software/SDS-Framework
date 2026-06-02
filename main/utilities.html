@@ -68,31 +68,41 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#sdsio-control-file-sdsioyml">SDSIO Control File: *.sdsio.yml</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#sdsio">sdsio:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#interface">interface:</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#usb">usb:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#serial">serial:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#socket">socket:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#streams">streams:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#play">play:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#flag-info">flag-info:</a>
+    </li>
+        </ul>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#sdsio-server">SDSIO-Server</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#sdsio-control-file-sdsioyml">SDSIO Control File: *.sdsio.yml</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#sdsio">sdsio:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#sdsio-control-file">SDSIO Control File</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#interface">interface:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#usb-mode-command-line">USB Mode (command line)</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#streams">streams:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#socket-mode-command-line">Socket Mode (command line)</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#play">play:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#serial-mode-command-line">Serial Mode (command line)</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#flag-info">flag-info:</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#example">Example</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#usb-mode">USB Mode</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#socket-mode">Socket Mode</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#serial-mode">Serial Mode</a>
-    </li>
-    <li class="toctree-l4"><a class="reference internal" href="#examples-of-using-general-options">Examples of using general options</a>
+    <li class="toctree-l4"><a class="reference internal" href="#using-general-options">Using general options</a>
     </li>
         </ul>
     </li>
@@ -181,12 +191,13 @@
 <!-- markdownlint-disable MD024 -->
 
 <p>The SDS-Framework pack includes in the folder <code>/utilities</code> several utilities that are implemented in Python.
-Install <strong>Python</strong> and packages listed in file <code>/utilities/requirements.txt</code> to run these utilities:</p>
+Install <strong>Python</strong> and the packages listed in the file <code>/utilities/requirements.txt</code> to run these utilities:</p>
 <ul>
+<li><a href="#sdsio-control-file-sdsioyml"><strong>SDSIO Control File <code>*.sdsio.yml</code>:</strong></a> configures the SDSIO-Server or the FVP VSI3 simulation interface.</li>
 <li><a href="#sdsio-server"><strong>SDSIO-Server:</strong></a> enables recording and playback of SDS data files via USB, socket (TCP/IP) or serial (UART) connection.</li>
 <li><a href="#sds-view"><strong>SDS-View:</strong></a> graphical data viewer for SDS data files.</li>
-<li><a href="#sds-convert"><strong>SDS-Convert:</strong></a> convert SDS data files into CSV, Qeexo V2 CSV, or WAV format.</li>
-<li><a href="#sds-check"><strong>SDS-Check:</strong></a> check SDS data files for correctness and consistency.</li>
+<li><a href="#sds-convert"><strong>SDS-Convert:</strong></a> converts SDS data files into CSV, Qeexo V2 CSV, or WAV format.</li>
+<li><a href="#sds-check"><strong>SDS-Check:</strong></a> checks SDS data files for correctness and consistency.</li>
 </ul>
 <h2 id="setup">Setup</h2>
 <p>Perform the following steps to setup the Python environment for using the SDS utilities.</p>
@@ -196,7 +207,7 @@ Install <strong>Python</strong> and packages listed in file <code>/utilities/req
 <pre><code class="language-bash">&gt;python --version
 </code></pre>
 <ul>
-<li>Navigate in the folder <code>SDS/&lt;version&gt;/utilities</code> and install the required Python packages with <code>pip</code>:</li>
+<li>Navigate to the folder <code>SDS/&lt;version&gt;/utilities</code> and install the required Python packages with <code>pip</code>:</li>
 </ul>
 <pre><code class="language-bash">&gt;cd %CMSIS_PACK_ROOT%/ARM/SDS/3.0.0/utilities
 &gt;pip install -r requirements.txt
@@ -212,105 +223,22 @@ Install <strong>Python</strong> and packages listed in file <code>/utilities/req
 </div>
 <h3 id="windows">Windows</h3>
 <ul>
-<li>On Windows, ensure that the  environment variable <strong>PATHEXT</strong> contains the extension <code>.PY</code>.</li>
+<li>On Windows, ensure that the environment variable <strong>PATHEXT</strong> contains the extension <code>.PY</code>.</li>
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <ul>
-<li>When the <strong>Path</strong> environment variable is configured, you may simply start the utilities by using its name. For example entering <code>&gt;sdsio-server</code> starts the utility.</li>
+<li>When the <strong>Path</strong> environment variable is configured, you may simply start the utilities by using its name. For example, entering <code>&gt;sdsio-server</code> starts the utility.</li>
 </ul>
 </div>
-<h2 id="sdsio-server">SDSIO-Server</h2>
-<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDSIO-Server</strong></a> enables recording and playback of SDS data files via USB, socket (TCP/IP) or serial (UART) connection.
-It communicates with the target using these <a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client">SDSIO-Client interfaces</a>:</p>
+<h2 id="sdsio-control-file-sdsioyml">SDSIO Control File: <code>*.sdsio.yml</code></h2>
+<p>The SDSIO control file <code>*.sdsio.yml</code> configures:</p>
 <ul>
-<li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_usb_mdk.c">usb</a> for communication via USB using MDK-Middleware.</li>
-<li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_socket.c">socket</a> for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.</li>
-<li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client/sdsio_client_serial.c">serial</a> for serial communication via CMSIS-Driver USART.</li>
+<li>For the <a href="#sdsio-server">SDSIO-Server</a>, the interface, workdir and steps for playback mode.</li>
+<li>For the <a href="sdsio.html#layer-sdsio_fvp">FVP simulation models (VSI3)</a>, the interface, workdir, and steps for playback.</li>
+<li>For the <a href="https://marketplace.visualstudio.com/">SDS extension for VS Code</a>, it configures the SDSIO-Server and the user interface.</li>
 </ul>
-<p>The SDS data stream is recorded to and played back from <code>*.sds</code> files with the following naming convention:</p>
-<p><code>&lt;name&gt;.&lt;label&gt;[.p].sds</code>  (where <code>[.p]</code> is optional and present only for files recorded during the playback)</p>
-<p>For more details see <a href="theory.html#filenames">Filenames section</a></p>
-<p>The contents of <code>&lt;name&gt;.&lt;label&gt;[.p].sds</code> files are described by the metadata file <code>&lt;name&gt;.sds.yml</code> in <a href="https://github.com/ARM-software/SDS-Framework/tree/main/schema">YAML format</a>.</p>
-<h3 id="usage">Usage</h3>
-<ul>
-<li><a href="#setup">Setup</a> the Python environment.</li>
-<li>Configure via a YAML control file (<code>-c *.sdsio.yml</code>) or specify the interface directly on the command line.</li>
-<li>Terminate the server by pressing <code>Ctrl+C</code> or the <code>X</code> key in the server application window.</li>
-</ul>
-<pre><code class="language-txt">usage: sdsio-server.py [-h] [-V] [{socket | serial | usb} [if-opts]] [-c sdsio.yml] [general-opts]
-
-SDSIO-Server: record and playback SDS data stream files over USB, socket, or serial interface.
-Configure via *.sdsio.yml file or specify the interface parameters directly on the command line.
-
-options:
-  --help, -h                   Show this help message and exit
-  --version, -V                Show program's version number and exit
-
-interface (optional, default: usb; overrides interface specified in *.sdsio.yml):
-  {socket | serial | usb}
-    socket                     Run TCP socket server
-    serial                     Run serial server
-    usb                        Run USB bulk server
-
-configuration:
-  --control, -c &lt;*.sdsio.yml&gt;  Configure interface, SDS file directories, and playback steps
-
-general-opts:
-  --playback, -p                   Start SDSIO-Server in playback mode (typically used in CI tests)
-  --workdir &lt;path&gt;                 Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
-  --mon-port, -m &lt;port&gt;            Monitor control interface port
-  --log, -l &lt;file&gt;                 Redirect console output to a log file (typically for CI use)
-  --write-flush-records &lt;records&gt;  Force recorded SDS data to disk after this many records (0 = after every record; default: disabled)
-  --verbose, -v                    Enable debug messages
-  --high-priority                  Increase process priority when using USB interface (requires elevated privileges)
-</code></pre>
-<p><strong>Keyboard input (in the server application window):</strong></p>
-<table>
-<thead>
-<tr>
-<th style="text-align: center;">Key</th>
-<th style="text-align: left;">Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: center;">R/r</td>
-<td style="text-align: left;">Start recording</td>
-</tr>
-<tr>
-<td style="text-align: center;">P/p</td>
-<td style="text-align: left;">Start playback</td>
-</tr>
-<tr>
-<td style="text-align: center;">S/s</td>
-<td style="text-align: left;">Stop  recording/playback</td>
-</tr>
-<tr>
-<td style="text-align: center;">T/t</td>
-<td style="text-align: left;">Reset target</td>
-</tr>
-<tr>
-<td style="text-align: center;">A-H</td>
-<td style="text-align: left;">Set user flags 0-7</td>
-</tr>
-<tr>
-<td style="text-align: center;">a-h</td>
-<td style="text-align: left;">Clear user flags 0-7</td>
-</tr>
-<tr>
-<td style="text-align: center;">X/x</td>
-<td style="text-align: left;">Terminate server</td>
-</tr>
-</tbody>
-</table>
-<h3 id="sdsio-control-file-sdsioyml">SDSIO Control File: <code>*.sdsio.yml</code></h3>
-<p>The SDSIO data file I/O can be configured using a YAML control file with the root node <code>sdsio:</code>.</p>
-<ul>
-<li>For <a href="#sdsio-server">SDSIO-Server</a>, the control file is specified with <code>--control &lt;*.sdsio.yml&gt;</code>.</li>
-<li>For AVH FVP simulation (VSI3), the config file path is defined by the <code>SDSIO_FVP</code> environment variable (absolute path to a file or directory); if not set, it is searched in the simulator working directory. See <a href="sdsio.html#layer-sdsio_fvp">SDSIO Interface</a>.</li>
-</ul>
-<h4 id="sdsio"><code>sdsio:</code></h4>
+<h3 id="sdsio"><code>sdsio:</code></h3>
 <table>
 <thead>
 <tr>
@@ -357,7 +285,7 @@ general-opts:
 </tr>
 </tbody>
 </table>
-<h4 id="interface"><code>interface:</code></h4>
+<h3 id="interface"><code>interface:</code></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
@@ -390,7 +318,7 @@ general-opts:
 </tr>
 </tbody>
 </table>
-<h5 id="usb"><code>usb:</code></h5>
+<h4 id="usb"><code>usb:</code></h4>
 <table>
 <thead>
 <tr>
@@ -407,7 +335,12 @@ general-opts:
 </tr>
 </tbody>
 </table>
-<h5 id="serial"><code>serial:</code></h5>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">sdsio:
+  interface:
+    usb:                # configure for USB interface
+</code></pre>
+<h4 id="serial"><code>serial:</code></h4>
 <table>
 <thead>
 <tr>
@@ -439,7 +372,13 @@ general-opts:
 </tr>
 </tbody>
 </table>
-<h5 id="socket"><code>socket:</code></h5>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">sdsio:
+  interface:
+    serial:             # configure for Serial interface with baudrate 230400 bps.
+      baudrate: 230400
+</code></pre>
+<h4 id="socket"><code>socket:</code></h4>
 <table>
 <thead>
 <tr>
@@ -452,7 +391,7 @@ general-opts:
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ipaddr:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">IPv4 address to bind to in listen mode, or host address to connect to in connect mode (example: <code>192.168.0.100</code>); mandatory with <code>connect</code>; cannot be used with <code>netif</code>.</td>
+<td style="text-align: left;">IPv4 address to bind to in listen mode, or host address when using <code>connect:</code> (example: <code>192.168.0.100</code>); default for <code>connect:</code> is localhost <code>127.0.0.1</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>netif:</code></td>
@@ -481,9 +420,23 @@ general-opts:
 <ul>
 <li>The <code>ipaddr:</code> and <code>netif:</code> options are mutually exclusive.</li>
 <li><code>connect:</code> requires <code>ipaddr:</code> and cannot be used with <code>netif:</code>.</li>
+<li><code>netif:</code> cannot be used in combination with <code>connect:</code>.</li>
 </ul>
 </div>
-<h4 id="streams"><code>streams:</code></h4>
+<p><strong>Example:</strong></p>
+<p>Configure for Network interface.</p>
+<pre><code class="language-yml">sdsio:
+  interface:
+    socket:             # configure for Network interface with default port
+</code></pre>
+<p>Configure for RTT interface via J-Link debug adapter.</p>
+<pre><code class="language-yml">sdsio:
+  interface:
+    socket:             # configure for RTT interface
+      connect: &quot;$$SEGGER_TELNET_ConfigStr=RTTCh;1$$&quot;
+      port: 19021
+</code></pre>
+<h3 id="streams"><code>streams:</code></h3>
 <p>The <code>streams:</code> node provides additional information about the SDS data streams to the <a href="https://marketplace.visualstudio.com/">SDS extension for VS Code</a>. It provides the context between the data streams and the display format.</p>
 <table>
 <thead>
@@ -506,7 +459,7 @@ general-opts:
 </tr>
 </tbody>
 </table>
-<h4 id="play"><code>play:</code></h4>
+<h3 id="play"><code>play:</code></h3>
 <p>The <code>play:</code> node specifies one or more playback steps.
 Each playback step defines the list of labels to play back for each opened SDS stream.</p>
 <p>For one playback step, all files of the <code>labels:</code> list are concatenated and appear as one data stream for the firmware.
@@ -547,7 +500,25 @@ A pause (where the data stream needs to be closed and opened again by the firmwa
 </tr>
 </tbody>
 </table>
-<h4 id="flag-info"><code>flag-info:</code></h4>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">sdsio:
+  interface:
+    usb:
+  workdir: ./algorithm/SDS Recordings
+  metadir: ./algorithm/SDS Recordings
+
+  play:             # Playback script
+    - step: &quot;Playback: ML_In.0&quot;
+      labels: [ 0 ]
+    - step: &quot;Playback: ML_In.rock.1.sds + ML_In.rock.2.sds + ML_In.rock.3.sds&quot;
+      setflags: 0x02
+      clearflags: 0x01
+      labels: 
+        - rock.1
+        - rock.2
+        - rock.3
+</code></pre>
+<h3 id="flag-info"><code>flag-info:</code></h3>
 <p>The <code>flag-info:</code> node provides human readable labels for the user flags 0..7.
 This information is currently not used by SDSIO-Server; it is intended for UI tooling.</p>
 <table>
@@ -562,7 +533,7 @@ This information is currently not used by SDSIO-Server; it is intended for UI to
 <tr>
 <td style="text-align: left;"><code>- &lt;flag-bit&gt;:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Maps the user flag bit position <code>0..7</code> to a human readable label.</td>
+<td style="text-align: left;">Maps the user flag bit position <code>0..23</code> to a human readable label.</td>
 </tr>
 </tbody>
 </table>
@@ -573,30 +544,103 @@ This information is currently not used by SDSIO-Server; it is intended for UI to
     - 1: Inject fault condition
     - 7: Reserved
 </code></pre>
-<h4 id="example">Example</h4>
-<pre><code class="language-yml">sdsio:
-  interface:
-    socket:
-      port: 5050
+<h2 id="sdsio-server">SDSIO-Server</h2>
+<p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDSIO-Server</strong></a> enables recording and playback of SDS data files via USB, socket (TCP/IP) or serial (UART) connection.
+It communicates with the target using a <a href="https://github.com/ARM-software/SDS-Framework/tree/main/sds/sdsio/client">SDSIO-Client interface</a>. Refer to the following sections for using the different client interfaces:</p>
+<ul>
+<li><a href="sdsio.html#using-usb-interface">USB</a> for communication via USB using MDK-Middleware.</li>
+<li><a href="sdsio.html#using-rtt-interface">RTT</a> for communication via the RTT interface of a debug adapter (J-Link or pyOCD).</li>
+<li><a href="sdsio.html#using-network-interface">Network</a> for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.</li>
+</ul>
+<p>SDS data streams are stored in <code>*.sds</code> files with the following naming convention:</p>
+<p><code>&lt;stream-name&gt;.&lt;label&gt;[.p].sds</code>  (<code>[.p]</code> is added when the SDS data stream is recorded during the playback)</p>
+<p>For more details, see the <a href="theory.html#filenames">Filenames section</a>.</p>
+<p>The contents of <code>&lt;name&gt;.&lt;label&gt;[.p].sds</code> files are described by the metadata file <code>&lt;name&gt;.sds.yml</code> in <a href="https://github.com/ARM-software/SDS-Framework/tree/main/schema">YAML format</a>.</p>
+<h3 id="usage">Usage</h3>
+<ul>
+<li><a href="#setup">Setup</a> the Python environment.</li>
+<li>Configure via a YAML control file (<code>-c *.sdsio.yml</code>) or specify the interface directly on the command line.</li>
+<li>Terminate the server by pressing <code>Ctrl+C</code> or the <code>X</code> key in the server application window.</li>
+</ul>
+<pre><code class="language-txt">usage: sdsio-server.py [-h] [-V] [{socket | serial | usb} [if-opts]] [-c sdsio.yml] [general-opts]
 
-  workdir: ./SDS Recordings
-  write-flush-records: 100
-  metadir: ./SDS Recordings
+SDSIO-Server: record and playback SDS data stream files over USB, socket, or serial interface.
+Configure via *.sdsio.yml file or specify the interface parameters directly on the command line.
 
-  play:
-    - step: &quot;Step 1&quot;
-      labels: [ case1, case2, case3 ]
+options:
+  --help, -h                   Show this help message and exit
+  --version, -V                Show program's version number and exit
 
-    - step: &quot;Step 2&quot;
-      recdir: test1
-      setflags: 0x01
-      clearflags: 0x02
-      labels:
-        - case1
-        - case4
-        - case3
+interface (optional, default: usb; overrides interface specified in *.sdsio.yml):
+  {socket | serial | usb}
+    socket                     Run TCP socket server
+    serial                     Run serial server
+    usb                        Run USB bulk server
+
+configuration:
+  --control, -c &lt;*.sdsio.yml&gt;  Configure interface, SDS file directories, and playback steps
+
+general-opts:
+  --playback, -p               Start SDSIO-Server in playback mode (typically used in CI tests)
+  --workdir &lt;path&gt;             Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
+  --mon-port, -m &lt;port&gt;        Monitor control interface port
+  --log, -l &lt;file&gt;             Redirect console output to a log file (typically for CI use)
+  --write-flush-size &lt;bytes&gt;   Force recorded SDS data to disk after this many bytes (0 disables explicit sync)
+  --verbose, -v                Enable debug messages
+  --high-priority              Increase process priority when using USB interface (requires elevated privileges)
 </code></pre>
-<h4 id="usb-mode">USB Mode</h4>
+<p><strong>Console input for SDSIO-Server:</strong></p>
+<p>The SDSIO-Server accepts directly on the console the following keyboard entries:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Key</th>
+<th style="text-align: left;">Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">R/r</td>
+<td style="text-align: left;">Start recording</td>
+</tr>
+<tr>
+<td style="text-align: center;">P/p</td>
+<td style="text-align: left;">Start playback</td>
+</tr>
+<tr>
+<td style="text-align: center;">S/s</td>
+<td style="text-align: left;">Stop recording/playback</td>
+</tr>
+<tr>
+<td style="text-align: center;">T/t</td>
+<td style="text-align: left;">Reset target</td>
+</tr>
+<tr>
+<td style="text-align: center;">A-H</td>
+<td style="text-align: left;">Set user flags 0-7</td>
+</tr>
+<tr>
+<td style="text-align: center;">a-h</td>
+<td style="text-align: left;">Clear user flags 0-7</td>
+</tr>
+<tr>
+<td style="text-align: center;">X/x</td>
+<td style="text-align: left;">Terminate server</td>
+</tr>
+</tbody>
+</table>
+<h4 id="sdsio-control-file">SDSIO Control File</h4>
+<p>It is recommended to use a <a href="#sdsio-control-file-sdsioyml">SDSIO control file (<code>*.sdsio.yml</code>)</a> that configures project parameters such as interface, workdir and steps for playback mode. With command line options the parameters of the <code>*.sdsio.yml</code> file can be overwritten.  It is also possible to use additional <a href="#using-general-options">general options</a>.</p>
+<p>Start SDSIO-Server using a control file:</p>
+<pre><code class="language-bash">python sdsio-server.py -c myproject.sdsio.yml
+</code></pre>
+<p>Start SDSIO-Server in <code>playback</code> mode:</p>
+<pre><code class="language-bash">python sdsio-server.py -c sdsio.yml --playback
+</code></pre>
+<p>Start SDSIO-Server in <code>playback</code> mode and overwrite the <code>workdir:</code> node.</p>
+<pre><code class="language-bash">python sdsio-server.py -c myproject.sdsio.yml --workdir ./mytest2
+</code></pre>
+<h4 id="usb-mode-command-line">USB Mode (command line)</h4>
 <pre><code class="language-txt">usage: sdsio-server.py usb [-h] [general-opts]
 
 options:
@@ -605,15 +649,12 @@ options:
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">python sdsio-server.py usb --workdir ./work_dir
 </code></pre>
-<h4 id="socket-mode">Socket Mode</h4>
+<h4 id="socket-mode-command-line">Socket Mode (command line)</h4>
 <p>The socket server can operate in two modes:</p>
 <ul>
-<li><strong>Listen mode</strong> (default): SDSIO-Server binds to a local IP address and waits for the target device to connect.</li>
-<li><strong>Connect mode</strong> (<code>--connect</code>): SDSIO-Server actively connects to the specified IP address.</li>
+<li><strong>Listen mode</strong> (default): SDSIO-Server binds to a local IP address and waits for the target device to connect. The listen mode is used with the <a href="sdsio.html#layer-sdsio_network">Layer: SDSIO-Network</a>. This mode requires network configuration.</li>
+<li><strong>Connect mode</strong> (<code>--connect</code>): SDSIO-Server actively connects to the specified IP address. The connect mode is used with the <a href="sdsio.html#layer-sdsio_rtt">Layer: SDSIO-RTT</a>, where the debug adapter (J-Link or pyOCD) exposes RTT data over a local TCP socket. No network configuration is required.</li>
 </ul>
-<p>Connect mode is typically used with the <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/rtt">SDSIO-RTT layer</a>,
-where the debug probe software (e.g., J-Link or pyOCD) exposes RTT data over a local TCP socket and
-SDSIO-Server connects to it directly — no network configuration on the target is required.</p>
 <pre><code class="language-txt">usage: sdsio-server.py socket [-h] [-V] [--ipaddr &lt;IP&gt; | --netif &lt;Interface&gt;] [--port &lt;TCP Port&gt;] [--connect [&lt;message&gt;]] [--connect-time &lt;ms&gt;] [general-opts]
 
 options:
@@ -639,31 +680,20 @@ if-opts (optional):
 <li><code>--connect</code> requires <code>--ipaddr</code> and cannot be combined with <code>--netif</code>.</li>
 </ul>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul>
-<li>The target device and the host computer must be connected to the same network. With a standard network installation, the DHCP server assigns IP addresses automatically.</li>
-<li>On <strong>Windows</strong>, a firewall may restrict socket connections. To allow the SDSIO-Server through the Windows Defender Firewall:<ul>
-<li>Open <strong>Windows Security - Firewall &amp; network protection - Allow an app through firewall</strong>.</li>
-<li>Click <strong>Change settings</strong>, then allow your Python runtime (<code>python.exe</code>) on the network profile you use (usually Private).</li>
-<li>On a managed corporate PC, Group Policy or endpoint security may still block connections. Your IT administrator may need to whitelist the IP address and port.</li>
-</ul>
-</li>
-</ul>
-</div>
-<p><strong>Example (listen mode, Windows, default computer IP):</strong></p>
+<p><strong>Examples:</strong></p>
+<p>Start in listen mode with default IP address of the host computer:</p>
 <pre><code class="language-bash">python sdsio-server.py socket --workdir ./work_dir
 </code></pre>
-<p><strong>Example (listen mode, Linux, specific interface):</strong></p>
+<p>Start in listen mode with a specific interface (for Linux or macOS):</p>
 <pre><code class="language-bash">python sdsio-server.py socket --netif eth0 --workdir ./work_dir
 </code></pre>
-<p><strong>Example (connect mode):</strong></p>
+<p>Start in <code>connect</code> mode using local host (default setting) and message for SEGGER J-Link:</p>
+<pre><code class="language-bash">python sdsio-server.py socket --port 19021 --connect &quot;$$SEGGER_TELNET_ConfigStr=RTTCh;1$$&quot;
+</code></pre>
+<p>Start in <code>connect</code> mode with a connection to a specific IP address and IP port.</p>
 <pre><code class="language-bash">python sdsio-server.py socket --ipaddr 192.168.0.1 --port 5050 --connect
 </code></pre>
-<p><strong>Example (connect mode with a message):</strong></p>
-<pre><code class="language-bash">python sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 --connect &quot;$$SEGGER_TELNET_ConfigStr=RTTCh;1$$&quot;
-</code></pre>
-<h4 id="serial-mode">Serial Mode</h4>
+<h4 id="serial-mode-command-line">Serial Mode (command line)</h4>
 <pre><code class="language-txt">usage: sdsio-server.py serial [-h] --port &lt;Serial Port&gt; [--baudrate &lt;Baudrate&gt;] [--parity &lt;Parity&gt;] [--stopbits &lt;Stop bits&gt;] [--connect-timeout &lt;Timeout&gt;] [general-opts]
 
 options:
@@ -681,17 +711,11 @@ if-opts (optional):
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">python sdsio-server.py serial --port COM0 --baudrate 115200 --workdir ./work_dir
 </code></pre>
-<h4 id="examples-of-using-general-options">Examples of using general options</h4>
-<p>Start SDSIO-Server with all configuration provided via the <code>sdsio.yml</code> file:</p>
-<pre><code class="language-bash">python sdsio-server.py -c sdsio.yml
-</code></pre>
-<p>Start SDSIO-Server and automatically start <code>playback</code>:</p>
-<pre><code class="language-bash">python sdsio-server.py -c sdsio.yml --playback
-</code></pre>
+<h4 id="using-general-options">Using general options</h4>
 <p>Start SDSIO-Server with monitor server waiting on the port <code>6060</code>:</p>
 <pre><code class="language-bash">python sdsio-server.py -c sdsio.yml --mon-port 6060
 </code></pre>
-<p>Start SDSIO-Server using user specified working directory:</p>
+<p>Start SDSIO-Server using a user-specified working directory:</p>
 <pre><code class="language-bash">python sdsio-server.py usb --workdir ./data
 </code></pre>
 <p>Start SDSIO-Server, forcing SDS file write flushes to disk after every 100 records:</p>
@@ -717,11 +741,11 @@ if-opts (optional):
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-View</strong></a> generates a time-based plot
 from data recorded in SDS files (<code>&lt;name&gt;.&lt;label&gt;.sds</code>) using the metadata provided in <code>&lt;name&gt;.sds.yml</code>.</p>
 <p>The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description.
-All plots form a single recording will be displayed on the same figure (shared vertical scale).</p>
+All plots from a single recording are displayed on the same figure (shared vertical scale).</p>
 <p>If there are 3 values described in the metadata file, an optional 3D view may be displayed.</p>
 <h3 id="limitations">Limitations</h3>
 <ul>
-<li>Data in recording must all be of the same type (float, uint32_t, uint16_t, ...)</li>
+<li>All data in a recording must be of the same type (float, uint32_t, uint16_t, ...)</li>
 </ul>
 <h3 id="usage_1">Usage</h3>
 <ul>
@@ -756,7 +780,7 @@ selected output format based on the descriptions provided in the metadata (YAML)
 <h3 id="usage_2">Usage</h3>
 <ul>
 <li><a href="#setup">Setup</a> the Python environment.</li>
-<li>Depending on the required format use the tool as shown below.</li>
+<li>Depending on the required format, use the tool as shown below.</li>
 </ul>
 <h4 id="audio-wav">Audio WAV</h4>
 <p>The <code>audio_wav</code> mode converts SDS file (<code>.sds</code>) containing raw microphone data into a standard RIFF/WAV file (<code>.wav</code>) using linear
@@ -782,7 +806,7 @@ required:
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>The tool expects the SDS file to contain strictly audio data - no header markers or custom formatting.</li>
+<li>The tool expects the SDS file to contain strictly audio data; no header markers or custom formatting.</li>
 </ul>
 </div>
 <p><strong>Example of metadata yml file for mono microphone:</strong></p>
@@ -880,7 +904,7 @@ all timeslots in the input file to be offset so that the first timeslot starts a
 </ul>
 <p>By default, the output file will have raw timeslots in integer format, in milliseconds.
 The default output timeslot interval is set to <code>50 ms</code>.
-To override this setting use the <code>--interval &lt;ms&gt;</code> parameter, where <code>&lt;ms&gt;</code> is the desired interval in milliseconds.</p>
+To override this setting, use the <code>--interval &lt;ms&gt;</code> parameter, where <code>&lt;ms&gt;</code> is the desired interval in milliseconds.</p>
 <p>An optional label can be added to the output by providing a string argument to the <code>--label &lt;text&gt;</code> parameter.
 This <code>&lt;text&gt;</code> will populate the label column in the output file.</p>
 <pre><code class="language-txt">usage: sds-convert.py qeexo_v2_csv [-h]
@@ -946,8 +970,8 @@ optional:
 <pre><code class="language-bash">python sds-convert.py qeexo_v2_csv -i Accelerometer.csv -o Accelerometer.sds
 </code></pre>
 <h4 id="video">Video</h4>
-<p>The <code>video</code> mode converts SDS file (<code>.sds</code>) containing video frames into a standard MP4 (H.264) file (<code>.mp4</code>).
-Video frame format shall be specified in the YAML metadata file (<code>.yml</code>), where pixel format,
+<p>The <code>video</code> mode converts an SDS file (<code>.sds</code>) containing video frames into a standard MP4 (H.264) file (<code>.mp4</code>).
+Video frame format must be specified in the YAML metadata file (<code>.yml</code>), where pixel format,
 resolution and frame stride shall be properly specified.</p>
 <pre><code class="language-txt">usage: sds-convert.py video [-h]
                             -i &lt;input_file&gt;
@@ -967,7 +991,7 @@ required:
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>The tool expects the SDS file to contain strictly video frames - no header markers or custom formatting.</li>
+<li>The tool expects the SDS file to contain strictly video frames; no header markers or custom formatting.</li>
 </ul>
 </div>
 <p><strong>Example of metadata yml file for RGB888 video stream:</strong></p>

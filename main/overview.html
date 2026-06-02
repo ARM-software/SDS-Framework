@@ -52,7 +52,7 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#data-capturing-and-playback">Data Capturing and Playback</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#sds-performance-measurements">SDS Performance Measurements</a>
+    <li class="toctree-l2"><a class="reference internal" href="#sds-recording-performance">SDS Recording Performance</a>
     </li>
     </ul>
                 </li>
@@ -105,9 +105,9 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-<p>The Synchronous Data Stream (SDS) Framework implements a data stream management, provides methods and utilities for developing and optimizing embedded
-applications that use DSP, ML, or Edge AI algorithms. The SDS-Framework allows you to capture simultaneously multiple data streams from
-different sources (sensors, audio, and video inputs) or the results of algorithms in real-time directly in target hardware.
+<p>The Synchronous Data Stream (SDS) Framework implements data stream management and provides methods and utilities for developing and optimizing embedded
+applications that use DSP, ML, or Edge AI algorithms. The SDS-Framework allows you to simultaneously capture multiple data streams from
+different sources (sensors, audio, and video inputs) or the results of algorithms in real time directly on target hardware.
 These data streams are stored in files.</p>
 <p><img alt="SDS-Recorder connected to different sources" src="images/SDS-Recording.png" /></p>
 <p>The captured data streams are useful in various steps of the development cycle, for example to:</p>
@@ -125,47 +125,56 @@ It enables data streaming into SDS data files via various interfaces such as USB
 The I/O implementation included in SDS utilizes the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil/overview/">MDK-Middleware</a>,
 however custom interfaces to other middleware or different communication channels can also be used.</p>
 <p>The <a href="utilities.html#sdsio-server"><strong>SDSIO-Server</strong></a> running on a host computer captures the recorded data stream and stores it in SDS data files.
-Each recording creates one set of SDS data files that are indicated by a sequential number.
+Each recording creates one set of SDS data files that are identified by a sequential number.
 The SDS data files are in binary format and may be described using a <a href="https://github.com/ARM-software/SDS-Framework/tree/main/schema">YAML metadata file</a>.
 With this information, other tools can utilize the content of the SDS data files as shown in the picture below.</p>
 <p><img alt="Analysis of SDS data files" src="images/Analyse.png" /></p>
 <p>On target hardware or in a FVP simulation environment, the <a href="sdsio.html#layer-sdsio_fvp"><strong>SDSIO Interface</strong></a> streams the SDS data files back to the algorithm under test. With this interface, the algorithm receives
-the same data stream as captured in the physical hardware. The setup can therefore be used for validation, performance optimizations, and runs even in CI environments for test automation.</p>
-<h2 id="sds-performance-measurements">SDS Performance Measurements</h2>
+the same data stream as captured on physical hardware. The setup can therefore be used for validation, performance optimization, and can run in CI environments for test automation.</p>
+<h2 id="sds-recording-performance">SDS Recording Performance</h2>
+<p>The following section lists the communication speeds that can be achieved on different targets with various interfaces.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>Performance measurements were obtained using the <a href="https://arm-software.github.io/SDS-Framework/main/template.html#using-datatest">DataTest</a> project, which validates captured data streams on the available interfaces.</li>
+<li>SDS data files were verified using the <a href="https://arm-software.github.io/SDS-Framework/main/utilities.html#sds-check">SDS-Check</a> utility.</li>
+<li>In addition to transfer performance, CPU idle time was measured to estimate the processing capacity available while communication was active.</li>
+<li>When using playback, the transfer performance is not critical, as the algorithm will only be executed when data is available.</li>
+</ul>
+</div>
+<p>Using the <a href="sdsio.html#using-usb-interface">USB</a> or <a href="sdsio.html#using-network-interface">Network</a> interface on different target hardware:</p>
 <table>
 <thead>
 <tr>
 <th>Interface</th>
 <th>USB</th>
-<th>Ethernet</th>
+<th>Network</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Alif Semiconductor DevKit-E8      (@ 400 MHz)</td>
-<td><strong>20 MB/s</strong> (55 % idle)</td>
-<td><strong>8 MB/s</strong> (66 % idle)</td>
+<td>20 MB/s (55% idle)</td>
+<td>8 MB/s (66% idle)</td>
 </tr>
 <tr>
 <td>STMicroelectronics STM32N6570-DK  (@ 600 MHz)</td>
-<td>13 MB/s   (55 % idle)</td>
+<td>13 MB/s (55% idle)</td>
 <td></td>
 </tr>
 <tr>
 <td>STMicroelectronics B-U585I-IOT02A (@ 160 MHz)</td>
-<td>1.1 MB/s   (86 % idle)</td>
+<td>1.1 MB/s (86% idle)</td>
 <td></td>
 </tr>
 </tbody>
 </table>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<p>Using the <a href="sdsio.html#using-rtt-interface">RTT</a> interface on the STM32F769I-EVAL board (with maximum SWD clock 12 MHz that is imposed by hardware):</p>
 <ul>
-<li>Performance measurements were obtained using the <a href="https://arm-software.github.io/SDS-Framework/main/template.html#using-datatest">DataTest</a> project, which validates captured data streams on the available board interfaces (Ethernet and USB).</li>
-<li>SDS data files were verified using the <a href="https://arm-software.github.io/SDS-Framework/main/utilities.html#sds-check">SDS-Check</a> utility.</li>
-<li>In addition to transfer performance, CPU idle time was measured to estimate the processing capacity available while communication was active.</li>
+<li>ST-Link (SWD clock: 10 MHz): 130 kB/s</li>
+<li>ULINKplus (SWD clock: 10 MHz): 250 kB/s</li>
+<li>J-Link Pro (SWD clock: auto): 800 kB/s</li>
 </ul>
-</div>
               
             </div>
           </div><footer>

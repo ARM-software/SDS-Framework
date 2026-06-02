@@ -58,19 +58,29 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">SDSIO Interface</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_network">Layer: sdsio_network</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_usb">Layer: sdsio_usb</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-usb-interface">Using USB Interface</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_network">Layer: sdsio_network</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-network-interface">Using Network Interface</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_rtt">Layer: sdsio_rtt</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-rtt-interface">Using RTT Interface</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_fs">Layer: sdsio_fs</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_fvp">Layer: sdsio_fvp</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#configuration-file-sdsioyml">Configuration File: sdsio.yml</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#log-file-sdsiolog">Log File: sdsio.log</a>
+    <li class="toctree-l3"><a class="reference internal" href="#using-fvp-simulation-models">Using FVP Simulation Models</a>
     </li>
         </ul>
     </li>
@@ -132,28 +142,51 @@
 <li><a href="#layer-sdsio_fs">Memory Card Interface</a> using the MDK-Middleware File System component.</li>
 <li><a href="#layer-sdsio_fvp">VSI Interface</a> using the ARM FVP simulation VSI interface.</li>
 </ul>
-<h2 id="layer-sdsio_network">Layer: sdsio_network</h2>
-<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/network"><code>layer/sdsio/network/sdsio_network.clayer.yml</code></a> is configured for recording and playback via the Ethernet interface. It uses the  <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> Network component.</p>
-<p>To access <a href="theory.html#sds-data-files">SDS data files</a>, start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> on the host computer with:</p>
-<pre><code class="language-bash">&gt;python sdsio-server.py socket
+<h2 id="layer-sdsio_usb">Layer: sdsio_usb</h2>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/usb"><code>layer/sdsio/usb/sdsio_usb.clayer.yml</code></a> is configured for recording and playback via the USB interface. It uses the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> USB Device component and connects to a host computer through a USB interface.</p>
+<p><img alt="SDS-Firmware with USB interface" src="images/USB-interface.png" /></p>
+<h3 id="using-usb-interface">Using USB Interface</h3>
+<p>To access <a href="theory.html#sds-data-files">SDS data files</a>, configure the <code>*.sdsio.yml</code> file with the <a href="utilities.html#usb"><code>interface - usb:</code></a> node and start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> on the host computer with:</p>
+<pre><code class="language-bash">&gt;python sdsio-server.py -c myproject.sdsio.yml
 Press 'Ctrl+C' or 'X' to exit.
+Working directory: ...\SDS_data.
+SDSIO configuration YAML: ...\myproject.sdsio.yml.
+SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.
+SDSIO-Client USB device connected.
+</code></pre>
+<h2 id="layer-sdsio_network">Layer: sdsio_network</h2>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/network"><code>layer/sdsio/network/sdsio_network.clayer.yml</code></a> is configured for recording and playback via the Ethernet interface. It uses the  <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> Network component. Both the target hardware and the SDSIO-Server are connected to a local LAN.</p>
+<p><img alt="SDS-Firmware with Network interface" src="images/Network-interface.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The target device and the host computer must be connected to the same network. With a standard network installation, the DHCP server assigns IP addresses automatically.</li>
+<li>On <strong>Windows</strong>, a firewall may restrict socket connections. To allow the SDSIO-Server through the Windows Defender Firewall:<ul>
+<li>Open <strong>Windows Security - Firewall &amp; network protection - Allow an app through firewall</strong>.</li>
+<li>Click <strong>Change settings</strong>, then allow your Python runtime (<code>python.exe</code>) on the network profile you use (usually Private).</li>
+<li>On a managed corporate PC, Group Policy or endpoint security may still block connections. Your IT administrator may need to whitelist the IP address and port.</li>
+</ul>
+</li>
+</ul>
+</div>
+<h3 id="using-network-interface">Using Network Interface</h3>
+<p>To access <a href="theory.html#sds-data-files">SDS data files</a>, configure the <code>*.sdsio.yml</code> file with the <a href="utilities.html#socket"><code>interface - socket:</code></a> node for Network interface, and start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> on the host computer with:</p>
+<pre><code class="language-bash">&gt;python sdsio-server.py -c myproject.sdsio.yml
+Press 'Ctrl+C' or 'X' to exit.
+Working directory: ...\SDS_data.
+SDSIO configuration YAML: ...\myproject.sdsio.yml.
+SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.
 Socket server listening on 172.20.10.2:5050
 </code></pre>
 <p>The SDSIO Server displays the IP address on which it is listening.
 This is the IP address that the target hardware must connect to. Configure this address in <code>./layer/sdsio/network/RTE/SDS/sdsio_client_socket_config.h</code> file
 by editing the <code>SDSIO_SOCKET_SERVER_IP</code> macro.</p>
-<h2 id="layer-sdsio_usb">Layer: sdsio_usb</h2>
-<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/usb"><code>layer/sdsio/usb/sdsio_usb.clayer.yml</code></a> is configured for recording and playback via the USB interface. It uses the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> USB Device component and connects to a host computer through a USB interface.</p>
-<p>To access <a href="theory.html#sds-data-files">SDS data files</a>, start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> on the host computer with:</p>
-<pre><code class="language-bash">&gt;sdsio-server.py usb
-Press 'Ctrl+C' or 'X' to exit.
-Starting USB Server...
-Waiting for SDSIO Client USB device...
-</code></pre>
 <h2 id="layer-sdsio_rtt">Layer: sdsio_rtt</h2>
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/rtt"><code>layer/sdsio/rtt/sdsio_rtt.clayer.yml</code></a> is configured for recording and playback using the SEGGER RTT component for I/O via a debug adapter.</p>
-<p>To access <a href="theory.html#sds-data-files">SDS data files</a> using RTT with J-Link, start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> on the host computer with:</p>
-<pre><code class="language-bash">&gt;sdsio-server.py socket --ipaddr 127.0.0.1 --port 19021 --connect-mode --connect-message &quot;$$SEGGER_TELNET_ConfigStr=RTTCh;1$$&quot;
+<p><img alt="SDS-Firmware with RTT interface" src="images/RTT-interface.png" /></p>
+<h3 id="using-rtt-interface">Using RTT Interface</h3>
+<p>To access <a href="theory.html#sds-data-files">SDS data files</a>, configure the <code>*.sdsio.yml</code> file with the <a href="utilities.html#socket"><code>interface - socket:</code></a> node for RTT interface, and start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> on the host computer with:</p>
+<pre><code class="language-bash">&gt;python sdsio-server.py -c myproject.sdsio.yml
 Press 'Ctrl+C' or 'X' to exit.
 Starting USB Server...
 Waiting for SDSIO Client USB device...
@@ -162,31 +195,61 @@ Waiting for SDSIO Client USB device...
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem"><code>layer/sdsio/filesystem/sdsio_fs.clayer.yml</code></a> is configured for recording to a Memory Card. It uses the MDK-Middleware File System component.</p>
 <h2 id="layer-sdsio_fvp">Layer: sdsio_fvp</h2>
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp"><code>template/sdsio/fvp/sdsio_fvp.clayer.yml</code></a> targets AVH FVP simulation and is configured for playback from the host computer. It uses the <a href="https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html">SDSIO VSI interface</a> implemented by the file <code>vsi/python/arm_vsi3.py</code>, which is loaded by the FVP simulation model. Since the SDSIO-Server functionality is implemented in <code>arm_vsi3.py</code>, no separate SDSIO-Server is required.</p>
-<h3 id="configuration-file-sdsioyml">Configuration File: sdsio.yml</h3>
+<h3 id="using-fvp-simulation-models">Using FVP Simulation Models</h3>
 <p>The SDSIO VSI interface can be configured using a <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a>.</p>
 <p>The VSI3 Python script (<code>arm_vsi3.py</code>) locates the control file as follows:</p>
 <ul>
-<li>If the environment variable <code>SDSIO_FVP</code> is set, it must be an <strong>absolute path</strong> to either a config file or a directory:</li>
+<li>If the environment variable <code>SDSIO_FVP</code> is set, it must be an <strong>absolute path</strong> to either a config file or a directory:<ul>
 <li><strong>File</strong> — used directly as the config file.</li>
 <li><strong>Directory</strong> — searched for a config file in this order: <code>sdsio.yml</code>, <code>sdsio.yaml</code>, first <code>*.sdsio.yml</code> (alphabetical), first <code>*.sdsio.yaml</code> (alphabetical).</li>
 <li>If the path does not exist or is not absolute, the search falls back to the working directory.</li>
+</ul>
+</li>
 <li>If <code>SDSIO_FVP</code> is not set (or falls back), the <strong>simulator working directory</strong> is searched using the same file order: <code>sdsio.yml</code>, <code>sdsio.yaml</code>, first <code>*.sdsio.yml</code> (alphabetical), first <code>*.sdsio.yaml</code> (alphabetical).</li>
 </ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>In Keil Studion you may set the <a href="https://mdk-packs.github.io/vscode-cmsis-solution-docs/zephyr.html#set-environment-variables">environment variable <code>SDSIO_FVP</code></a> using the Settings dialog with id <code>cmsis-csolution.environmentVariables</code>.</p>
+</div>
 <p>If a control file is found, the script reads the <code>sdsio:</code> root node. If <code>workdir:</code> is a relative path, it is interpreted relative to the simulator working directory.</p>
-<h3 id="log-file-sdsiolog">Log File: sdsio.log</h3>
-<p>During FVP simulation, an <code>sdsio.log</code> file is generated that records all <a href="theory.html#sds-data-files">SDS data file</a> access operations.</p>
+<p><strong>Console output:</strong></p>
+<p>This is a example console output during simulation</p>
+<pre><code class="language-txt">FVP_Corstone_SSE-300_Ethos-U55 -f Board/Corstone-300/fvp_config.txt -a out/DataTest/SSE-300-U55/Debug/DataTest.hex  
+
+Ethos-U version info:
+        Arch:       v1.1.0
+        MACs/cc:    128
+        Cmd stream: v0
+SDSIO VSI interface initialized successfully
+==== SDS playback started
+==== SDS playback stopped
+
+Info: /OSCI/SystemC: Simulation stopped by user.
+Fatal Python error: _Py_GetConfig: the function must be called with the GIL held ...
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Fatal Python error at exit is a known problem that will be solved in a future version of the FVP simulation models.</p>
+</div>
+<p><strong>Log File: <code>sdsio.log</code>:</strong></p>
+<p>During FVP simulation, an <code>sdsio.log</code> file is generated that records all <a href="theory.html#sds-data-files">SDS data file</a> access operations. This file is located in the folder that is configured the <code>workdir:</code> in the <code>*.sdsio.yml</code> file.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-txt">Created by ...\Board\Corstone-300\vsi\python\arm_vsi3.py
 
 SDSIO VSI version 3.0.0
-SDSIO configuration YAML: ...\SDS.sdsio.yml
-sdsFlags = 0xB0000000
-Playback: ML_In (...\SDS Recordings\ML_In.0.sds)
-Record:   ML_Out (...\SDS Recordings\ML_Out.0.p.sds)
-...
-Closed:   ML_In (...\SDS Recordings\ML_In.0.sds)
-Closed:   ML_Out (...\SDS Recordings\ML_Out.0.p.sds)
-
+SDSIO_FVP environment variable not set.
+Working directory: ...\datatest\SDS Recordings.
+SDSIO configuration YAML: ...\SDS\datatest.sdsio.yml.
+sdsFlags = 0xB0000000.
+Playback step 1/1: Test 0.
+Playback: Test_In (Test_In.0.sds).
+Record:   Test_Out (Test_Out.0.p.sds).
+Closed:   Test_In (Test_In.0.sds).
+Closed:   Test_Out (Test_Out.0.p.sds).
+sdsControl: auto playback terminate.
+sdsFlags = 0x30000000.
+sdsFlags = 0x70000000.
+sdsFlags = 0x30000000.
 </code></pre>
               
             </div>
