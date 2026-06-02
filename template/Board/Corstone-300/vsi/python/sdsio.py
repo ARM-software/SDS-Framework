@@ -218,7 +218,7 @@ class sdsio_manager:
         auto_playback=False,
         play_list: Optional[list] = None,
         mon_port: Optional[int] = None,
-        write_flush_count: Optional[int] = None,
+        write_flush_records: Optional[int] = None,
         status_bar_factory=None,
         monitor_factory=None,
         control_input_factory=None,
@@ -252,7 +252,7 @@ class sdsio_manager:
         self._playback_mode = False
         self._play_list = play_list
         self._mon_port = mon_port
-        self._write_flush_count = write_flush_count
+        self._write_flush_records = write_flush_records
         # SDS Control Flags
         self.shutdown_requested = threading.Event()
         self._flags = sdsFlags(auto_playback)
@@ -419,13 +419,13 @@ class sdsio_manager:
                                 # Complete record: write and reset for next record
                                 _file_obj.write(_data)
                                 _records_since_flush += 1
-                                if self._write_flush_count is not None:
-                                    if _records_since_flush >= self._write_flush_count:
+                                if self._write_flush_records is not None:
+                                    if _records_since_flush >= self._write_flush_records:
                                         _file_obj.flush()
                                         os.fsync(_file_obj.fileno())
                                         _records_since_flush = 0
                                 _data = bytearray()
-                    if self._write_flush_count is not None:
+                    if self._write_flush_records is not None:
                         _file_obj.flush()
                         os.fsync(_file_obj.fileno())
                 # Last file close is handled in close(); send close only for non-last files

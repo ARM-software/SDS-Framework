@@ -91,6 +91,18 @@ _log_buffer.setFormatter(logging.Formatter("%(message)s"))
 logger.addHandler(_log_buffer)
 logger.info(f"Created by {path.abspath(__file__)}\n")
 
+def _get_non_negative_int(value, name: str):
+    try:
+        _value = int(value)
+    except (TypeError, ValueError):
+        logger.error(f"Invalid integer value for {name}: {value}.")
+        return None
+    if _value < 0:
+        logger.error(f"{name} must be 0 or greater.")
+        return None
+    return _value
+
+
 def _load_sdsio_server_config(base_dir: str):
     _cfg_path = None
 
@@ -146,6 +158,9 @@ def _load_sdsio_server_config(base_dir: str):
     _cfg_base = path.dirname(_cfg_path) if _cfg_path else base_dir
     _work_dir = path.normpath(path.join(_cfg_base, _work_dir)) if not path.isabs(_work_dir) else path.normpath(_work_dir)
     _play_list = _ctrl_data.get("play", None) if _ctrl_data else None
+    _write_flush_records = None
+    if _ctrl_data and _ctrl_data.get("write-flush-records") is not None:
+        _write_flush_records = _get_non_negative_int(_ctrl_data.get("write-flush-records"), "write-flush-records")
 
     logger.info(f"Working directory: {path.abspath(_work_dir)}.")
     if _ctrl_data:
@@ -153,7 +168,7 @@ def _load_sdsio_server_config(base_dir: str):
 
     # auto-playback is always enabled on VSI
     _auto_playback = True
-    return _work_dir, _auto_playback, _play_list
+    return _work_dir, _auto_playback, _play_list, _write_flush_records
 
 
 def _build_sdsio_request(command: int, sid: int = 0, argument: int = 0, data: bytes = b"") -> bytearray:
@@ -166,7 +181,7 @@ def _build_sdsio_request(command: int, sid: int = 0, argument: int = 0, data: by
     return _req
 
 logger.info(f"SDSIO VSI version {SDSIO_VSI_VERSION}")
-_work_dir, _auto_playback, _play_list = _load_sdsio_server_config(os.getcwd())
+_work_dir, _auto_playback, _play_list, _write_flush_records = _load_sdsio_server_config(os.getcwd())
 os.makedirs(_work_dir, exist_ok=True)
 _log_handler = logging.FileHandler(path.join(_work_dir, "sdsio.log"), mode="w", encoding="utf-8")
 _log_handler.setFormatter(logging.Formatter("%(message)s"))
@@ -179,6 +194,7 @@ Stream = sdsio_manager(
     auto_playback=_auto_playback,
     play_list=_play_list,
     mon_port=None,
+    write_flush_records=_write_flush_records,
     status_bar_factory=False,
     monitor_factory=False,
     control_input_factory=False,
