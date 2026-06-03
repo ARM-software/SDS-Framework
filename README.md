@@ -38,16 +38,18 @@ This is a list of the relevant files and directories.
 
 ## Continuous Integration (CI)
 
-The underlying build system of [Keil Studio](https://www.keil.arm.com/) uses the [CMSIS-Toolbox](https://open-cmsis-pack.github.io/cmsis-toolbox/) and CMake. [CI](https://en.wikipedia.org/wiki/Continuous_integration) is effectively supported with:
+This repository uses CI Workflows listed below to build artifacts and verify template projects.
+Examples are verified with the build system of [Keil Studio](https://www.keil.arm.com/) that uses the [CMSIS-Toolbox](https://open-cmsis-pack.github.io/cmsis-toolbox/) and CMake. Using this toolchain supports [CI](https://en.wikipedia.org/wiki/Continuous_integration) with:
 
 - Tool installation based on a single [`vcpkg-configuration.json`](./vcpkg-configuration.json) file for desktop and CI environments.
 - CMSIS solution files (`*.csolution.yml`) that enable seamless builds in CI, for example using GitHub actions.
 
-| CI Workflow                                               | Description                                |
-|---                                                        |---                                         |
-| [pack](./.github/workflows/pack.yml)                      | Builds the pack on a GitHub hosted runner. |
-| [gh-pages](./.github/workflows/gh-pages.yml)              | Deploying this content to GitHub Pages.    |
-| [build_examples](./.github/workflows/build_examples.yml)  | Builds the application binaries by using the Arm Compiler for Embedded (AC6) on a GitHub hosted runner. |
+| CI Workflow                                                       | Description                                |
+|---                                                                |---                                         |
+| [pack](./.github/workflows/pack.yml)                              | Builds the pack on a GitHub hosted runner. |
+| [gh-pages](./.github/workflows/gh-pages.yml)                      | Deploying this content to GitHub Pages.    |
+| [build_examples](./.github/workflows/build_examples.yml)          | Builds the application binaries by using the Arm Compiler for Embedded (AC6) on a GitHub hosted runner. |
+| [build_sdsio-server](./.github/workflows/build_sdsio-server.yml)  | Generate SDSIO-Server as executable for Windows, macOS, and Linux. |
 
 ## License
 

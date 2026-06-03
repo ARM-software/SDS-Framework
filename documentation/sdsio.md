@@ -8,7 +8,6 @@ The SDSIO components offer flexible SDS communication interfaces. You may choose
   - component: SDS:IO:RTT                        # RTT Interface
   - component: SDS:IO:Serial&CMSIS USART         # USART Interface
   - component: SDS:IO:File System&MDK FS         # Memory card
-  - component: SDS:IO:File System&Semihosting    # Simulation or Debugger via Semihosting interface
   - component: SDS:IO:VSI                        # VSI Simulation interface of an AVH FVP
   - component: SDS:IO:Custom                     # Source code template for custom implementation
 ```
@@ -66,9 +65,8 @@ SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, X/x=exit, A-H=se
 Socket server listening on 172.20.10.2:5050
 ```
 
-The SDSIO Server displays the IP address on which it is listening.
-This is the IP address that the target hardware must connect to. Configure this address in `./layer/sdsio/network/RTE/SDS/sdsio_client_socket_config.h` file
-by editing the `SDSIO_SOCKET_SERVER_IP` macro.
+!!! Note
+    The SDSIO Server prints the IP address on which it is listening. The target hardware must connect to this IP address. Configure the target by updating the `SDSIO_SOCKET_SERVER_IP` macro in `./layer/sdsio/network/RTE/SDS/sdsio_client_socket_config.h`.
 
 ## Layer: sdsio_rtt
 
@@ -78,14 +76,78 @@ The [`layer/sdsio/rtt/sdsio_rtt.clayer.yml`](https://github.com/ARM-software/SDS
 
 ### Using RTT Interface
 
-To access [SDS data files](theory.md#sds-data-files), configure the `*.sdsio.yml` file with the [`interface - socket:`](utilities.md#socket) node for RTT interface, and start the [SDSIO-Server](utilities.md#sdsio-server) on the host computer with:
+The SDSIO layer communicates with the host computer via an RTT socket exposed by the
+debug probe software. The [SDSIO-Server](https://arm-software.github.io/SDS-Framework/main/utilities.html#sdsio-server)
+runs on the host and connects to the debug probe socket using
+[socket connect mode](https://arm-software.github.io/SDS-Framework/main/utilities.html#socket-mode).
+
+#### Connect with SEGGER J-Link
+
+Configure `interface:` in the [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml) as shown below:
+
+```yml
+sdsio:
+  interface:
+    socket:
+      ipaddr: 127.0.0.1
+      port: 19021
+      connect: "$$SEGGER_TELNET_ConfigStr=RTTCh;1$$"
+      connect-time: 100
+```
+
+Then start the SDSIO-Server with:
 
 ```bash
->python sdsio-server.py -c myproject.sdsio.yml
-Press 'Ctrl+C' or 'X' to exit.
-Starting USB Server...
-Waiting for SDSIO Client USB device...
+python sdsio-server.py -c myproject.sdsio.yml
 ```
+
+**How it works:**
+
+J-Link exposes RTT data via a TELNET-like TCP socket on `localhost`, port **19021** (default), while a J-Link connection is active (typically during a debug session). After connecting to this TCP socket, the SDSIO-Server (sends within the 100 ms time limit) the [SEGGER TELNET Config String](https://kb.segger.com/J-Link_RTT_TELNET_Channel) that selects the RTT channel. The SDSIO-Server should sends this string automatically via `--connect`, and discards any initial response from J-Link during the `--connect-time` window.
+
+#### Connect with pyOCD
+
+pyOCD can expose each RTT channel as a TCP socket server. RTT is configured under the `debugger:` node of the `*.csolution.yml` file as shown below. Refer to [CMSIS-Toolbox - pyOCD - RTT](https://open-cmsis-pack.github.io/cmsis-toolbox/pyOCD-Debugger/#rtt) for further details.
+
+```yml
+  target-types:
+    - type: MyHardware
+      target-set:
+        - set:
+          images:
+            - project-context: DataTest.Debug
+          debugger:
+            name: CMSIS-DAP@pyOCD
+            clock: 10000000
+            protocol: swd
+            rtt:
+              channel:
+                - number: 1     # must match SDSIO_RTT_CHANNEL in sdsio_client_rtt_config.h
+                  mode: server
+                  port: 5100    # any free TCP port on localhost
+```
+
+Configure `interface:` in the [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml) as shown below:
+
+```yml
+sdsio:
+  interface:
+    socket:
+      ipaddr: 127.0.0.1
+      port: 5100       # must match the port configured in *.csolution.yml
+      connect:         # no connect string required; channel is configured with `rtt:` node above
+```
+
+The CMSIS-Toolbox includes all project configuration in the file `*.cbuild-run.yml`. Once this file is up-to-date, run pyOCD and SDSIO-Server with:
+
+```bash
+pyocd run --cbuild-run out/<name>+<target-type>.cbuild-run.yml --eot
+python sdsio-server.py -c myproject.sdsio.yml
+```
+
+**How it works:**
+
+pyOCD does not required a connect message. Instead the RTT channel configuration is part of the `*.cbuild-run.yml` file that also specifies project files and other hardware related parameters. Refer to [CMSIS-Toolbox - Run and Debug Configuration](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#run-and-debug-configuration) for further information.
 
 ## Layer: sdsio_fs
 
@@ -132,7 +194,8 @@ Fatal Python error: _Py_GetConfig: the function must be called with the GIL held
 ```
 
 !!! Note
-    The Fatal Python error at exit is a known problem that will be solved in a future version of the FVP simulation models.
+    - It might be required to enable access permissions for the FVP simulation model.
+    - The Fatal Python error at exit is a known problem that will be solved in a future version of the FVP simulation models. It has no impact on the actual test results.
 
 **Log File: `sdsio.log`:**
 
@@ -158,3 +221,10 @@ sdsFlags = 0x30000000.
 sdsFlags = 0x70000000.
 sdsFlags = 0x30000000.
 ```
+
+**FVP Model Configuration:**
+
+The FVP model is configured with the file `./Board/Corstone-300/fvp_config.txt` or `./Board/Corstone-320/fvp_config.txt`.
+When using an Ethos-U NPU it is important that the MAC configuration matches the settings that were used when generating the ML model.
+
+Refer to [Arm FVP Simulation Models - Model Configuration](https://arm-software.github.io/AVH/main/simulation/html/using.html#Config) for further information.

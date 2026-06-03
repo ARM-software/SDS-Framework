@@ -435,9 +435,8 @@ All plots from a single recording are displayed on the same figure (shared verti
 
 If there are 3 values described in the metadata file, an optional 3D view may be displayed.
 
-### Limitations
-
-- All data in a recording must be of the same type (float, uint32_t, uint16_t, ...)
+!!! Note
+    - SDS-View requires that all values in the [`*.sds.yml` metadata file](https://arm-software.github.io/SDS-Framework/main/theory.html#yaml-metadata-format) have the same data type (float, uint32_t, uint16_t, ...)
 
 ### Usage
 

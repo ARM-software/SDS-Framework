@@ -20,7 +20,7 @@ The following SDS software components are required:
 ```
 
 The IP address of the SDSIO-Server must be updated in `sdsio_client_socket_config.h` with the
-address reported by the SDSIO-Server at startup:
+(`Socket server listing`) address reported by the SDSIO-Server at startup:
 
 ```c
 #define SDSIO_SOCKET_SERVER_IP    "0.0.0.0"
@@ -59,19 +59,6 @@ The communication does not use the **IPv6** protocol, therefore the variant `IPv
 
 You can leave the other configuration settings at their default values.
 
-## Starting SDSIO-Server
+## Usage
 
-The **SDSIO-Server** is a Python-based utility for PC, which is included in the
-[SDS-Framework](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) pack.
-
-To start the SDSIO-Server, run it from the `./utilities` directory with:
-
-```txt
-python sdsio-server.py socket
-```
-
-This activates the SDSIO-Server with the default settings.
-Further information about the SDSIO-Server application can be found in the
-[SDS-Framework documentation](https://github.com/ARM-software/SDS-Framework/tree/main/documentation/utilities.md#sdsio-server).
-
-> ***Important Note***: The evaluation board and the PC must be in the same network in order to establish a connection.
+For more information refer [Using Network Interface](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_network).

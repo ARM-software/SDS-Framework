@@ -320,7 +320,7 @@ The SDSIO interface provides a generic mechanism for reading from and writing to
 
 An SDSIO can operate over:
 
-- A local file system, such as an SD card or semihosting, where files are accessed directly.
+- A local file system, such as an SD card, where files are accessed directly.
 - A communication channel such as Ethernet, USB, or UART, where access to files is performed remotely via an SDSIO-Server.
 
 When using a communication channel, the embedded device runs an SDSIO-Client, which communicates with the SDSIO-Server
@@ -354,7 +354,7 @@ It is a parameter of the \ref sdsioOpen function.
 \details
 \b Description:
 
-Initializes the SDSIO interface. The interface may be a local file system (e.g., an SD card) or semihosting,
+Initializes the SDSIO interface. The interface may be a local file system, for example an SD card,
 or a communication channel such as Ethernet, USB or UART. In the case of a communication channel,
 the SDSIO-Client is used to interact with the SDSIO-Server running on a host machine.
 The initialization process includes setting up the communication interface and verifying that
@@ -375,7 +375,7 @@ the corresponding communication interface is also de-initialized.
 \details
 \b Description:
 
-Opens an SDSIO stream for reading or writing. If the interface is a local file system or semihosting, the file is opened directly.
+Opens an SDSIO stream for reading or writing. If the interface is a local file system, the file is opened directly.
 For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends an open command (SDSIO_CMD_OPEN) to the SDSIO-Server to open
 the file on the host system. The function returns the handle to the SDSIO stream; if the SDSIO stream could not be opened, it returns NULL.
 */
@@ -385,7 +385,7 @@ the file on the host system. The function returns the handle to the SDSIO stream
 \details
 \b Description:
 
-Closes an SDSIO stream. If the interface is a local file system or semihosting, the file is closed directly.
+Closes an SDSIO stream. If the interface is a local file system, the file is closed directly.
 For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends a close command (SDSIO_CMD_CLOSE)
 to the SDSIO-Server to close the file on the host system.
 */
@@ -396,7 +396,7 @@ to the SDSIO-Server to close the file on the host system.
 \b Description:
 
 Attempts to write up to `buf_size` bytes from the memory pointed to `buf` to the SDSIO stream identified by `id`.
-If the interface is a local file system or semihosting, data is written directly to the file.
+If the interface is a local file system, data is written directly to the file.
 For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends a write command (SDSIO_CMD_WRITE) along with the data to
 the SDSIO-Server, which then writes the data to a file on the host system.
 
@@ -413,7 +413,7 @@ The function may return before all data has been written, depending on the avail
 \b Description:
 
 Attempts to read up to `buf_size` bytes of data from the SDSIO stream identified by `id` into the memory pointed to `buf`.
-If the interface is a local file system or semihosting, data is read directly from the file.
+If the interface is a local file system, data is read directly from the file.
 For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends a read command (SDSIO_CMD_READ) to the SDSIO-Server, which reads
 the file on the host system and returns the data to the SDSIO-Client.
 

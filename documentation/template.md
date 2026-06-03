@@ -11,8 +11,8 @@ The [SDS template application](https://github.com/ARM-software/SDS-Framework/tre
 
 The SDS template application is implemented as a [CMSIS-Toolbox Reference Application](https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/). It is hardware-agnostic and requires an `SDSIO-Layer` and a `Board-Layer` with drivers for the target hardware.
 
-The `SDSIO-Layer` connects the SDS template application to a communication interface for SDS file I/O operations.
-The following [SDSIO interfaces](sdsio.md) are pre-configured:
+An `SDSIO-Layer` connects the SDS template application to a communication interface for SDS file I/O operations.
+For hardware targets, the following [SDSIO interfaces](sdsio.md) are available as pre-configured software layers:
 
 - [Ethernet Interface](sdsio.md#layer-sdsio_network) using the MDK-Middleware Network component.
 - [USB Bulk Interface](sdsio.md#layer-sdsio_usb) using the MDK-Middleware USB component.
@@ -123,7 +123,7 @@ The steps to add a custom hardware configuration are:
 - Open the `*.csolution.yml` file and add a new `target-type`.
 
 ```yml
-    packs:
+  packs:
     - pack: <DFP for your hardware> # use keil.arm.com/packs to search for packs
 
   target-types:
