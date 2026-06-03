@@ -636,6 +636,7 @@ class sdsio_manager:
     ):
         self._stream_id = 0
         self._play_step_index = 0
+        self._rec_index = None      # recording session index (None = not yet determined)
         self._work_dir = path.normpath(work_dir)
         self._rec_dir = self._work_dir
         self.opened_streams = {}    # sid -> StreamInfo
@@ -976,13 +977,19 @@ class sdsio_manager:
         if mode == 1:
             if not self._label_list:
                 if not self._playback_mode:
-                    # find first available numeric label for new recording
-                    _idx = 0
-                    _sds_file_path = self._make_sds_file_path(name, str(_idx), mode)
-                    while path.exists(_sds_file_path):
-                        _idx += 1
+                    # find index for new recording session
+                    if self._rec_index is None:
+                        # first session: scan from 0 to find first unused index
+                        _idx = 0
                         _sds_file_path = self._make_sds_file_path(name, str(_idx), mode)
-                    self._label_list.append(str(_idx))
+                        while path.exists(_sds_file_path):
+                            _idx += 1
+                            _sds_file_path = self._make_sds_file_path(name, str(_idx), mode)
+                        self._rec_index = _idx
+                    else:
+                        # subsequent sessions: increment from previous
+                        self._rec_index += 1
+                    self._label_list.append(str(self._rec_index))
 
             _file_paths = self._build_stream_file_paths(name, mode)
             # validate if recdir exsist
