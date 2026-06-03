@@ -103,7 +103,7 @@ python sdsio-server.py -c myproject.sdsio.yml
 
 **How it works:**
 
-J-Link exposes RTT data via a TELNET-like TCP socket on `localhost`, port **19021** (default), while a J-Link connection is active (typically during a debug session). After connecting to this TCP socket, the SDSIO-Server (sends within the 100 ms time limit) the [SEGGER TELNET Config String](https://kb.segger.com/J-Link_RTT_TELNET_Channel) that selects the RTT channel. The SDSIO-Server should sends this string automatically via `--connect`, and discards any initial response from J-Link during the `--connect-time` window.
+J-Link exposes RTT data via a TELNET-like TCP socket on `localhost`, port **19021** (default), while a J-Link connection is active (typically during a debug session). After connecting to this TCP socket, the SDSIO-Server (sends within the 100 ms time limit) the [SEGGER TELNET Config String](https://kb.segger.com/J-Link_RTT_TELNET_Channel) that selects the RTT channel. The SDSIO-Server sends this string automatically via `--connect`, and discards any initial response from J-Link during the `--connect-time` window.
 
 #### Connect with pyOCD
 
