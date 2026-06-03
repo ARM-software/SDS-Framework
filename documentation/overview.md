@@ -48,7 +48,7 @@ The following section lists the communication speeds that can be achieved on dif
     - In addition to transfer performance, CPU idle time was measured to estimate the processing capacity available while communication was active.
     - When using playback, the transfer performance is not critical, as the algorithm will only be executed when data is available.
 
-Using the [USB](sdsio.md#using-usb-interface) or [Network](sdsio.md#using-network-interface) interface on different target hardware:
+[Using the USB](sdsio.md#layer-sdsio_usb) or [Network](sdsio.md#layer-sdsio_network) interface on different target hardware:
 
 | Interface                                     | USB                    | Network                |
 |-----------------------------------------------|------------------------|------------------------|
@@ -56,8 +56,10 @@ Using the [USB](sdsio.md#using-usb-interface) or [Network](sdsio.md#using-networ
 | STMicroelectronics STM32N6570-DK  (@ 600 MHz) | 13 MB/s (55% idle)     |                        |
 | STMicroelectronics B-U585I-IOT02A (@ 160 MHz) | 1.1 MB/s (86% idle)    |                        |
 
-Using the [RTT](sdsio.md#using-rtt-interface) interface on the STM32F769I-EVAL board (with maximum SWD clock 12 MHz that is imposed by hardware):
+[Using the RTT](sdsio.md#layer-sdsio_rtt) interface on the STM32F769I-EVAL board (with maximum SWD clock 12 MHz that is imposed by hardware) with different debug adapters:
 
 - ST-Link (SWD clock: 10 MHz): 130 kB/s
 - ULINKplus (SWD clock: 10 MHz): 250 kB/s
 - J-Link Pro (SWD clock: auto): 800 kB/s
+
+[Using the FileSystem](layer-sdsio_fs) on the STM32H7B3_DK board with SYSCLK 280 MHz, SDMMC with 4-bit bus: 5 MB/s
