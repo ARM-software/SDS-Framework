@@ -212,6 +212,7 @@
     </component>
 
     <!-- SDSIO via File System (Semihosting) -->
+    <!--
     <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="3.0.0" Cversion="3.0.0">
       <description>SDSIO via File System (using Semihosting)</description>
       <RTE_Components_h>
@@ -224,6 +225,7 @@
         <file category="source" name="sds/sdsio/fs/sdsio_fs_semihosting.c"/>
       </files>
     </component>
+    -->
   </components>
 
   <csolution>
