@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "0.9.32"
+SDSIO_SERVER_VERSION = "3.0.0"
 
 class StreamInfo(NamedTuple):
     name: str = None
