@@ -142,7 +142,7 @@ the same data stream as captured on physical hardware. The setup can therefore b
 <li>When using playback, the transfer performance is not critical, as the algorithm will only be executed when data is available.</li>
 </ul>
 </div>
-<p>Using the <a href="sdsio.html#using-usb-interface">USB</a> or <a href="sdsio.html#using-network-interface">Network</a> interface on different target hardware:</p>
+<p><a href="sdsio.html#layer-sdsio_usb">Using the USB</a> or <a href="sdsio.html#layer-sdsio_network">Network</a> interface on different target hardware:</p>
 <table>
 <thead>
 <tr>
@@ -169,12 +169,13 @@ the same data stream as captured on physical hardware. The setup can therefore b
 </tr>
 </tbody>
 </table>
-<p>Using the <a href="sdsio.html#using-rtt-interface">RTT</a> interface on the STM32F769I-EVAL board (with maximum SWD clock 12 MHz that is imposed by hardware):</p>
+<p><a href="sdsio.html#layer-sdsio_rtt">Using the RTT</a> interface on the STM32F769I-EVAL board (with maximum SWD clock 12 MHz that is imposed by hardware) with different debug adapters:</p>
 <ul>
 <li>ST-Link (SWD clock: 10 MHz): 130 kB/s</li>
 <li>ULINKplus (SWD clock: 10 MHz): 250 kB/s</li>
 <li>J-Link Pro (SWD clock: auto): 800 kB/s</li>
 </ul>
+<p><a href="layer-sdsio_fs">Using the FileSystem</a> on the STM32H7B3_DK board with SYSCLK 280 MHz, SDMMC with 4-bit bus: 5 MB/s</p>
               
             </div>
           </div><footer>

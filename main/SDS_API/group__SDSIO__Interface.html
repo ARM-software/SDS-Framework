@@ -156,7 +156,7 @@
 <p>The SDSIO interface provides a generic mechanism for reading from and writing to <code>SDS files</code> using different SDSIO implementations.</p>
 <p>An SDSIO can operate over:</p>
 <ul>
-<li>A local file system, such as an SD card or semihosting, where files are accessed directly.</li>
+<li>A local file system, such as an SD card, where files are accessed directly.</li>
 <li>A communication channel such as Ethernet, USB, or UART, where access to files is performed remotely via an SDSIO-Server.</li>
 </ul>
 <p>When using a communication channel, the embedded device runs an SDSIO-Client, which communicates with the SDSIO-Server running on the host machine. This interaction is command-based (e.g., <code>SDSIO_CMD_OPEN</code>, <code>SDSIO_CMD_READ</code>, <code>SDSIO_CMD_WRITE</code>) and enables the embedded system to remotely open, read, write, and close files located on the host. For more details, refer to <a href="../theory.html#sdsio-server-firmware-protocol">SDSIO-Server Firmware Protocol</a>.</p>
@@ -186,7 +186,7 @@
 ) 
 </code></pre>
 <p><strong>Description:</strong> </p>
-<p>Closes an SDSIO stream. If the interface is a local file system or semihosting, the file is closed directly. For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends a close command (SDSIO_CMD_CLOSE) to the SDSIO-Server to close the file on the host system.</p>
+<p>Closes an SDSIO stream. If the interface is a local file system, the file is closed directly. For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends a close command (SDSIO_CMD_CLOSE) to the SDSIO-Server to close the file on the host system.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>id</code> <a href="group__SDSIO__Interface.html#typedef-sdsioid_t"><strong>sdsioId_t</strong></a> handle to SDSIO stream </li>
@@ -202,7 +202,7 @@
 ) 
 </code></pre>
 <p><strong>Description:</strong> </p>
-<p>Initializes the SDSIO interface. The interface may be a local file system (e.g., an SD card) or semihosting, or a communication channel such as Ethernet, USB or UART. In the case of a communication channel, the SDSIO-Client is used to interact with the SDSIO-Server running on a host machine. The initialization process includes setting up the communication interface and verifying that the SDSIO-Server is active on the host.</p>
+<p>Initializes the SDSIO interface. The interface may be a local file system, for example an SD card, or a communication channel such as Ethernet, USB or UART. In the case of a communication channel, the SDSIO-Client is used to interact with the SDSIO-Server running on a host machine. The initialization process includes setting up the communication interface and verifying that the SDSIO-Server is active on the host.</p>
 <p><strong>Returns:</strong></p>
 <p>SDS_OK on success or a negative value on error (see <a href="group__SDS__Return__Codes.html"><strong>Function Return Codes</strong></a>) </p>
 <hr>
@@ -215,7 +215,7 @@
 ) 
 </code></pre>
 <p><strong>Description:</strong> </p>
-<p>Opens an SDSIO stream for reading or writing. If the interface is a local file system or semihosting, the file is opened directly. For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends an open command (SDSIO_CMD_OPEN) to the SDSIO-Server to open the file on the host system. The function returns the handle to the SDSIO stream; if the SDSIO stream could not be opened, it returns NULL.</p>
+<p>Opens an SDSIO stream for reading or writing. If the interface is a local file system, the file is opened directly. For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends an open command (SDSIO_CMD_OPEN) to the SDSIO-Server to open the file on the host system. The function returns the handle to the SDSIO stream; if the SDSIO stream could not be opened, it returns NULL.</p>
 <p><strong>Parameters:</strong></p>
 <ul>
 <li><code>name</code> stream name (pointer to NULL terminated string) </li>
@@ -234,7 +234,7 @@
 ) 
 </code></pre>
 <p><strong>Description:</strong> </p>
-<p>Attempts to read up to <code>buf_size</code> bytes of data from the SDSIO stream identified by <code>id</code> into the memory pointed to <code>buf</code>. If the interface is a local file system or semihosting, data is read directly from the file. For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends a read command (SDSIO_CMD_READ) to the SDSIO-Server, which reads the file on the host system and returns the data to the SDSIO-Client.</p>
+<p>Attempts to read up to <code>buf_size</code> bytes of data from the SDSIO stream identified by <code>id</code> into the memory pointed to <code>buf</code>. If the interface is a local file system, data is read directly from the file. For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends a read command (SDSIO_CMD_READ) to the SDSIO-Server, which reads the file on the host system and returns the data to the SDSIO-Client.</p>
 <p>The function attempts to read data and may block based on the behavior of the underlying interface and data availability. It returns under the following conditions:</p>
 <ul>
 <li>If data is available, the function reads up to <code>buf_size</code> bytes and returns the number of bytes actually read. This value may be less than <code>buf_size</code>.</li>
@@ -274,7 +274,7 @@
 ) 
 </code></pre>
 <p><strong>Description:</strong> </p>
-<p>Attempts to write up to <code>buf_size</code> bytes from the memory pointed to <code>buf</code> to the SDSIO stream identified by <code>id</code>. If the interface is a local file system or semihosting, data is written directly to the file. For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends a write command (SDSIO_CMD_WRITE) along with the data to the SDSIO-Server, which then writes the data to a file on the host system.</p>
+<p>Attempts to write up to <code>buf_size</code> bytes from the memory pointed to <code>buf</code> to the SDSIO stream identified by <code>id</code>. If the interface is a local file system, data is written directly to the file. For communication channels such as Ethernet, USB or USART, the SDSIO-Client sends a write command (SDSIO_CMD_WRITE) along with the data to the SDSIO-Server, which then writes the data to a file on the host system.</p>
 <p>The function may return before all data has been written, depending on the available interface bandwidth, buffer capacity, or timeout behavior:</p>
 <ul>
 <li>If the write operation is successful, the function returns the number of bytes actually written. This value may be less than <em>buf_size</em> in case of partial write.</li>

@@ -150,8 +150,8 @@
 <li>The captured data streams can be labeled and used as a training dataset for AI models in MLOps systems.</li>
 </ul>
 <p>The SDS template application is implemented as a <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/">CMSIS-Toolbox Reference Application</a>. It is hardware-agnostic and requires an <code>SDSIO-Layer</code> and a <code>Board-Layer</code> with drivers for the target hardware.</p>
-<p>The <code>SDSIO-Layer</code> connects the SDS template application to a communication interface for SDS file I/O operations.
-The following <a href="sdsio.html">SDSIO interfaces</a> are pre-configured:</p>
+<p>An <code>SDSIO-Layer</code> connects the SDS template application to a communication interface for SDS file I/O operations.
+For hardware targets, the following <a href="sdsio.html">SDSIO interfaces</a> are available as pre-configured software layers:</p>
 <ul>
 <li><a href="sdsio.html#layer-sdsio_network">Ethernet Interface</a> using the MDK-Middleware Network component.</li>
 <li><a href="sdsio.html#layer-sdsio_usb">USB Bulk Interface</a> using the MDK-Middleware USB component.</li>
@@ -273,7 +273,7 @@ Because the input data stream can be repeated, it enables consistent verificatio
 <ul>
 <li>Open the <code>*.csolution.yml</code> file and add a new <code>target-type</code>.</li>
 </ul>
-<pre><code class="language-yml">    packs:
+<pre><code class="language-yml">  packs:
     - pack: &lt;DFP for your hardware&gt; # use keil.arm.com/packs to search for packs
 
   target-types:

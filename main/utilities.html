@@ -110,8 +110,6 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#sds-view">SDS-View</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a>
-    </li>
     <li class="toctree-l3"><a class="reference internal" href="#usage_1">Usage</a>
     </li>
         </ul>
@@ -743,10 +741,12 @@ from data recorded in SDS files (<code>&lt;name&gt;.&lt;label&gt;.sds</code>) us
 <p>The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description.
 All plots from a single recording are displayed on the same figure (shared vertical scale).</p>
 <p>If there are 3 values described in the metadata file, an optional 3D view may be displayed.</p>
-<h3 id="limitations">Limitations</h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul>
-<li>All data in a recording must be of the same type (float, uint32_t, uint16_t, ...)</li>
+<li>SDS-View requires that all values in the <a href="https://arm-software.github.io/SDS-Framework/main/theory.html#yaml-metadata-format"><code>*.sds.yml</code> metadata file</a> have the same data type (float, uint32_t, uint16_t, ...)</li>
 </ul>
+</div>
 <h3 id="usage_1">Usage</h3>
 <ul>
 <li><a href="#setup">Setup</a> the Python environment.</li>
