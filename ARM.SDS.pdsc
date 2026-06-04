@@ -40,31 +40,44 @@
   <conditions>
     <condition id="SDSIO via VSI">
       <description>SDSIO via VSI</description>
+      <require Cclass="SDS"   Cgroup="Stream"/>
       <require Cclass="CMSIS" Cgroup="RTOS2"/>
     </condition>
     <condition id="SDSIO via Socket">
       <description>SDSIO via Socket (IoT Socket)</description>
-      <require Cclass="CMSIS"        Cgroup="RTOS2"/>
-      <require Cclass="IoT Utility"  Cgroup="Socket"/>
+      <require Cclass="SDS"         Cgroup="Stream"/>
+      <require Cclass="CMSIS"       Cgroup="RTOS2"/>
+      <require Cclass="IoT Utility" Cgroup="Socket"/>
     </condition>
     <condition id="SDSIO via RTT">
       <description>SDSIO via RTT (SEGGER RTT)</description>
+      <require Cclass="SDS"    Cgroup="Stream"/>
+      <require Cclass="CMSIS"  Cgroup="RTOS2"/>
       <require Cclass="SEGGER" Cgroup="RTT"/>
     </condition>
     <condition id="SDSIO via USB - MDK USB">
       <description>SDSIO via USB (MDK USB)</description>
+      <require Cclass="SDS"   Cgroup="Stream"/>
       <require Cclass="CMSIS" Cgroup="RTOS2"/>
       <require Cvendor="Keil" Cclass="USB" Cgroup="Device" Csub="Custom Class"/>
     </condition>
     <condition id="SDSIO via USART - CMSIS USART">
       <description>SDSIO via USART (CMSIS USART)</description>
+      <require Cclass="SDS"          Cgroup="Stream"/>
       <require Cclass="CMSIS"        Cgroup="RTOS2"/>
       <require Cclass="CMSIS Driver" Cgroup="USART"/>
     </condition>
     <condition id="SDSIO via File System - MDK FS">
       <description>SDSIO via File System (MDK FS)</description>
+      <require Cclass="SDS"   Cgroup="Stream"/>
       <require Cvendor="Keil" Cclass="File System" Cgroup="Drive"/>
     </condition>
+    <!--
+    <condition id="SDSIO via File System - Semihosting">
+      <description>SDSIO via File System (Semihosting)</description>
+      <require Cclass="SDS" Cgroup="Stream"/>
+    </condition>
+    -->
     <condition id="SDS with CMSIS-RTOS2">
       <description>SDS with CMSIS-RTOS2</description>
       <require Cclass="CMSIS" Cgroup="RTOS2"/>
@@ -213,7 +226,7 @@
 
     <!-- SDSIO via File System (Semihosting) -->
     <!--
-    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="3.0.0" Cversion="3.0.0">
+    <component Cclass="SDS" Cgroup="IO" Csub="File System" Cvariant="Semihosting" Capiversion="3.0.0" Cversion="3.0.0" condition="SDSIO via File System - Semihosting">
       <description>SDSIO via File System (using Semihosting)</description>
       <RTE_Components_h>
         #define RTE_SDS_IO                              /* SDSIO */
