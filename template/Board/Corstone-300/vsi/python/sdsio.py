@@ -225,6 +225,7 @@ class sdsio_manager:
     ):
         self._stream_id = 0
         self._play_step_index = 0
+        self._rec_index = None      # recording session index (None = not yet determined)
         self._work_dir = path.normpath(work_dir)
         self._rec_dir = self._work_dir
         self.opened_streams = {}    # sid -> StreamInfo
@@ -357,14 +358,14 @@ class sdsio_manager:
                     try:
                         os.rename(_sds_file_path, _sds_file_path + ".bak")
                     except Exception:
-                        logger.warning(f"Could not create backup for existing file '{self._format_path(_sds_file_path)}'.")
+                        logger.warning(f"Could not create backup for existing file '{self._format_path(_sds_file_path)}'")
 
                 _eof_reached = False
                 with open(_sds_file_path, "wb") as _file_obj:
                     _records_since_flush = 0
                     if _index > 0:
                         # First file open was already notified in _open(); notify for subsequent files here
-                        logger.info(f"Record:   {_stream.name} ({self._format_path(_sds_file_path)}).")
+                        logger.info(f"Record:   {_stream.name} ({self._format_path(_sds_file_path)})")
                         if self._monitor:
                             self._monitor.send_open_msg(_sds_file_path, 1)
                         self.opened_streams[sid] = self.opened_streams[sid]._replace(file_idx=_index)
@@ -430,7 +431,7 @@ class sdsio_manager:
                         os.fsync(_file_obj.fileno())
                 # Last file close is handled in close(); send close only for non-last files
                 if not _eof_reached and _index < len(_stream.file_paths) - 1:
-                    logger.info(f"Closed:   {name} ({self._format_path(_sds_file_path)}).")
+                    logger.info(f"Closed:   {name} ({self._format_path(_sds_file_path)})")
                     if self._monitor:
                         self._monitor.send_close_msg(_sds_file_path)
                 if _eof_reached:
@@ -489,7 +490,7 @@ class sdsio_manager:
             self._flags.request_auto_playback_start()
         elif self._flags.auto_playback and self._last_playback_stream_name:
             if self._flags.request_auto_playback_terminate():
-                logger.info("sdsControl: auto playback terminate.")
+                logger.info("Playback complete - no more steps remaining.")
 
     def _open(self, mode, name):
         _cmd = CMD_OPEN
@@ -565,18 +566,24 @@ class sdsio_manager:
         if mode == 1:
             if not self._label_list:
                 if not self._playback_mode:
-                    # find first available numeric label for new recording
-                    _idx = 0
-                    _sds_file_path = self._make_sds_file_path(name, str(_idx), mode)
-                    while path.exists(_sds_file_path):
-                        _idx += 1
+                    # find index for new recording session
+                    if self._rec_index is None:
+                        # first session: scan from 0 to find first unused index
+                        _idx = 0
                         _sds_file_path = self._make_sds_file_path(name, str(_idx), mode)
-                    self._label_list.append(str(_idx))
+                        while path.exists(_sds_file_path):
+                            _idx += 1
+                            _sds_file_path = self._make_sds_file_path(name, str(_idx), mode)
+                        self._rec_index = _idx
+                    else:
+                        # subsequent sessions: increment from previous
+                        self._rec_index += 1
+                    self._label_list.append(str(self._rec_index))
 
             _file_paths = self._build_stream_file_paths(name, mode)
             # validate if recdir exsist
             if _file_paths and not path.exists(path.dirname(_file_paths[0])):
-                logger.error(f"Recording directory does not exist for stream '{name}': {self._format_path(path.dirname(_file_paths[0]))}.")
+                logger.error(f"Recording directory does not exist for stream '{name}': {self._format_path(path.dirname(_file_paths[0]))}")
                 return _resp_err
 
             # allocate new sid
@@ -597,7 +604,7 @@ class sdsio_manager:
             self._write_stop[_sid]   = _stop_evt
             # Notify monitor for the first file; subsequent files are notified in the write worker
             if _file_paths:
-                logger.info(f"Record:   {name} ({self._format_path(_file_paths[0])}).")
+                logger.info(f"Record:   {name} ({self._format_path(_file_paths[0])})")
                 if self._monitor:
                     self._monitor.send_open_msg(_file_paths[0], 1)
 
@@ -606,7 +613,7 @@ class sdsio_manager:
             # Validate that files for all labels exist
             for _sds_file_path in _file_paths:
                 if not path.exists(_sds_file_path):
-                    logger.error(f"Missing file for playback stream '{name}': {self._format_path(_sds_file_path)}.")
+                    logger.error(f"Missing file for playback stream '{name}': {self._format_path(_sds_file_path)}")
                     return _resp_err
 
             if not self._timestamp_boundaries:
@@ -635,7 +642,7 @@ class sdsio_manager:
             self._read_stop[_sid]  = _stop_evt
             # Notify monitor for the first file; subsequent files are notified in the read worker
             if _file_paths:
-                logger.info(f"Playback: {name} ({self._format_path(_file_paths[0])}).")
+                logger.info(f"Playback: {name} ({self._format_path(_file_paths[0])})")
                 if self._monitor:
                     self._monitor.send_open_msg(_file_paths[0], 0)
             self._last_playback_stream_name = name
@@ -666,7 +673,7 @@ class sdsio_manager:
                 _last_idx = _last_stream.file_idx
                 if _last_idx < len(_last_stream.file_paths):
                     _sds_file_path = _last_stream.file_paths[_last_idx]
-                    logger.info(f"Closed:   {_name} ({self._format_path(_sds_file_path)}).")
+                    logger.info(f"Closed:   {_name} ({self._format_path(_sds_file_path)})")
                     if self._monitor:
                         self._monitor.send_close_msg(_sds_file_path)
             self._write_threads.pop(sid)
@@ -681,7 +688,7 @@ class sdsio_manager:
                 _last_idx = _last_stream.file_idx
                 if _last_idx < len(_last_stream.file_paths):
                     _sds_file_path = _last_stream.file_paths[_last_idx]
-                    logger.info(f"Closed:   {_name} ({self._format_path(_sds_file_path)}).")
+                    logger.info(f"Closed:   {_name} ({self._format_path(_sds_file_path)})")
                     if self._monitor:
                         self._monitor.send_close_msg(_sds_file_path)
             self._read_buffers.pop(sid)
@@ -754,7 +761,7 @@ class sdsio_manager:
                         if _stream.file_paths and _f_idx < len(_stream.file_paths) - 1:
                             # Non-last file fully drained: report close and advance to next file
                             _sds_file_path = _stream.file_paths[_f_idx]
-                            logger.info(f"Closed:   {_stream.name} ({self._format_path(_sds_file_path)}).")
+                            logger.info(f"Closed:   {_stream.name} ({self._format_path(_sds_file_path)})")
                             if self._monitor:
                                 self._monitor.send_close_msg(_sds_file_path)
                             self.opened_streams[sid] = self.opened_streams[sid]._replace(file_idx=_f_idx + 1)
@@ -762,7 +769,7 @@ class sdsio_manager:
                             if _next_idx < len(_stream.file_paths):
                                 # First file open was already notified in _open(); notify for subsequent files here
                                 _sds_file_path = _stream.file_paths[_next_idx]
-                                logger.info(f"Playback: {_stream.name} ({self._format_path(_sds_file_path)}).")
+                                logger.info(f"Playback: {_stream.name} ({self._format_path(_sds_file_path)})")
                                 if self._monitor:
                                     self._monitor.send_open_msg(_sds_file_path, 0)
                             continue
