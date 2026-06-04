@@ -72,6 +72,7 @@ ARM.CMSIS-RTX.pdsc
 Keil.MDK-Middleware.pdsc
 MDK-Packs.IoT_Socket.pdsc
 ARM.CMSIS-View.pdsc
+SEGGER.RTT.pdsc
 "
 
 # Optional: restrict fallback modes for changelog generation
