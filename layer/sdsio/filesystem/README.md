@@ -36,3 +36,4 @@ For retargeting of standard C run-time library file operations the CMSIS-Compile
   - component: CMSIS-Compiler:File Interface:MDK-MW File System
 ```
 
+For more information refer to [Using File System Interface](https://arm-software.github.io/SDS-Framework/main/sdsio.html#using-file-system-interface).

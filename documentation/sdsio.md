@@ -156,6 +156,19 @@ pyOCD does not required a connect message. Instead the RTT channel configuration
 
 The [`layer/sdsio/filesystem/sdsio_fs.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem) is configured for recording to a Memory Card. It uses the MDK-Middleware File System component.
 
+### Using File System Interface
+
+The file system interface, used together with a template, enables recording of [SDS data files](theory.md#sds-data-files) to the SD card on the embedded board.
+
+Recording can be started and stopped using the on-board user button.
+
+Once the desired number of recordings has been captured, the SD card can be removed and transferred to a PC for review, copying, or labeling of the recorded data.
+
+!!! Note
+    The template-based file system implementation natively supports recording mode only.
+    Playback mode can be enabled by adapting the provided template code.
+    For example, an additional button on the board can be used to toggle between recording and playback modes.
+
 ## Layer: sdsio_fvp
 
 The [`template/sdsio/fvp/sdsio_fvp.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp) targets AVH FVP simulation and is configured for playback from the host computer. It uses the [SDSIO VSI interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html) implemented by the file `vsi/python/arm_vsi3.py`, which is loaded by the FVP simulation model. Since the SDSIO-Server functionality is implemented in `arm_vsi3.py`, no separate SDSIO-Server is required.
@@ -173,7 +186,7 @@ The VSI3 Python script (`arm_vsi3.py`) locates the control file as follows:
 - If `SDSIO_FVP` is not set (or falls back), the **simulator working directory** is searched using the same file order: `sdsio.yml`, `sdsio.yaml`, first `*.sdsio.yml` (alphabetical), first `*.sdsio.yaml` (alphabetical).
 
 !!! Tip
-    In Keil Studion you may set the [environment variable `SDSIO_FVP`](https://mdk-packs.github.io/vscode-cmsis-solution-docs/zephyr.html#set-environment-variables) using the Settings dialog with id `cmsis-csolution.environmentVariables`.
+    In Keil Studio you may set the [environment variable `SDSIO_FVP`](https://mdk-packs.github.io/vscode-cmsis-solution-docs/zephyr.html#set-environment-variables) using the Settings dialog with id `cmsis-csolution.environmentVariables`.
 
 If a control file is found, the script reads the `sdsio:` root node. If `workdir:` is a relative path, it is interpreted relative to the simulator working directory.
 
