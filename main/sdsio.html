@@ -83,6 +83,10 @@
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_fs">Layer: sdsio_fs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-file-system-interface">Using File System Interface</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_fvp">Layer: sdsio_fvp</a>
         <ul>
@@ -247,6 +251,16 @@ python sdsio-server.py -c myproject.sdsio.yml
 <p>pyOCD does not required a connect message. Instead the RTT channel configuration is part of the <code>*.cbuild-run.yml</code> file that also specifies project files and other hardware related parameters. Refer to <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#run-and-debug-configuration">CMSIS-Toolbox - Run and Debug Configuration</a> for further information.</p>
 <h2 id="layer-sdsio_fs">Layer: sdsio_fs</h2>
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem"><code>layer/sdsio/filesystem/sdsio_fs.clayer.yml</code></a> is configured for recording to a Memory Card. It uses the MDK-Middleware File System component.</p>
+<h3 id="using-file-system-interface">Using File System Interface</h3>
+<p>The file system interface, used together with a template, enables recording of <a href="theory.html#sds-data-files">SDS data files</a> to the SD card on the embedded board.</p>
+<p>Recording can be started and stopped using the on-board user button.</p>
+<p>Once the desired number of recordings has been captured, the SD card can be removed and transferred to a PC for review, copying, or labeling of the recorded data.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The template-based file system implementation natively supports recording mode only.
+Playback mode can be enabled by adapting the provided template code.
+For example, an additional button on the board can be used to toggle between recording and playback modes.</p>
+</div>
 <h2 id="layer-sdsio_fvp">Layer: sdsio_fvp</h2>
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp"><code>template/sdsio/fvp/sdsio_fvp.clayer.yml</code></a> targets AVH FVP simulation and is configured for playback from the host computer. It uses the <a href="https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html">SDSIO VSI interface</a> implemented by the file <code>vsi/python/arm_vsi3.py</code>, which is loaded by the FVP simulation model. Since the SDSIO-Server functionality is implemented in <code>arm_vsi3.py</code>, no separate SDSIO-Server is required.</p>
 <h3 id="using-fvp-simulation-models">Using FVP Simulation Models</h3>
@@ -263,7 +277,7 @@ python sdsio-server.py -c myproject.sdsio.yml
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>In Keil Studion you may set the <a href="https://mdk-packs.github.io/vscode-cmsis-solution-docs/zephyr.html#set-environment-variables">environment variable <code>SDSIO_FVP</code></a> using the Settings dialog with id <code>cmsis-csolution.environmentVariables</code>.</p>
+<p>In Keil Studio you may set the <a href="https://mdk-packs.github.io/vscode-cmsis-solution-docs/zephyr.html#set-environment-variables">environment variable <code>SDSIO_FVP</code></a> using the Settings dialog with id <code>cmsis-csolution.environmentVariables</code>.</p>
 </div>
 <p>If a control file is found, the script reads the <code>sdsio:</code> root node. If <code>workdir:</code> is a relative path, it is interpreted relative to the simulator working directory.</p>
 <p><strong>Console output:</strong></p>
