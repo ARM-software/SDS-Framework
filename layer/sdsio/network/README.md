@@ -61,4 +61,4 @@ You can leave the other configuration settings at their default values.
 
 ## Usage
 
-For more information refer [Using Network Interface](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_network).
+For more information refer to [Using Network Interface](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_network).

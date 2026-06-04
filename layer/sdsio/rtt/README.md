@@ -30,4 +30,4 @@ The RTT channel number used for SDSIO is configured in
 
 ## Usage
 
-For more information refer [Using RTT Interface](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_rtt).
+For more information refer to [Using RTT Interface](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_rtt).

@@ -44,4 +44,4 @@ The Vendor ID must be assigned by the [USB Implementers Forum (USB-IF)](https://
 
 ## Usage
 
-For more information refer [Using USB Interface](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_usb).
+For more information refer to [Using USB Interface](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_usb).

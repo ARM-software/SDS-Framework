@@ -41,3 +41,7 @@ During the simulation, the SDS files are saved on or read from the host computer
 
 - create a [New Solution](https://arm-software.github.io/SDS-Framework/main/template.html#create-new-solution) named `SDS` in an empty folder with VS Code IDE.
 - select the active target `SSE-300-U55` or `SSE-320-U85`, build and run the application.
+
+## Usage
+
+For more information refer to [Using FVP Simulation Models](https://arm-software.github.io/SDS-Framework/main/sdsio.html#using-fvp-simulation-models).
