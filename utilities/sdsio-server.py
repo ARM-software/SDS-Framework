@@ -548,7 +548,7 @@ class sdsControlInput(threading.Thread):
         self.start()
 
     def _request_shutdown(self, source: str):
-        logger.info(f"sdsControl: terminate ({source}).")
+        logger.info(f"SDSIO command: terminate ({source}).")
         if self._shutdown_event:
             self._shutdown_event.set()
         if self._loop and self._main_task:
@@ -579,7 +579,7 @@ class sdsControlInput(threading.Thread):
             if _action:
                 _set_mask, _clear_mask, _desc = _action
                 self._flags.apply(_set_mask, _clear_mask)
-                logger.info(f"sdsControl: {_desc} ('{_ch}').")
+                logger.info(f"SDSIO command: {_desc} ('{_ch}').")
 
     def stop(self):
         self._quit.set()
@@ -2613,4 +2613,4 @@ if __name__ == "__main__":
         asyncio.run(main())
     except (KeyboardInterrupt, asyncio.CancelledError):
         logger.info("Ctrl+C received, shutting down.")
-    logger.info("SDSIO-Server stopped.")
+    logger.info("SDSIO-Server shut down.")
