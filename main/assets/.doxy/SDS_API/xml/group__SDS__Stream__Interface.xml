@@ -99,7 +99,7 @@ This callback function is registered by passing a pointer to it as a parameter t
         <detaileddescription>
 <para>The sdsFlags variable stores configuration and diagnostic information in a single 32-bit word. This global variable can be directly read by the SDS application. To update the value from the SDS application use the function <ref refid="group__SDS__Stream__Interface_1gacc58cf2b724d52c75d118a5c5ddc81d0" kindref="member">sdsFlagsModify</ref>.</para>
 <para>The highest 8 bits are reserved for SDS control (see <ref refid="group__SDS__Flag__Masks" kindref="compound">sdsFlags Bitmasks</ref>), and the lower 24 bits are available to the user. User bits can be used to configure algorithms in A/B tests (e.g., bypassing a filter) and to report status information to the SDSIO-Server.</para>
-<para>The SDSIO-Server running on a host computer receives the sdsFlags value periodically (see <ref refid="group__SDS__Stream__Interface_1ga538b3bd8c3f78dd8eaa768a5c93ff6bd" kindref="member">sdsExchange</ref>). The SDSIO server can also update the sdsFlags variable, for example to start recording or configure algorithms. </para>
+<para>The SDSIO-Server running on a host computer receives the sdsFlags value periodically (see <ref refid="group__SDS__Stream__Interface_1ga538b3bd8c3f78dd8eaa768a5c93ff6bd" kindref="member">sdsExchange</ref>). The SDSIO-Server can also update the sdsFlags variable, for example to start recording or configure algorithms. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

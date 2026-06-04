@@ -178,13 +178,14 @@ used for a single inference. The inference itself is executed by the <code>Execu
 Opening a stream in <code>sdsModeRead</code> mode is used for playback and opening stream in <code>sdsModeWrite</code> is used for recording.</p>
 <p>The actual files used when opening a stream depend on the presence of the <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a> and its <code>play</code> node.</p>
 <p><strong>Recording:</strong></p>
-<p><code>&lt;label&gt;</code> is a sequential number starting at 0 and incremented by 1. The first value for which no corresponding file exists is used to create a new file.
-After recording completes, the process continues from the last <code>&lt;label&gt;</code> value.</p>
+<p><code>&lt;label&gt;</code> is a sequential integer starting at 0. The value is incremented until no file exists with the corresponding name, at which point a new file is created.</p>
+<p>Each subsequent recording session uses the next <code>&lt;label&gt;</code> value in the sequence. If a file with the selected name already exists, it is preserved by renaming it with
+a .bak extension before a new file is created with the original name.</p>
 <p><strong>Playback:</strong></p>
 <p>When a <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a> is used and contains a <a href="utilities.html#play"><code>play:</code></a> node, the filename follows the pattern <code>&lt;stream-name&gt;.&lt;label&gt;.sds</code>, where <code>&lt;label&gt;</code> is specified in the corresponding
 <a href="utilities.html#play"><code>step:</code></a>.</p>
-<p>When no <code>*.sdsio.yml</code> control file is used, the <code>&lt;label&gt;</code> is a sequential number starting at 0. If the corresponding file does not exist, the open operation fails.
-After playback completes, the process repeats with the <code>&lt;label&gt;</code> incremented by one.</p>
+<p>When <code>*.sdsio.yml</code> control file is not used, the <code>&lt;label&gt;</code> is a sequential number starting at 0. If the corresponding file does not exist, the open operation fails.
+After playback session completes, the process repeats with the <code>&lt;label&gt;</code> incremented by one.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
@@ -482,7 +483,7 @@ int32_t  n;                     // number of bytes written to data stream
 <li>the frequency of the algorithm execution. Fast execution speeds may require a larger buffer.</li>
 </ul>
 <p>As a guideline, the buffer size should be at least <strong>(2 × block size) + 2 KB</strong>.<br/>
-The minimum recommended buffer size is <strong>0x1000 (4 KB)</strong>.</p>
+The minimum recommended buffer size is <strong>4 KB</strong>.</p>
 <h2 id="sdsio-server-protocols">SDSIO-Server Protocols</h2>
 <p>The SDSIO-Server communicates with the firmware using the <a href="#sdsio-server-firmware-protocol">SDSIO-Server Firmware Protocol</a> over supported physical interfaces,
 including Ethernet, Wi-Fi, USB, debugger, and serial (USART) connections.

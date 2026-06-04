@@ -160,14 +160,16 @@ For hardware targets, the following <a href="sdsio.html">SDSIO interfaces</a> ar
 </ul>
 <p>With a custom SDSIO interface, alternative I/O configurations are possible.</p>
 <h2 id="sds-template-structure">SDS Template Structure</h2>
-<p>The structure of the SDS template application is shown below. Two projects let you choose between a data communication test and a user algorithm test. Two target types let you deploy the test application either on hardware (evaluation board) or on an AVH FVP (simulation model).</p>
+<p>The structure of the SDS template application is shown below. Two projects let you choose between a data communication test and a user algorithm test. Three target types are available, allowing the test application to be deployed either on hardware (an evaluation board) or on one of two AVH FVP simulation models.</p>
 <p>A standard board layer, provided by several BSPs, implements the hardware interface. For communication, the SDSIO layer uses the MDK-Middleware or (for the AVH FVP target) a virtual simulation interface (VSI).</p>
 <p><img alt="SDS Template Structure" src="images/Template_Structure.png" /></p>
 <p>The <code>Debug</code> and <code>Release</code> build types differ only in the optimization level and the amount of debug information printed.
 Both build types support recording and playback, controlled via <code>sdsFlags</code>. The <code>sdsFlags</code> value can be modified by the SDS application (using the function <code>sdsFlagsModify</code>) or by the SDSIO-Server, making it easy to switch between Record Mode and Playback Mode.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Implementations using a file system support only recording mode.</p>
+<p>The template-based file system implementation natively supports recording mode only.
+Playback mode can be enabled by adapting the provided template code.
+For example, an additional button on the board can be used to toggle between recording and playback modes.</p>
 </div>
 <h3 id="record-mode">Record Mode</h3>
 <p>Record mode captures the input data stream and the algorithm output data stream simultaneously.</p>
@@ -248,7 +250,7 @@ Because the input data stream can be repeated, it enables consistent verificatio
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>If no compatible software layer is available for SDS, use the <code>V2M-MPS3-SSE-300-FVP</code> board. Then adapt <code>sds.csolution.yml</code> and create a software layer for your target hardware as outlined in <a href="#compile-for-custom-hardware">Compile for Custom Hardware</a>. The <a href="sdsio.html#layer-sdsio_rtt">layer: sdsio_rtt</a> has minimal requirements because it uses the debug adapter as the communication interface to the SDSIO-Server.</li>
+<li>If no compatible software layer is available for SDS, use the <code>V2M-MPS3-SSE-300-FVP</code> board. Then adapt <code>SDS.csolution.yml</code> and create a software layer for your target hardware as outlined in <a href="#compile-for-custom-hardware">Compile for Custom Hardware</a>. The <a href="sdsio.html#layer-sdsio_rtt">layer: sdsio_rtt</a> has minimal requirements because it uses the debug adapter as the communication interface to the SDSIO-Server.</li>
 </ul>
 </div>
 <p><img alt="Configure Solution" src="images/ConfigureSolution.png" /></p>
@@ -306,7 +308,7 @@ Because the input data stream can be repeated, it enables consistent verificatio
 <p><strong>Recording</strong></p>
 <p>Activate recording from the SDSIO-Server by pressing the <code>R</code> key. To stop recording, press the <code>S</code> key.
 Alternatively, recording can be started or stopped by pressing the user button on the board.</p>
-<p>This run should generate the files <code>Test_In.1.sds</code> and <code>Test_Out.1.sds</code> in the folder <code>datatest\SDS Recordings</code>. The <code>DataTest</code> project is configured to record 1000 data records at an interval of 10 ms.</p>
+<p>This run should generate the files <code>Test_In.1.sds</code> and <code>Test_Out.1.sds</code> in the folder <code>datatest/SDS Recordings</code>. The <code>DataTest</code> project is configured to record 1000 data records at an interval of 10 ms.</p>
 <p>To verify correctness of the recording using the SDS-Check utility, use the following commands:</p>
 <pre><code class="language-bash">python sds-check.py -i Test_In.1.sds
 python sds-check.py -i Test_Out.1.sds
@@ -320,7 +322,7 @@ python sds-check.py -i Test_Out.1.sds
 </div>
 <p><strong>Playback</strong></p>
 <p>Activate the playback from the SDSIO-Server by pressing the <code>P</code> key.</p>
-<p>This run should read the <code>Test_In.0.sds</code> file and generate the <code>Test_Out.0.p.sds</code> file in the folder <code>datatest\SDS Recordings</code>. The <code>Test_Out.0.sds</code> file generated during recording is identical to <code>Test_Out.0.p.sds</code>, which is generated in playback mode.</p>
+<p>This run should read the <code>Test_In.0.sds</code> file and generate the <code>Test_Out.0.p.sds</code> file in the folder <code>datatest/SDS Recordings</code>. The <code>Test_Out.0.sds</code> file generated during recording is identical to <code>Test_Out.0.p.sds</code>, which is generated in playback mode.</p>
 <p>To verify correctness of the recording using the SDS-Check utility, use the following command:</p>
 <pre><code class="language-bash">python sds-check.py -i Test_Out.0.p.sds
 </code></pre>

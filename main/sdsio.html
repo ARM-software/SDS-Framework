@@ -130,7 +130,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="sdsio-interface">SDSIO Interface</h1>
-<p>The SDSIO components offer flexible SDS communication interfaces. You may choose between these interface components that are stored in the folders: <code>./sds/sdsio/client</code>, <code>./sds/sdsio/fs</code> or <code>./sds/sdsio/vsi</code>. You may use one of the following CMSIS software components for integration of the SDSIO interface into the target system:</p>
+<p>The SDSIO components offer flexible SDS communication interfaces. You may choose between these interface components that are stored in the folders: <code>sds/sdsio/client</code>, <code>sds/sdsio/fs</code> or <code>sds/sdsio/vsi</code>. You may use one of the following CMSIS software components for integration of the SDSIO interface into the target system:</p>
 <pre><code class="language-yml">  - component: SDS:IO:Socket                     # IoT Socket Interface (Ethernet or WiFi)
   - component: SDS:IO:USB&amp;MDK USB                # USB Interface
   - component: SDS:IO:RTT                        # RTT Interface
@@ -153,10 +153,12 @@
 <h3 id="using-usb-interface">Using USB Interface</h3>
 <p>To access <a href="theory.html#sds-data-files">SDS data files</a>, configure the <code>*.sdsio.yml</code> file with the <a href="utilities.html#usb"><code>interface - usb:</code></a> node and start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> on the host computer with:</p>
 <pre><code class="language-bash">&gt;python sdsio-server.py -c myproject.sdsio.yml
+SDSIO-Server v3.0.0
 Press 'Ctrl+C' or 'X' to exit.
-Working directory: ...\SDS_data.
-SDSIO configuration YAML: ...\myproject.sdsio.yml.
+Working directory: ...\SDS_data
+SDSIO configuration YAML: ...\myproject.sdsio.yml
 SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.
+SDSIO-Server waiting for USB SDSIO-Client...
 SDSIO-Client USB device connected.
 </code></pre>
 <h2 id="layer-sdsio_network">Layer: sdsio_network</h2>
@@ -177,15 +179,16 @@ SDSIO-Client USB device connected.
 <h3 id="using-network-interface">Using Network Interface</h3>
 <p>To access <a href="theory.html#sds-data-files">SDS data files</a>, configure the <code>*.sdsio.yml</code> file with the <a href="utilities.html#socket"><code>interface - socket:</code></a> node for Network interface, and start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> on the host computer with:</p>
 <pre><code class="language-bash">&gt;python sdsio-server.py -c myproject.sdsio.yml
+SDSIO-Server v3.0.0
 Press 'Ctrl+C' or 'X' to exit.
-Working directory: ...\SDS_data.
-SDSIO configuration YAML: ...\myproject.sdsio.yml.
+Working directory: ...\SDS_data
+SDSIO configuration YAML: ...\myproject.sdsio.yml
 SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.
-Socket server listening on 172.20.10.2:5050
+SDSIO-Server listening on 172.20.10.2:5050
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The SDSIO Server prints the IP address on which it is listening. The target hardware must connect to this IP address. Configure the target by updating the <code>SDSIO_SOCKET_SERVER_IP</code> macro in <code>./layer/sdsio/network/RTE/SDS/sdsio_client_socket_config.h</code>.</p>
+<p>The SDSIO-Server prints the IP address on which it is listening. The target hardware must connect to this IP address. Configure the target by updating the <code>SDSIO_SOCKET_SERVER_IP</code> macro in <code>layer/sdsio/network/RTE/SDS/sdsio_client_socket_config.h</code>.</p>
 </div>
 <h2 id="layer-sdsio_rtt">Layer: sdsio_rtt</h2>
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/rtt"><code>layer/sdsio/rtt/sdsio_rtt.clayer.yml</code></a> is configured for recording and playback using the SEGGER RTT component for I/O via a debug adapter.</p>
@@ -194,7 +197,7 @@ Socket server listening on 172.20.10.2:5050
 <p>The SDSIO layer communicates with the host computer via an RTT socket exposed by the
 debug probe software. The <a href="https://arm-software.github.io/SDS-Framework/main/utilities.html#sdsio-server">SDSIO-Server</a>
 runs on the host and connects to the debug probe socket using
-<a href="https://arm-software.github.io/SDS-Framework/main/utilities.html#socket-mode">socket connect mode</a>.</p>
+<a href="https://arm-software.github.io/SDS-Framework/main/utilities.html#socket-mode-command-line">socket connect mode</a>.</p>
 <h4 id="connect-with-segger-j-link">Connect with SEGGER J-Link</h4>
 <p>Configure <code>interface:</code> in the <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a> as shown below:</p>
 <pre><code class="language-yml">sdsio:
@@ -300,7 +303,7 @@ Playback: Test_In (Test_In.0.sds).
 Record:   Test_Out (Test_Out.0.p.sds).
 Closed:   Test_In (Test_In.0.sds).
 Closed:   Test_Out (Test_Out.0.p.sds).
-sdsControl: auto playback terminate.
+Playback complete - no more steps remaining.
 sdsFlags = 0x30000000.
 sdsFlags = 0x70000000.
 sdsFlags = 0x30000000.

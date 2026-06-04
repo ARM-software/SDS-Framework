@@ -264,7 +264,7 @@ The sdsFlags variable stores configuration and diagnostic information in a singl
 The highest 8 bits are reserved for SDS control (see [**sdsFlags Bitmasks**](group__SDS__Flag__Masks.md)), and the lower 24 bits are available to the user. User bits can be used to configure algorithms in A/B tests (e.g., bypassing a filter) and to report status information to the SDSIO-Server.
 
 
-The SDSIO-Server running on a host computer receives the sdsFlags value periodically (see [**sdsExchange**](group__SDS__Stream__Interface.md#function-sdsexchange)). The SDSIO server can also update the sdsFlags variable, for example to start recording or configure algorithms. 
+The SDSIO-Server running on a host computer receives the sdsFlags value periodically (see [**sdsExchange**](group__SDS__Stream__Interface.md#function-sdsexchange)). The SDSIO-Server can also update the sdsFlags variable, for example to start recording or configure algorithms. 
 
 
         
