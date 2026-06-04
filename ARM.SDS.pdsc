@@ -13,27 +13,8 @@
   <repository type="git">https://github.com/ARM-software/SDS-Framework.git</repository>
 
   <releases>
-    <release version="3.0.0-dev">
+    <release version="3.1.0-dev">
       Active development ...
-      SDS Framework:
-      - Simplified API to improve usability and developer experience (breaking change)
-      - Added support for control data exchange between firmware and host (SDSIO-Server)
-      - Reorganized source directory structure for better clarity and maintainability
-      - Standardized configuration file naming conventions
-      - Moved the Buffer component under the Stream component
-      - Updated SDSIO layers
-      - Enhanced and updated documentation
-      SDSIO-Server:
-      - Added support for control data exchange with the SDSIO-Client
-      - Introduced a keyboard-based user interface for controlling firmware application flags
-      - Added monitor data exchange support for the SDS VS Code extension
-      - Introduced configuration via the sdsio.yml file
-      - Enhanced playback capabilities through the sdsio.yml configuration
-      SDSIO-Client:
-      - Updated all interface implementations to support non-blocking receive operations
-      - Added RTT-based implementation
-      Template:
-      - Simplified template to improve usability and developer experience
     </release>
   </releases>
 
