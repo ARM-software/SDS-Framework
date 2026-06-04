@@ -62,4 +62,4 @@ The following section lists the communication speeds that can be achieved on dif
 - ULINKplus (SWD clock: 10 MHz): 250 kB/s
 - J-Link Pro (SWD clock: auto): 800 kB/s
 
-[Using the FileSystem](layer-sdsio_fs) on the STM32H7B3_DK board with SYSCLK 280 MHz, SDMMC with 4-bit bus: 5 MB/s
+[Using the FileSystem](layer-sdsio_fs) on the STM32H7B3_DK board with CPU running at 280 MHz, SDMMC with 4-bit bus: 5 MB/s

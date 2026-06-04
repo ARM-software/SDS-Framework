@@ -74,16 +74,18 @@ The actual files used when opening a stream depend on the presence of the [`*.sd
 
 **Recording:**
 
-`<label>` is a sequential number starting at 0 and incremented by 1. The first value for which no corresponding file exists is used to create a new file.
-After recording completes, the process continues from the last `<label>` value.
+`<label>` is a sequential integer starting at 0. The value is incremented until no file exists with the corresponding name, at which point a new file is created.
+
+Each subsequent recording session uses the next `<label>` value in the sequence. If a file with the selected name already exists, it is preserved by renaming it with
+a .bak extension before a new file is created with the original name.
 
 **Playback:**
 
 When a [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml) is used and contains a [`play:`](utilities.md#play) node, the filename follows the pattern `<stream-name>.<label>.sds`, where `<label>` is specified in the corresponding
 [`step:`](utilities.md#play).
 
-When no `*.sdsio.yml` control file is used, the `<label>` is a sequential number starting at 0. If the corresponding file does not exist, the open operation fails.
-After playback completes, the process repeats with the `<label>` incremented by one.
+When `*.sdsio.yml` control file is not used, the `<label>` is a sequential number starting at 0. If the corresponding file does not exist, the open operation fails.
+After playback session completes, the process repeats with the `<label>` incremented by one.
 
 !!! Note
     - Files recorded during playback include an additional `.p` before the `.sds` extension to
@@ -256,7 +258,7 @@ The size of the data stream buffer depends on several factors such as:
 - the frequency of the algorithm execution. Fast execution speeds may require a larger buffer.
 
 As a guideline, the buffer size should be at least **(2 × block size) + 2 KB**.  
-The minimum recommended buffer size is **0x1000 (4 KB)**.
+The minimum recommended buffer size is **4 KB**.
 
 ## SDSIO-Server Protocols
 

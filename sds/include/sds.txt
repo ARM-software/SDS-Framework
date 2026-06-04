@@ -123,7 +123,7 @@ The highest 8 bits are reserved for SDS control (see \ref SDS_Flag_Masks), and t
 User bits can be used to configure algorithms in A/B tests (e.g., bypassing a filter) and to report status information to the SDSIO-Server.
 
 The SDSIO-Server running on a host computer receives the sdsFlags value periodically (see \ref sdsExchange).
-The SDSIO server can also update the sdsFlags variable, for example to start recording or configure algorithms.
+The SDSIO-Server can also update the sdsFlags variable, for example to start recording or configure algorithms.
 */
 
 /**

@@ -4,8 +4,8 @@
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD024 -->
 
-The SDS-Framework pack includes in the folder `/utilities` several utilities that are implemented in Python.
-Install **Python** and the packages listed in the file `/utilities/requirements.txt` to run these utilities:
+The SDS-Framework pack includes in the folder `utilities` several utilities that are implemented in Python.
+Install **Python** and the packages listed in the file `utilities/requirements.txt` to run these utilities:
 
 - [**SDSIO Control File `*.sdsio.yml`:**](#sdsio-control-file-sdsioyml) configures the SDSIO-Server or the FVP VSI3 simulation interface.
 - [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via USB, socket (TCP/IP) or serial (UART) connection.
@@ -48,7 +48,7 @@ The SDSIO control file `*.sdsio.yml` configures:
 
 - For the [SDSIO-Server](#sdsio-server), the interface, workdir and steps for playback mode.
 - For the [FVP simulation models (VSI3)](sdsio.md#layer-sdsio_fvp), the interface, workdir, and steps for playback.
-- For the [SDS extension for VS Code](https://marketplace.visualstudio.com/), it configures the SDSIO-Server and the user interface.
+- For the [SDS extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds), it configures the SDSIO-Server and the user interface.
 
 ### `sdsio:`
 
@@ -113,7 +113,7 @@ sdsio:
 &nbsp;&nbsp;&nbsp; `netif:`                                 |   Optional   | Network interface name (example: `eth0`); cannot be used with `ipaddr`.
 &nbsp;&nbsp;&nbsp; `port:`                                  |   Optional   | TCP port number (default: `5050`).
 &nbsp;&nbsp;&nbsp; `connect:`                               |   Optional   | When present, connect to `ipaddr` instead of listening; optional value is a message sent to the host when the connection is established (default: none).
-&nbsp;&nbsp;&nbsp; `connect-time:`                          |   Optional   | Milliseconds to discard incoming data after the connection is established (default: `50`).
+&nbsp;&nbsp;&nbsp; `connect-time:`                          |   Optional   | Duration in milliseconds to discard incoming data after the connection is established (default: `50`).
 
 !!! Note
     - The `ipaddr:` and `netif:` options are mutually exclusive.
@@ -142,7 +142,7 @@ sdsio:
 
 ### `streams:`
 
-The `streams:` node provides additional information about the SDS data streams to the [SDS extension for VS Code](https://marketplace.visualstudio.com/). It provides the context between the data streams and the display format.
+The `streams:` node provides additional information about the SDS data streams to the [SDS extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds). It provides the context between the data streams and the display format.
 
 `streams:`                                                  |              | Content
 :-----------------------------------------------------------|:-------------|:------------------------------------
@@ -235,26 +235,26 @@ SDSIO-Server: record and playback SDS data stream files over USB, socket, or ser
 Configure via *.sdsio.yml file or specify the interface parameters directly on the command line.
 
 options:
-  --help, -h                   Show this help message and exit
-  --version, -V                Show program's version number and exit
+  --help, -h                       Show this help message and exit
+  --version, -V                    Show program's version number and exit
 
 interface (optional, default: usb; overrides interface specified in *.sdsio.yml):
   {socket | serial | usb}
-    socket                     Run TCP socket server
-    serial                     Run serial server
-    usb                        Run USB bulk server
+    socket                         Run SDSIO-Server using socket interface
+    serial                         Run SDSIO-Server using serial interface
+    usb                            Run SDSIO-Server using USB interface
 
 configuration:
-  --control, -c <*.sdsio.yml>  Configure interface, SDS file directories, and playback steps
+  --control, -c <*.sdsio.yml>      Configure interface, SDS file directories, and playback steps
 
 general-opts:
-  --playback, -p               Start SDSIO-Server in playback mode (typically used in CI tests)
-  --workdir <path>             Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
-  --mon-port, -m <port>        Monitor control interface port
-  --log, -l <file>             Redirect console output to a log file (typically for CI use)
-  --write-flush-size <bytes>   Force recorded SDS data to disk after this many bytes (0 disables explicit sync)
-  --verbose, -v                Enable debug messages
-  --high-priority              Increase process priority when using USB interface (requires elevated privileges)
+  --playback, -p                   Start SDSIO-Server in playback mode (typically used in CI tests)
+  --workdir <path>                 Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
+  --mon-port, -m <port>            Monitor control interface port
+  --log, -l <file>                 Redirect console output to a log file (typically for CI use)
+  --write-flush-records <records>  Force recorded SDS data to disk after this many records (overrides *.sdsio.yml setting; 0 = after every record; default: disabled)
+  --verbose, -v                    Enable debug messages
+  --high-priority                  Increase process priority when using USB interface (requires elevated privileges)
 ```
 
 **Console input for SDSIO-Server:**
@@ -281,13 +281,13 @@ Start SDSIO-Server using a control file:
 python sdsio-server.py -c myproject.sdsio.yml
 ```
 
-Start SDSIO-Server in `playback` mode:
+Start SDSIO-Server automatically starting the playback:
 
 ```bash
 python sdsio-server.py -c sdsio.yml --playback
 ```
 
-Start SDSIO-Server in `playback` mode and overwrite the `workdir:` node.
+Start SDSIO-Server and override the `workdir:` node.
 
 ```bash
 python sdsio-server.py -c myproject.sdsio.yml --workdir ./mytest2
@@ -296,10 +296,11 @@ python sdsio-server.py -c myproject.sdsio.yml --workdir ./mytest2
 #### USB Mode (command line)
 
 ```txt
-usage: sdsio-server.py usb [-h] [general-opts]
+usage: sdsio-server.py usb [-h] [-V] [general-opts]
 
 options:
-  -h, --help             Show this help message and exit
+  --help, -h                       Show this help message and exit
+  --version, -V                    Show program's version number and exit
 ```
 
 **Example:**
@@ -319,19 +320,17 @@ The socket server can operate in two modes:
 usage: sdsio-server.py socket [-h] [-V] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [--connect [<message>]] [--connect-time <ms>] [general-opts]
 
 options:
-  -h, --help                        Show this help message and exit
+  --help, -h                       Show this help message and exit
+  --version, -V                    Show program's version number and exit
 
 if-opts (optional):
-  --ipaddr <IP>                     Server IP address in listen mode, or host IP address in connect mode
-                                    (example: 192.168.0.100); mandatory with --connect;
-                                    cannot be combined with 'netif'
-  --netif <Interface>               Network interface (example: eth0), cannot be combined with 'ipaddr'
-  --port <TCP Port>                 TCP port number (default: 5050)
-  --connect [<message>]             Connect to the configured IP address instead of listening for
-                                    incoming socket connections; optional message sent to the host
-                                    when the connection is established
-  --connect-time <ms>               Duration in milliseconds to discard incoming data after the connection
-                                    is established (default: 50)
+  --ipaddr <IP>                    Server IP address; cannot be combined with 'netif',
+                                   or host IP address in connect mode (default: 127.0.0.1 / localhost)
+  --netif <Interface>              Network interface (example: eth0), cannot be combined with '--ipaddr' or '--connect'
+  --port <TCP Port>                TCP port number (default: 5050)
+  --connect <message>              Connect to existing IP port instead of listening for incoming connections;
+                                   optionally send <message> to establish the connection
+  --connect-time <ms>              Duration in milliseconds to discard incoming data after the connection is established (default: 50)
 ```
 
 !!! Note
@@ -368,19 +367,20 @@ python sdsio-server.py socket --ipaddr 192.168.0.1 --port 5050 --connect
 #### Serial Mode (command line)
 
 ```txt
-usage: sdsio-server.py serial [-h] --port <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>] [general-opts]
+usage: sdsio-server.py serial [-h] [-V] --port <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>] [general-opts]
 
 options:
-  -h, --help                   Show this help message and exit
+  --help, -h                       Show this help message and exit
+  --version, -V                    Show program's version number and exit
 
 if-opts (required):
-  --port <Serial Port>         Serial port (required)
+  --port <Serial Port>             Serial port (required)
 
 if-opts (optional):
-  --baudrate <Baudrate>        Baudrate (default: 115200)
-  --parity <Parity>            Parity: none, even, odd, mark, space (default: none)
-  --stopbits <Stop bits>       Stop bits: 1, 1.5, 2 (default: 1)
-  --connect-timeout <Timeout>  Serial port connection timeout in seconds (default: no timeout)
+  --baudrate <Baudrate>            Baudrate (default: 115200)
+  --parity <Parity>                Parity: none, even, odd, mark, space (default: none)
+  --stopbits <Stop bits>           Stop bits: 1, 1.5, 2 (default: 1)
+  --connect-timeout <Timeout>      Serial port connection timeout in seconds (default: no timeout)
 ```
 
 **Example:**
@@ -403,10 +403,10 @@ Start SDSIO-Server using a user-specified working directory:
 python sdsio-server.py usb --workdir ./data
 ```
 
-Start SDSIO-Server, forcing SDS file write flushes to disk after every 100 records:
+Start SDSIO-Server, forcing SDS file write flushes to disk after each new record:
 
 ```bash
-python sdsio-server.py usb --write-flush-records 100
+python sdsio-server.py usb --write-flush-records 0
 ```
 
 !!! Note

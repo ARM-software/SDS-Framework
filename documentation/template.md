@@ -23,7 +23,7 @@ With a custom SDSIO interface, alternative I/O configurations are possible.
 
 ## SDS Template Structure
 
-The structure of the SDS template application is shown below. Two projects let you choose between a data communication test and a user algorithm test. Two target types let you deploy the test application either on hardware (evaluation board) or on an AVH FVP (simulation model).
+The structure of the SDS template application is shown below. Two projects let you choose between a data communication test and a user algorithm test. Three target types are available, allowing the test application to be deployed either on hardware (an evaluation board) or on one of two AVH FVP simulation models.
 
 A standard board layer, provided by several BSPs, implements the hardware interface. For communication, the SDSIO layer uses the MDK-Middleware or (for the AVH FVP target) a virtual simulation interface (VSI).
 
@@ -33,7 +33,9 @@ The `Debug` and `Release` build types differ only in the optimization level and 
 Both build types support recording and playback, controlled via `sdsFlags`. The `sdsFlags` value can be modified by the SDS application (using the function `sdsFlagsModify`) or by the SDSIO-Server, making it easy to switch between Record Mode and Playback Mode.
 
 !!! Note
-    Implementations using a file system support only recording mode.
+    The template-based file system implementation natively supports recording mode only.
+    Playback mode can be enabled by adapting the provided template code.
+    For example, an additional button on the board can be used to toggle between recording and playback modes.
 
 ### Record Mode
 
@@ -95,7 +97,7 @@ In the [**Create a new solution**](https://mdk-packs.github.io/vscode-cmsis-solu
 After the *csolution project* loads, VS Code displays a dialog where you can select a compatible software layer and an installed compiler toolchain.
 
 !!! Note
-    - If no compatible software layer is available for SDS, use the `V2M-MPS3-SSE-300-FVP` board. Then adapt `sds.csolution.yml` and create a software layer for your target hardware as outlined in [Compile for Custom Hardware](#compile-for-custom-hardware). The [layer: sdsio_rtt](sdsio.md#layer-sdsio_rtt) has minimal requirements because it uses the debug adapter as the communication interface to the SDSIO-Server.
+    - If no compatible software layer is available for SDS, use the `V2M-MPS3-SSE-300-FVP` board. Then adapt `SDS.csolution.yml` and create a software layer for your target hardware as outlined in [Compile for Custom Hardware](#compile-for-custom-hardware). The [layer: sdsio_rtt](sdsio.md#layer-sdsio_rtt) has minimal requirements because it uses the debug adapter as the communication interface to the SDSIO-Server.
 
 ![Configure Solution](images/ConfigureSolution.png)
 
@@ -157,7 +159,7 @@ The **DataTest** project validates the communication channel.
 Activate recording from the SDSIO-Server by pressing the `R` key. To stop recording, press the `S` key.
 Alternatively, recording can be started or stopped by pressing the user button on the board.
 
-This run should generate the files `Test_In.1.sds` and `Test_Out.1.sds` in the folder `datatest\SDS Recordings`. The `DataTest` project is configured to record 1000 data records at an interval of 10 ms.
+This run should generate the files `Test_In.1.sds` and `Test_Out.1.sds` in the folder `datatest/SDS Recordings`. The `DataTest` project is configured to record 1000 data records at an interval of 10 ms.
 
 To verify correctness of the recording using the SDS-Check utility, use the following commands:
 
@@ -175,7 +177,7 @@ When recording is started again, new files with different names are created: `Te
 
 Activate the playback from the SDSIO-Server by pressing the `P` key.
 
-This run should read the `Test_In.0.sds` file and generate the `Test_Out.0.p.sds` file in the folder `datatest\SDS Recordings`. The `Test_Out.0.sds` file generated during recording is identical to `Test_Out.0.p.sds`, which is generated in playback mode.
+This run should read the `Test_In.0.sds` file and generate the `Test_Out.0.p.sds` file in the folder `datatest/SDS Recordings`. The `Test_Out.0.sds` file generated during recording is identical to `Test_Out.0.p.sds`, which is generated in playback mode.
 
 To verify correctness of the recording using the SDS-Check utility, use the following command:
 

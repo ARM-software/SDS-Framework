@@ -1,6 +1,6 @@
 # SDSIO Interface
 
-The SDSIO components offer flexible SDS communication interfaces. You may choose between these interface components that are stored in the folders: `./sds/sdsio/client`, `./sds/sdsio/fs` or `./sds/sdsio/vsi`. You may use one of the following CMSIS software components for integration of the SDSIO interface into the target system:
+The SDSIO components offer flexible SDS communication interfaces. You may choose between these interface components that are stored in the folders: `sds/sdsio/client`, `sds/sdsio/fs` or `sds/sdsio/vsi`. You may use one of the following CMSIS software components for integration of the SDSIO interface into the target system:
 
 ```yml
   - component: SDS:IO:Socket                     # IoT Socket Interface (Ethernet or WiFi)
@@ -32,10 +32,12 @@ To access [SDS data files](theory.md#sds-data-files), configure the `*.sdsio.yml
 
 ```bash
 >python sdsio-server.py -c myproject.sdsio.yml
+SDSIO-Server v3.0.0
 Press 'Ctrl+C' or 'X' to exit.
-Working directory: ...\SDS_data.
-SDSIO configuration YAML: ...\myproject.sdsio.yml.
+Working directory: ...\SDS_data
+SDSIO configuration YAML: ...\myproject.sdsio.yml
 SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.
+SDSIO-Server waiting for USB SDSIO-Client...
 SDSIO-Client USB device connected.
 ```
 
@@ -58,15 +60,16 @@ To access [SDS data files](theory.md#sds-data-files), configure the `*.sdsio.yml
 
 ```bash
 >python sdsio-server.py -c myproject.sdsio.yml
+SDSIO-Server v3.0.0
 Press 'Ctrl+C' or 'X' to exit.
-Working directory: ...\SDS_data.
-SDSIO configuration YAML: ...\myproject.sdsio.yml.
+Working directory: ...\SDS_data
+SDSIO configuration YAML: ...\myproject.sdsio.yml
 SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.
-Socket server listening on 172.20.10.2:5050
+SDSIO-Server listening on 172.20.10.2:5050
 ```
 
 !!! Note
-    The SDSIO Server prints the IP address on which it is listening. The target hardware must connect to this IP address. Configure the target by updating the `SDSIO_SOCKET_SERVER_IP` macro in `./layer/sdsio/network/RTE/SDS/sdsio_client_socket_config.h`.
+    The SDSIO-Server prints the IP address on which it is listening. The target hardware must connect to this IP address. Configure the target by updating the `SDSIO_SOCKET_SERVER_IP` macro in `layer/sdsio/network/RTE/SDS/sdsio_client_socket_config.h`.
 
 ## Layer: sdsio_rtt
 
@@ -79,7 +82,7 @@ The [`layer/sdsio/rtt/sdsio_rtt.clayer.yml`](https://github.com/ARM-software/SDS
 The SDSIO layer communicates with the host computer via an RTT socket exposed by the
 debug probe software. The [SDSIO-Server](https://arm-software.github.io/SDS-Framework/main/utilities.html#sdsio-server)
 runs on the host and connects to the debug probe socket using
-[socket connect mode](https://arm-software.github.io/SDS-Framework/main/utilities.html#socket-mode).
+[socket connect mode](https://arm-software.github.io/SDS-Framework/main/utilities.html#socket-mode-command-line).
 
 #### Connect with SEGGER J-Link
 
@@ -216,7 +219,7 @@ Playback: Test_In (Test_In.0.sds).
 Record:   Test_Out (Test_Out.0.p.sds).
 Closed:   Test_In (Test_In.0.sds).
 Closed:   Test_Out (Test_Out.0.p.sds).
-sdsControl: auto playback terminate.
+Playback complete - no more steps remaining.
 sdsFlags = 0x30000000.
 sdsFlags = 0x70000000.
 sdsFlags = 0x30000000.
