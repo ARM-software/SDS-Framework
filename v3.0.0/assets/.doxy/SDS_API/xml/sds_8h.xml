@@ -1,0 +1,308 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="sds_8h" kind="file" language="C++">
+    <compoundname>sds.h</compoundname>
+    <includes local="no">stdio.h</includes>
+    <includes local="no">stdint.h</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>sds/include/sds.h</label>
+        <link refid="sds_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>stdint.h</label>
+      </node>
+      <node id="2">
+        <label>stdio.h</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structsdsError__t" prot="public">sdsError_t</innerclass>
+    <sectiondef kind="define">
+      <member refid="group__SDS__Return__Codes_1gafebe74e89e19cf971c72779eeaec6863" kind="define"><name>SDS_OK</name></member>
+      <member refid="group__SDS__Return__Codes_1ga734982f7ce9f8eb3c592d540b605331b" kind="define"><name>SDS_ERROR</name></member>
+      <member refid="group__SDS__Return__Codes_1ga2878077ff7828f21757082f0125577ad" kind="define"><name>SDS_ERROR_PARAMETER</name></member>
+      <member refid="group__SDS__Return__Codes_1ga92e9c489cdb95b2b3c2350050f07e8b1" kind="define"><name>SDS_ERROR_TIMEOUT</name></member>
+      <member refid="group__SDS__Return__Codes_1ga3cca5be420b6b8fbdb3c56fedf535fbd" kind="define"><name>SDS_ERROR_IO</name></member>
+      <member refid="group__SDS__Return__Codes_1ga5b26591fac6b0aff5dbfec00d2ea773b" kind="define"><name>SDS_NO_SPACE</name></member>
+      <member refid="group__SDS__Return__Codes_1gadf38bbd9b95c00dc3fd512e04087c612" kind="define"><name>SDS_NO_DATA</name></member>
+      <member refid="group__SDS__Return__Codes_1gae272775a6617dce7b3728042876cadd8" kind="define"><name>SDS_EOS</name></member>
+      <member refid="group__SDS__Event__Codes_1ga7c2482f9b5c93e6a51f3b13c8621963b" kind="define"><name>SDS_EVENT_ERROR_IO</name></member>
+      <member refid="group__SDS__Event__Codes_1ga88867f7d5275af88378fd59c4790603a" kind="define"><name>SDS_EVENT_NO_SPACE</name></member>
+      <member refid="group__SDS__Event__Codes_1gacd2820b46a0b739dcdf507a144bcbf20" kind="define"><name>SDS_EVENT_NO_DATA</name></member>
+      <memberdef kind="define" id="sds_8h_1aced5a492c220c6dd9bd22484fb94dc9d" prot="public" static="no">
+        <name>SDS_STDIO</name>
+        <initializer>1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="137" column="9" bodyfile="sds/include/sds.h" bodystart="137" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="sds_8h_1af7c466279d56b70f7a26e4c96c8fea2b" prot="public" static="no">
+        <name>SDS_PRINTF</name>
+        <param><defname>...</defname></param>
+        <initializer>  printf(__VA_ARGS__)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="144" column="9" bodyfile="sds/include/sds.h" bodystart="144" bodyend="145"/>
+      </memberdef>
+      <memberdef kind="define" id="sds_8h_1ab49a1d146174d0ac652399b25df599da" prot="public" static="no">
+        <name>SDS_ERROR_CHECK</name>
+        <param><defname>sds_status</defname></param>
+        <initializer>  if ((sds_status != <ref refid="group__SDS__Return__Codes_1gafebe74e89e19cf971c72779eeaec6863" kindref="member">SDS_OK</ref>) &amp;&amp; (sdsError.occurred == 0U)) {    \
+    sdsError.status = sds_status;                               \
+    sdsError.file = __FILE__;                                   \
+    sdsError.line = __LINE__;                                   \
+    sdsError.occurred = 1U;                                     \
+    SDS_PRINTF(&quot;Error: SDS_ERROR_CHECK status = %i: %s: %u\n&quot;, sds_status, sdsError.file, sdsError.line); \
+  }</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="166" column="9" bodyfile="sds/include/sds.h" bodystart="166" bodyend="173"/>
+      </memberdef>
+      <memberdef kind="define" id="sds_8h_1a8b1e982c7a64eab772efa739830f3039" prot="public" static="no">
+        <name>SDS_ASSERT</name>
+        <param><defname>cond</defname></param>
+        <initializer>  if (!(cond) &amp;&amp; (sdsError.occurred == 0U)) {   \
+    sdsError.status = <ref refid="group__SDS__Return__Codes_1gafebe74e89e19cf971c72779eeaec6863" kindref="member">SDS_OK</ref>;                   \
+    sdsError.file = __FILE__;                   \
+    sdsError.line = __LINE__;                   \
+    sdsError.occurred = 1U;                     \
+    SDS_PRINTF(&quot;Error: SDS_ASSERT failed: %s: %u\n&quot;, sdsError.file, sdsError.line); \
+  }</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="180" column="9" bodyfile="sds/include/sds.h" bodystart="180" bodyend="187"/>
+      </memberdef>
+      <member refid="group__SDS__Flag__Masks_1ga232e6df52024368cc29a897d21780039" kind="define"><name>SDS_FLAG_START</name></member>
+      <member refid="group__SDS__Flag__Masks_1ga25462727626bbc463cfb9abd839d3d9d" kind="define"><name>SDS_FLAG_TERMINATE</name></member>
+      <member refid="group__SDS__Flag__Masks_1gad0eb45bd3ad461042a817db48664e137" kind="define"><name>SDS_FLAG_PLAYBACK</name></member>
+      <member refid="group__SDS__Flag__Masks_1ga1895aa890cc25c079b60d4a92589dbf9" kind="define"><name>SDS_FLAG_ALIVE</name></member>
+      <member refid="group__SDS__Flag__Masks_1ga133028b3ccc0fd0bf85b7a8923c061d9" kind="define"><name>SDS_FLAG_RESET</name></member>
+      <member refid="group__SDS__State__Codes_1ga5a907b659d9fc6e216b439f5a8d57aab" kind="define"><name>SDS_STATE_INACTIVE</name></member>
+      <member refid="group__SDS__State__Codes_1gaf024399c5bc1c5039781344237c0b131" kind="define"><name>SDS_STATE_CONNECTED</name></member>
+      <member refid="group__SDS__State__Codes_1gaf3dbe95252bc1daf54149780fa3b534b" kind="define"><name>SDS_STATE_START</name></member>
+      <member refid="group__SDS__State__Codes_1ga644145791174ce37a634c8a4849117ea" kind="define"><name>SDS_STATE_ACTIVE</name></member>
+      <member refid="group__SDS__State__Codes_1ga075dd3c7ac9d29ad30b24568c0734374" kind="define"><name>SDS_STATE_STOP_REQ</name></member>
+      <member refid="group__SDS__State__Codes_1ga4163f8773a87c556109c184f118ee833" kind="define"><name>SDS_STATE_STOP_DONE</name></member>
+      <member refid="group__SDS__State__Codes_1ga53d987b53be4e6630c55f0ecc5550851" kind="define"><name>SDS_STATE_END</name></member>
+      <member refid="group__SDS__State__Codes_1gad98b7ed572340d850818401fe30c255b" kind="define"><name>SDS_STATE_RESET</name></member>
+      <member refid="group__SDS__State__Codes_1gace7f9148e2614b1dd42cf6804f7b82e1" kind="define"><name>SDS_STATE_TERMINATE</name></member>
+    </sectiondef>
+    <sectiondef kind="enum">
+      <member refid="group__SDS__Stream__Interface_1ga2efce73b9fb6a87eeb28d3587d3ccdb7" kind="enum"><name>sdsMode_t</name></member>
+    </sectiondef>
+    <sectiondef kind="typedef">
+      <member refid="group__SDS__Stream__Interface_1gad6d59026db360abedd94d82ab336ebbf" kind="typedef"><name>sdsId_t</name></member>
+      <member refid="group__SDS__Stream__Interface_1ga9a26c990f6c41064d04a15401f24b902" kind="typedef"><name>sdsEvent_t</name></member>
+    </sectiondef>
+    <sectiondef kind="var">
+      <member refid="group__SDS__Stream__Interface_1ga67fcecf8a20781854b399b5107417526" kind="variable"><name>sdsError</name></member>
+      <member refid="group__SDS__Stream__Interface_1ga5dc742cda7ce949a6b73105b0be095ca" kind="variable"><name>sdsFlags</name></member>
+      <member refid="group__SDS__Stream__Interface_1gac5fbc1c61d43606b0c54a482781a2ce9" kind="variable"><name>sdsState</name></member>
+      <member refid="group__SDS__Stream__Interface_1ga7c5a17f56f2d24b1453f0d198f2c572d" kind="variable"><name>sdsIdleRate</name></member>
+    </sectiondef>
+    <sectiondef kind="func">
+      <member refid="group__SDS__Stream__Interface_1ga31335fdb44338293976461dec3634b03" kind="function"><name>sdsInit</name></member>
+      <member refid="group__SDS__Stream__Interface_1ga78ba5fcb605d9b2ef149dc8c89070247" kind="function"><name>sdsUninit</name></member>
+      <member refid="group__SDS__Stream__Interface_1ga556e7b58658f67d3a59a1ae32b4af2a0" kind="function"><name>sdsOpen</name></member>
+      <member refid="group__SDS__Stream__Interface_1ga22743afd7f4d4f25622e426fef93bdac" kind="function"><name>sdsClose</name></member>
+      <member refid="group__SDS__Stream__Interface_1ga08ace9f59d5d5dcf5f671ec2738a174a" kind="function"><name>sdsWrite</name></member>
+      <member refid="group__SDS__Stream__Interface_1gacb7b42f9087f9de9fe5021db3318751e" kind="function"><name>sdsRead</name></member>
+      <member refid="group__SDS__Stream__Interface_1ga55fa3875a9ef1ebfd4108eba1a4cfb49" kind="function"><name>sdsGetSize</name></member>
+      <member refid="group__SDS__Stream__Interface_1ga538b3bd8c3f78dd8eaa768a5c93ff6bd" kind="function"><name>sdsExchange</name></member>
+      <member refid="group__SDS__Stream__Interface_1gacc58cf2b724d52c75d118a5c5ddc81d0" kind="function"><name>sdsFlagsModify</name></member>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Copyright<sp/>(c)<sp/>2025-2026<sp/>Arm<sp/>Limited.<sp/>All<sp/>rights<sp/>reserved.</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>SPDX-License-Identifier:<sp/>Apache-2.0</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the<sp/>License);<sp/>you<sp/>may</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance<sp/>with<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/>www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,<sp/>software</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an<sp/>AS<sp/>IS<sp/>BASIS,<sp/>WITHOUT</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>See<sp/>the<sp/>License<sp/>for<sp/>the<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>limitations<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>SDS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_H</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;C&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stdio.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stdint.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="comment">//<sp/>====<sp/>SDS<sp/>Interface<sp/>====</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32" refid="group__SDS__Stream__Interface_1gad6d59026db360abedd94d82ab336ebbf" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*<ref refid="group__SDS__Stream__Interface_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Handle<sp/>to<sp/>SDS<sp/>stream</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Function<sp/>return<sp/>codes</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35" refid="group__SDS__Return__Codes_1gafebe74e89e19cf971c72779eeaec6863" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_OK<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(0)<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36" refid="group__SDS__Return__Codes_1ga734982f7ce9f8eb3c592d540b605331b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_ERROR<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(-1)<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="group__SDS__Return__Codes_1ga2878077ff7828f21757082f0125577ad" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_ERROR_PARAMETER<sp/><sp/><sp/><sp/><sp/>(-2)<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="group__SDS__Return__Codes_1ga92e9c489cdb95b2b3c2350050f07e8b1" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_ERROR_TIMEOUT<sp/><sp/><sp/><sp/><sp/><sp/><sp/>(-3)<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="39" refid="group__SDS__Return__Codes_1ga3cca5be420b6b8fbdb3c56fedf535fbd" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_ERROR_IO<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(-4)<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40" refid="group__SDS__Return__Codes_1ga5b26591fac6b0aff5dbfec00d2ea773b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_NO_SPACE<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(-5)<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41" refid="group__SDS__Return__Codes_1gadf38bbd9b95c00dc3fd512e04087c612" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_NO_DATA<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(-6)<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="group__SDS__Return__Codes_1gae272775a6617dce7b3728042876cadd8" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_EOS<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(-7)<sp/><sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Event<sp/>codes<sp/>for<sp/>sdsEvent<sp/>callback<sp/>function</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="group__SDS__Event__Codes_1ga7c2482f9b5c93e6a51f3b13c8621963b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_EVENT_ERROR_IO<sp/><sp/><sp/><sp/><sp/><sp/>(1UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="46" refid="group__SDS__Event__Codes_1ga88867f7d5275af88378fd59c4790603a" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_EVENT_NO_SPACE<sp/><sp/><sp/><sp/><sp/><sp/>(2UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="group__SDS__Event__Codes_1gacd2820b46a0b739dcdf507a144bcbf20" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_EVENT_NO_DATA<sp/><sp/><sp/><sp/><sp/><sp/><sp/>(4UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="comment">//<sp/>SDS<sp/>stream<sp/>open<sp/>mode</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="group__SDS__Stream__Interface_1ga2efce73b9fb6a87eeb28d3587d3ccdb7" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">enum</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/>sdsModeRead<sp/><sp/>=<sp/>0,<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Open<sp/>SDS<sp/>stream<sp/>for<sp/>read<sp/>(binary)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/>sdsModeWrite<sp/>=<sp/>1<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Open<sp/>SDS<sp/>stream<sp/>for<sp/>write<sp/>(binary)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal">}<sp/><ref refid="group__SDS__Stream__Interface_1ga2efce73b9fb6a87eeb28d3587d3ccdb7" kindref="member">sdsMode_t</ref>;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61" refid="group__SDS__Stream__Interface_1ga9a26c990f6c41064d04a15401f24b902" refkind="member"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>void<sp/>(*<ref refid="group__SDS__Stream__Interface_1ga9a26c990f6c41064d04a15401f24b902" kindref="member">sdsEvent_t</ref>)<sp/>(<ref refid="group__SDS__Stream__Interface_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref><sp/>id,<sp/>uint32_t<sp/>event);</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70" refid="group__SDS__Stream__Interface_1ga31335fdb44338293976461dec3634b03" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Stream__Interface_1ga31335fdb44338293976461dec3634b03" kindref="member">sdsInit</ref><sp/>(<ref refid="group__SDS__Stream__Interface_1ga9a26c990f6c41064d04a15401f24b902" kindref="member">sdsEvent_t</ref><sp/>event_cb);</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78" refid="group__SDS__Stream__Interface_1ga78ba5fcb605d9b2ef149dc8c89070247" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Stream__Interface_1ga78ba5fcb605d9b2ef149dc8c89070247" kindref="member">sdsUninit</ref><sp/>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89" refid="group__SDS__Stream__Interface_1ga556e7b58658f67d3a59a1ae32b4af2a0" refkind="member"><highlight class="normal"><ref refid="group__SDS__Stream__Interface_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref><sp/><ref refid="group__SDS__Stream__Interface_1ga556e7b58658f67d3a59a1ae32b4af2a0" kindref="member">sdsOpen</ref><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*name,<sp/><ref refid="group__SDS__Stream__Interface_1ga2efce73b9fb6a87eeb28d3587d3ccdb7" kindref="member">sdsMode_t</ref><sp/>mode,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98" refid="group__SDS__Stream__Interface_1ga22743afd7f4d4f25622e426fef93bdac" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Stream__Interface_1ga22743afd7f4d4f25622e426fef93bdac" kindref="member">sdsClose</ref><sp/>(<ref refid="group__SDS__Stream__Interface_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110" refid="group__SDS__Stream__Interface_1ga08ace9f59d5d5dcf5f671ec2738a174a" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Stream__Interface_1ga08ace9f59d5d5dcf5f671ec2738a174a" kindref="member">sdsWrite</ref><sp/>(<ref refid="group__SDS__Stream__Interface_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/>uint32_t<sp/>timeslot,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="122" refid="group__SDS__Stream__Interface_1gacb7b42f9087f9de9fe5021db3318751e" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Stream__Interface_1gacb7b42f9087f9de9fe5021db3318751e" kindref="member">sdsRead</ref><sp/>(<ref refid="group__SDS__Stream__Interface_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">,<sp/>uint32_t<sp/>*timeslot,<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*buf,<sp/>uint32_t<sp/>buf_size);</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131" refid="group__SDS__Stream__Interface_1ga55fa3875a9ef1ebfd4108eba1a4cfb49" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Stream__Interface_1ga55fa3875a9ef1ebfd4108eba1a4cfb49" kindref="member">sdsGetSize</ref><sp/>(<ref refid="group__SDS__Stream__Interface_1gad6d59026db360abedd94d82ab336ebbf" kindref="member">sdsId_t</ref><sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight><highlight class="comment">//<sp/>====<sp/>SDS<sp/>Control<sp/>Interface<sp/>====</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>SDS_STDIO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_STDIO<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>SDS_PRINTF</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight><highlight class="preprocessor">#if<sp/><sp/><sp/><sp/><sp/>SDS_STDIO<sp/>==<sp/>1</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Print<sp/>messages<sp/>to<sp/>STDIO</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_PRINTF(...)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="145"><highlight class="preprocessor"><sp/><sp/>printf(__VA_ARGS__)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"></highlight><highlight class="preprocessor">#else</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_PRINTF(...)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Error<sp/>information<sp/>structure</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="153" refid="structsdsError__t" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">{<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="154" refid="structsdsError__t_1a20d203ba1c418d9e8c1af7d394b90215" refkind="member"><highlight class="normal"><sp/><sp/>int32_t<sp/><ref refid="structsdsError__t_1a20d203ba1c418d9e8c1af7d394b90215" kindref="member">status</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="155" refid="structsdsError__t_1a855d0a5dc827f2142765345545a9d4d2" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<ref refid="structsdsError__t_1a855d0a5dc827f2142765345545a9d4d2" kindref="member">file</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="156" refid="structsdsError__t_1aabe87ecb25a1fbef68a3fb263b848acd" refkind="member"><highlight class="normal"><sp/><sp/>uint32_t<sp/><ref refid="structsdsError__t_1aabe87ecb25a1fbef68a3fb263b848acd" kindref="member">line</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="157" refid="structsdsError__t_1aa12bcf3aa1d6c2cfb0b269f6ce68070b" refkind="member"><highlight class="normal"><sp/><sp/>uint8_t<sp/><ref refid="structsdsError__t_1aa12bcf3aa1d6c2cfb0b269f6ce68070b" kindref="member">occurred</ref>;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="158"><highlight class="normal">}<sp/><ref refid="structsdsError__t" kindref="compound">sdsError_t</ref>;</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Global<sp/>error<sp/>information</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/><ref refid="structsdsError__t" kindref="compound">sdsError_t</ref><sp/><ref refid="group__SDS__Stream__Interface_1ga67fcecf8a20781854b399b5107417526" kindref="member">sdsError</ref>;</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"></highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>SDS_ERROR_CHECK</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Check<sp/>for<sp/>error<sp/>and<sp/>record<sp/>error<sp/>location</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_ERROR_CHECK(sds_status)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="167"><highlight class="preprocessor"><sp/><sp/>if<sp/>((sds_status<sp/>!=<sp/>SDS_OK)<sp/>&amp;&amp;<sp/>(sdsError.occurred<sp/>==<sp/>0U))<sp/>{<sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="168"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.status<sp/>=<sp/>sds_status;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="169"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.file<sp/>=<sp/>__FILE__;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="170"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.line<sp/>=<sp/>__LINE__;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="171"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.occurred<sp/>=<sp/>1U;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="172"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>SDS_PRINTF(&quot;Error:<sp/>SDS_ERROR_CHECK<sp/>status<sp/>=<sp/>%i:<sp/>%s:<sp/>%u\n&quot;,<sp/>sds_status,<sp/>sdsError.file,<sp/>sdsError.line);<sp/>\</highlight></codeline>
+<codeline lineno="173"><highlight class="preprocessor"><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"></highlight></codeline>
+<codeline lineno="175"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight><highlight class="preprocessor">#ifndef<sp/>SDS_ASSERT</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight></codeline>
+<codeline lineno="179"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Assert<sp/>macro</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_ASSERT(cond)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="181"><highlight class="preprocessor"><sp/><sp/>if<sp/>(!(cond)<sp/>&amp;&amp;<sp/>(sdsError.occurred<sp/>==<sp/>0U))<sp/>{<sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="182"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.status<sp/>=<sp/>SDS_OK;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="183"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.file<sp/>=<sp/>__FILE__;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="184"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.line<sp/>=<sp/>__LINE__;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="185"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.occurred<sp/>=<sp/>1U;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="186"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>SDS_PRINTF(&quot;Error:<sp/>SDS_ASSERT<sp/>failed:<sp/>%s:<sp/>%u\n&quot;,<sp/>sdsError.file,<sp/>sdsError.line);<sp/>\</highlight></codeline>
+<codeline lineno="187"><highlight class="preprocessor"><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="188"><highlight class="normal"></highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191"><highlight class="normal"></highlight><highlight class="comment">//<sp/>sdsFlags<sp/>bitmask<sp/>definitions</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="192" refid="group__SDS__Flag__Masks_1ga232e6df52024368cc29a897d21780039" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_FLAG_START<sp/><sp/><sp/><sp/><sp/>(0x80000000UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="193" refid="group__SDS__Flag__Masks_1ga25462727626bbc463cfb9abd839d3d9d" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_FLAG_TERMINATE<sp/>(0x40000000UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="194" refid="group__SDS__Flag__Masks_1gad0eb45bd3ad461042a817db48664e137" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_FLAG_PLAYBACK<sp/><sp/>(0x20000000UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="195" refid="group__SDS__Flag__Masks_1ga1895aa890cc25c079b60d4a92589dbf9" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_FLAG_ALIVE<sp/><sp/><sp/><sp/><sp/>(0x10000000UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="196" refid="group__SDS__Flag__Masks_1ga133028b3ccc0fd0bf85b7a8923c061d9" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_FLAG_RESET<sp/><sp/><sp/><sp/><sp/>(0x08000000UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Bits<sp/>24..26<sp/>are<sp/>reserved<sp/>for<sp/>future<sp/>enhancements</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Bits<sp/>0..23<sp/>for<sp/>used<sp/>for<sp/>user<sp/>options<sp/>(i.e.<sp/>bypassing<sp/>filter,<sp/>etc.)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="199"><highlight class="normal"></highlight></codeline>
+<codeline lineno="200"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Configuration<sp/>options<sp/>and<sp/>control<sp/>information</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">volatile</highlight><highlight class="normal"><sp/>uint32_t<sp/><ref refid="group__SDS__Stream__Interface_1ga5dc742cda7ce949a6b73105b0be095ca" kindref="member">sdsFlags</ref>;</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"></highlight></codeline>
+<codeline lineno="203"><highlight class="normal"></highlight><highlight class="comment">//<sp/>sdsState<sp/>value<sp/>definitions</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="204" refid="group__SDS__State__Codes_1ga5a907b659d9fc6e216b439f5a8d57aab" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_STATE_INACTIVE<sp/><sp/><sp/><sp/><sp/><sp/>(0UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="205" refid="group__SDS__State__Codes_1gaf024399c5bc1c5039781344237c0b131" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_STATE_CONNECTED<sp/><sp/><sp/><sp/><sp/>(1UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="206" refid="group__SDS__State__Codes_1gaf3dbe95252bc1daf54149780fa3b534b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_STATE_START<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(2UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="207" refid="group__SDS__State__Codes_1ga644145791174ce37a634c8a4849117ea" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_STATE_ACTIVE<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(3UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="208" refid="group__SDS__State__Codes_1ga075dd3c7ac9d29ad30b24568c0734374" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_STATE_STOP_REQ<sp/><sp/><sp/><sp/><sp/><sp/>(4UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="209" refid="group__SDS__State__Codes_1ga4163f8773a87c556109c184f118ee833" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_STATE_STOP_DONE<sp/><sp/><sp/><sp/><sp/>(5UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="210" refid="group__SDS__State__Codes_1ga53d987b53be4e6630c55f0ecc5550851" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_STATE_END<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(6UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="211" refid="group__SDS__State__Codes_1gad98b7ed572340d850818401fe30c255b" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_STATE_RESET<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(7UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="212" refid="group__SDS__State__Codes_1gace7f9148e2614b1dd42cf6804f7b82e1" refkind="member"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>SDS_STATE_TERMINATE<sp/><sp/><sp/><sp/><sp/>(8UL)<sp/><sp/><sp/></highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"></highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight><highlight class="comment">//<sp/>State<sp/>information</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">volatile</highlight><highlight class="normal"><sp/>uint32_t<sp/><ref refid="group__SDS__Stream__Interface_1gac5fbc1c61d43606b0c54a482781a2ce9" kindref="member">sdsState</ref>;</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"></highlight></codeline>
+<codeline lineno="217"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Idle<sp/>rate<sp/>information</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="218"><highlight class="normal"></highlight><highlight class="keyword">extern</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">volatile</highlight><highlight class="normal"><sp/>uint32_t<sp/><ref refid="group__SDS__Stream__Interface_1ga7c5a17f56f2d24b1453f0d198f2c572d" kindref="member">sdsIdleRate</ref>;</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"></highlight></codeline>
+<codeline lineno="226" refid="group__SDS__Stream__Interface_1ga538b3bd8c3f78dd8eaa768a5c93ff6bd" refkind="member"><highlight class="normal">int32_t<sp/><ref refid="group__SDS__Stream__Interface_1ga538b3bd8c3f78dd8eaa768a5c93ff6bd" kindref="member">sdsExchange</ref><sp/>(</highlight><highlight class="keywordtype">void</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"></highlight></codeline>
+<codeline lineno="234" refid="group__SDS__Stream__Interface_1gacc58cf2b724d52c75d118a5c5ddc81d0" refkind="member"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="group__SDS__Stream__Interface_1gacc58cf2b724d52c75d118a5c5ddc81d0" kindref="member">sdsFlagsModify</ref><sp/>(uint32_t<sp/>set_mask,<sp/>uint32_t<sp/>clear_mask);</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="236"><highlight class="normal"></highlight><highlight class="preprocessor">#ifdef<sp/><sp/>__cplusplus</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="237"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="239"><highlight class="normal"></highlight></codeline>
+<codeline lineno="240"><highlight class="normal"></highlight><highlight class="preprocessor">#endif<sp/><sp/></highlight><highlight class="comment">/*<sp/>SDS_H<sp/>*/</highlight><highlight class="preprocessor"></highlight></codeline>
+    </programlisting>
+    <location file="sds/include/sds.h"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>SDSIO Interface - SDS-Framework</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "SDSIO Interface";
+        var mkdocs_page_input_path = "sdsio.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="index.html" class="icon icon-home"> SDS-Framework
+        </a>
+        <div class="version">
+          3.0.0
+        </div><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="template.html">SDS Template Application</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">SDSIO Interface</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_usb">Layer: sdsio_usb</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-usb-interface">Using USB Interface</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_network">Layer: sdsio_network</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-network-interface">Using Network Interface</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_rtt">Layer: sdsio_rtt</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-rtt-interface">Using RTT Interface</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#connect-with-segger-j-link">Connect with SEGGER J-Link</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#connect-with-pyocd">Connect with pyOCD</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_fs">Layer: sdsio_fs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-file-system-interface">Using File System Interface</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#layer-sdsio_fvp">Layer: sdsio_fvp</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-fvp-simulation-models">Using FVP Simulation Models</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="theory.html">Theory of Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="SDS_API/modules.html">API Modules</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SDS-Framework</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html" class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">SDSIO Interface</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/sdsio.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="sdsio-interface">SDSIO Interface</h1>
+<p>The SDSIO components offer flexible SDS communication interfaces. You may choose between these interface components that are stored in the folders: <code>sds/sdsio/client</code>, <code>sds/sdsio/fs</code> or <code>sds/sdsio/vsi</code>. You may use one of the following CMSIS software components for integration of the SDSIO interface into the target system:</p>
+<pre><code class="language-yml">  - component: SDS:IO:Socket                     # IoT Socket Interface (Ethernet or WiFi)
+  - component: SDS:IO:USB&amp;MDK USB                # USB Interface
+  - component: SDS:IO:RTT                        # RTT Interface
+  - component: SDS:IO:Serial&amp;CMSIS USART         # USART Interface
+  - component: SDS:IO:File System&amp;MDK FS         # Memory card
+  - component: SDS:IO:VSI                        # VSI Simulation interface of an AVH FVP
+  - component: SDS:IO:Custom                     # Source code template for custom implementation
+</code></pre>
+<p>To simplify usage further, pre-configured SDS interface layers in <em>csolution project format</em> are available. These connect via various interfaces to the SDSIO-Server, which provides read/write access to SDS data files. The following SDS interface layers are available in the pack <a href="https://www.keil.arm.com/packs/sds-arm"><code>ARM::SDS</code></a>:</p>
+<ul>
+<li><a href="#layer-sdsio_network">Ethernet Interface</a> using the MDK-Middleware Network component.</li>
+<li><a href="#layer-sdsio_usb">USB Bulk Interface</a> using the MDK-Middleware USB component.</li>
+<li><a href="#layer-sdsio_rtt">RTT Interface</a> using the SEGGER RTT component.</li>
+<li><a href="#layer-sdsio_fs">Memory Card Interface</a> using the MDK-Middleware File System component.</li>
+<li><a href="#layer-sdsio_fvp">VSI Interface</a> using the ARM FVP simulation VSI interface.</li>
+</ul>
+<h2 id="layer-sdsio_usb">Layer: sdsio_usb</h2>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/usb"><code>layer/sdsio/usb/sdsio_usb.clayer.yml</code></a> is configured for recording and playback via the USB interface. It uses the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> USB Device component and connects to a host computer through a USB interface.</p>
+<p><img alt="SDS-Firmware with USB interface" src="images/USB-interface.png" /></p>
+<h3 id="using-usb-interface">Using USB Interface</h3>
+<p>To access <a href="theory.html#sds-data-files">SDS data files</a>, configure the <code>*.sdsio.yml</code> file with the <a href="utilities.html#usb"><code>interface - usb:</code></a> node and start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> on the host computer with:</p>
+<pre><code class="language-bash">&gt;python sdsio-server.py -c myproject.sdsio.yml
+SDSIO-Server v3.0.0
+Press 'Ctrl+C' or 'X' to exit.
+Working directory: ...\SDS_data
+SDSIO configuration YAML: ...\myproject.sdsio.yml
+SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.
+SDSIO-Server waiting for USB SDSIO-Client...
+SDSIO-Client USB device connected.
+</code></pre>
+<h2 id="layer-sdsio_network">Layer: sdsio_network</h2>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/network"><code>layer/sdsio/network/sdsio_network.clayer.yml</code></a> is configured for recording and playback via the Ethernet interface. It uses the  <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> Network component. Both the target hardware and the SDSIO-Server are connected to a local LAN.</p>
+<p><img alt="SDS-Firmware with Network interface" src="images/Network-interface.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The target device and the host computer must be connected to the same network. With a standard network installation, the DHCP server assigns IP addresses automatically.</li>
+<li>On <strong>Windows</strong>, a firewall may restrict socket connections. To allow the SDSIO-Server through the Windows Defender Firewall:<ul>
+<li>Open <strong>Windows Security - Firewall &amp; network protection - Allow an app through firewall</strong>.</li>
+<li>Click <strong>Change settings</strong>, then allow your Python runtime (<code>python.exe</code>) on the network profile you use (usually Private).</li>
+<li>On a managed corporate PC, Group Policy or endpoint security may still block connections. Your IT administrator may need to whitelist the IP address and port.</li>
+</ul>
+</li>
+</ul>
+</div>
+<h3 id="using-network-interface">Using Network Interface</h3>
+<p>To access <a href="theory.html#sds-data-files">SDS data files</a>, configure the <code>*.sdsio.yml</code> file with the <a href="utilities.html#socket"><code>interface - socket:</code></a> node for Network interface, and start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> on the host computer with:</p>
+<pre><code class="language-bash">&gt;python sdsio-server.py -c myproject.sdsio.yml
+SDSIO-Server v3.0.0
+Press 'Ctrl+C' or 'X' to exit.
+Working directory: ...\SDS_data
+SDSIO configuration YAML: ...\myproject.sdsio.yml
+SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.
+SDSIO-Server listening on 172.20.10.2:5050
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The SDSIO-Server prints the IP address on which it is listening. The target hardware must connect to this IP address. Configure the target by updating the <code>SDSIO_SOCKET_SERVER_IP</code> macro in <code>layer/sdsio/network/RTE/SDS/sdsio_client_socket_config.h</code>.</p>
+</div>
+<h2 id="layer-sdsio_rtt">Layer: sdsio_rtt</h2>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/rtt"><code>layer/sdsio/rtt/sdsio_rtt.clayer.yml</code></a> is configured for recording and playback using the SEGGER RTT component for I/O via a debug adapter.</p>
+<p><img alt="SDS-Firmware with RTT interface" src="images/RTT-interface.png" /></p>
+<h3 id="using-rtt-interface">Using RTT Interface</h3>
+<p>The SDSIO layer communicates with the host computer via an RTT socket exposed by the
+debug probe software. The <a href="https://arm-software.github.io/SDS-Framework/main/utilities.html#sdsio-server">SDSIO-Server</a>
+runs on the host and connects to the debug probe socket using
+<a href="https://arm-software.github.io/SDS-Framework/main/utilities.html#socket-mode-command-line">socket connect mode</a>.</p>
+<h4 id="connect-with-segger-j-link">Connect with SEGGER J-Link</h4>
+<p>Configure <code>interface:</code> in the <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a> as shown below:</p>
+<pre><code class="language-yml">sdsio:
+  interface:
+    socket:
+      ipaddr: 127.0.0.1
+      port: 19021
+      connect: &quot;$$SEGGER_TELNET_ConfigStr=RTTCh;1$$&quot;
+      connect-time: 100
+</code></pre>
+<p>Then start the SDSIO-Server with:</p>
+<pre><code class="language-bash">python sdsio-server.py -c myproject.sdsio.yml
+</code></pre>
+<p><strong>How it works:</strong></p>
+<p>J-Link exposes RTT data via a TELNET-like TCP socket on <code>localhost</code>, port <strong>19021</strong> (default), while a J-Link connection is active (typically during a debug session). After connecting to this TCP socket, the SDSIO-Server (sends within the 100 ms time limit) the <a href="https://kb.segger.com/J-Link_RTT_TELNET_Channel">SEGGER TELNET Config String</a> that selects the RTT channel. The SDSIO-Server sends this string automatically via <code>--connect</code>, and discards any initial response from J-Link during the <code>--connect-time</code> window.</p>
+<h4 id="connect-with-pyocd">Connect with pyOCD</h4>
+<p>pyOCD can expose each RTT channel as a TCP socket server. RTT is configured under the <code>debugger:</code> node of the <code>*.csolution.yml</code> file as shown below. Refer to <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/pyOCD-Debugger/#rtt">CMSIS-Toolbox - pyOCD - RTT</a> for further details.</p>
+<pre><code class="language-yml">  target-types:
+    - type: MyHardware
+      target-set:
+        - set:
+          images:
+            - project-context: DataTest.Debug
+          debugger:
+            name: CMSIS-DAP@pyOCD
+            clock: 10000000
+            protocol: swd
+            rtt:
+              channel:
+                - number: 1     # must match SDSIO_RTT_CHANNEL in sdsio_client_rtt_config.h
+                  mode: server
+                  port: 5100    # any free TCP port on localhost
+</code></pre>
+<p>Configure <code>interface:</code> in the <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a> as shown below:</p>
+<pre><code class="language-yml">sdsio:
+  interface:
+    socket:
+      ipaddr: 127.0.0.1
+      port: 5100       # must match the port configured in *.csolution.yml
+      connect:         # no connect string required; channel is configured with `rtt:` node above
+</code></pre>
+<p>The CMSIS-Toolbox includes all project configuration in the file <code>*.cbuild-run.yml</code>. Once this file is up-to-date, run pyOCD and SDSIO-Server with:</p>
+<pre><code class="language-bash">pyocd run --cbuild-run out/&lt;name&gt;+&lt;target-type&gt;.cbuild-run.yml --eot
+python sdsio-server.py -c myproject.sdsio.yml
+</code></pre>
+<p><strong>How it works:</strong></p>
+<p>pyOCD does not required a connect message. Instead the RTT channel configuration is part of the <code>*.cbuild-run.yml</code> file that also specifies project files and other hardware related parameters. Refer to <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#run-and-debug-configuration">CMSIS-Toolbox - Run and Debug Configuration</a> for further information.</p>
+<h2 id="layer-sdsio_fs">Layer: sdsio_fs</h2>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem"><code>layer/sdsio/filesystem/sdsio_fs.clayer.yml</code></a> is configured for recording to a Memory Card. It uses the MDK-Middleware File System component.</p>
+<h3 id="using-file-system-interface">Using File System Interface</h3>
+<p>The file system interface, used together with a template, enables recording of <a href="theory.html#sds-data-files">SDS data files</a> to the SD card on the embedded board.</p>
+<p>Recording can be started and stopped using the on-board user button.</p>
+<p>Once the desired number of recordings has been captured, the SD card can be removed and transferred to a PC for review, copying, or labeling of the recorded data.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The template-based file system implementation natively supports recording mode only.
+Playback mode can be enabled by adapting the provided template code.
+For example, an additional button on the board can be used to toggle between recording and playback modes.</p>
+</div>
+<h2 id="layer-sdsio_fvp">Layer: sdsio_fvp</h2>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp"><code>template/sdsio/fvp/sdsio_fvp.clayer.yml</code></a> targets AVH FVP simulation and is configured for playback from the host computer. It uses the <a href="https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html">SDSIO VSI interface</a> implemented by the file <code>vsi/python/arm_vsi3.py</code>, which is loaded by the FVP simulation model. Since the SDSIO-Server functionality is implemented in <code>arm_vsi3.py</code>, no separate SDSIO-Server is required.</p>
+<h3 id="using-fvp-simulation-models">Using FVP Simulation Models</h3>
+<p>The SDSIO VSI interface can be configured using a <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a>.</p>
+<p>The VSI3 Python script (<code>arm_vsi3.py</code>) locates the control file as follows:</p>
+<ul>
+<li>If the environment variable <code>SDSIO_FVP</code> is set, it must be an <strong>absolute path</strong> to either a config file or a directory:<ul>
+<li><strong>File</strong> — used directly as the config file.</li>
+<li><strong>Directory</strong> — searched for a config file in this order: <code>sdsio.yml</code>, <code>sdsio.yaml</code>, first <code>*.sdsio.yml</code> (alphabetical), first <code>*.sdsio.yaml</code> (alphabetical).</li>
+<li>If the path does not exist or is not absolute, the search falls back to the working directory.</li>
+</ul>
+</li>
+<li>If <code>SDSIO_FVP</code> is not set (or falls back), the <strong>simulator working directory</strong> is searched using the same file order: <code>sdsio.yml</code>, <code>sdsio.yaml</code>, first <code>*.sdsio.yml</code> (alphabetical), first <code>*.sdsio.yaml</code> (alphabetical).</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>In Keil Studio you may set the <a href="https://mdk-packs.github.io/vscode-cmsis-solution-docs/zephyr.html#set-environment-variables">environment variable <code>SDSIO_FVP</code></a> using the Settings dialog with id <code>cmsis-csolution.environmentVariables</code>.</p>
+</div>
+<p>If a control file is found, the script reads the <code>sdsio:</code> root node. If <code>workdir:</code> is a relative path, it is interpreted relative to the simulator working directory.</p>
+<p><strong>Console output:</strong></p>
+<p>This is a example console output during simulation</p>
+<pre><code class="language-txt">FVP_Corstone_SSE-300_Ethos-U55 -f Board/Corstone-300/fvp_config.txt -a out/DataTest/SSE-300-U55/Debug/DataTest.hex  
+
+Ethos-U version info:
+        Arch:       v1.1.0
+        MACs/cc:    128
+        Cmd stream: v0
+SDSIO VSI interface initialized successfully
+==== SDS playback started
+==== SDS playback stopped
+
+Info: /OSCI/SystemC: Simulation stopped by user.
+Fatal Python error: _Py_GetConfig: the function must be called with the GIL held ...
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>It might be required to enable access permissions for the FVP simulation model.</li>
+<li>The Fatal Python error at exit is a known problem that will be solved in a future version of the FVP simulation models. It has no impact on the actual test results.</li>
+</ul>
+</div>
+<p><strong>Log File: <code>sdsio.log</code>:</strong></p>
+<p>During FVP simulation, an <code>sdsio.log</code> file is generated that records all <a href="theory.html#sds-data-files">SDS data file</a> access operations. This file is located in the folder that is configured the <code>workdir:</code> in the <code>*.sdsio.yml</code> file.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-txt">Created by ...\Board\Corstone-300\vsi\python\arm_vsi3.py
+
+SDSIO VSI version 3.0.0
+SDSIO_FVP environment variable not set.
+Working directory: ...\datatest\SDS Recordings.
+SDSIO configuration YAML: ...\SDS\datatest.sdsio.yml.
+sdsFlags = 0xB0000000.
+Playback step 1/1: Test 0.
+Playback: Test_In (Test_In.0.sds).
+Record:   Test_Out (Test_Out.0.p.sds).
+Closed:   Test_In (Test_In.0.sds).
+Closed:   Test_Out (Test_Out.0.p.sds).
+Playback complete - no more steps remaining.
+sdsFlags = 0x30000000.
+sdsFlags = 0x70000000.
+sdsFlags = 0x30000000.
+</code></pre>
+<p><strong>FVP Model Configuration:</strong></p>
+<p>The FVP model is configured with the file <code>./Board/Corstone-300/fvp_config.txt</code> or <code>./Board/Corstone-320/fvp_config.txt</code>.
+When using an Ethos-U NPU it is important that the MAC configuration matches the settings that were used when generating the ML model.</p>
+<p>Refer to <a href="https://arm-software.github.io/AVH/main/simulation/html/using.html#Config">Arm FVP Simulation Models - Model Configuration</a> for further information.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="template.html" class="btn btn-neutral float-left" title="SDS Template Application"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="utilities.html" class="btn btn-neutral float-right" title="Utilities">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/ARM-software/SDS-Framework" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="template.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="utilities.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

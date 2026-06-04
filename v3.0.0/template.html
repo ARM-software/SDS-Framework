@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>SDS Template Application - SDS-Framework</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "SDS Template Application";
+        var mkdocs_page_input_path = "template.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="index.html" class="icon icon-home"> SDS-Framework
+        </a>
+        <div class="version">
+          3.0.0
+        </div><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">SDS Template Application</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#sds-template-structure">SDS Template Structure</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#record-mode">Record Mode</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#playback-mode">Playback Mode</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#working-with-the-sds-template">Working with the SDS Template</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-vs-code">Using VS Code</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#install-required-packs">Install Required Packs</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#create-new-solution">Create New Solution</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#build-the-template-application">Build the Template Application</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#compile-for-custom-hardware">Compile for Custom Hardware</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#using-datatest">Using DataTest</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#recordingplayback-on-hardware-target">Recording/playback on Hardware Target</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#configure-bandwidth-for-datatest">Configure Bandwidth for DataTest</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#playback-on-simulation-model">Playback on Simulation Model</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#using-algorithmtest">Using AlgorithmTest</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#add-user-algorithm">Add User Algorithm</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#example-projects">Example Projects</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="sdsio.html">SDSIO Interface</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="theory.html">Theory of Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="SDS_API/modules.html">API Modules</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">SDS-Framework</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html" class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">SDS Template Application</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/ARM-software/SDS-Framework/edit/main/documentation/template.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="sds-template-application">SDS Template Application</h1>
+<!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD060 -->
+
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template">SDS template application</a> is a test framework for DSP and ML algorithms. It supports recording and playback of real-world data streams on physical hardware or simulation models using <a href="https://github.com/ARM-software/AVH">Arm Virtual Hardware (FVP)</a>, feeding a user algorithm under test. The real-world data streams are captured in SDS data files. This enables multiple use cases:</p>
+<ul>
+<li>Validate and optimize algorithms using playback. This makes it possible to repeat test cases with the same data stream.</li>
+<li>The captured data streams can be labeled and used as a training dataset for AI models in MLOps systems.</li>
+</ul>
+<p>The SDS template application is implemented as a <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/">CMSIS-Toolbox Reference Application</a>. It is hardware-agnostic and requires an <code>SDSIO-Layer</code> and a <code>Board-Layer</code> with drivers for the target hardware.</p>
+<p>An <code>SDSIO-Layer</code> connects the SDS template application to a communication interface for SDS file I/O operations.
+For hardware targets, the following <a href="sdsio.html">SDSIO interfaces</a> are available as pre-configured software layers:</p>
+<ul>
+<li><a href="sdsio.html#layer-sdsio_network">Ethernet Interface</a> using the MDK-Middleware Network component.</li>
+<li><a href="sdsio.html#layer-sdsio_usb">USB Bulk Interface</a> using the MDK-Middleware USB component.</li>
+<li><a href="sdsio.html#layer-sdsio_rtt">RTT (Real-Time Transfer)</a> using the SEGGER RTT component for I/O via the debug adapter.</li>
+<li><a href="sdsio.html#layer-sdsio_fs">Memory Card Interface</a> using the MDK-Middleware File System component.</li>
+</ul>
+<p>With a custom SDSIO interface, alternative I/O configurations are possible.</p>
+<h2 id="sds-template-structure">SDS Template Structure</h2>
+<p>The structure of the SDS template application is shown below. Two projects let you choose between a data communication test and a user algorithm test. Three target types are available, allowing the test application to be deployed either on hardware (an evaluation board) or on one of two AVH FVP simulation models.</p>
+<p>A standard board layer, provided by several BSPs, implements the hardware interface. For communication, the SDSIO layer uses the MDK-Middleware or (for the AVH FVP target) a virtual simulation interface (VSI).</p>
+<p><img alt="SDS Template Structure" src="images/Template_Structure.png" /></p>
+<p>The <code>Debug</code> and <code>Release</code> build types differ only in the optimization level and the amount of debug information printed.
+Both build types support recording and playback, controlled via <code>sdsFlags</code>. The <code>sdsFlags</code> value can be modified by the SDS application (using the function <code>sdsFlagsModify</code>) or by the SDSIO-Server, making it easy to switch between Record Mode and Playback Mode.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The template-based file system implementation natively supports recording mode only.
+Playback mode can be enabled by adapting the provided template code.
+For example, an additional button on the board can be used to toggle between recording and playback modes.</p>
+</div>
+<h3 id="record-mode">Record Mode</h3>
+<p>Record mode captures the input data stream and the algorithm output data stream simultaneously.</p>
+<p><img alt="Record Mode" src="images/Example_Record.png" title="Record Mode" /></p>
+<h3 id="playback-mode">Playback Mode</h3>
+<p>Playback mode replays the input data stream while recording the algorithm output data stream at the same time.
+The test application can run either on hardware (evaluation board) or on an AVH FVP (simulation model).
+Because the input data stream can be repeated, it enables consistent verification and optimization of the algorithm while capturing the resulting output data stream.</p>
+<p><img alt="Playback Mode" src="images/Example_Playback.png" title="Playback Mode" /></p>
+<h2 id="working-with-the-sds-template">Working with the SDS Template</h2>
+<p>The SDS template application and <a href="sdsio.html">SDSIO interface layers</a> are part of the <a href="https://www.keil.arm.com/packs/sds-arm">SDS pack</a>.</p>
+<p>Several <a href="https://www.keil.arm.com/packs/">Board Support Packs (BSP)</a> contain board layers that support the required API interfaces. Refer to the <em>Overview</em> page of the pack to check the <em>Provided connection API Interface</em> of the layers. The table below lists the required API interfaces that should be provided by the <code>Board-Layer</code>.  </p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Required API Interface</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="sdsio.html#layer-sdsio_fs"><strong>SDSIO File System</strong></a></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">CMSIS_MCI</td>
+<td style="text-align: left;"><a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__mci__interface__gr.html">CMSIS-Driver MCI</a> interface to memory card.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CMSIS_VIO, STDOUT, STDERR</td>
+<td style="text-align: left;">For user button and printf output.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="sdsio.html#layer-sdsio_network"><strong>SDSIO Network</strong></a></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">CMSIS_ETH</td>
+<td style="text-align: left;"><a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__eth__interface__gr.html">CMSIS-Driver Ethernet</a> MAC/PHY interface.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CMSIS_VIO, STDOUT, STDERR</td>
+<td style="text-align: left;">For user button and printf output.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="sdsio.html#layer-sdsio_usb"><strong>SDSIO USB Device</strong></a></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">CMSIS_USB_Device</td>
+<td style="text-align: left;"><a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__usbd__interface__gr.html">CMSIS-Driver USB Device</a> interface.</td>
+</tr>
+<tr>
+<td style="text-align: left;">CMSIS_VIO, STDOUT, STDERR</td>
+<td style="text-align: left;">For user button and printf output.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>RTT has no API interface requirements to a board layer and may be used when no compatible board layer is available.</li>
+<li>When no board layer is available, it is possible to <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/#structure">create a compatible board layer</a>.</li>
+</ul>
+</div>
+<h3 id="using-vs-code">Using VS Code</h3>
+<p>This section explains how to use SDS template application with the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution</a> for VS Code. This extension is for example part of the <a href="https://www.keil.arm.com/">Keil Studio</a>.</p>
+<p>The example below uses the <a href="https://www.keil.arm.com/packs/stm32f746g-disco_bsp-keil">STM32F746G-DISCO</a> board, which provides interfaces for all SDSIO communication interfaces.</p>
+<h4 id="install-required-packs">Install Required Packs</h4>
+<p>To make the software components available, install the SDS pack and the pack for the selected evaluation board, for example with:</p>
+<pre><code class="language-shell">&gt;cpackget add ARM::SDS
+&gt;cpackget add Keil::STM32F746G-DISCO_BSP
+</code></pre>
+<h4 id="create-new-solution">Create New Solution</h4>
+<p>In the <a href="https://mdk-packs.github.io/vscode-cmsis-solution-docs/create_app.html"><strong>Create a new solution</strong></a> dialog, select the target board and the SDS reference application.</p>
+<p><img alt="Select Reference Application" src="images/SelectReferenceApplication.png" /></p>
+<p>After the <em>csolution project</em> loads, VS Code displays a dialog where you can select a compatible software layer and an installed compiler toolchain.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>If no compatible software layer is available for SDS, use the <code>V2M-MPS3-SSE-300-FVP</code> board. Then adapt <code>SDS.csolution.yml</code> and create a software layer for your target hardware as outlined in <a href="#compile-for-custom-hardware">Compile for Custom Hardware</a>. The <a href="sdsio.html#layer-sdsio_rtt">layer: sdsio_rtt</a> has minimal requirements because it uses the debug adapter as the communication interface to the SDSIO-Server.</li>
+</ul>
+</div>
+<p><img alt="Configure Solution" src="images/ConfigureSolution.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The <strong>Add Software Layer</strong> dialog only appears when the BSP contains a board layer with compatible API Interfaces (see next section).</li>
+<li>ST board layers are configured for the Arm Compiler (AC6) using STM32CubeMX.  However, it is easy to reconfigure for different compilers. The steps are provided in the BSP overview.</li>
+</ul>
+</div>
+<h4 id="build-the-template-application">Build the Template Application</h4>
+<p>The SDS template application contains three targets (an evaluation board and two AVH FVP simulation models) and two projects:</p>
+<ul>
+<li><strong>DataTest</strong> is a data communication test between target and SDSIO-Server or file system.</li>
+<li><strong>AlgorithmTest</strong> allows you to add the DSP or ML algorithm that should be tested.</li>
+</ul>
+<p>Use the <code>CMSIS:Manage Solution Settings</code> command to select the project you want to explore. Start with <strong>DataTest</strong>, which should work out of the box on target hardware.</p>
+<p><img alt="Select Project" src="images/SelectProject.png" /></p>
+<p>Once the project is selected and the debug adapter is configured, save the solution and use the build command to generate the template application. Then download the application to the selected target.</p>
+<h3 id="compile-for-custom-hardware">Compile for Custom Hardware</h3>
+<p>The steps to add a custom hardware configuration are:</p>
+<ul>
+<li>Open the <code>*.csolution.yml</code> file and add a new <code>target-type</code>.</li>
+</ul>
+<pre><code class="language-yml">  packs:
+    - pack: &lt;DFP for your hardware&gt; # use keil.arm.com/packs to search for packs
+
+  target-types:
+    - type: MyHardware
+      device: STM32U535CBTx
+      variables:
+        - Board-Layer: $SolutionDir()$/Board/MyHardware/Board.clayer.yml
+        - SDSIO-Layer: $SolutionDir()$/sdsio/rtt/sdsio_rtt.clayer.yml
+</code></pre>
+<ul>
+<li>Add a board layer that implements the API interfaces described above.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>You may copy an existing board layer as starting point. But typically these board layers support a range of reference applications and contain driver API interfaces that may be removed.</li>
+<li>The step above allows also manual configuration without using the VS Code IDE.</li>
+</ul>
+</div>
+<h2 id="using-datatest">Using DataTest</h2>
+<p>The <strong>DataTest</strong> project validates the communication channel.</p>
+<h3 id="recordingplayback-on-hardware-target">Recording/playback on Hardware Target</h3>
+<ol>
+<li>Select the <code>STM32F746G-DISCO</code> target with Project <code>DataTest</code> and Build Type <code>Debug</code> to record/playback SDS data files.</li>
+<li>Configure the file <code>datatest.sdsio.yml</code> for your selected <a href="utilities.html#interface">communication interface</a>.</li>
+<li>Start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> with <code>python sdsio-server.py -c datatest.sdsio.yml</code>.</li>
+<li>Build and Run the application.</li>
+<li>Use <a href="utilities.html#sds-check">SDS-Check</a> to verify correctness of the recording.</li>
+</ol>
+<p><strong>Recording</strong></p>
+<p>Activate recording from the SDSIO-Server by pressing the <code>R</code> key. To stop recording, press the <code>S</code> key.
+Alternatively, recording can be started or stopped by pressing the user button on the board.</p>
+<p>This run should generate the files <code>Test_In.1.sds</code> and <code>Test_Out.1.sds</code> in the folder <code>datatest/SDS Recordings</code>. The <code>DataTest</code> project is configured to record 1000 data records at an interval of 10 ms.</p>
+<p>To verify correctness of the recording using the SDS-Check utility, use the following commands:</p>
+<pre><code class="language-bash">python sds-check.py -i Test_In.1.sds
+python sds-check.py -i Test_Out.1.sds
+</code></pre>
+<p>When recording is started again, new files with different names are created: <code>Test_In.2.sds</code> and <code>Test_Out.2.sds</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>Refer to <a href="theory.html#filenames">Theory of Operation - Filenames</a> for more information.</li>
+</ul>
+</div>
+<p><strong>Playback</strong></p>
+<p>Activate the playback from the SDSIO-Server by pressing the <code>P</code> key.</p>
+<p>This run should read the <code>Test_In.0.sds</code> file and generate the <code>Test_Out.0.p.sds</code> file in the folder <code>datatest/SDS Recordings</code>. The <code>Test_Out.0.sds</code> file generated during recording is identical to <code>Test_Out.0.p.sds</code>, which is generated in playback mode.</p>
+<p>To verify correctness of the recording using the SDS-Check utility, use the following command:</p>
+<pre><code class="language-bash">python sds-check.py -i Test_Out.0.p.sds
+</code></pre>
+<p>Compare the output files <code>Test_Out.0.sds</code> and <code>Test_Out.0.p.sds</code> with any program that can compare binary files. If the communication is correct, the files should be identical.</p>
+<h3 id="configure-bandwidth-for-datatest">Configure Bandwidth for DataTest</h3>
+<p>The <strong>DataTest</strong> project uses a fixed algorithm to verify the communication interface. In <code>datatest/algorithm_config.h</code>, you can configure bandwidth and interval to match the requirements of the algorithm under test.</p>
+<h3 id="playback-on-simulation-model">Playback on Simulation Model</h3>
+<ol>
+<li>Select the target <code>SSE-300-U55</code> (or <code>SSE-320-U85</code>) with Project <code>DataTest</code> and Build Type <code>Debug</code> to play back SDS data files.</li>
+<li><a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp/README.md">Build and Run</a> the application.</li>
+<li>Use <a href="utilities.html#sds-check">SDS-Check</a> to verify correctness of the files recorded during playback.</li>
+</ol>
+<p>By default, the Template application includes a <code>datatest.sdsio.yml</code> configuration file that specifies playback of the <code>Test_In.0.sds</code> file,
+while new output recordings are stored in the <code>Test_Out.0.p.sds</code> file.</p>
+<p>Refer to <a href="utilities.html#sdsio-control-file-sdsioyml">SDSIO control file: <code>sdsio.yml</code></a> for more information and configuration of playback files using the <a href="utilities.html#play"><code>play:</code></a> node.</p>
+<p>To verify correctness of the recording using the SDS-Check utility, use the following command:</p>
+<pre><code class="language-bash">python sds-check.py -i Test_Out.0.p.sds
+</code></pre>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Compare the output files <code>Test_Out.0.sds</code> and <code>Test_Out.0.p.sds</code> with any program that can compare binary files. If the communication is correct, the files should be identical.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>Recording mode is not available when using Simulation Model.</li>
+</ul>
+</div>
+<h2 id="using-algorithmtest">Using AlgorithmTest</h2>
+<p>The <strong>AlgorithmTest</strong> project allows you to add custom algorithms for testing. It is prepared for recording and playback of SDS data files.</p>
+<h3 id="add-user-algorithm">Add User Algorithm</h3>
+<p>In the SDS template application, these files must be modified to integrate the DSP/ML algorithm under test:</p>
+<ul>
+<li><code>algorithm/algorithm_config.h</code> configures the block size of data streams.</li>
+<li><code>algorithm/algorithm_user.c</code> is the interface to the DSP/ML algorithm under test.</li>
+<li><code>algorithm/data_in_user.c</code> is the interface to the physical data source.</li>
+</ul>
+<h2 id="example-projects">Example Projects</h2>
+<p>Configured variants of the SDS template application are provided in a separate <a href="https://github.com/Arm-Examples/sds-examples">GitHub repository github.com/Arm-Examples/sds-examples</a>. These examples show the usage of the SDS-Framework with real-world devices and use cases.</p>
+<p>For details, refer to the <strong>README.md</strong> files included with the example configurations.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="overview.html" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="sdsio.html" class="btn btn-neutral float-right" title="SDSIO Interface">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/ARM-software/SDS-Framework" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="overview.html" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="sdsio.html" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
