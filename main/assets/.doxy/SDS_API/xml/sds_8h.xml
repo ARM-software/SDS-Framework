@@ -64,7 +64,7 @@
     sdsError.file = __FILE__;                                   \
     sdsError.line = __LINE__;                                   \
     sdsError.occurred = 1U;                                     \
-    SDS_PRINTF(&quot;Error: SDS_ERROR_CHECK status = %i: %s: %u\n&quot;, sds_status, sdsError.file, sdsError.line); \
+    SDS_PRINTF(&quot;Error: SDS_ERROR_CHECK status = %i: %s:%u\n&quot;, sds_status, sdsError.file, sdsError.line); \
   }</initializer>
         <briefdescription>
         </briefdescription>
@@ -82,7 +82,7 @@
     sdsError.file = __FILE__;                   \
     sdsError.line = __LINE__;                   \
     sdsError.occurred = 1U;                     \
-    SDS_PRINTF(&quot;Error: SDS_ASSERT failed: %s: %u\n&quot;, sdsError.file, sdsError.line); \
+    SDS_PRINTF(&quot;Error: SDS_ASSERT failed: %s:%u\n&quot;, sdsError.file, sdsError.line); \
   }</initializer>
         <briefdescription>
         </briefdescription>
@@ -245,7 +245,7 @@
 <codeline lineno="169"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.file<sp/>=<sp/>__FILE__;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
 <codeline lineno="170"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.line<sp/>=<sp/>__LINE__;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
 <codeline lineno="171"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.occurred<sp/>=<sp/>1U;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="172"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>SDS_PRINTF(&quot;Error:<sp/>SDS_ERROR_CHECK<sp/>status<sp/>=<sp/>%i:<sp/>%s:<sp/>%u\n&quot;,<sp/>sds_status,<sp/>sdsError.file,<sp/>sdsError.line);<sp/>\</highlight></codeline>
+<codeline lineno="172"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>SDS_PRINTF(&quot;Error:<sp/>SDS_ERROR_CHECK<sp/>status<sp/>=<sp/>%i:<sp/>%s:%u\n&quot;,<sp/>sds_status,<sp/>sdsError.file,<sp/>sdsError.line);<sp/>\</highlight></codeline>
 <codeline lineno="173"><highlight class="preprocessor"><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="174"><highlight class="normal"></highlight></codeline>
 <codeline lineno="175"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>
@@ -259,7 +259,7 @@
 <codeline lineno="183"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.file<sp/>=<sp/>__FILE__;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
 <codeline lineno="184"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.line<sp/>=<sp/>__LINE__;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
 <codeline lineno="185"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>sdsError.occurred<sp/>=<sp/>1U;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
-<codeline lineno="186"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>SDS_PRINTF(&quot;Error:<sp/>SDS_ASSERT<sp/>failed:<sp/>%s:<sp/>%u\n&quot;,<sp/>sdsError.file,<sp/>sdsError.line);<sp/>\</highlight></codeline>
+<codeline lineno="186"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>SDS_PRINTF(&quot;Error:<sp/>SDS_ASSERT<sp/>failed:<sp/>%s:%u\n&quot;,<sp/>sdsError.file,<sp/>sdsError.line);<sp/>\</highlight></codeline>
 <codeline lineno="187"><highlight class="preprocessor"><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
 <codeline lineno="188"><highlight class="normal"></highlight></codeline>
 <codeline lineno="189"><highlight class="normal"></highlight><highlight class="preprocessor">#endif</highlight><highlight class="normal"></highlight></codeline>

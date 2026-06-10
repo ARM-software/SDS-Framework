@@ -117,7 +117,7 @@ extern sdsError_t sdsError;
     sdsError.file = __FILE__;                                   \
     sdsError.line = __LINE__;                                   \
     sdsError.occurred = 1U;                                     \
-    SDS_PRINTF("Error: SDS_ERROR_CHECK status = %i: %s: %u\n", sds_status, sdsError.file, sdsError.line); \
+    SDS_PRINTF("Error: SDS_ERROR_CHECK status = %i: %s:%u\n", sds_status, sdsError.file, sdsError.line); \
   }
 
 #endif
@@ -131,7 +131,7 @@ extern sdsError_t sdsError;
     sdsError.file = __FILE__;                   \
     sdsError.line = __LINE__;                   \
     sdsError.occurred = 1U;                     \
-    SDS_PRINTF("Error: SDS_ASSERT failed: %s: %u\n", sdsError.file, sdsError.line); \
+    SDS_PRINTF("Error: SDS_ASSERT failed: %s:%u\n", sdsError.file, sdsError.line); \
   }
 
 #endif
