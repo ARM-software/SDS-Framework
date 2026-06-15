@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "3.0.0"
+SDSIO_SERVER_VERSION = "3.0.1-dev1"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -627,6 +627,7 @@ class sdsio_manager:
         self,
         work_dir,
         auto_playback=False,
+        exit_after_playback=False,
         play_list: Optional[list] = None,
         mon_port: Optional[int] = None,
         write_flush_records: Optional[int] = None,
@@ -662,6 +663,8 @@ class sdsio_manager:
             self._status = status_bar_factory(self)
 
         self._playback_mode = False
+        self._exit_after_playback = exit_after_playback
+        self._send_ci_terminate_on_shutdown = False
         self._play_list = play_list
         self._mon_port = mon_port
         self._write_flush_records = write_flush_records
@@ -686,6 +689,12 @@ class sdsio_manager:
         self._info_IdleRate: int = 0
         self._last_async_time = time.time()
         self._last_playback_stream_name = None
+        try:
+            self._loop = asyncio.get_running_loop()
+            self._main_task = asyncio.current_task()
+        except RuntimeError:
+            self._loop = None
+            self._main_task = None
 
     def shutdown(self):
         self.shutdown_requested.set()
@@ -902,6 +911,12 @@ class sdsio_manager:
         elif self._flags.auto_playback and self._last_playback_stream_name:
             if self._flags.request_auto_playback_terminate():
                 logger.info("Playback complete - no more steps remaining.")
+                if self._exit_after_playback:
+                    logger.info("SDSIO-Server terminating (playback complete).")
+                    self._send_ci_terminate_on_shutdown = True
+                    self.shutdown_requested.set()
+                    if self._loop and self._main_task:
+                        self._loop.call_soon_threadsafe(self._main_task.cancel)
 
     def _open(self, mode, name):
         _cmd = CMD_OPEN
@@ -1261,9 +1276,16 @@ class sdsio_manager:
     def get_shutdown_flags(self):
         _resp = bytearray()
         _cmd = CMD_FLAGS
+        _set_mask = self._flags.consume_set()
+        self._flags.consume_clear()
+        if self._send_ci_terminate_on_shutdown:
+            _set_mask &= SDS_FLAG_MASK_CI_TERMINATE
+        else:
+            _set_mask = 0
+        _clear_mask = SDS_FLAG_MASK_ALIVE
         _resp.extend(_cmd.to_bytes(4,'little'))
-        _resp.extend((0).to_bytes(4,'little'))
-        _resp.extend((1 << 28).to_bytes(4,'little'))
+        _resp.extend(_set_mask.to_bytes(4,'little'))
+        _resp.extend(_clear_mask.to_bytes(4,'little'))
         _resp.extend((0).to_bytes(4,'little'))
         return _resp
 
@@ -2288,6 +2310,9 @@ def parse_arguments():
         _g.add_argument("--playback", "-p", dest="auto_playback", action="store_true",
                        help="Start SDSIO-Server in playback mode (typically used in CI tests)",
                        default=argparse.SUPPRESS)
+        _g.add_argument("--exit-after-playback", "-x", dest="exit_after_playback", action="store_true",
+                       help="Terminate when playback is completed",
+                       default=argparse.SUPPRESS)
         _g.add_argument("--workdir", dest="work_dir", metavar="<path>",
                        help="Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)",
                        type=dir_path, default=argparse.SUPPRESS)
@@ -2389,6 +2414,8 @@ def parse_arguments():
     _general = _parser.add_argument_group("general-opts")
     _general.add_argument("--playback", "-p", dest="auto_playback", action="store_true",
                          help="Start SDSIO-Server in playback mode (typically used in CI tests)", default=None)
+    _general.add_argument("--exit-after-playback", "-x", dest="exit_after_playback", action="store_true",
+                         help="Terminate when playback is completed", default=None)
     _general.add_argument("--workdir", dest="work_dir", metavar="<path>",
                         help="Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)", type=dir_path, default=None)
     _general.add_argument("--mon-port", "-m", dest="monitor_port", metavar="<port>",
@@ -2556,6 +2583,7 @@ async def main():
 
     # Auto playback
     _auto_playback = _args.auto_playback if _args.auto_playback else False
+    _exit_after_playback = _args.exit_after_playback if _args.exit_after_playback else False
 
     # Playback list
     _play_list: Optional[list] = _ctrl_data.get('play', None) if _ctrl_data else None
@@ -2565,8 +2593,8 @@ async def main():
             if _recdir and not path.isabs(_recdir):
                 _step['recdir'] = path.normpath(path.join(_work_dir, _recdir))
 
-    _manager = sdsio_manager(work_dir=_work_dir, auto_playback=_auto_playback, play_list=_play_list,
-                             mon_port=_args.monitor_port, write_flush_records=_write_flush_records)
+    _manager = sdsio_manager(work_dir=_work_dir, auto_playback=_auto_playback, exit_after_playback=_exit_after_playback,
+                             play_list=_play_list, mon_port=_args.monitor_port, write_flush_records=_write_flush_records)
 
     try:
         if _server_type == "socket":
