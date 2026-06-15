@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "3.0.1-dev1"
+SDSIO_SERVER_VERSION = "3.0.1-dev2"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -628,6 +628,7 @@ class sdsio_manager:
         work_dir,
         auto_playback=False,
         exit_after_playback=False,
+        no_progress_info=False,
         play_list: Optional[list] = None,
         mon_port: Optional[int] = None,
         write_flush_records: Optional[int] = None,
@@ -657,7 +658,7 @@ class sdsio_manager:
         self.time_last_rw = time.time()
         # status bar
         self._status = None
-        if status_bar_factory is None:
+        if status_bar_factory is None and not no_progress_info:
             status_bar_factory = StatusBar
         if status_bar_factory:
             self._status = status_bar_factory(self)
@@ -2313,6 +2314,9 @@ def parse_arguments():
         _g.add_argument("--exit-after-playback", "-x", dest="exit_after_playback", action="store_true",
                        help="Terminate when playback is completed",
                        default=argparse.SUPPRESS)
+        _g.add_argument("--no-progress-info", "-n", dest="no_progress_info", action="store_true",
+                       help="Disable dynamic progress indicator",
+                       default=argparse.SUPPRESS)
         _g.add_argument("--workdir", dest="work_dir", metavar="<path>",
                        help="Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)",
                        type=dir_path, default=argparse.SUPPRESS)
@@ -2416,6 +2420,8 @@ def parse_arguments():
                          help="Start SDSIO-Server in playback mode (typically used in CI tests)", default=None)
     _general.add_argument("--exit-after-playback", "-x", dest="exit_after_playback", action="store_true",
                          help="Terminate when playback is completed", default=None)
+    _general.add_argument("--no-progress-info", "-n", dest="no_progress_info", action="store_true",
+                         help="Disable dynamic progress indicator", default=None)
     _general.add_argument("--workdir", dest="work_dir", metavar="<path>",
                         help="Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)", type=dir_path, default=None)
     _general.add_argument("--mon-port", "-m", dest="monitor_port", metavar="<port>",
@@ -2584,6 +2590,7 @@ async def main():
     # Auto playback
     _auto_playback = _args.auto_playback if _args.auto_playback else False
     _exit_after_playback = _args.exit_after_playback if _args.exit_after_playback else False
+    _no_progress_info = _args.no_progress_info if _args.no_progress_info else False
 
     # Playback list
     _play_list: Optional[list] = _ctrl_data.get('play', None) if _ctrl_data else None
@@ -2594,7 +2601,8 @@ async def main():
                 _step['recdir'] = path.normpath(path.join(_work_dir, _recdir))
 
     _manager = sdsio_manager(work_dir=_work_dir, auto_playback=_auto_playback, exit_after_playback=_exit_after_playback,
-                             play_list=_play_list, mon_port=_args.monitor_port, write_flush_records=_write_flush_records)
+                             no_progress_info=_no_progress_info, play_list=_play_list,
+                             mon_port=_args.monitor_port, write_flush_records=_write_flush_records)
 
     try:
         if _server_type == "socket":

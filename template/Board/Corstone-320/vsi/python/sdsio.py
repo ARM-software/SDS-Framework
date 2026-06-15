@@ -26,7 +26,7 @@ logger = logging.getLogger("sdsio")
 # ---------------------------------------------------------------------------- #
 #                  SDSIO server-compatible stream implementation                #
 # ---------------------------------------------------------------------------- #
-SDSIO_VSI_VERSION = "3.0.1-dev1"
+SDSIO_VSI_VERSION = "3.0.1-dev2"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -217,6 +217,7 @@ class sdsio_manager:
         work_dir,
         auto_playback=False,
         exit_after_playback=False,
+        no_progress_info=False,
         play_list: Optional[list] = None,
         mon_port: Optional[int] = None,
         write_flush_records: Optional[int] = None,
@@ -246,7 +247,7 @@ class sdsio_manager:
         self.time_last_rw = time.time()
         # status bar
         self._status = None
-        if status_bar_factory is None:
+        if status_bar_factory is None and not no_progress_info:
             status_bar_factory = StatusBar
         if status_bar_factory:
             self._status = status_bar_factory(self)
