@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "3.0.1-dev2"
+SDSIO_SERVER_VERSION = "3.0.1-dev3"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -679,7 +679,7 @@ class sdsio_manager:
             if monitor_factory:
                 self._monitor = monitor_factory(self._mon_port, self._flags)
         self._ctrl_input = None
-        if control_input_factory is not False:
+        if control_input_factory is not False and sys.stdin.isatty():
             if control_input_factory is None:
                 control_input_factory = sdsControlInput
             if control_input_factory:
