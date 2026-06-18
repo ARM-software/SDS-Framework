@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "3.0.1-dev3"
+SDSIO_SERVER_VERSION = "3.0.1-dev4"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -1277,10 +1277,8 @@ class sdsio_manager:
     def get_shutdown_flags(self):
         _resp = bytearray()
         _cmd = CMD_FLAGS
-        _set_mask = self._flags.consume_set()
-        self._flags.consume_clear()
         if self._send_ci_terminate_on_shutdown:
-            _set_mask &= SDS_FLAG_MASK_CI_TERMINATE
+            _set_mask = SDS_FLAG_MASK_CI_TERMINATE
         else:
             _set_mask = 0
         _clear_mask = SDS_FLAG_MASK_ALIVE
