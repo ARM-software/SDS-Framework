@@ -42,12 +42,12 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Install tools
-        uses: ARM-software/cmsis-actions/vcpkg@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1.2
+        uses: ARM-software/cmsis-actions/vcpkg@8a50b77681a484568e08f31fb7c2285c4735f682 # v1.3
         with:
           config: "./.ci/vcpkg-configuration.json"
 
       - name: Activate Arm tool license
-        uses: ARM-software/cmsis-actions/armlm@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1.2
+        uses: ARM-software/cmsis-actions/armlm@8a50b77681a484568e08f31fb7c2285c4735f682 # v1.3
 
       - name: Cache CMSIS packs
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
