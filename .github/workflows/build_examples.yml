@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Install tools
-        uses: ARM-software/cmsis-actions/vcpkg@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1.2
+        uses: ARM-software/cmsis-actions/vcpkg@8a50b77681a484568e08f31fb7c2285c4735f682 # v1.3
         with:
           config: "./.ci/vcpkg-configuration.json"
 
