@@ -29,10 +29,10 @@ static uint8_t algo_data_in_buf [ALGO_DATA_IN_BLOCK_SIZE]  __ALIGNED(4);
 static uint8_t algo_data_out_buf[ALGO_DATA_OUT_BLOCK_SIZE] __ALIGNED(4);
 
 // SDS buffers
-static uint8_t sds_data_in_buf [((ALGO_DATA_IN_BLOCK_SIZE  * 2) + 2048)] __ALIGNED(4);
-static uint8_t sds_data_out_buf[((ALGO_DATA_OUT_BLOCK_SIZE * 2) + 2048)] __ALIGNED(4);
+static uint8_t sds_data_in_buf [(ALGO_DATA_IN_BLOCK_SIZE  * 2) + 2048] __ALIGNED(4);
+static uint8_t sds_data_out_buf[(ALGO_DATA_OUT_BLOCK_SIZE * 2) + 2048] __ALIGNED(4);
 
-// SDS identifiers
+// SDS stream identifiers
 static sdsId_t sds_data_in_id  = NULL;
 static sdsId_t sds_data_out_id = NULL;
 
@@ -97,17 +97,28 @@ int32_t CloseStreams (void) {
     play = 1U;
   }
 
-  close_status = sdsClose(sds_data_in_id);
-  SDS_ERROR_CHECK(close_status);
-  if (close_status == SDS_OK) {
+  if (sds_data_in_id != NULL) {
+    close_status = sdsClose(sds_data_in_id);
+    SDS_ERROR_CHECK(close_status);
+    if (close_status == SDS_OK) {
+      sds_data_in_id = NULL;
+    } else {
+      status = -1;
+    }
+  }
+  if (sds_data_out_id != NULL) {
     close_status = sdsClose(sds_data_out_id);
     SDS_ERROR_CHECK(close_status);
+    if (close_status == SDS_OK) {
+      sds_data_out_id = NULL;
+    } else {
+      status = -1;
+    }
   }
 
-  if (close_status == SDS_OK) {
+  if (status == 0) {
     SDS_PRINTF("==== SDS %s stopped\n", SDS_MODE[play]);
   } else {
-    status = -1;
     SDS_PRINTF("==== SDS %s stop failed\n", SDS_MODE[play]);
   }
 
@@ -194,7 +205,12 @@ __NO_RETURN void AlgorithmThread (void *argument) {
 
     if (sds_state == SDS_STATE_ACTIVE) {
       // Record algorithm output data
-      ret = sdsWrite(sds_data_out_id, timeslot, algo_data_out_buf, sizeof(algo_data_out_buf));
+      do {
+        ret = sdsWrite(sds_data_out_id, timeslot, algo_data_out_buf, sizeof(algo_data_out_buf));
+        if (ret == SDS_NO_SPACE) {
+          osDelay(10U);
+        }
+      } while (ret == SDS_NO_SPACE);
       SDS_ASSERT(ret == sizeof(algo_data_out_buf));
     }
   }

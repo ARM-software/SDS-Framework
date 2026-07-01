@@ -38,8 +38,9 @@ osThreadAttr_t attr_sdsControlThread = {
 };
 
 // Idle time counter
-static volatile uint32_t idle_cnt;
-static          uint32_t no_load_cnt;
+static volatile uint32_t idle_cnt     = 0U;
+static volatile uint8_t  rst_idle_cnt = 0U;
+static          uint32_t no_load_cnt  = 0U;
 
 #ifdef RTE_CMSIS_RTOS2_RTX5
 // Measure system idle time if OS is RTX5
@@ -48,6 +49,11 @@ __NO_RETURN void osRtxIdleThread (void *argument) {
 
   for (;;) {
     idle_cnt++;
+
+    if (rst_idle_cnt != 0U) {           // If request to reset idle_cnt is set
+      rst_idle_cnt = 0U;
+      idle_cnt = 0U;
+    }
   }
 }
 #else
@@ -57,7 +63,7 @@ __NO_RETURN void osRtxIdleThread (void *argument) {
 // Calibrate idle measurement
 void sdsIdleCalibrate (void) {
   osDelay(1U);
-  idle_cnt = 0U;
+  rst_idle_cnt = 1U;
   osDelay(10U);
   no_load_cnt = idle_cnt;
 }

@@ -15,6 +15,9 @@
   <releases>
     <release version="3.1.0-dev">
       Active development ...
+      Template:
+      - Corrected idle measurement
+      - Improved robustness
     </release>
   </releases>
 

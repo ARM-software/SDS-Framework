@@ -13,13 +13,15 @@ solution:
   # Refer to https://open-cmsis-pack.github.io/cmsis-toolbox/ReferenceApplications/ for more information
 
   packs:
-    - pack: ARM::SDS # search SDS pack for layers
+    - pack: ARM::SDS@^3.0.0-0
+    - pack: ARM::V2M_MPS3_SSE_300_BSP@^1.5.0
+    - pack: ARM::SSE_320_BSP@^1.1.0
 
   # List different hardware targets that are used to deploy the solution.
   target-types:
     - type: SSE-300-U55
-      board: ARM::V2M-MPS3-SSE-300-FVP
-      device: ARM::SSE-300-MPS3
+      board: V2M-MPS3-SSE-300-FVP
+      device: SSE-300-MPS3
       define:
         - SIMULATOR
       variables:
@@ -35,8 +37,8 @@ solution:
             config-file: Board/Corstone-300/fvp_config.txt
 
     - type: SSE-320-U85
-      board: ARM::SSE-320
-      device: ARM::SSE-320-FVP
+      board: SSE-320
+      device: SSE-320-FVP
       define:
         - SIMULATOR
       variables:
