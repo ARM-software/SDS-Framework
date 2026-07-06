@@ -66,17 +66,21 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#sds-data-files">SDS Data Files</a>
 <ul>
+<li class="toctree-l3"><a class="reference internal" href="#file-format">File Format</a>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#filenames">Filenames</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#timeslot">Timeslot</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#file-format">File Format</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#yaml-metadata-format">YAML Metadata Format</a>
-<ul>
-<li class="toctree-l4"><a class="reference internal" href="#image-metadata-format">Image Metadata Format</a>
-</li>
 </ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sds-metadata-format">SDS Metadata Format</a>
+<ul>
+<li class="toctree-l3"><a class="reference internal" href="#value-list-data-stream">Value list data stream</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#audio-data-stream">Audio data stream</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#image-data-stream">Image data stream</a>
 </li>
 </ul>
 </li>
@@ -125,19 +129,14 @@
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD060 -->
 <p>The SDS Framework enables recording and playback of one or more data streams for an application under development, as shown in the diagram below. With the SDSIO interface, the data streams are connected to SDS data files. The file storage can be either embedded within the system and accessed via a file system, or external (on a host computer) and accessed via a communication interface such as Ethernet or USB.</p>
-<p>The DSP or ML algorithms that are tested operate on blocks and are executed periodically. This documentation uses these terms:</p>
-<ul>
-<li><strong>Data Block</strong>: is a set of input or output data which is processed in one step by a DSP or ML compute node.</li>
-<li><strong>Block size</strong>: is the number of bytes of a data block.</li>
-<li><strong>Interval</strong>: is the periodic time interval at which the compute node executes.</li>
-</ul>
+<p>The DSP or ML algorithms under test operate on blocks and are executed periodically. This documentation uses the term <strong>Data Block</strong> to refer to a block of input or output data that is processed in one step by a DSP or ML compute node.</p>
 <p><img alt="SDSIO Interface for Player and Recorder" src="images/SDS-InOut.png"/></p>
-<p>Using the SDS Stream Interface functions (<code>sds.c/h</code>), the data stream under development may read and write as shown above. The Stream Interface functions store data streams in a circular buffer (<code>sds_buffer.c/h</code>). This circular buffer is the I/O queue for the SDSIO-Client (<code>sdsio_x.c / sdsio.h</code>).</p>
+<p>Using the SDS Stream Interface functions (<code>sds.c/h</code>), the data stream under development may read and write as shown above. The Stream Interface functions store data streams in a circular buffer (<code>sds_buffer.c/h</code>). This circular buffer is the I/O queue for the SDSIO-Client (<code>sdsio_x.c/h</code>).</p>
 <p><img alt="Implementation Files of SDS" src="images/Theory_of_Operation.png"/></p>
 <h2 id="usage">Usage</h2>
-<p>The following diagram shows the usage of the SDS Stream Interface functions (executed in <code>sdsThread</code>).  The <code>sdsControlThread</code> controls the overall execution. <code>AlgorithmThread</code> is the thread that executes Signal Conditioning (SC) and ML Model.</p>
+<p>The following diagram shows the usage of the SDS Stream Interface functions (executed in <code>sdsThread</code>).  The <code>sdsControlThread</code> controls the overall execution. <code>AlgorithmThread</code> is the thread that executes Signal Conditioning (SC) and the ML Model.</p>
 <p>When <code>AlgorithmThread</code> starts, it first calls the <code>InitInputData</code> function, which initializes the input interfaces
-(for example, camera, microphone, accelerometer, etc.). It then calls <code>InitAlgorithm</code>, which is responsible for initializing the ML algorithm.</p>
+(camera, microphone or sensor interfaces). It then calls <code>InitAlgorithm</code>, which is responsible for initializing the ML algorithm.</p>
 <p>After initialization, <code>AlgorithmThread</code> enters a loop in which it repeatedly calls <code>GetInputData</code>. This function provides a block of input data
 used for a single inference. The inference itself is executed by the <code>ExecuteAlgorithm</code> function.</p>
 <p>Two additional functions are also provided:</p>
@@ -167,32 +166,42 @@ used for a single inference. The inference itself is executed by the <code>Execu
     Note over sdsThread: Flush and close&lt;br/&gt; data streams
 </div>
 <h2 id="sds-data-files">SDS Data Files</h2>
-<p>Each data stream is stored in a separate SDS data file. In the diagram below <code>SCinput.0.sds</code> is the input to Signal Conditioning, <code>SCoutput.0.sds</code> is the output of Signal Conditioning, and <code>MLoutput.0.sds</code> is the output of the ML Model. Each execution of the algorithm is represented in a data block with a <code>timeslot</code>. The <code>timeslot</code> allows correlating blocks from different streams. In the example above, all blocks of one algorithm execution have the same timeslot value.</p>
+<p>Each data stream is stored in a separate SDS data file. In the diagram below <code>SCinput.0.sds</code> is the input to Signal Conditioning, <code>SCoutput.0.sds</code> is the output of Signal Conditioning, and <code>MLoutput.0.sds</code> is the output of the ML Model. Each execution of the algorithm is represented by a data block with a <code>timeslot</code>. The <code>timeslot</code> allows correlating blocks from different streams.</p>
+<p>All data blocks of one algorithm execution have the same timeslot value as shown below:</p>
 <p><img alt="SDS Files" src="images/SDS-Files.png"/></p>
 <ul>
 <li>Each call to the function <code>sdsWrite</code> writes one complete data block.</li>
 <li>Each call to the function <code>sdsRead</code> reads one complete data block.</li>
 </ul>
+<h3 id="file-format">File Format</h3>
+<p>Each SDS file contains a sequence of variable-size data blocks. Every data block has the following information:</p>
+<ol>
+<li><strong>timeslot</strong>: data block timeslot measured at the <code>tick-frequency</code> rate (32-bit unsigned integer, little endian).</li>
+<li><strong>block size</strong>: number of bytes in the following data block (32-bit unsigned integer, little endian).</li>
+<li><strong>data block</strong>: SDS stream content (little endian, no padding) as described by the corresponding <code>*.sds.yml</code> <a href="#sds-metadata-format">metadata file</a>.</li>
+</ol>
+<p>This structure supports recording and playback of multiple data streams that may have jitter. The timeslot information allows correlating data blocks from different data streams and enables sensor fusion applications where multiple data streams are combined as training input to one machine learning algorithm.</p>
 <h3 id="filenames">Filenames</h3>
-<p>The <code>sdsOpen</code> function takes <code>&lt;name&gt;</code> for the stream and the opening mode as input parameters.
-Opening a stream in <code>sdsModeRead</code> mode is used for playback and opening stream in <code>sdsModeWrite</code> is used for recording.</p>
-<p>The actual files used when opening a stream depend on the presence of the <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a> and its <code>play</code> node.</p>
+<p>SDS data streams are stored in <code>*.sds</code> files with the following naming convention:</p>
+<pre><code class="language-txt">&lt;stream-name&gt;.&lt;label&gt;[.p].sds
+</code></pre>
+<p>The <code>.p</code> is added when the SDS data stream is recorded during playback.</p>
+<p>The <code>sdsOpen</code> function takes <code>&lt;stream-name&gt;</code> for the stream and the opening mode as input parameters.
+Opening a stream in <code>sdsModeRead</code> mode is used for playback and opening a stream in <code>sdsModeWrite</code> is used for recording.</p>
+<p>The <a href="utilities.html#sdsio-server"><code>SDSIO-Server</code></a> adds <code>.&lt;label&gt;[.p].sds</code> to compose a filename as explained below:</p>
 <p><strong>Recording:</strong></p>
-<p><code>&lt;label&gt;</code> is a sequential integer starting at 0. The value is incremented until no file exists with the corresponding name, at which point a new file is created.</p>
-<p>Each subsequent recording session uses the next <code>&lt;label&gt;</code> value in the sequence. If a file with the selected name already exists, it is preserved by renaming it with
-a .bak extension before a new file is created with the original name.</p>
+<p><code>&lt;label&gt;</code> is a sequential number starting at 0. The number is incremented until no file exists with the corresponding name, at which point a new file is created.</p>
+<p>Each subsequent recording session uses the next <code>&lt;label&gt;</code> number in the sequence. If a file with the selected name already exists, it is preserved by renaming it with a <code>.bak</code> extension before a new file is created with the original name.</p>
 <p><strong>Playback:</strong></p>
-<p>When a <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a> is used and contains a <a href="utilities.html#play"><code>play:</code></a> node, the filename follows the pattern <code>&lt;stream-name&gt;.&lt;label&gt;.sds</code>, where <code>&lt;label&gt;</code> is specified in the corresponding
-<a href="utilities.html#play"><code>step:</code></a>.</p>
-<p>When <code>*.sdsio.yml</code> control file is not used, the <code>&lt;label&gt;</code> is a sequential number starting at 0. If the corresponding file does not exist, the open operation fails.
-After playback session completes, the process repeats with the <code>&lt;label&gt;</code> incremented by one.</p>
+<p>When a <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a> is used and contains a <a href="utilities.html#play"><code>play:</code></a> node, the <code>&lt;label&gt;</code> is specified in the corresponding <a href="utilities.html#play"><code>step:</code></a>.</p>
+<p>When <code>*.sdsio.yml</code> control file is not used, the <code>&lt;label&gt;</code> is a sequential number starting at 0. If the corresponding file does not exist, the open operation fails.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
 <li>Files recorded during playback include an additional <code>.p</code> before the <code>.sds</code> extension to
   distinguish them from originally recorded files (e.g., <code>ML_Out.0.p.sds</code>).</li>
 <li>If a recording filename already exists, any existing <code>.bak</code> file with the same name is deleted,
-  the current file is renamed by appending <code>.bak</code>, and the new recording uses the original filename.</li>
+  the current file is renamed by appending <code>.bak</code>.</li>
 </ul>
 </div>
 <h3 id="timeslot">Timeslot</h3>
@@ -202,19 +211,13 @@ After playback session completes, the process repeats with the <code>&lt;label&g
 <li>Order of the SDS data files captured during execution.</li>
 <li>Combining multiple SDS file records with the same timeslot value.</li>
 </ul>
-<p>The same timeslot connects different SDS file records. It is therefore useful to
-use the same timeslot for the recording of one iteration of a DSP or ML algorithm.
+<p>The same timeslot connects different SDS file data blocks. It is useful to
+use the same timeslot for the recording of data blocks in different data streams for one iteration of a DSP or ML algorithm.
 In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timeslot resolution.</p>
-<h3 id="file-format">File Format</h3>
-<p>The <strong>SDS Framework</strong> uses a binary data file format to store the individual data streams. It supports recording and playback of multiple data streams that may have jitter. Therefore, each stream contains timeslot information that allows correlating data streams, as required, for example, in sensor fusion applications.</p>
-<p>The binary data format (stored in <code>*.sds</code> data files) has a record structure with a variable size. Each record has the following format:</p>
-<ol>
-<li><strong>timeslot</strong>: record timeslot in tick-frequency (32-bit unsigned integer, little endian)</li>
-<li><strong>data size</strong>: number of data bytes in the record (32-bit unsigned integer, little endian)</li>
-<li><strong>binary data</strong>: SDS stream (little endian, no padding) as described with the <code>*.sds.yml</code> file.</li>
-</ol>
-<h3 id="yaml-metadata-format">YAML Metadata Format</h3>
-<p>The content of each data stream may be described in a <a href="https://en.wikipedia.org/wiki/YAML">YAML</a> metadata file that is created by the user. The following section defines the YAML format of this metadata file. The file <code>schema/sds.schema.json</code> is a schema description of the SDS Format Description.</p>
+<h2 id="sds-metadata-format">SDS Metadata Format</h2>
+<p>The content of each data stream may be described in an SDS metadata file in <a href="https://en.wikipedia.org/wiki/YAML">YAML format</a> that is created by the user. For example, a data stream named <code>sensorX</code> (stored in files <code>sensorX.0.sds</code>, <code>sensorX.1.sds</code>, ...) can be described with a corresponding metadata file <code>sensorX.sds.yml</code> as shown below.</p>
+<p><img alt="SDS Metadata Format" src="images/SDS-Metainfo.png" title="SDS Metadata Format"/></p>
+<p>The following section defines the YAML format of this metadata file. The file <a href="https://github.com/ARM-software/SDS-Framework/blob/main/schema/sds.schema.json"><code>schema/sds.schema.json</code></a> is a schema description of the SDS metadata format.</p>
 <table>
 <thead>
 <tr>
@@ -232,12 +235,16 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <td>Additional descriptive text (optional)</td>
 </tr>
 <tr>
-<td style="text-align: left;">    <code>frequency:</code></td>
-<td>Capture frequency of the SDS (required)</td>
+<td style="text-align: left;">    <code>block-frequency:</code></td>
+<td>Frequency in Hz (interval) of data blocks within a data stream (optional, see note)</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>sample-frequency:</code></td>
+<td>Frequency in Hz (sample rate) of samples within a data block (optional, see note)</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>tick-frequency:</code></td>
-<td>Tick frequency of the timeslot value (optional); default: 1000</td>
+<td>Tick frequency in Hz of the timeslot value (optional); default: 1000 Hz</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>content:</code></td>
@@ -245,11 +252,30 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li><code>block-frequency:</code> is optional as it can be derived from the timeslot value in combination with <code>tick-frequency:</code>.</li>
+<li><code>sample-frequency:</code> is required when a data block contains multiple samples as shown in the picture below. Otherwise all samples are generated at the same time.</li>
+<li>SDS v3.0 used <code>frequency:</code> to indicate a sample rate. In SDS v3.1 this is renamed to <code>sample-frequency:</code> to clarify the information.</li>
+</ul>
+</div>
+<p>The picture below shows how <code>sample-frequency:</code> and <code>block-frequency:</code> are applied. When data streams from different sources are combined, data blocks may vary in size.</p>
+<p><img alt="Data Block Size and Sample Frequency" src="images/SDS-Metainfo2.png" title="Data Block Size and Sample Frequency"/></p>
+<p>The <code>content:</code> list describes the binary layout of one data block. Depending on the stream type, it uses these nodes:</p>
+<ul>
+<li><a href="#value-list-data-stream"><code>value:</code></a> list entries to describe discrete values, such as sensor channels or algorithm outputs. A data block can contain multiple samples, so the <code>block size</code> is a multiple of the sample size. A <code>block size</code> of 0 indicates that no sample is available in that timeslot.</li>
+<li><a href="#audio-data-stream"><code>audio:</code></a> entry to describe audio channel parameters.</li>
+<li><a href="#image-data-stream"><code>image:</code></a> entry to describe a camera stream with frame layout parameters.</li>
+</ul>
+<h3 id="value-list-data-stream">Value list data stream</h3>
+<p>Typically describes the sample layout of a sensor data stream or the output of ML algorithms. A data block may contain several samples as shown in the picture above. The <code>sample-frequency:</code> should be specified when the data stream uses a discrete sample rate.</p>
+<p>With <code>dim-x:</code> and <code>dim-y:</code> arrays can be composed. The equivalent representation in C is "<em>type name[dim-y][dim-x]</em>".</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;"><code>content:</code></th>
-<th>List of values captured (in the order of the data file)</th>
+<th>Value list in the order stored in the data block</th>
 </tr>
 </thead>
 <tbody>
@@ -260,6 +286,14 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <tr>
 <td style="text-align: left;">    <code>type:</code></td>
 <td>Data type of the value (required)</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>dim-x:</code></td>
+<td>Array size x (optional); default: 1</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>dim-y:</code></td>
+<td>Array size y (optional); default: 1</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>offset:</code></td>
@@ -273,69 +307,14 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <td style="text-align: left;">    <code>unit:</code></td>
 <td>Physical unit of the value (optional)</td>
 </tr>
-<tr>
-<td style="text-align: left;">    <code>image:</code></td>
-<td>Image stream metadata (optional, see below)</td>
-</tr>
 </tbody>
 </table>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>image:</code></th>
-<th><a href="#image-metadata-format">Image metadata</a> for one <code>content</code> entry</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">    <code>pixel_format:</code></td>
-<td>Pixel format identifier (required)</td>
-</tr>
-<tr>
-<td style="text-align: left;">    <code>width:</code></td>
-<td>Number of pixels per row (required, integer &gt;= 1)</td>
-</tr>
-<tr>
-<td style="text-align: left;">    <code>height:</code></td>
-<td>Number of rows (required, integer &gt;= 1)</td>
-</tr>
-<tr>
-<td style="text-align: left;">    <code>stride_bytes:</code></td>
-<td>Bytes per row for single-plane formats (optional)</td>
-</tr>
-<tr>
-<td style="text-align: left;">    <code>planes:</code></td>
-<td>Per-plane stride for multi-plane formats (optional, 2..3 entries)</td>
-</tr>
-</tbody>
-</table>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>planes:</code></th>
-<th>Per-plane metadata entry</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>- stride_bytes:</code></td>
-<td>Bytes per row for this plane (required, integer &gt;= 1)</td>
-</tr>
-</tbody>
-</table>
-<p>For <code>image</code>, exactly one of <code>stride_bytes</code> or <code>planes</code> must be provided.</p>
-<p><strong>Example</strong></p>
-<p>This example defines a data stream with the name "sensorX" that contains the values of a gyroscope, temperature sensor, and additional raw data (that are not further described).</p>
-<p><img alt="image" src="images/SDS-Metainfo.png"/></p>
-<p>The binary data coming from these sensors are stored in data files with the following file format: <code>&lt;sensor-name&gt;.&lt;index&gt;.sds</code>. In this example, the filenames could be:</p>
-<pre><code class="language-yml">   sensorX.0.sds   # capture 0
-   sensorX.1.sds   # capture 1
-</code></pre>
+<p><strong>Examples:</strong></p>
 <p>The following <code>sensorX.sds.yml</code> provides the format description of the SDS <code>sensorX</code> binary data files and may be used by data conversion utilities and data viewers.</p>
 <pre><code class="language-yml">sds:                   # describes a synchronous data stream
   name: sensorX        # user defined name
-  description: Gyroscope stream with 1KHz, plus additional user data
-  frequency: 1000
+  description: Gyroscope stream with 1KHz sample rate, plus additional user data
+  sample-frequency: 1000
   content:
   - value: x           # Value name is 'x'
     type:  uint16_t    # stored using a 16-bit unsigned int
@@ -356,8 +335,117 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
   - value: flag
     type: uint32_t:1   # a single bit stored in a 32-bit int
 </code></pre>
-<h4 id="image-metadata-format">Image Metadata Format</h4>
-<p>The <code>pixel_format</code> values listed in <code>sds.schema.json</code> map to the following template files located in <code>schema/image_format</code> and use Linux V4L2 references.</p>
+<p>The following <code>ToF.sds.yml</code> provides the format description of a Time-of-Flight sensor.</p>
+<pre><code class="language-yml">sds:                   # describes a synchronous data stream
+  name: ToF            # user defined name
+  description: Time-of-Flight sensor with 8x8 matrix
+  content:
+  - value: distance    # Value name is 'distance'
+    type:  uint16_t    # stored using a 16-bit unsigned int
+    dim-x: 8
+    dim-y: 8
+</code></pre>
+<h3 id="audio-data-stream">Audio data stream</h3>
+<p>Describes audio data format, typically used for a microphone data stream.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>content:</code></th>
+<th style="text-align: left;">Audio metadata for <code>content:</code> node</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- audio:</code></td>
+<td style="text-align: left;">Audio format specification</td>
+</tr>
+<tr>
+<td style="text-align: left;">       <code>sample-frequency:</code></td>
+<td style="text-align: left;">Audio sample rate in Hz (required)</td>
+</tr>
+<tr>
+<td style="text-align: left;">       <code>bit-depth:</code></td>
+<td style="text-align: left;">Bits per audio sample (required)</td>
+</tr>
+<tr>
+<td style="text-align: left;">       <code>audio-channels:</code></td>
+<td style="text-align: left;">Number of interleaved audio channels (required)</td>
+</tr>
+<tr>
+<td style="text-align: left;">       <code>format:</code></td>
+<td style="text-align: left;">Audio format used (optional), currently only <code>pcm</code> is supported</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">sds:
+  name: Mono
+  description: Mono 16-bit PCM microphone
+  content:
+  - audio:
+      sample-frequency: 16000
+      bit-depth: 16
+      audio-channels: 1
+      format: pcm
+</code></pre>
+<h3 id="image-data-stream">Image data stream</h3>
+<p>Describes the image data format, typically used for a camera data stream.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>content:</code></th>
+<th style="text-align: left;">Image metadata for <code>content:</code> node</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- image:</code></td>
+<td style="text-align: left;">Image (camera data) format specification</td>
+</tr>
+<tr>
+<td style="text-align: left;">       <code>pixel_format:</code></td>
+<td style="text-align: left;">Pixel format identifier (required)</td>
+</tr>
+<tr>
+<td style="text-align: left;">       <code>width:</code></td>
+<td style="text-align: left;">Number of pixels per row (required, integer &gt;= 1)</td>
+</tr>
+<tr>
+<td style="text-align: left;">       <code>height:</code></td>
+<td style="text-align: left;">Number of rows (required, integer &gt;= 1)</td>
+</tr>
+<tr>
+<td style="text-align: left;">       <code>stride_bytes:</code></td>
+<td style="text-align: left;">Bytes per row for single-plane formats (optional, see note)</td>
+</tr>
+<tr>
+<td style="text-align: left;">       <code>planes:</code></td>
+<td style="text-align: left;">Per-plane stride for multi-plane formats (optional, 2..3 entries, see note)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>planes:</code></th>
+<th>Per-plane metadata entry</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- stride_bytes:</code></td>
+<td>Bytes per row for this plane (required, integer &gt;= 1)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>For <code>image:</code>, exactly one of <code>stride_bytes:</code> or <code>planes:</code> must be provided.</li>
+</ul>
+</div>
+<p>Template files for various image data formats are located in <a href="https://github.com/ARM-software/SDS-Framework/tree/main/schema/image_format"><code>schema/image_format</code></a>.
+These templates are listed below and use Linux V4L2 references.</p>
 <table>
 <thead>
 <tr>
@@ -445,8 +533,19 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <li>When RAW10 is packed (4 pixels in 5 bytes), use <a href="https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/pixfmt-srggb10p.html">10-bit packed Bayer formats</a>.</li>
 </ul>
 </div>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">sds:
+  name: Video Stream - RGB888
+  description: RGB888 video frames from camera
+  content:
+    - image:
+        pixel_format: RGB888
+        width: 1280
+        height: 720
+        stride_bytes: 3840   # 3 bytes per pixel
+</code></pre>
 <h2 id="code-example">Code Example</h2>
-<p>The following code snippets show the usage of the <strong>SDS</strong> for recording of sensor data. In this case an accelerometer data stream is recorded.</p>
+<p>The following code snippets show how to use <strong>SDS</strong> for recording sensor data. In this case an accelerometer data stream is recorded.</p>
 <pre><code class="language-c">#include "sds.h"
 
 // variable definitions
@@ -467,7 +566,7 @@ int32_t  n;                     // number of bytes written to data stream
    // open data stream for writing (recording)
    accel_id = sdsOpen("Accel", sdsModeWrite, accel_buf, sizeof(accel_buf));
      :
-   // write data in accelerometer buffer with timeslot from RTOS kernel.
+   // write data in accelerometer buffer with a timeslot from the RTOS kernel.
    timeslot = osKernelGetTickCount();
    n = sdsWrite(accel_id, timeslot, accelerometer, sizeof(accelerometer));
    if (n != sizeof(accelerometer)) {
@@ -789,7 +888,7 @@ signal to the firmware that it will stop operating, and shut down gracefully.</p
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Monitor program or user should ensure that no streams are open before the shutdown is initiated.</p>
+<p>When shutdown is initiated, all data streams will be closed by the SDSIO-Server. Ideally it should be initiated when the user application has completed playback or recording and closed all data streams.</p>
 </div>
 <h2 id="sdsio-message-sequence">SDSIO Message Sequence</h2>
 <p>This section describes the states and the message sequence of the SDS framework when using the <a href="utilities.html#sdsio-server">SDSIO-Server</a>.
@@ -872,7 +971,7 @@ It contains the following threads that execute on the target.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>When the command <code>SDSIO_CMD_FLAGS</code> sets SDS_FLAG_ALIVE, the <code>sdsControlThread</code> transitions into the SDS_STATE_CONNECTED.</li>
+<li>When the command <code>SDSIO_CMD_FLAGS</code> sets SDS_FLAG_ALIVE, the <code>sdsControlThread</code> transitions to SDS_STATE_CONNECTED.</li>
 <li>When <code>SDSIO_CMD_INFO</code> is sent more than 10 times without a <code>SDSIO_CMD_FLAGS</code> response, the <code>sdsControlThread</code> transitions into the SDS_STATE_INACTIVE.</li>
 </ul>
 </div>
@@ -946,7 +1045,6 @@ It contains the following threads that execute on the target.</p>
 
     Note over sdsControlThread: sdsClose&lt;br/&gt;(all streams)
     sdsControlThread-&gt;&gt;Server: SDSIO_CMD_CLOSE
-    Server-&gt;&gt;sdsControlThread: Response
     Note right of sdsControlThread: SDS_STATE_CONNECTED
 
     deactivate AlgorithmThread
@@ -1007,7 +1105,6 @@ It contains the following threads that execute on the target.</p>
 
     Note over sdsControlThread: sdsClose&lt;br/&gt;(all streams)
     sdsControlThread-&gt;&gt;Server: SDSIO_CMD_CLOSE
-    Server-&gt;&gt;sdsControlThread: Response
     Note right of sdsControlThread: SDS_STATE_CONNECTED
 
     deactivate sdsControlThread

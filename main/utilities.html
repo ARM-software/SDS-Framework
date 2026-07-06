@@ -453,7 +453,7 @@ Install <strong>Python</strong> and the packages listed in the file <code>utilit
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>view:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Format of the data stream for the viewer (signal, wav, video, heatmap, csv, csv2)</td>
+<td style="text-align: left;">Format of the data stream for the viewer (signal, wav, image, heatmap, csv, csv2)</td>
 </tr>
 </tbody>
 </table>
@@ -550,10 +550,7 @@ It communicates with the target using a <a href="https://github.com/ARM-software
 <li><a href="sdsio.html#using-rtt-interface">RTT</a> for communication via the RTT interface of a debug adapter (J-Link or pyOCD).</li>
 <li><a href="sdsio.html#using-network-interface">Network</a> for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.</li>
 </ul>
-<p>SDS data streams are stored in <code>*.sds</code> files with the following naming convention:</p>
-<p><code>&lt;stream-name&gt;.&lt;label&gt;[.p].sds</code>  (<code>[.p]</code> is added when the SDS data stream is recorded during the playback)</p>
-<p>For more details, see the <a href="theory.html#filenames">Filenames section</a>.</p>
-<p>The contents of <code>&lt;name&gt;.&lt;label&gt;[.p].sds</code> files are described by the metadata file <code>&lt;name&gt;.sds.yml</code> in <a href="https://github.com/ARM-software/SDS-Framework/tree/main/schema">YAML format</a>.</p>
+<p>SDS data streams are stored in file that use the format <code>&lt;stream-name&gt;.&lt;label&gt;[.p].sds</code>. See <a href="theory.html#filenames">Filenames</a> for details. The contents of SDS data files are described by the <a href="https://github.com/ARM-software/SDS-Framework/tree/main/schema">YAML metadata</a> file that use the format <code>&lt;stream-name&gt;.sds.yml</code>.</p>
 <h3 id="usage">Usage</h3>
 <ul>
 <li><a href="#setup">Setup</a> the Python environment.</li>
@@ -737,14 +734,14 @@ if-opts (optional):
 <p>Then reload rules with <code>sudo udevadm control --reload &amp;&amp; sudo udevadm trigger</code>.  Use <code>dmesg</code> before and after plugging in the device to find the vendor/product IDs.</p>
 <h2 id="sds-view">SDS-View</h2>
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-View</strong></a> generates a time-based plot
-from data recorded in SDS files (<code>&lt;name&gt;.&lt;label&gt;.sds</code>) using the metadata provided in <code>&lt;name&gt;.sds.yml</code>.</p>
-<p>The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description.
+from data recorded in SDS files (<code>&lt;stream-name&gt;.&lt;label&gt;.sds</code>) using the metadata provided in <code>&lt;stream-name&gt;.sds.yml</code>.</p>
+<p>The horizontal time scale is derived from the number of data points in a recording and <code>sample-frequency:</code> provided in the metadata description.
 All plots from a single recording are displayed on the same figure (shared vertical scale).</p>
 <p>If there are 3 values described in the metadata file, an optional 3D view may be displayed.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>SDS-View requires that all values in the <a href="https://arm-software.github.io/SDS-Framework/main/theory.html#yaml-metadata-format"><code>*.sds.yml</code> metadata file</a> have the same data type (float, uint32_t, uint16_t, ...)</li>
+<li>SDS-View requires that all values in the <a href="theory.html#sds-metadata-format"><code>&lt;stream-name&gt;.sds.yml</code> metadata file</a> have the same data type (float, uint32_t, uint16_t, ...)</li>
 </ul>
 </div>
 <h3 id="usage_1">Usage</h3>
@@ -811,23 +808,25 @@ required:
 </div>
 <p><strong>Example of metadata yml file for mono microphone:</strong></p>
 <pre><code class="language-yml">sds:
-  name: Microphone
-  description: Mono microphone with 16kHz sample rate
-  frequency: 16000
+  name: Mono
+  description: Mono 16-bit PCM microphone
   content:
-  - value: Mono
-    type: int16_t
+  - audio:
+      sample-frequency: 16000
+      bit-depth: 16
+      audio-channels: 1
+      format: pcm
 </code></pre>
 <p><strong>Example of metadata yml file for stereo microphone:</strong></p>
 <pre><code class="language-yml">sds:
-  name: Microphone
-  description: Stereo microphone with 16kHz sample rate
-  frequency: 16000
+  name: Stereo
+  description: Stereo 16-bit PCM microphone
   content:
-  - value: Left channel
-    type: int16_t
-  - value: Right channel
-    type: int16_t
+  - audio:
+      sample-frequency: 44100
+      bit-depth: 16
+      audio-channels: 2
+      format: pcm
 </code></pre>
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">python sds-convert.py audio_wav -i Microphone.0.sds -o microphone.wav -y Microphone.sds.yml
@@ -874,7 +873,7 @@ optional:
 <pre><code class="language-yml">sds:
   name: Gyroscope
   description: Gyroscope with 1667Hz sample rate
-  frequency: 1667
+  sample-frequency: 1667
   content:
   - value: x
     type: int16_t
@@ -998,11 +997,8 @@ required:
 <pre><code class="language-yml">sds:
   name: Video Stream - RGB888
   description: 192 x 192 RGB888 video frames
-  frequency: 30
   content:
-    - value: Frame
-      type: uint8_t
-      image:
+    - image:
         pixel_format: RGB888
         width: 192
         height: 192
@@ -1014,7 +1010,7 @@ required:
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li><a href="theory.html#image-metadata-format">Theory of Operation - Image Metadata Format</a> contains more information about the supported video formats.</li>
+<li><a href="theory.html#image-data-stream">Theory of Operation - Image Metadata Format</a> contains more information about the supported video formats.</li>
 </ul>
 </div>
 <h2 id="sds-check">SDS-Check</h2>
