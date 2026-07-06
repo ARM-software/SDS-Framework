@@ -512,9 +512,9 @@ sds:
   description: Mono 16-bit PCM microphone
   content:
   - audio:
-      sample_rate: 16000
-      bit_depth: 16
-      audio_channels: 1
+      sample-frequency: 16000
+      bit-depth: 16
+      audio-channels: 1
       format: pcm
 ```
 
@@ -526,9 +526,9 @@ sds:
   description: Stereo 16-bit PCM microphone
   content:
   - audio:
-      sample_rate: 44100
-      bit_depth: 16
-      audio_channels: 2
+      sample-frequency: 44100
+      bit-depth: 16
+      audio-channels: 2
       format: pcm
 ```
 

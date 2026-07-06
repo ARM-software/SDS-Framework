@@ -130,15 +130,19 @@ The following section defines the YAML format of this metadata file. The file [`
 :-------------------------------------|---------------------------------------------------
 &nbsp;&nbsp;&nbsp; `name:`            | Name of the Synchronous Data Stream (required)
 &nbsp;&nbsp;&nbsp; `description:`     | Additional descriptive text (optional)
-&nbsp;&nbsp;&nbsp; `block-frequency:` | Frequency in Hz (interval) of data blocks within a data stream (optional)
-&nbsp;&nbsp;&nbsp; `sample-frequency:`| Frequency in Hz (sample rate) of samples within a data block (optional)
+&nbsp;&nbsp;&nbsp; `block-frequency:` | Frequency in Hz (interval) of data blocks within a data stream (optional, see note)
+&nbsp;&nbsp;&nbsp; `sample-frequency:`| Frequency in Hz (sample rate) of samples within a data block (optional, see note)
 &nbsp;&nbsp;&nbsp; `tick-frequency:`  | Tick frequency in Hz of the timeslot value (optional); default: 1000 Hz
 &nbsp;&nbsp;&nbsp; `content:`         | List of values captured (required, see below)
 
 !!! Note
+    - `block-frequency:` is optional as it can be derived from the timeslot value in combination with `tick-frequency:`.
+    - `sample-frequency:` is required when a data block contains multiple samples as shown in the picture below. Otherwise all samples are generated at the same time.
     - SDS v3.0 used `frequency:` to indicate a sample rate. In SDS v3.1 this is renamed to `sample-frequency:` to clarify the information.
 
-![Data Block Structure](./images/SDS-Metainfo2.png "Data Block Structure")
+The picture below shows how `sample-frequency:` and `block-frequency:` are applied. When data streams from different sources are combined, data blocks may vary in size.
+
+![Data Block Size and Sample Frequency](./images/SDS-Metainfo2.png "Data Block Size and Sample Frequency")
 
 The `content:` list describes the binary layout of one data block. Depending on the stream type, it uses these nodes:
 
@@ -150,7 +154,7 @@ The `content:` list describes the binary layout of one data block. Depending on 
 
 Typically describes the sample layout of a sensor data stream or the output of ML algorithms. A data block may contain several samples as shown in the picture above. The `sample-frequency:` should be specified when the data stream uses a discrete sample rate.
 
-With `dim-x:`, `dim-y:`, `dim-z:` arrays can be composed. The equivalent representation in C is "*type name[dim-y][dim-x]*".
+With `dim-x:` and `dim-y:` arrays can be composed. The equivalent representation in C is "*type name[dim-y][dim-x]*".
 
 `content:`                           | Value list in the order stored in the data block
 :------------------------------------|---------------------------------------------------
@@ -209,13 +213,13 @@ sds:                   # describes a synchronous data stream
 
 Describes audio data format, typically used for a microphone data stream.
 
-`content:`                                             | Audio metadata for `content:` node
-:------------------------------------------------------|:---------------------------------------------------
-`- audio:`                                             | Audio format specification
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `sample_rate:`    | Audio sample rate in Hz (required)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `bit_depth:`      | Bits per audio sample (required)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `audio_channels:` | Number of interleaved audio channels (required)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `format:`         | Audio format used (optional), currently only `pcm` is supported
+`content:`                                               | Audio metadata for `content:` node
+:--------------------------------------------------------|:---------------------------------------------------
+`- audio:`                                               | Audio format specification
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `sample-frequency:` | Audio sample rate in Hz (required)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `bit-depth:`        | Bits per audio sample (required)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `audio-channels:`   | Number of interleaved audio channels (required)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `format:`           | Audio format used (optional), currently only `pcm` is supported
 
 **Example:**
 
@@ -225,9 +229,9 @@ sds:
   description: Mono 16-bit PCM microphone
   content:
   - audio:
-      sample_rate: 16000
-      bit_depth: 16
-      audio_channels: 1
+      sample-frequency: 16000
+      bit-depth: 16
+      audio-channels: 1
       format: pcm
 ```
 
