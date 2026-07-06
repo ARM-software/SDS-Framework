@@ -1,11 +1,8 @@
 sds:
   name: Video Stream - YUV422P
   description: YUV422P (YUV422 planar) video frames from camera
-  frequency: 30
   content:
-    - value: Frame
-      type: uint8_t
-      image:
+    - image:
         pixel_format: YUV422P
         width: 1280
         height: 720

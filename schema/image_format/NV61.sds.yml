@@ -1,11 +1,8 @@
 sds:
   name: Video Stream - NV61
   description: NV61 (YUV422 semi-planar, VU) video frames from camera
-  frequency: 30
   content:
-    - value: Frame
-      type: uint8_t
-      image:
+    - image:
         pixel_format: NV61
         width: 1280
         height: 720

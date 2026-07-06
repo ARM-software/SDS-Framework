@@ -1,117 +1,234 @@
-{ 
+{
+    "$comment" : "For documentation refer to https://arm-software.github.io/SDS-Framework/main/theory.html#sds-metadata-format",
     "$schema" : "https://json-schema.org/draft/2020-12/schema",
+    "title" : "SDS Metadata",
+    "description" : "Metadata description for SDS data file content",
     "type" : "object",
-    "properties" : { 
-        "sds" : { 
+    "version" : "3.1.0",
+    "properties" : {
+        "sds" : {
+            "title" : "sds:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#sds-metadata-format",
+            "description" : "Metadata description for SDS data file content",
             "type" : "object",
-            "properties" : { 
-                "name" : { 
+            "properties" : {
+                "name" : {
+                    "title" : "name:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#sds-metadata-format",
                     "type" : "string",
                     "description" : "Name of the Synchronous Data Stream (SDS)"
                 },
-                "description" : { 
+                "description" : {
+                    "title" : "description:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#sds-metadata-format",
                     "type" : "string",
                     "description" : "Additional descriptive text (optional)"
                 },
-                "frequency" : { 
+                "block-frequency" : {
+                    "title" : "block-frequency:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#sds-metadata-format",
                     "type" : "number",
-                    "description" : "Capture frequency of the SDS"
+                    "exclusiveMinimum" : 0,
+                    "description" : "Frequency in Hz (interval) of data blocks within a data stream (optional)"
                 },
-                "tick-frequency" : { 
+                "sample-frequency" : {
+                    "title" : "sample-frequency:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#sds-metadata-format",
                     "type" : "number",
-                    "description" : "Tick frequency of the timeslot value (optional); default: 1000 for 1 millisecond interval",
+                    "exclusiveMinimum" : 0,
+                    "description" : "Frequency in Hz (sample rate) of samples within a data block (optional)"
+                },
+                "tick-frequency" : {
+                    "title" : "tick-frequency:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#sds-metadata-format",
+                    "type" : "number",
+                    "exclusiveMinimum" : 0,
+                    "description" : "Tick frequency in Hz of the timeslot value (optional); default: 1000 Hz",
                     "default" : 1000
                 },
-                "content" : { 
+                "content" : {
+                    "title" : "content:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#sds-metadata-format",
                     "type" : "array",
-                    "description" : "List of values captured (see below)",
-                    "items" : { 
-                        "type" : "object",
-                        "properties" : { 
-                            "value" : { 
-                                "type" : "string",
-                                "description" : "Name of the value"
+                    "description" : "List of stream content entries captured in one data block",
+                    "minItems" : 1,
+                    "items" : {
+                        "oneOf" : [
+                            {
+                                "$ref" : "#/$defs/valueContent"
                             },
-                            "type" : { 
-                                "type" : "string",
-                                "description" : "Data type of the value"
+                            {
+                                "$ref" : "#/$defs/audioContent"
                             },
-                            "offset" : { 
-                                "type" : "number",
-                                "description" : "Offset of the value (optional); default: 0",
-                                "default" : 0
-                            },
-                            "scale" : { 
-                                "type" : "number",
-                                "description" : "Scale factor of the value (optional); default: 1.0",
-                                "default" : 1.0
-                            },
-                            "unit" : { 
-                                "type" : "string",
-                                "description" : "Physical unit of the value (optional); default: no units"
-                            },
-                            "image" : { 
-                                "type" : "object",
-                                "description" : "Image stream metadata, applicable when the value represents an image frame",
-                                "properties" : { 
-                                    "pixel_format" : { 
-                                        "type" : "string",
-                                        "description" : "Pixel format identifier.",
-                                        "enum" : [ "RAW8", "RAW10", "RGB565", "RGB888", "NV12", "NV21", "I420", "NV16", "NV61", "YUYV", "UYVY", "YUV422P", "YUV444", "YUV444P" ]
-                                    },
-                                    "width" : { 
-                                        "type" : "integer",
-                                        "minimum" : 1,
-                                        "description" : "Number of pixels per row."
-                                    },
-                                    "height" : { 
-                                        "type" : "integer",
-                                        "minimum" : 1,
-                                        "description" : "Number of rows."
-                                    },
-                                    "stride_bytes" : { 
-                                        "type" : "integer",
-                                        "minimum" : 1,
-                                        "description" : "Bytes per row for single-plane formats."
-                                    },
-                                    "planes" : { 
-                                        "type" : "array",
-                                        "description" : "Per-plane stride (for multi-plane formats).",
-                                        "minItems" : 2,
-                                        "maxItems" : 3,
-                                        "items" : { 
-                                            "type" : "object",
-                                            "properties" : { 
-                                                "stride_bytes" : { 
-                                                    "type" : "integer",
-                                                    "minimum" : 1,
-                                                    "description" : "Bytes per row for this plane."
-                                                }
-                                            },
-                                            "required" : [ "stride_bytes" ]
-                                        }
-                                    }
-                                },
-                                "required" : [ "pixel_format", "width", "height" ],
-                                "oneOf" : [ { 
-                                    "required" : [ "stride_bytes" ],
-                                    "not" : { 
-                                        "required" : [ "planes" ]
-                                    }
-                                }, { 
-                                    "required" : [ "planes" ],
-                                    "not" : { 
-                                        "required" : [ "stride_bytes" ]
-                                    }
-                                } ]
+                            {
+                                "$ref" : "#/$defs/imageContent"
                             }
-                        },
-                        "required" : [ "value", "type" ]
+                        ]
                     }
                 }
             },
-            "required" : [ "name", "frequency", "content" ]
+            "required" : [ "name", "content" ]
         }
     },
-    "required" : [ "sds" ]
+    "required" : [ "sds" ],
+    "$defs" : {
+        "valueContent" : {
+            "title" : "value:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#value-list-data-stream",
+            "type" : "object",
+            "properties" : {
+                "value" : {
+                    "title" : "value:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#value-list-data-stream",
+                    "type" : "string",
+                    "description" : "Name of the value"
+                },
+                "type" : {
+                    "title" : "type:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#value-list-data-stream",
+                    "type" : "string",
+                    "description" : "Data type of the value"
+                },
+                "dim-x" : {
+                    "title" : "dim-x:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#value-list-data-stream",
+                    "type" : "integer",
+                    "minimum" : 1,
+                    "description" : "Array size x (optional); default: 1",
+                    "default" : 1
+                },
+                "dim-y" : {
+                    "title" : "dim-y:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#value-list-data-stream",
+                    "type" : "integer",
+                    "minimum" : 1,
+                    "description" : "Array size y (optional); default: 1",
+                    "default" : 1
+                },
+                "offset" : {
+                    "title" : "offset:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#value-list-data-stream",
+                    "type" : "number",
+                    "description" : "Offset of the value (optional); default: 0",
+                    "default" : 0
+                },
+                "scale" : {
+                    "title" : "scale:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#value-list-data-stream",
+                    "type" : "number",
+                    "description" : "Scale factor of the value (optional); default: 1.0",
+                    "default" : 1.0
+                },
+                "unit" : {
+                    "title" : "unit:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#value-list-data-stream",
+                    "type" : "string",
+                    "description" : "Physical unit of the value (optional)"
+                }
+            },
+            "required" : [ "value", "type" ],
+            "additionalProperties" : false
+        },
+        "audioContent" : {
+            "title" : "audio:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#audio-data-stream",
+            "type" : "object",
+            "properties" : {
+                "audio" : {
+                    "title" : "audio:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#audio-data-stream",
+                    "type" : "object",
+                    "description" : "Audio format specification",
+                    "properties" : {
+                        "sample_rate" : {
+                            "title" : "sample_rate:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#audio-data-stream",
+                            "type" : "integer",
+                            "minimum" : 1,
+                            "description" : "Audio sample rate in Hz"
+                        },
+                        "bit_depth" : {
+                            "title" : "bit_depth:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#audio-data-stream",
+                            "type" : "integer",
+                            "minimum" : 1,
+                            "description" : "Bits per audio sample"
+                        },
+                        "audio_channels" : {
+                            "title" : "audio_channels:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#audio-data-stream",
+                            "type" : "integer",
+                            "minimum" : 1,
+                            "description" : "Number of interleaved audio channels"
+                        },
+                        "codec" : {
+                            "title" : "codec:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#audio-data-stream",
+                            "type" : "string",
+                            "description" : "Codec used (optional), currently only pcm is supported",
+                            "enum" : [ "pcm" ]
+                        }
+                    },
+                    "required" : [ "sample_rate", "bit_depth", "audio_channels" ],
+                    "additionalProperties" : false
+                }
+            },
+            "required" : [ "audio" ],
+            "additionalProperties" : false
+        },
+        "imageContent" : {
+            "title" : "image:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#image-data-stream",
+            "type" : "object",
+            "properties" : {
+                "image" : {
+                    "title" : "image:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#image-data-stream",
+                    "type" : "object",
+                    "description" : "Image (camera data) format specification",
+                    "properties" : {
+                        "pixel_format" : {
+                            "title" : "pixel_format:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#image-data-stream",
+                            "type" : "string",
+                            "description" : "Pixel format identifier",
+                            "enum" : [ "RAW8", "RAW10", "RGB565", "RGB888", "NV12", "NV21", "I420", "NV16", "NV61", "YUYV", "UYVY", "YUV422P", "YUV444", "YUV444P" ]
+                        },
+                        "width" : {
+                            "title" : "width:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#image-data-stream",
+                            "type" : "integer",
+                            "minimum" : 1,
+                            "description" : "Number of pixels per row"
+                        },
+                        "height" : {
+                            "title" : "height:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#image-data-stream",
+                            "type" : "integer",
+                            "minimum" : 1,
+                            "description" : "Number of rows"
+                        },
+                        "stride_bytes" : {
+                            "title" : "stride_bytes:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#image-data-stream",
+                            "type" : "integer",
+                            "minimum" : 1,
+                            "description" : "Bytes per row for single-plane formats"
+                        },
+                        "planes" : {
+                            "title" : "planes:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#image-data-stream",
+                            "type" : "array",
+                            "description" : "Per-plane stride for multi-plane formats",
+                            "minItems" : 2,
+                            "maxItems" : 3,
+                            "items" : {
+                                "type" : "object",
+                                "properties" : {
+                                    "stride_bytes" : {
+                                        "title" : "stride_bytes:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#image-data-stream",
+                                        "type" : "integer",
+                                        "minimum" : 1,
+                                        "description" : "Bytes per row for this plane"
+                                    }
+                                },
+                                "required" : [ "stride_bytes" ],
+                                "additionalProperties" : false
+                            }
+                        }
+                    },
+                    "required" : [ "pixel_format", "width", "height" ],
+                    "oneOf" : [
+                        {
+                            "required" : [ "stride_bytes" ],
+                            "not" : {
+                                "required" : [ "planes" ]
+                            }
+                        },
+                        {
+                            "required" : [ "planes" ],
+                            "not" : {
+                                "required" : [ "stride_bytes" ]
+                            }
+                        }
+                    ],
+                    "additionalProperties" : false
+                }
+            },
+            "required" : [ "image" ],
+            "additionalProperties" : false
+        }
+    }
 }

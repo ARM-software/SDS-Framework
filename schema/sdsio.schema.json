@@ -1,0 +1,200 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SDSIO Control File Schema",
+  "description": "Schema for SDSIO control files",
+  "type": "object",
+  "version" : "3.1.0",
+  "required": ["sdsio"],
+  "properties": {
+    "sdsio": {
+      "type": "object",
+      "description": "SDSIO control file configuration",
+      "properties": {
+        "interface": {
+          "title": "interface:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/utilities.html#interface",
+          "type": "object",
+          "description": "Interface configuration for SDSIO-Server",
+          "properties": {
+            "usb": {
+              "title": "usb:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/utilities.html#usb",
+              "type": ["object", "null"],
+              "description": "Configure USB bulk interface",
+              "properties": {
+                "high_priority": {
+                  "type": "boolean",
+                  "description": "Increase process priority (default: false)",
+                  "default": false
+                }
+              },
+              "additionalProperties": false
+            },
+            "serial": {
+              "title": "serial:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/utilities.html#serial",
+              "type": ["object", "null"],
+              "description": "Configure serial (UART) interface",
+              "required": ["port"],
+              "properties": {
+                "port": {
+                  "type": "string",
+                  "description": "Port name (examples: COM3, ttyS0, ttyUSB1) (required)"
+                },
+                "baudrate": {
+                  "type": "integer",
+                  "description": "Baudrate (default: 115200)",
+                  "default": 115200
+                },
+                "parity": {
+                  "type": "string",
+                  "description": "Parity bit (default: none)",
+                  "enum": ["none", "even", "odd", "mark", "space"],
+                  "default": "none"
+                },
+                "stopbits": {
+                  "type": ["integer", "number"],
+                  "description": "Stop bits (default: 1)",
+                  "enum": [1, 1.5, 2],
+                  "default": 1
+                }
+              },
+              "additionalProperties": false
+            },
+            "socket": {
+              "title": "socket:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/utilities.html#socket",
+              "type": ["object", "null"],
+              "description": "Configure TCP socket interface",
+              "properties": {
+                "ipaddr": {
+                  "type": "string",
+                  "description": "IPv4 address to bind to or host address (cannot be used with netif)"
+                },
+                "netif": {
+                  "type": "string",
+                  "description": "Network interface name (cannot be used with ipaddr)"
+                },
+                "port": {
+                  "type": "integer",
+                  "description": "TCP port number (default: 5050)",
+                  "default": 5050,
+                  "minimum": 1,
+                  "maximum": 65535
+                },
+                "connect": {
+                  "type": ["string", "boolean", "null"],
+                  "description": "Connect to ipaddr instead of listening; optional value is a message sent to host"
+                },
+                "connect-time": {
+                  "type": "integer",
+                  "description": "Duration in milliseconds to discard incoming data after connection (default: 50)",
+                  "default": 50,
+                  "minimum": 0
+                }
+              },
+              "allOf": [
+                {
+                  "not": {
+                    "required": ["ipaddr", "netif"]
+                  }
+                },
+                {
+                  "not": {
+                    "required": ["connect", "netif"]
+                  }
+                }
+              ],
+              "dependencies": {
+                "connect": ["ipaddr"]
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "workdir": {
+          "type": "string",
+          "description": "Directory containing *.sds files (relative to .sdsio.yml location)"
+        },
+        "metadir": {
+          "type": "string",
+          "description": "Directory for metadata files (used by VS Code extension)"
+        },
+        "write-flush-records": {
+          "type": "integer",
+          "description": "Force recorded SDS data to disk after this many records (0 = after every record)",
+          "minimum": 0
+        },
+        "streams": {
+          "title": "streams:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/utilities.html#streams",
+          "type": "array",
+          "description": "Data stream information used by the SDS extension for VS Code",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the data stream (required)"
+              },
+              "view": {
+                "type": "string",
+                "description": "Format of the data stream for the viewer",
+                "enum": ["signal", "wav", "image", "heatmap", "csv", "csv2"]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "play": {
+          "title": "play:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/utilities.html#play",
+          "type": "array",
+          "description": "Playback step list that defines how *.sds files are played back",
+          "items": {
+            "type": "object",
+            "properties": {
+              "step": {
+                "type": ["string", "integer", "null"],
+                "description": "Descriptive text or numeric identifier for the playback step (optional). Empty value and empty string are allowed."
+              },
+              "recdir": {
+                "type": "string",
+                "description": "Recording directory for generated *.p.sds files during playback"
+              },
+              "setflags": {
+                "type": ["integer", "string"],
+                "description": "Set user flags (bitmask, e.g., 0x01)"
+              },
+              "clearflags": {
+                "type": ["integer", "string"],
+                "description": "Clear user flags (bitmask, e.g., 0x01)"
+              },
+              "labels": {
+                "type": "array",
+                "description": "List of label names that define the playback sequence",
+                "items": {
+                  "type": ["string", "integer"]
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "flag-info": {
+          "title": "flag-info:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/utilities.html#flag-info",
+          "type": "array",
+          "description": "Human readable labels for user flags 0..23",
+          "items": {
+            "type": "object",
+            "patternProperties": {
+              "^([0-9]|1[0-9]|2[0-3])$": {
+                "type": "string",
+                "description": "Label for flag bit 0..23"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
