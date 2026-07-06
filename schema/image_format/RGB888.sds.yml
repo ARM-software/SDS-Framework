@@ -1,11 +1,8 @@
 sds:
   name: Video Stream - RGB888
   description: RGB888 video frames from camera
-  frequency: 30
   content:
-    - value: Frame
-      type: uint8_t
-      image:
+    - image:
         pixel_format: RGB888
         width: 1280
         height: 720

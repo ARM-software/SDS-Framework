@@ -31,7 +31,7 @@ This is a list of the relevant files and directories.
 | [template](./template)                   | [SDS template application](https://arm-software.github.io/SDS-Framework/main/template.html), a test framework for DSP and ML algorithms. |
 | [layer/sdsio](./layer/sdsio)             | Configured [SDSIO layers](https://arm-software.github.io/SDS-Framework/main/sdsio.html) for file I/O via Network, USB, or File System. |
 | [utilities](./utilities)                 | Python scripts for processing of SDS binary data files. |
-| [schema](./schema)                       | Schema for [SDS YAML metadata format](https://arm-software.github.io/SDS-Framework/main/theory.html#yaml-metadata-format) that describes the content of SDS files. |
+| [schema](./schema)                       | Schema for [SDS YAML metadata format](https://arm-software.github.io/SDS-Framework/main/theory.html#sds-metadata-format) that describes the content of SDS files.
 | [sds](./sds)                             | SDS-Framework source files and implementation of various SDSIO interfaces. |
 | [.github/workflows](./.github/workflows) | GitHub Actions for validation and publishing. |
 | [.ci](./.ci)                             | Files that relate to CI tests. |

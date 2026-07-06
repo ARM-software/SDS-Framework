@@ -1,11 +1,8 @@
 sds:
   name: Video Stream - YUV444P
   description: YUV444P (YUV444 planar) video frames from camera
-  frequency: 30
   content:
-    - value: Frame
-      type: uint8_t
-      image:
+    - image:
         pixel_format: YUV444P
         width: 1280
         height: 720

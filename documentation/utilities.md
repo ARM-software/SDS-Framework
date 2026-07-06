@@ -147,7 +147,7 @@ The `streams:` node provides additional information about the SDS data streams t
 `streams:`                                                  |              | Content
 :-----------------------------------------------------------|:-------------|:------------------------------------
 `- name:`                                                   | **Required** | Name of the data stream.
-&nbsp;&nbsp;&nbsp; `view:`                                  |   Optional   | Format of the data stream for the viewer (signal, wav, video, heatmap, csv, csv2)
+&nbsp;&nbsp;&nbsp; `view:`                                  |   Optional   | Format of the data stream for the viewer (signal, wav, image, heatmap, csv, csv2)
 
 ### `play:`
 
@@ -214,13 +214,7 @@ It communicates with the target using a [SDSIO-Client interface](https://github.
 - [RTT](sdsio.md#using-rtt-interface) for communication via the RTT interface of a debug adapter (J-Link or pyOCD).
 - [Network](sdsio.md#using-network-interface) for TCP/IP communication via IoT Socket using MDK-Middleware, LwIP, or CMSIS-Driver WiFi.
 
-SDS data streams are stored in `*.sds` files with the following naming convention:
-
-`<stream-name>.<label>[.p].sds`  (`[.p]` is added when the SDS data stream is recorded during the playback)
-
-For more details, see the [Filenames section](theory.md#filenames).
-
-The contents of `<name>.<label>[.p].sds` files are described by the metadata file `<name>.sds.yml` in [YAML format](https://github.com/ARM-software/SDS-Framework/tree/main/schema).
+SDS data streams are stored in file that use the format `<stream-name>.<label>[.p].sds`. See [Filenames](theory.md#filenames) for details. The contents of SDS data files are described by the [YAML metadata](https://github.com/ARM-software/SDS-Framework/tree/main/schema) file that use the format `<stream-name>.sds.yml`.
 
 ### Usage
 
@@ -428,15 +422,15 @@ Then reload rules with `sudo udevadm control --reload && sudo udevadm trigger`. 
 ## SDS-View
 
 The Python utility [**SDS-View**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) generates a time-based plot
-from data recorded in SDS files (`<name>.<label>.sds`) using the metadata provided in `<name>.sds.yml`.
+from data recorded in SDS files (`<stream-name>.<label>.sds`) using the metadata provided in `<stream-name>.sds.yml`.
 
-The horizontal time scale is derived from the number of data points in a recording and frequency provided in the metadata description.
+The horizontal time scale is derived from the number of data points in a recording and `sample-frequency:` provided in the metadata description.
 All plots from a single recording are displayed on the same figure (shared vertical scale).
 
 If there are 3 values described in the metadata file, an optional 3D view may be displayed.
 
 !!! Note
-    - SDS-View requires that all values in the [`*.sds.yml` metadata file](https://arm-software.github.io/SDS-Framework/main/theory.html#yaml-metadata-format) have the same data type (float, uint32_t, uint16_t, ...)
+    - SDS-View requires that all values in the [`<stream-name>.sds.yml` metadata file](theory.md#sds-metadata-format) have the same data type (float, uint32_t, uint16_t, ...)
 
 ### Usage
 
@@ -514,26 +508,28 @@ required:
 
 ```yml
 sds:
-  name: Microphone
-  description: Mono microphone with 16kHz sample rate
-  frequency: 16000
+  name: Mono
+  description: Mono 16-bit PCM microphone
   content:
-  - value: Mono
-    type: int16_t
+  - audio:
+      sample-frequency: 16000
+      bit-depth: 16
+      audio-channels: 1
+      format: pcm
 ```
 
 **Example of metadata yml file for stereo microphone:**
 
 ```yml
 sds:
-  name: Microphone
-  description: Stereo microphone with 16kHz sample rate
-  frequency: 16000
+  name: Stereo
+  description: Stereo 16-bit PCM microphone
   content:
-  - value: Left channel
-    type: int16_t
-  - value: Right channel
-    type: int16_t
+  - audio:
+      sample-frequency: 44100
+      bit-depth: 16
+      audio-channels: 2
+      format: pcm
 ```
 
 **Example:**
@@ -588,7 +584,7 @@ optional:
 sds:
   name: Gyroscope
   description: Gyroscope with 1667Hz sample rate
-  frequency: 1667
+  sample-frequency: 1667
   content:
   - value: x
     type: int16_t
@@ -734,11 +730,8 @@ required:
 sds:
   name: Video Stream - RGB888
   description: 192 x 192 RGB888 video frames
-  frequency: 30
   content:
-    - value: Frame
-      type: uint8_t
-      image:
+    - image:
         pixel_format: RGB888
         width: 192
         height: 192
@@ -752,7 +745,7 @@ python sds-convert.py video -i Camera.0.sds -o Camera.mp4 -y Camera.sds.yml
 ```
 
 !!! Note
-    - [Theory of Operation - Image Metadata Format](theory.md#image-metadata-format) contains more information about the supported video formats.
+    - [Theory of Operation - Image Metadata Format](theory.md#image-data-stream) contains more information about the supported video formats.
 
 ## SDS-Check
 

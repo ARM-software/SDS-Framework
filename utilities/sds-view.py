@@ -30,10 +30,12 @@ class RecordManager:
         self.HEADER_SIZE    = 8
         self.TIMESLOT_SIZE  = 4
         self.data = bytearray()
+        self.timeslot = []
 
     # Flush data buffer
     def flush(self):
         self.data = bytearray()
+        self.timeslot = []
 
     # Private function for retrieving data from record
     def __getRecord(self, file):
@@ -41,6 +43,7 @@ class RecordManager:
         if len(record) == self.HEADER_SIZE:
             timeslot  = struct.unpack("I", record[:self.TIMESLOT_SIZE])[0]
             data_size = struct.unpack("I", record[self.TIMESLOT_SIZE:])[0]
+            self.timeslot.append(timeslot)
             self.data.extend(bytearray(file.read(data_size)))
             return True
         else:
@@ -51,7 +54,46 @@ class RecordManager:
         record = True
         while record:
             record = self.__getRecord(file)
-        return self.data
+        return {"raw_data" : self.data, "timeslot" : self.timeslot}
+
+
+def getSampleFrequency(meta_data):
+    if "sample-frequency" in meta_data:
+        return meta_data["sample-frequency"]
+    if "frequency" in meta_data:
+        return meta_data["frequency"]
+    return None
+
+
+def getPlotFrequency(meta_data, data):
+    sample_frequency = getSampleFrequency(meta_data)
+    if sample_frequency is not None:
+        if not sample_frequency > 0:
+            print(f"Error: Sample frequency must be greater than 0 (f = {sample_frequency})\n")
+            sys.exit(0)
+        return sample_frequency
+
+    timeslot = data["timeslot"]
+    if len(timeslot) < 2:
+        return None
+
+    delta = timeslot[1] - timeslot[0]
+    if delta <= 0:
+        return None
+
+    tick_frequency = meta_data.get("tick-frequency", 1000)
+    if not tick_frequency > 0:
+        print(f"Error: Tick frequency must be greater than 0 (f = {tick_frequency})\n")
+        sys.exit(0)
+
+    return tick_frequency / delta
+
+
+def requireValueMetadata(meta_data):
+    for entry in meta_data:
+        if "value" not in entry or "type" not in entry:
+            content_type = next((key for key in ("image", "audio") if key in entry), "non-value")
+            sys.exit(f"Error: SDS-View requires `value:` content entries; found `{content_type}:`")
 
 
 # Convert C style data type to Python style
@@ -96,6 +138,7 @@ def closeFile(file_name):
 
 # Create new figure and plot content
 def plotData(all_data, data_desc, freq, title, view3D):
+    raw_data = all_data["raw_data"]
     dim = {}
     desc_n = 0
     desc_n_max = len(data_desc)
@@ -127,7 +170,7 @@ def plotData(all_data, data_desc, freq, title, view3D):
         # Calculate number of bytes needed for decoding the data in .sds file
         d_byte = struct.calcsize(d_type)
         # Disunite raw data into a list of data points according to the number of bytes needed for each data point
-        tmp_data = [all_data[i:(i + d_byte)] for i in range(0, len(all_data), d_byte)]
+        tmp_data = [raw_data[i:(i + d_byte)] for i in range(0, len(raw_data), d_byte)]
         # Keep only every n-th data point
         tmp_data = tmp_data[desc_n::desc_n_max]
         # Decode retrieved data points
@@ -135,11 +178,14 @@ def plotData(all_data, data_desc, freq, title, view3D):
         # Scale and offset data points
         scaled_data = [((x * scale) + offset) for x in data]
 
-        # Generate timeslots using number of data points and sampling frequency
-        t = np.arange(0, len(data) / freq, 1 / freq)
-        if len(t) > len(data):
-            # Truncate timeslots to match the number of data points
-            t = t[0:len(data)]
+        if freq is None:
+            t = np.arange(0, len(data))
+        else:
+            # Generate timeslots using number of data points and sampling frequency
+            t = np.arange(0, len(data) / freq, 1 / freq)
+            if len(t) > len(data):
+                # Truncate timeslots to match the number of data points
+                t = t[0:len(data)]
         plt.plot(t, scaled_data, label=desc["value"])
 
         # Store data points in a dictionary for later use when there are 3 axes described
@@ -151,7 +197,7 @@ def plotData(all_data, data_desc, freq, title, view3D):
 
     plt.grid(linestyle=":")
     plt.title(title)
-    plt.xlabel("seconds")
+    plt.xlabel("sample" if freq is None else "seconds")
     plt.ylabel(unit)
     plt.legend()
 
@@ -199,10 +245,7 @@ def main():
     # Parse description file
     data_name = meta_data["name"]
     data_desc = meta_data["content"]
-    data_freq = meta_data["frequency"]
-    if not data_freq > 0:
-        print(f"Error: Sample frequency must be greater than 0 (f = {data_freq})\n")
-        sys.exit(0)
+    requireValueMetadata(data_desc)
 
     # Record manager
     Record = RecordManager()
@@ -213,6 +256,7 @@ def main():
         data = Record.getData(file)
         closeFile(file)
         Record.flush()
+        data_freq = getPlotFrequency(meta_data, data)
 
         # Plot data from .sds file/files
         plotData(data, data_desc, data_freq, data_name, args.view3D)

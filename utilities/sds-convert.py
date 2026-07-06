@@ -80,6 +80,53 @@ class RecordManager:
 # Potential AutoML CSV V2 columns that are not sensors, and so should be ignored.
 EXCLUDE_QX_CSVV2_COLS = ('timeslot', 'index', 'event', 'label', 'data_type', 'seconds', 'recording_id', 'event_id')
 
+def getSampleFrequency(meta_data):
+    if "sample-frequency" in meta_data:
+        return meta_data["sample-frequency"]
+    if "frequency" in meta_data:
+        return meta_data["frequency"]
+    return None
+
+def requireSampleFrequency(sample_frequency, convert_format):
+    if sample_frequency is None:
+        sys.exit(f"Error: {convert_format} conversion requires `sample-frequency` or legacy `frequency` in the metadata file")
+    if not sample_frequency > 0:
+        sys.exit(f"Error: Sample frequency must be greater than 0 (f = {sample_frequency})")
+    return sample_frequency
+
+def getAudioMetadata(meta_data):
+    if len(meta_data) != 1 or "audio" not in meta_data[0]:
+        sys.exit("Error: Audio WAV conversion requires an `audio:` node in the metadata content")
+
+    audio_meta = meta_data[0]["audio"]
+    for field in ("sample-frequency", "bit-depth", "audio-channels"):
+        if field not in audio_meta:
+            sys.exit(f"Error: Audio metadata is missing `{field}:`")
+
+    if "format" in audio_meta and audio_meta["format"] != "pcm":
+        sys.exit(f"Error: Unsupported audio format: {audio_meta['format']}")
+
+    if not audio_meta["sample-frequency"] > 0:
+        sys.exit(f"Error: Audio sample frequency must be greater than 0 (f = {audio_meta['sample-frequency']})")
+    if not audio_meta["bit-depth"] > 0:
+        sys.exit(f"Error: Audio bit depth must be greater than 0 (bits = {audio_meta['bit-depth']})")
+    if audio_meta["bit-depth"] % 8 != 0:
+        sys.exit(f"Error: Audio bit depth must be a whole number of bytes (bits = {audio_meta['bit-depth']})")
+    if not audio_meta["audio-channels"] > 0:
+        sys.exit(f"Error: Audio channels must be greater than 0 (channels = {audio_meta['audio-channels']})")
+
+    return audio_meta
+
+def requireValueMetadata(meta_data, convert_format):
+    for entry in meta_data:
+        if "value" not in entry or "type" not in entry:
+            content_type = next((key for key in ("image", "audio") if key in entry), "non-value")
+            sys.exit(f"Error: {convert_format} conversion requires `value:` content entries; found `{content_type}:`")
+
+def requireValueMetadataMap(meta_data, convert_format):
+    for stream_name in meta_data:
+        requireValueMetadata(meta_data[stream_name], convert_format)
+
 # Convert C style data type to Python style
 def getDataType(data_type):
     if   data_type == "int16_t":
@@ -445,16 +492,13 @@ def write_QeexoV2CSV_SDS(index):
 
 
 # Create and write WAV file with parameters from metadata file
-def write_SDS_AudioWAV(framerate, data, meta_data):
+def write_SDS_AudioWAV(data, audio_meta):
     raw_data = data["raw_data"]
-    n_channels = len(meta_data)
-    d_type = getDataType(meta_data[0]["type"])
-    sample_width = calcsize(d_type)
 
     # Set audio parameters and write binary data to file
-    wave_file.setnchannels(n_channels)
-    wave_file.setsampwidth(sample_width)
-    wave_file.setframerate(framerate)
+    wave_file.setnchannels(audio_meta["audio-channels"])
+    wave_file.setsampwidth(audio_meta["bit-depth"] // 8)
+    wave_file.setframerate(audio_meta["sample-frequency"])
     wave_file.writeframes(raw_data)
     wave_file.close()
 
@@ -755,7 +799,7 @@ def main():
                 with open(filename, "r") as file:
                     yaml_data = yaml.load(file, Loader=yaml.FullLoader)["sds"]
                     sensor_name.append(yaml_data["name"])
-                    sensor_frequency[sensor_name[-1]] = yaml_data["frequency"]
+                    sensor_frequency[sensor_name[-1]] = getSampleFrequency(yaml_data)
                     meta_data[sensor_name[-1]] = yaml_data["content"]
             except Exception as e:
                 sys.exit(f"Error loading YAML file: {e}")
@@ -785,9 +829,9 @@ def main():
         filename = other_files[0].split('.csv')[0]
 
         if 'sds' in in_extension:
-            createCSV(filename)
-
             if args.convert_format == "qeexo_v2_csv":
+                requireValueMetadataMap(meta_data, "Qeexo V2 CSV")
+                createCSV(filename)
                 # Check if interval is zero
                 if args.interval == 0:
                     sys.exit(f"Invalid interval option: {args.interval} ms")
@@ -796,6 +840,8 @@ def main():
                 # Only used for one sensor
                 if (len(args.yaml) > 1) or (len(sds_files) > 1):
                     sys.exit("Simple CSV file format only supports 1 metadata and 1 SDS file")
+                requireValueMetadata(meta_data[sensor_name[0]], "Simple CSV")
+                createCSV(filename)
                 write_SDS_SimpleCSV(args, data[sensor_name[0]], meta_data[sensor_name[0]])
         else:
             readCSV(filename)
@@ -809,13 +855,14 @@ def main():
     elif "wav" in args.convert_format:
         if 'sds' in in_extension:
             filename = other_files[0].split('.wav')[0]
-            createWAV(filename)
 
             if args.convert_format == "audio_wav":
                 # Only used for one sensor
                 if (len(args.yaml) > 1) or (len(sds_files) > 1):
                     sys.exit("Audio WAV file format only supports 1 metadata and 1 SDS file")
-                write_SDS_AudioWAV(sensor_frequency[sensor_name[0]], data[sensor_name[0]], meta_data[sensor_name[0]])
+                audio_meta = getAudioMetadata(meta_data[sensor_name[0]])
+                createWAV(filename)
+                write_SDS_AudioWAV(data[sensor_name[0]], audio_meta)
         else:
             sys.exit('WAV to SDS conversion is not supported.')
 
@@ -828,7 +875,8 @@ def main():
                 # Only used for one sensor/video stream
                 if (len(args.yaml) > 1) or (len(sds_files) > 1):
                     sys.exit("Video MP4 file format only supports 1 metadata and 1 SDS file")
-                write_SDS_VideoMP4(filename, sensor_frequency[sensor_name[0]], data[sensor_name[0]], meta_data[sensor_name[0]])
+                sample_frequency = requireSampleFrequency(sensor_frequency[sensor_name[0]], "Video MP4")
+                write_SDS_VideoMP4(filename, sample_frequency, data[sensor_name[0]], meta_data[sensor_name[0]])
         else:
             sys.exit('MP4 to SDS conversion is not supported.')
 

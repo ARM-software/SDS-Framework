@@ -1,11 +1,8 @@
 sds:
   name: Video Stream - RGB565
   description: RGB565 video frames from camera
-  frequency: 30
   content:
-    - value: Frame
-      type: uint16_t
-      image:
+    - image:
         pixel_format: RGB565
         width: 1280
         height: 720

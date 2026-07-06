@@ -1,0 +1,9 @@
+sds:
+  name: Stereo
+  description: Stereo 16-bit PCM microphone
+  content:
+  - audio:
+      sample-frequency: 44100
+      bit-depth: 16
+      audio-channels: 2
+      format: pcm
