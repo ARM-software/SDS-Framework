@@ -25,6 +25,7 @@
 #More details.
 
 import os
+import atexit
 import logging
 import logging.handlers
 from os import path
@@ -222,6 +223,15 @@ Stream = sdsio_manager(
     control_input_factory=False,
 )
 
+# Shutdown SDSIO manager on exit
+def shutdown():
+    try:
+        Stream.shutdown()
+    except Exception:
+        logger.error("Failed to shutdown SDSIO manager.")
+
+# Register the shutdown function to be called on exit
+atexit.register(shutdown)
 
 ## Process command
 #  @param command requested SDSIO command
