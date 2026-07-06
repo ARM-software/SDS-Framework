@@ -6,11 +6,7 @@
 
 The SDS Framework enables recording and playback of one or more data streams for an application under development, as shown in the diagram below. With the SDSIO interface, the data streams are connected to SDS data files. The file storage can be either embedded within the system and accessed via a file system, or external (on a host computer) and accessed via a communication interface such as Ethernet or USB.
 
-The DSP or ML algorithms that are tested operate on blocks and are executed periodically. This documentation uses these terms:
-
-- **Data Block**: a set of input or output data which is processed in one step by a DSP or ML compute node.
-- **Block size**: the number of bytes of a data block.
-- **Frequency**: the periodic time interval at which the compute node executes.
+The DSP or ML algorithms under test operate on blocks and are executed periodically. This documentation uses the term **Data Block** to refer to a block of input or output data that is processed in one step by a DSP or ML compute node.
 
 ![SDSIO Interface for Player and Recorder](images/SDS-InOut.png)
 
@@ -219,7 +215,7 @@ Describes audio data format, typically used for a microphone data stream.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `sample_rate:`    | Audio sample rate in Hz (required)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `bit_depth:`      | Bits per audio sample (required)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `audio_channels:` | Number of interleaved audio channels (required)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `codec:`          | Codec used (optional), currently only `pcm` is supported
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `format:`         | Audio format used (optional), currently only `pcm` is supported
 
 **Example:**
 
@@ -232,7 +228,7 @@ sds:
       sample_rate: 16000
       bit_depth: 16
       audio_channels: 1
-      codec: pcm
+      format: pcm
 ```
 
 ### Image data stream

@@ -515,7 +515,7 @@ sds:
       sample_rate: 16000
       bit_depth: 16
       audio_channels: 1
-      codec: pcm
+      format: pcm
 ```
 
 **Example of metadata yml file for stereo microphone:**
@@ -529,7 +529,7 @@ sds:
       sample_rate: 44100
       bit_depth: 16
       audio_channels: 2
-      codec: pcm
+      format: pcm
 ```
 
 **Example:**

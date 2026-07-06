@@ -141,10 +141,10 @@
                             "minimum" : 1,
                             "description" : "Number of interleaved audio channels"
                         },
-                        "codec" : {
-                            "title" : "codec:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#audio-data-stream",
+                        "format" : {
+                            "title" : "format:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#audio-data-stream",
                             "type" : "string",
-                            "description" : "Codec used (optional), currently only pcm is supported",
+                            "description" : "Audio format used (optional), currently only pcm is supported",
                             "enum" : [ "pcm" ]
                         }
                     },

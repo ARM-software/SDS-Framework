@@ -6,4 +6,4 @@ sds:
       sample_rate: 16000
       bit_depth: 16
       audio_channels: 1
-      codec: pcm
+      format: pcm
