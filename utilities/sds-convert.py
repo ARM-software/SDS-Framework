@@ -99,7 +99,7 @@ def getAudioMetadata(meta_data):
         sys.exit("Error: Audio WAV conversion requires an `audio:` node in the metadata content")
 
     audio_meta = meta_data[0]["audio"]
-    for field in ("sample-frequency", "bit-depth", "audio-channels"):
+    for field in ("sample-frequency", "bit-depth", "channels"):
         if field not in audio_meta:
             sys.exit(f"Error: Audio metadata is missing `{field}:`")
 
@@ -112,8 +112,8 @@ def getAudioMetadata(meta_data):
         sys.exit(f"Error: Audio bit depth must be greater than 0 (bits = {audio_meta['bit-depth']})")
     if audio_meta["bit-depth"] % 8 != 0:
         sys.exit(f"Error: Audio bit depth must be a whole number of bytes (bits = {audio_meta['bit-depth']})")
-    if not audio_meta["audio-channels"] > 0:
-        sys.exit(f"Error: Audio channels must be greater than 0 (channels = {audio_meta['audio-channels']})")
+    if not audio_meta["channels"] > 0:
+        sys.exit(f"Error: Audio channels must be greater than 0 (channels = {audio_meta['channels']})")
 
     return audio_meta
 
@@ -496,7 +496,7 @@ def write_SDS_AudioWAV(data, audio_meta):
     raw_data = data["raw_data"]
 
     # Set audio parameters and write binary data to file
-    wave_file.setnchannels(audio_meta["audio-channels"])
+    wave_file.setnchannels(audio_meta["channels"])
     wave_file.setsampwidth(audio_meta["bit-depth"] // 8)
     wave_file.setframerate(audio_meta["sample-frequency"])
     wave_file.writeframes(raw_data)
