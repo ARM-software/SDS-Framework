@@ -218,7 +218,7 @@ Describes audio data format, typically used for a microphone data stream.
 `- audio:`                                               | Audio format specification
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `sample-frequency:` | Audio sample rate in Hz (required)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `bit-depth:`        | Bits per audio sample (required)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `audio-channels:`   | Number of interleaved audio channels (required)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `channels:`         | Number of interleaved audio channels (required)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `format:`           | Audio format used (optional), currently only `pcm` is supported
 
 **Example:**
@@ -231,7 +231,7 @@ sds:
   - audio:
       sample-frequency: 16000
       bit-depth: 16
-      audio-channels: 1
+      channels: 1
       format: pcm
 ```
 

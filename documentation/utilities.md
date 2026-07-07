@@ -514,7 +514,7 @@ sds:
   - audio:
       sample-frequency: 16000
       bit-depth: 16
-      audio-channels: 1
+      channels: 1
       format: pcm
 ```
 
@@ -528,7 +528,7 @@ sds:
   - audio:
       sample-frequency: 44100
       bit-depth: 16
-      audio-channels: 2
+      channels: 2
       format: pcm
 ```
 
