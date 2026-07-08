@@ -120,7 +120,7 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#audio-wav">Audio WAV</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#simple-csv">Simple CSV</a>
+    <li class="toctree-l4"><a class="reference internal" href="#csv">CSV</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#qeexo-v2-csv">Qeexo V2 CSV</a>
     </li>
@@ -831,8 +831,8 @@ required:
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">python sds-convert.py audio_wav -i Microphone.0.sds -o microphone.wav -y Microphone.sds.yml
 </code></pre>
-<h4 id="simple-csv">Simple CSV</h4>
-<p>The <code>simple_csv</code> mode converts SDS file (<code>.sds</code>) containing sensor data into a human-readable CSV file (<code>.csv</code>).</p>
+<h4 id="csv">CSV</h4>
+<p>The <code>csv</code> mode converts SDS file (<code>.sds</code>) containing sensor data into a human-readable CSV file (<code>.csv</code>).</p>
 <p>Timeslots are represented in floating-point format, in seconds. Using the <code>--normalize</code> parameter causes
 all timeslots in the input file to be offset so that the first timeslot starts at <code>0</code>.</p>
 <p>Users may specify a time range selection of the input data to be processed using the following parameters:</p>
@@ -840,13 +840,13 @@ all timeslots in the input file to be offset so that the first timeslot starts a
 <li><code>--start-timeslot &lt;timeslot&gt;</code>: Starting input data timeslot in floating-point format, in seconds.</li>
 <li><code>--stop-timeslot &lt;timeslot&gt;</code> : Stopping input data timeslot in floating-point format, in seconds.</li>
 </ul>
-<pre><code class="language-txt">usage: sds-convert.py simple_csv [-h]
-                                 -i &lt;input_file&gt;
-                                 -o &lt;output_file&gt;
-                                 -y &lt;yaml_file&gt;
-                                 [--normalize]
-                                 [--start-timeslot &lt;timeslot&gt;]
-                                 [--stop-timeslot &lt;timeslot&gt;]
+<pre><code class="language-txt">usage: sds-convert.py csv [-h]
+                          -i &lt;input_file&gt;
+                          -o &lt;output_file&gt;
+                          -y &lt;yaml_file&gt;
+                          [--normalize]
+                          [--start-timeslot &lt;timeslot&gt;]
+                          [--stop-timeslot &lt;timeslot&gt;]
 
 Convert SDS file to CSV file with timeslots and data columns
 
@@ -889,7 +889,7 @@ optional:
     unit: dps
 </code></pre>
 <p><strong>Example:</strong></p>
-<pre><code class="language-bash">python sds-convert.py simple_csv -i Gyroscope.0.sds -o Gyroscope.csv -y Gyroscope.sds.yml --normalize --start-timeslot 0.2 --stop-timeslot 0.3
+<pre><code class="language-bash">python sds-convert.py csv -i Gyroscope.0.sds -o Gyroscope.csv -y Gyroscope.sds.yml --normalize --start-timeslot 0.2 --stop-timeslot 0.3
 </code></pre>
 <h4 id="qeexo-v2-csv">Qeexo V2 CSV</h4>
 <p>The <code>qeexo_v2_csv</code> mode converts between SDS files (<code>.sds</code>) containing sensor data and Qeexo V2 CSV files (<code>.csv</code>).</p>
