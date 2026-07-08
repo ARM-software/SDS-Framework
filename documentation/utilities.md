@@ -538,9 +538,9 @@ sds:
 python sds-convert.py audio_wav -i Microphone.0.sds -o microphone.wav -y Microphone.sds.yml
 ```
 
-#### Simple CSV
+#### CSV
 
-The `simple_csv` mode converts SDS file (`.sds`) containing sensor data into a human-readable CSV file (`.csv`).
+The `csv` mode converts SDS file (`.sds`) containing sensor data into a human-readable CSV file (`.csv`).
 
 Timeslots are represented in floating-point format, in seconds. Using the `--normalize` parameter causes
 all timeslots in the input file to be offset so that the first timeslot starts at `0`.
@@ -551,13 +551,13 @@ Users may specify a time range selection of the input data to be processed using
 - `--stop-timeslot <timeslot>` : Stopping input data timeslot in floating-point format, in seconds.
 
 ```txt
-usage: sds-convert.py simple_csv [-h]
-                                 -i <input_file>
-                                 -o <output_file>
-                                 -y <yaml_file>
-                                 [--normalize]
-                                 [--start-timeslot <timeslot>]
-                                 [--stop-timeslot <timeslot>]
+usage: sds-convert.py csv [-h]
+                          -i <input_file>
+                          -o <output_file>
+                          -y <yaml_file>
+                          [--normalize]
+                          [--start-timeslot <timeslot>]
+                          [--stop-timeslot <timeslot>]
 
 Convert SDS file to CSV file with timeslots and data columns
 
@@ -603,7 +603,7 @@ sds:
 **Example:**
 
 ```bash
-python sds-convert.py simple_csv -i Gyroscope.0.sds -o Gyroscope.csv -y Gyroscope.sds.yml --normalize --start-timeslot 0.2 --stop-timeslot 0.3
+python sds-convert.py csv -i Gyroscope.0.sds -o Gyroscope.csv -y Gyroscope.sds.yml --normalize --start-timeslot 0.2 --stop-timeslot 0.3
 ```
 
 #### Qeexo V2 CSV

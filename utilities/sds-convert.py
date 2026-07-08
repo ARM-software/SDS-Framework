@@ -674,6 +674,7 @@ def main():
 
     subparsers = parser.add_subparsers(
         dest="convert_format",
+        metavar="{audio_wav,csv,qeexo_v2_csv,video}",
         title="conversion formats",
         description="Choose a format for file conversion",
         help="Use '<format> --help' for format-specific options",
@@ -695,30 +696,32 @@ def main():
     parser_audio_wav_required.add_argument("-y", dest="yaml", metavar="<yaml_file>",
                                            help="YAML metadata file", required=True)
 
-    # Simple CSV
-    parser_simple_csv = subparsers.add_parser("simple_csv",
-                                              help="Convert SDS file to CSV file (single sensor)",
-                                              description="Convert SDS file to CSV file with timeslots and data columns",
-                                              formatter_class=formatter, add_help=False)
-    parser_simple_csv_options = parser_simple_csv.add_argument_group("options")
-    parser_simple_csv_options.add_argument("-h", "--help", action="help",
-                                           help="Show this help message and exit")
-    parser_simple_csv_required = parser_simple_csv.add_argument_group("required")
-    parser_simple_csv_required.add_argument("-i", dest="in_file", metavar="<input_file>",
-                                            help="Input file", type=in_file, required=True)
-    parser_simple_csv_required.add_argument("-o", dest="out_file", metavar="<output_file>",
-                                            help="Output file", type=out_file, required=True)
-    parser_simple_csv_required.add_argument("-y", dest="yaml", metavar="<yaml_file>",
-                                            help="YAML metadata file", required=True)
-    parser_simple_csv_optional = parser_simple_csv.add_argument_group("optional")
-    parser_simple_csv_optional.add_argument("--normalize", dest="normalize",
-                                            help="Normalize timeslots so they start with 0", action="store_true")
-    parser_simple_csv_optional.add_argument("--start-timeslot", dest="start_timeslot", metavar="<timeslot>",
-                                            help="Starting input data timeslot, in seconds (default: %(default)s)",
-                                            type=float, default=None)
-    parser_simple_csv_optional.add_argument("--stop-timeslot", dest="stop_timeslot", metavar="<timeslot>",
-                                            help="Stopping input data timeslot, in seconds (default: %(default)s)",
-                                            type=float, default=None)
+    # CSV
+    parser_csv = subparsers.add_parser("csv",
+                                       help="Convert SDS file to CSV file (single sensor)",
+                                       description="Convert SDS file to CSV file with timeslots and data columns",
+                                       formatter_class=formatter, add_help=False)
+    # Keep the old command accepted without exposing it in generated help.
+    subparsers._name_parser_map["simple_csv"] = parser_csv
+    parser_csv_options = parser_csv.add_argument_group("options")
+    parser_csv_options.add_argument("-h", "--help", action="help",
+                                    help="Show this help message and exit")
+    parser_csv_required = parser_csv.add_argument_group("required")
+    parser_csv_required.add_argument("-i", dest="in_file", metavar="<input_file>",
+                                     help="Input file", type=in_file, required=True)
+    parser_csv_required.add_argument("-o", dest="out_file", metavar="<output_file>",
+                                     help="Output file", type=out_file, required=True)
+    parser_csv_required.add_argument("-y", dest="yaml", metavar="<yaml_file>",
+                                     help="YAML metadata file", required=True)
+    parser_csv_optional = parser_csv.add_argument_group("optional")
+    parser_csv_optional.add_argument("--normalize", dest="normalize",
+                                     help="Normalize timeslots so they start with 0", action="store_true")
+    parser_csv_optional.add_argument("--start-timeslot", dest="start_timeslot", metavar="<timeslot>",
+                                     help="Starting input data timeslot, in seconds (default: %(default)s)",
+                                     type=float, default=None)
+    parser_csv_optional.add_argument("--stop-timeslot", dest="stop_timeslot", metavar="<timeslot>",
+                                     help="Stopping input data timeslot, in seconds (default: %(default)s)",
+                                     type=float, default=None)
 
     # Qeexo V2 CSV
     parser_qeexo_v2_csv = subparsers.add_parser("qeexo_v2_csv",
@@ -775,6 +778,8 @@ def main():
         sys.exit(1)
 
     args = parser.parse_args()
+    if args.convert_format == "simple_csv":
+        args.convert_format = "csv"
 
     if not isinstance(args.in_file, list):
         args.in_file = [args.in_file]
@@ -836,11 +841,11 @@ def main():
                 if args.interval == 0:
                     sys.exit(f"Invalid interval option: {args.interval} ms")
                 write_SDS_QeexoV2CSV(args, data, meta_data)
-            elif args.convert_format == "simple_csv":
+            elif args.convert_format == "csv":
                 # Only used for one sensor
                 if (len(args.yaml) > 1) or (len(sds_files) > 1):
-                    sys.exit("Simple CSV file format only supports 1 metadata and 1 SDS file")
-                requireValueMetadata(meta_data[sensor_name[0]], "Simple CSV")
+                    sys.exit("CSV file format only supports 1 metadata and 1 SDS file")
+                requireValueMetadata(meta_data[sensor_name[0]], "CSV")
                 createCSV(filename)
                 write_SDS_SimpleCSV(args, data[sensor_name[0]], meta_data[sensor_name[0]])
         else:
@@ -848,8 +853,8 @@ def main():
 
             if args.convert_format == "qeexo_v2_csv":
                 write_QeexoV2CSV_SDS(args.sds_index)
-            elif args.convert_format == "simple_csv":
-                sys.exit('Simple CSV to SDS conversion is not supported.')
+            elif args.convert_format == "csv":
+                sys.exit('CSV to SDS conversion is not supported.')
 
     # WAV
     elif "wav" in args.convert_format:
