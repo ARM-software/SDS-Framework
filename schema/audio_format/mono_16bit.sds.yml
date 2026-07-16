@@ -1,9 +1,9 @@
 sds:
   name: Mono
   description: Mono 16-bit PCM microphone
+  sample-frequency: 16000
   content:
   - audio:
-      sample-frequency: 16000
       bit-depth: 16
       channels: 1
       format: pcm

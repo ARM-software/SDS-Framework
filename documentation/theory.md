@@ -216,7 +216,6 @@ Describes audio data format, typically used for a microphone data stream.
 `content:`                                               | Audio metadata for `content:` node
 :--------------------------------------------------------|:---------------------------------------------------
 `- audio:`                                               | Audio format specification
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `sample-frequency:` | Audio sample rate in Hz (required)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `bit-depth:`        | Bits per audio sample (required)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `channels:`         | Number of interleaved audio channels (required)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `format:`           | Audio format used (optional), currently only `pcm` is supported
@@ -227,9 +226,9 @@ Describes audio data format, typically used for a microphone data stream.
 sds:
   name: Mono
   description: Mono 16-bit PCM microphone
+  sample-frequency: 16000
   content:
   - audio:
-      sample-frequency: 16000
       bit-depth: 16
       channels: 1
       format: pcm

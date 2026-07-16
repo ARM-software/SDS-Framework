@@ -510,9 +510,9 @@ required:
 sds:
   name: Mono
   description: Mono 16-bit PCM microphone
+  sample-frequency: 16000
   content:
   - audio:
-      sample-frequency: 16000
       bit-depth: 16
       channels: 1
       format: pcm
@@ -524,9 +524,9 @@ sds:
 sds:
   name: Stereo
   description: Stereo 16-bit PCM microphone
+  sample-frequency: 44100
   content:
   - audio:
-      sample-frequency: 44100
       bit-depth: 16
       channels: 2
       format: pcm
