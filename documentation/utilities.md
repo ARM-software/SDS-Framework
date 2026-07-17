@@ -549,10 +549,10 @@ sds:
   description: Mono 16-bit PCM microphone
   sample-frequency: 16000
   content:
-  - audio:
-      bit-depth: 16
-      channels: 1
-      format: pcm
+    - audio:
+        bit-depth: 16
+        channels: 1
+        format: pcm
 ```
 
 **Example of metadata yml file for stereo microphone:**
@@ -563,10 +563,10 @@ sds:
   description: Stereo 16-bit PCM microphone
   sample-frequency: 44100
   content:
-  - audio:
-      bit-depth: 16
-      channels: 2
-      format: pcm
+    - audio:
+        bit-depth: 16
+        channels: 2
+        format: pcm
 ```
 
 **Example:**
@@ -623,18 +623,18 @@ sds:
   description: Gyroscope with 1667Hz sample rate
   sample-frequency: 1667
   content:
-  - value: x
-    type: int16_t
-    scale: 0.07
-    unit: dps
-  - value: y
-    type: int16_t
-    scale: 0.07
-    unit: dps
-  - value: z
-    type: int16_t
-    scale: 0.07
-    unit: dps
+    - value: x
+      type: int16_t
+      scale: 0.07
+      unit: dps
+    - value: y
+      type: int16_t
+      scale: 0.07
+      unit: dps
+    - value: z
+      type: int16_t
+      scale: 0.07
+      unit: dps
 ```
 
 **Example:**
@@ -707,18 +707,18 @@ sds:
   description: Accelerometer with 1667Hz sample rate
   frequency: 1667
   content:
-  - value: x
-    type: int16_t
-    scale: 0.000061
-    unit: G
-  - value: y
-    type: int16_t
-    scale: 0.000061
-    unit: G
-  - value: z
-    type: int16_t
-    scale: 0.000061
-    unit: G
+    - value: x
+      type: int16_t
+      scale: 0.000061
+      unit: G
+    - value: y
+      type: int16_t
+      scale: 0.000061
+      unit: G
+    - value: z
+      type: int16_t
+      scale: 0.000061
+      unit: G
 ```
 
 **Examples:**
@@ -767,6 +767,7 @@ required:
 sds:
   name: Video Stream - RGB888
   description: 192 x 192 RGB888 video frames
+  sample-frequency: 24
   content:
     - image:
         pixel_format: RGB888
