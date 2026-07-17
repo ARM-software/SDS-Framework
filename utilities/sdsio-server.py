@@ -2280,7 +2280,7 @@ def parse_arguments():
         epilog=_top_epilog,
     )
     _parser.is_top_level = True
-    _parser.usage = "%(prog)s [-h] [-V] [{socket | serial | usb} [if-opts]] [-c sdsio.yml] [general-opts]"
+    _parser.usage = "%(prog)s [-h] [-V] [{socket | serial | usb} [interface-opts]] [-c sdsio.yml] [general-opts]"
 
     def _add_info_opts(p, version_text=None):
         _options = p.add_argument_group("options")
@@ -2346,7 +2346,7 @@ def parse_arguments():
     _parser_socket.usage = "%(prog)s [-h] [-V] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [--connect [<message>]] [--connect-time <ms>] [general-opts]"
     _add_info_opts(_parser_socket, version_text=f"{_parser.prog} {SDSIO_SERVER_VERSION}")
 
-    _socket_group = _parser_socket.add_argument_group("if-opts (optional)")
+    _socket_group = _parser_socket.add_argument_group("interface-opts (optional)")
     _socket_group.add_argument("--ipaddr", dest="ip", metavar="<IP>",
                               help="Server IP address; cannot be combined with 'netif',\nor host IP address in connect mode (default: 127.0.0.1 / localhost)",
                               type=ip_validator, default=None)
@@ -2377,11 +2377,11 @@ def parse_arguments():
     _parser_serial.usage = "%(prog)s [-h] [-V] --port <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>] [general-opts]"
     _add_info_opts(_parser_serial, version_text=f"{_parser.prog} {SDSIO_SERVER_VERSION}")
 
-    _serial_required = _parser_serial.add_argument_group("if-opts (required)")
+    _serial_required = _parser_serial.add_argument_group("interface-opts (required)")
     _serial_required.add_argument("--port", dest="port", metavar="<Serial Port>",
                                  help="Serial port (required)", required=True)
 
-    _serial_optional = _parser_serial.add_argument_group("if-opts (optional)")
+    _serial_optional = _parser_serial.add_argument_group("interface-opts (optional)")
     _serial_optional.add_argument("--baudrate", dest="baudrate", metavar="<Baudrate>",
                                  help="Baudrate (default: 115200)", type=int, default=115200)
     _parity_help = "Parity: none, even, odd, mark, space (default: none)"

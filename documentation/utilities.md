@@ -223,7 +223,7 @@ SDS data streams are stored in file that use the format `<stream-name>.<label>[.
 - Terminate the server by pressing `Ctrl+C` or the `X` key in the server application window.
 
 ```txt
-usage: sdsio-server.py [-h] [-V] [{socket | serial | usb} [if-opts]] [-c sdsio.yml] [general-opts]
+usage: sdsio-server.py [-h] [-V] [{socket | serial | usb} [interface-opts]] [-c sdsio.yml] [general-opts]
 
 SDSIO-Server: record and playback SDS data stream files over USB, socket, or serial interface.
 Configure via *.sdsio.yml file or specify the interface parameters directly on the command line.
@@ -243,6 +243,8 @@ configuration:
 
 general-opts:
   --playback, -p                   Start SDSIO-Server in playback mode (typically used in CI tests)
+  --exit-after-playback, -x        Terminate when playback is completed
+  --no-progress-info, -n           Disable dynamic progress indicator
   --workdir <path>                 Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
   --mon-port, -m <port>            Monitor control interface port
   --log, -l <file>                 Redirect console output to a log file (typically for CI use)
@@ -317,7 +319,7 @@ options:
   --help, -h                       Show this help message and exit
   --version, -V                    Show program's version number and exit
 
-if-opts (optional):
+interface-opts (optional):
   --ipaddr <IP>                    Server IP address; cannot be combined with 'netif',
                                    or host IP address in connect mode (default: 127.0.0.1 / localhost)
   --netif <Interface>              Network interface (example: eth0), cannot be combined with '--ipaddr' or '--connect'
@@ -367,10 +369,10 @@ options:
   --help, -h                       Show this help message and exit
   --version, -V                    Show program's version number and exit
 
-if-opts (required):
+interface-opts (required):
   --port <Serial Port>             Serial port (required)
 
-if-opts (optional):
+interface-opts (optional):
   --baudrate <Baudrate>            Baudrate (default: 115200)
   --parity <Parity>                Parity: none, even, odd, mark, space (default: none)
   --stopbits <Stop bits>           Stop bits: 1, 1.5, 2 (default: 1)
@@ -418,6 +420,41 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="XXXX", ATTRS{idProduct}=="XXXX", MODE="0666"
 ```
 
 Then reload rules with `sudo udevadm control --reload && sudo udevadm trigger`.  Use `dmesg` before and after plugging in the device to find the vendor/product IDs.
+
+### Usage in CI Systems
+
+The SDSIO-Server can be used in CI systems. When combined with the [pyOCD Debugger](https://open-cmsis-pack.github.io/cmsis-toolbox/pyOCD-Debugger/) fully automated HIL tests can be configured.
+
+This example contains the relevant steps in a GitHub workflow:
+
+```
+      - name: Flash using pyOCD
+        working-directory: ./RockPaperScissors/AppKit-E8_USB/out
+        run: |
+          pyocd load --uid L96807771A --cbuild-run SDS+AppKit-E8-U85.cbuild-run.yml
+
+      - name: Run using pyOCD
+        working-directory: ./RockPaperScissors/AppKit-E8_USB/out
+        run: |
+          nohup pyocd run --uid L96807771A --cbuild-run SDS+AppKit-E8-U85.cbuild-run.yml --timelimit 30 --eot > pyocd.out 2>&1 &
+
+      - name: Start the SDSIO server on the Raspberry Pi
+        working-directory: ./RockPaperScissors/AppKit-E8_USB
+        run: |
+          sleep 2 # Delay to ensure that pyOCD is started
+          sdsio-server --control SDS.sdsio.yml --playback --exit-after-playback --no-progress-info | tee sdsio-server.log
+
+      - name: Wait for pyocd to complete
+        run: |
+          while pgrep pyocd > /dev/null; do
+            sleep 1
+          done
+```
+
+See also: 
+
+- [Setup Self-Hosted GitHub Runner on Raspberry Pi 5](https://github.com/Arm-Examples/.github/blob/main/profile/RPI_GH_Runner.md) explains the configuration of a Linux host system for HIL testing.
+- [github.com/Arm-Examples/ModelNova/.github/workflows/Run_RPS_AppKit-E8.yml](https://github.com/Arm-Examples/ModelNova/blob/main/.github/workflows/Run_RPS_AppKit-E8.yml) for a complete CI test workflow.
 
 ## SDS-View
 

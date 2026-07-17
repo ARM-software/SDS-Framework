@@ -171,13 +171,19 @@ Once the desired number of recordings has been captured, the SD card can be remo
 
 ## Layer: sdsio_fvp
 
-The [`template/sdsio/fvp/sdsio_fvp.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp) targets AVH FVP simulation and is configured for playback from the host computer. It uses the [SDSIO VSI interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html) implemented by the file `vsi/python/arm_vsi3.py`, which is loaded by the FVP simulation model. Since the SDSIO-Server functionality is implemented in `arm_vsi3.py`, no separate SDSIO-Server is required.
+The [`template/sdsio/fvp/sdsio_fvp.clayer.yml`](https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp) targets AVH FVP simulation and is configured for playback from the host computer or a CI system. It uses the [SDSIO VSI interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html) implemented by the file `vsi/python/arm_vsi3.py`, which is loaded by the FVP simulation model. Since the SDSIO-Server functionality is implemented in `arm_vsi3.py`, no separate SDSIO-Server is required.
+
+The VSI3 Python script (`arm_vsi3.py`) is tested with Python 3.13 and has requirements to the modules `pyyaml` and `asyncio` that can be installed with:
+
+```bash
+pip install pyyaml asyncio
+```
 
 ### Using FVP Simulation Models
 
-The SDSIO VSI interface can be configured using a [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml).
+VSI3 implements the SDSIO VSI interface and is designed for regression testing on host computer and CI systems. The tests cases are configured using a [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml). 
 
-The VSI3 Python script (`arm_vsi3.py`) locates the control file as follows:
+VSI3 locates a [`*.sdsio.yml` control file](utilities.md#sdsio-control-file-sdsioyml) as follows:
 
 - If the environment variable `SDSIO_FVP` is set, it must be an **absolute path** to either a config file or a directory:
     - **File** — used directly as the config file.
