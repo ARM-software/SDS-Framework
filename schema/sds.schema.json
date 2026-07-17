@@ -123,12 +123,6 @@
                     "type" : "object",
                     "description" : "Audio format specification",
                     "properties" : {
-                        "sample-frequency" : {
-                            "title" : "sample-frequency:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#audio-data-stream",
-                            "type" : "integer",
-                            "minimum" : 1,
-                            "description" : "Audio sample rate in Hz"
-                        },
                         "bit-depth" : {
                             "title" : "bit-depth:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#audio-data-stream",
                             "type" : "integer",
@@ -148,7 +142,7 @@
                             "enum" : [ "pcm" ]
                         }
                     },
-                    "required" : [ "sample-frequency", "bit-depth", "channels" ],
+                    "required" : [ "bit-depth", "channels" ],
                     "additionalProperties" : false
                 }
             },

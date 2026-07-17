@@ -94,20 +94,19 @@ def requireSampleFrequency(sample_frequency, convert_format):
         sys.exit(f"Error: Sample frequency must be greater than 0 (f = {sample_frequency})")
     return sample_frequency
 
-def getAudioMetadata(meta_data):
+def getAudioMetadata(meta_data, sample_frequency):
     if len(meta_data) != 1 or "audio" not in meta_data[0]:
         sys.exit("Error: Audio WAV conversion requires an `audio:` node in the metadata content")
 
     audio_meta = meta_data[0]["audio"]
-    for field in ("sample-frequency", "bit-depth", "channels"):
+    for field in ("bit-depth", "channels"):
         if field not in audio_meta:
             sys.exit(f"Error: Audio metadata is missing `{field}:`")
 
     if "format" in audio_meta and audio_meta["format"] != "pcm":
         sys.exit(f"Error: Unsupported audio format: {audio_meta['format']}")
 
-    if not audio_meta["sample-frequency"] > 0:
-        sys.exit(f"Error: Audio sample frequency must be greater than 0 (f = {audio_meta['sample-frequency']})")
+    sample_frequency = requireSampleFrequency(sample_frequency, "Audio WAV")
     if not audio_meta["bit-depth"] > 0:
         sys.exit(f"Error: Audio bit depth must be greater than 0 (bits = {audio_meta['bit-depth']})")
     if audio_meta["bit-depth"] % 8 != 0:
@@ -115,7 +114,7 @@ def getAudioMetadata(meta_data):
     if not audio_meta["channels"] > 0:
         sys.exit(f"Error: Audio channels must be greater than 0 (channels = {audio_meta['channels']})")
 
-    return audio_meta
+    return audio_meta, sample_frequency
 
 def requireValueMetadata(meta_data, convert_format):
     for entry in meta_data:
@@ -492,13 +491,13 @@ def write_QeexoV2CSV_SDS(index):
 
 
 # Create and write WAV file with parameters from metadata file
-def write_SDS_AudioWAV(data, audio_meta):
+def write_SDS_AudioWAV(data, audio_meta, sample_frequency):
     raw_data = data["raw_data"]
 
     # Set audio parameters and write binary data to file
     wave_file.setnchannels(audio_meta["channels"])
     wave_file.setsampwidth(audio_meta["bit-depth"] // 8)
-    wave_file.setframerate(audio_meta["sample-frequency"])
+    wave_file.setframerate(sample_frequency)
     wave_file.writeframes(raw_data)
     wave_file.close()
 
@@ -865,9 +864,9 @@ def main():
                 # Only used for one sensor
                 if (len(args.yaml) > 1) or (len(sds_files) > 1):
                     sys.exit("Audio WAV file format only supports 1 metadata and 1 SDS file")
-                audio_meta = getAudioMetadata(meta_data[sensor_name[0]])
+                audio_meta, sample_frequency = getAudioMetadata(meta_data[sensor_name[0]], sensor_frequency[sensor_name[0]])
                 createWAV(filename)
-                write_SDS_AudioWAV(data[sensor_name[0]], audio_meta)
+                write_SDS_AudioWAV(data[sensor_name[0]], audio_meta, sample_frequency)
         else:
             sys.exit('WAV to SDS conversion is not supported.')
 
