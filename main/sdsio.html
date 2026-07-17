@@ -262,10 +262,13 @@ Playback mode can be enabled by adapting the provided template code.
 For example, an additional button on the board can be used to toggle between recording and playback modes.</p>
 </div>
 <h2 id="layer-sdsio_fvp">Layer: sdsio_fvp</h2>
-<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp"><code>template/sdsio/fvp/sdsio_fvp.clayer.yml</code></a> targets AVH FVP simulation and is configured for playback from the host computer. It uses the <a href="https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html">SDSIO VSI interface</a> implemented by the file <code>vsi/python/arm_vsi3.py</code>, which is loaded by the FVP simulation model. Since the SDSIO-Server functionality is implemented in <code>arm_vsi3.py</code>, no separate SDSIO-Server is required.</p>
+<p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/template/sdsio/fvp"><code>template/sdsio/fvp/sdsio_fvp.clayer.yml</code></a> targets AVH FVP simulation and is configured for playback from the host computer or a CI system. It uses the <a href="https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html">SDSIO VSI interface</a> implemented by the file <code>vsi/python/arm_vsi3.py</code>, which is loaded by the FVP simulation model. Since the SDSIO-Server functionality is implemented in <code>arm_vsi3.py</code>, no separate SDSIO-Server is required.</p>
+<p>The VSI3 Python script (<code>arm_vsi3.py</code>) is tested with Python 3.13 and has requirements to the modules <code>pyyaml</code> and <code>asyncio</code> that can be installed with:</p>
+<pre><code class="language-bash">pip install pyyaml asyncio
+</code></pre>
 <h3 id="using-fvp-simulation-models">Using FVP Simulation Models</h3>
-<p>The SDSIO VSI interface can be configured using a <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a>.</p>
-<p>The VSI3 Python script (<code>arm_vsi3.py</code>) locates the control file as follows:</p>
+<p>VSI3 implements the SDSIO VSI interface and is designed for regression testing on host computer and CI systems. The tests cases are configured using a <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a>. </p>
+<p>VSI3 locates a <a href="utilities.html#sdsio-control-file-sdsioyml"><code>*.sdsio.yml</code> control file</a> as follows:</p>
 <ul>
 <li>If the environment variable <code>SDSIO_FVP</code> is set, it must be an <strong>absolute path</strong> to either a config file or a directory:<ul>
 <li><strong>File</strong> — used directly as the config file.</li>

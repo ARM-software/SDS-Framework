@@ -360,10 +360,6 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <td style="text-align: left;">Audio format specification</td>
 </tr>
 <tr>
-<td style="text-align: left;">       <code>sample-frequency:</code></td>
-<td style="text-align: left;">Audio sample rate in Hz (required)</td>
-</tr>
-<tr>
 <td style="text-align: left;">       <code>bit-depth:</code></td>
 <td style="text-align: left;">Bits per audio sample (required)</td>
 </tr>
@@ -381,9 +377,9 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <pre><code class="language-yml">sds:
   name: Mono
   description: Mono 16-bit PCM microphone
+  sample-frequency: 16000
   content:
   - audio:
-      sample-frequency: 16000
       bit-depth: 16
       channels: 1
       format: pcm
