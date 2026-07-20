@@ -846,10 +846,10 @@ required:
   description: Mono 16-bit PCM microphone
   sample-frequency: 16000
   content:
-  - audio:
-      bit-depth: 16
-      channels: 1
-      format: pcm
+    - audio:
+        bit-depth: 16
+        channels: 1
+        format: pcm
 </code></pre>
 <p><strong>Example of metadata yml file for stereo microphone:</strong></p>
 <pre><code class="language-yml">sds:
@@ -857,10 +857,10 @@ required:
   description: Stereo 16-bit PCM microphone
   sample-frequency: 44100
   content:
-  - audio:
-      bit-depth: 16
-      channels: 2
-      format: pcm
+    - audio:
+        bit-depth: 16
+        channels: 2
+        format: pcm
 </code></pre>
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">python sds-convert.py audio_wav -i Microphone.0.sds -o microphone.wav -y Microphone.sds.yml
@@ -909,18 +909,18 @@ optional:
   description: Gyroscope with 1667Hz sample rate
   sample-frequency: 1667
   content:
-  - value: x
-    type: int16_t
-    scale: 0.07
-    unit: dps
-  - value: y
-    type: int16_t
-    scale: 0.07
-    unit: dps
-  - value: z
-    type: int16_t
-    scale: 0.07
-    unit: dps
+    - value: x
+      type: int16_t
+      scale: 0.07
+      unit: dps
+    - value: y
+      type: int16_t
+      scale: 0.07
+      unit: dps
+    - value: z
+      type: int16_t
+      scale: 0.07
+      unit: dps
 </code></pre>
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">python sds-convert.py csv -i Gyroscope.0.sds -o Gyroscope.csv -y Gyroscope.sds.yml --normalize --start-timeslot 0.2 --stop-timeslot 0.3
@@ -982,18 +982,18 @@ optional:
   description: Accelerometer with 1667Hz sample rate
   frequency: 1667
   content:
-  - value: x
-    type: int16_t
-    scale: 0.000061
-    unit: G
-  - value: y
-    type: int16_t
-    scale: 0.000061
-    unit: G
-  - value: z
-    type: int16_t
-    scale: 0.000061
-    unit: G
+    - value: x
+      type: int16_t
+      scale: 0.000061
+      unit: G
+    - value: y
+      type: int16_t
+      scale: 0.000061
+      unit: G
+    - value: z
+      type: int16_t
+      scale: 0.000061
+      unit: G
 </code></pre>
 <p><strong>Examples:</strong></p>
 <p>Convert <strong>SDS</strong> files to <strong>Qeexo V2 CSV</strong> files:</p>
@@ -1031,6 +1031,7 @@ required:
 <pre><code class="language-yml">sds:
   name: Video Stream - RGB888
   description: 192 x 192 RGB888 video frames
+  sample-frequency: 24
   content:
     - image:
         pixel_format: RGB888

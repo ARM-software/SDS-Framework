@@ -316,34 +316,34 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
   description: Gyroscope stream with 1KHz sample rate, plus additional user data
   sample-frequency: 1000
   content:
-  - value: x           # Value name is 'x'
-    type:  uint16_t    # stored using a 16-bit unsigned int
-    scale: 0.2         # value is scaled by 0.2
-    unit: dps          # base unit of the value
-  - value: y
-    type: uint16_t
-    scale: 0.2
-    unit: dps
-  - value: z
-    type: uint16_t
-    unit: dps          # scale 1.0 is default
-  - value: temp
-    type: float
-    unit: degree Celsius
-  - value: raw
-    type: uint16_t     # raw data, no scale or unit given
-  - value: flag
-    type: uint32_t:1   # a single bit stored in a 32-bit int
+    - value: x         # Value name is 'x'
+      type:  uint16_t  # stored using a 16-bit unsigned int
+      scale: 0.2       # value is scaled by 0.2
+      unit: dps        # base unit of the value
+    - value: y
+      type: uint16_t
+      scale: 0.2
+      unit: dps
+    - value: z
+      type: uint16_t
+      unit: dps        # scale 1.0 is default
+    - value: temp
+      type: float
+      unit: degree Celsius
+    - value: raw
+      type: uint16_t   # raw data, no scale or unit given
+    - value: flag
+      type: uint32_t:1 # a single bit stored in a 32-bit int
 </code></pre>
 <p>The following <code>ToF.sds.yml</code> provides the format description of a Time-of-Flight sensor.</p>
 <pre><code class="language-yml">sds:                   # describes a synchronous data stream
   name: ToF            # user defined name
   description: Time-of-Flight sensor with 8x8 matrix
   content:
-  - value: distance    # Value name is 'distance'
-    type:  uint16_t    # stored using a 16-bit unsigned int
-    dim-x: 8
-    dim-y: 8
+    - value: distance  # Value name is 'distance'
+      type:  uint16_t  # stored using a 16-bit unsigned int
+      dim-x: 8
+      dim-y: 8
 </code></pre>
 <h3 id="audio-data-stream">Audio data stream</h3>
 <p>Describes audio data format, typically used for a microphone data stream.</p>
@@ -379,10 +379,10 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
   description: Mono 16-bit PCM microphone
   sample-frequency: 16000
   content:
-  - audio:
-      bit-depth: 16
-      channels: 1
-      format: pcm
+    - audio:
+        bit-depth: 16
+        channels: 1
+        format: pcm
 </code></pre>
 <h3 id="image-data-stream">Image data stream</h3>
 <p>Describes the image data format, typically used for a camera data stream.</p>
@@ -533,6 +533,7 @@ These templates are listed below and use Linux V4L2 references.</p>
 <pre><code class="language-yml">sds:
   name: Video Stream - RGB888
   description: RGB888 video frames from camera
+  sample-frequency: 24
   content:
     - image:
         pixel_format: RGB888
