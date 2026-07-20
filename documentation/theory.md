@@ -176,24 +176,24 @@ sds:                   # describes a synchronous data stream
   description: Gyroscope stream with 1KHz sample rate, plus additional user data
   sample-frequency: 1000
   content:
-  - value: x           # Value name is 'x'
-    type:  uint16_t    # stored using a 16-bit unsigned int
-    scale: 0.2         # value is scaled by 0.2
-    unit: dps          # base unit of the value
-  - value: y
-    type: uint16_t
-    scale: 0.2
-    unit: dps
-  - value: z
-    type: uint16_t
-    unit: dps          # scale 1.0 is default
-  - value: temp
-    type: float
-    unit: degree Celsius
-  - value: raw
-    type: uint16_t     # raw data, no scale or unit given
-  - value: flag
-    type: uint32_t:1   # a single bit stored in a 32-bit int
+    - value: x         # Value name is 'x'
+      type:  uint16_t  # stored using a 16-bit unsigned int
+      scale: 0.2       # value is scaled by 0.2
+      unit: dps        # base unit of the value
+    - value: y
+      type: uint16_t
+      scale: 0.2
+      unit: dps
+    - value: z
+      type: uint16_t
+      unit: dps        # scale 1.0 is default
+    - value: temp
+      type: float
+      unit: degree Celsius
+    - value: raw
+      type: uint16_t   # raw data, no scale or unit given
+    - value: flag
+      type: uint32_t:1 # a single bit stored in a 32-bit int
 ```
 
 The following `ToF.sds.yml` provides the format description of a Time-of-Flight sensor.
@@ -203,10 +203,10 @@ sds:                   # describes a synchronous data stream
   name: ToF            # user defined name
   description: Time-of-Flight sensor with 8x8 matrix
   content:
-  - value: distance    # Value name is 'distance'
-    type:  uint16_t    # stored using a 16-bit unsigned int
-    dim-x: 8
-    dim-y: 8
+    - value: distance  # Value name is 'distance'
+      type:  uint16_t  # stored using a 16-bit unsigned int
+      dim-x: 8
+      dim-y: 8
 ```
 
 ### Audio data stream
@@ -228,10 +228,10 @@ sds:
   description: Mono 16-bit PCM microphone
   sample-frequency: 16000
   content:
-  - audio:
-      bit-depth: 16
-      channels: 1
-      format: pcm
+    - audio:
+        bit-depth: 16
+        channels: 1
+        format: pcm
 ```
 
 ### Image data stream
@@ -283,6 +283,7 @@ These templates are listed below and use Linux V4L2 references.
 sds:
   name: Video Stream - RGB888
   description: RGB888 video frames from camera
+  sample-frequency: 24
   content:
     - image:
         pixel_format: RGB888
