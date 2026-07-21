@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "3.0.1-dev4"
+SDSIO_SERVER_VERSION = "3.0.1-dev5"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -911,7 +911,8 @@ class sdsio_manager:
             self._flags.request_auto_playback_start()
         elif self._flags.auto_playback and self._last_playback_stream_name:
             if self._flags.request_auto_playback_terminate():
-                logger.info("Playback complete - no more steps remaining.")
+                _complete_msg = "Playback complete - no more steps remaining." if self._play_list else "Playback complete."
+                logger.info(_complete_msg)
                 if self._exit_after_playback:
                     logger.info("SDSIO-Server terminating (playback complete).")
                     self._send_ci_terminate_on_shutdown = True
@@ -950,6 +951,7 @@ class sdsio_manager:
         if self._playback_mode:
             if not self._label_list:
                 # Get flags, Set working dir
+                _index_based_playback = False
                 if self._play_list:
                     if self._play_step_index < len(self._play_list):
                         _step = self._play_list[self._play_step_index]
@@ -969,6 +971,7 @@ class sdsio_manager:
                 else:
                     _set_flags = 0
                     _clear_flags = 0
+                    _index_based_playback = True
 
                 if _set_flags or _clear_flags:
                     logger.debug(f"Applying flags for playback stream '{name}': set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}.")
@@ -983,6 +986,8 @@ class sdsio_manager:
                         logger.error(f"Open Failed. No files found for playback stream '{name}'.")
                     return _resp_err
                 self._label_list = _play_label_list
+                if _index_based_playback and self._play_step_index == 0:
+                    logger.info("No play steps, index based playback started.")
 
         else:
             if mode == 0:
