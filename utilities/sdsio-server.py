@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "3.0.1-dev5"
+SDSIO_SERVER_VERSION = "3.0.1-dev6"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -1241,7 +1241,7 @@ class sdsio_manager:
                 logger.info(f"{idle_rate}% idle.")
             self._info_IdleRate = idle_rate
         if err_data:
-            _status = int.from_bytes(err_data[0:4],'little')
+            _status = int.from_bytes(err_data[0:4], 'little', signed=True)
             _line   = int.from_bytes(err_data[4:8],'little')
             _err_mgs = err_data[8:]
             if _status == 0:
