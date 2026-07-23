@@ -150,7 +150,9 @@ python sdsio-server.py -c myproject.sdsio.yml
 
 **How it works:**
 
-pyOCD does not required a connect message. Instead the RTT channel configuration is part of the `*.cbuild-run.yml` file that also specifies project files and other hardware related parameters. Refer to [CMSIS-Toolbox - Run and Debug Configuration](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#run-and-debug-configuration) for further information.
+pyOCD does not require a connect message. Instead the RTT channel configuration is part of the `*.cbuild-run.yml` file that also specifies project files and other hardware related parameters. Refer to [CMSIS-Toolbox - Run and Debug Configuration](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#run-and-debug-configuration) for further information.
+
+For CI runs that should stop automatically after SDS playback, start pyOCD with `--eot` and run SDSIO-Server with `--playback --exit-after-playback`. After playback completes, SDSIO-Server sets `SDS_FLAG_TERMINATE`. The target application can then write EOT (`0x04`). pyOCD can terminate on this character only when it receives the target standard output stream, for example through semihosting or RTT stdio. If standard output is retargeted directly to UART, the character bypasses pyOCD and `--eot` will not stop the pyOCD run.
 
 ## Layer: sdsio_fs
 
