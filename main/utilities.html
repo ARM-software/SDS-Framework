@@ -738,6 +738,7 @@ interface-opts (optional):
 <p>Then reload rules with <code>sudo udevadm control --reload &amp;&amp; sudo udevadm trigger</code>.  Use <code>dmesg</code> before and after plugging in the device to find the vendor/product IDs.</p>
 <h3 id="usage-in-ci-systems">Usage in CI Systems</h3>
 <p>The SDSIO-Server can be used in CI systems. When combined with the <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/pyOCD-Debugger/">pyOCD Debugger</a> fully automated HIL tests can be configured.</p>
+<p>When <code>sdsio-server</code> runs with <code>--playback --exit-after-playback</code>, playback completion requests CI termination by setting <code>SDS_FLAG_TERMINATE</code> in the flags sent to the target. If the target application writes EOT (<code>0x04</code>) to standard output retargeted through a pyOCD-managed channel, such as semihosting or RTT stdio, pyOCD can detect it when started with <code>--eot</code> and exit. If standard output is retargeted directly to UART, pyOCD does not see that character, so <code>--eot</code> will not terminate pyOCD. Keep <code>--timelimit</code> as a fallback in case the target application does not reach the termination state or EOT is not routed through pyOCD.</p>
 <p>This example contains the relevant steps in a GitHub workflow:</p>
 <pre><code>      - name: Flash using pyOCD
         working-directory: ./RockPaperScissors/AppKit-E8_USB/out

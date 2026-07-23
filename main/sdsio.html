@@ -248,7 +248,8 @@ runs on the host and connects to the debug probe socket using
 python sdsio-server.py -c myproject.sdsio.yml
 </code></pre>
 <p><strong>How it works:</strong></p>
-<p>pyOCD does not required a connect message. Instead the RTT channel configuration is part of the <code>*.cbuild-run.yml</code> file that also specifies project files and other hardware related parameters. Refer to <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#run-and-debug-configuration">CMSIS-Toolbox - Run and Debug Configuration</a> for further information.</p>
+<p>pyOCD does not require a connect message. Instead the RTT channel configuration is part of the <code>*.cbuild-run.yml</code> file that also specifies project files and other hardware related parameters. Refer to <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#run-and-debug-configuration">CMSIS-Toolbox - Run and Debug Configuration</a> for further information.</p>
+<p>For CI runs that should stop automatically after SDS playback, start pyOCD with <code>--eot</code> and run SDSIO-Server with <code>--playback --exit-after-playback</code>. After playback completes, SDSIO-Server sets <code>SDS_FLAG_TERMINATE</code>. The target application can then write EOT (<code>0x04</code>). pyOCD can terminate on this character only when it receives the target standard output stream, for example through semihosting or RTT stdio. If standard output is retargeted directly to UART, the character bypasses pyOCD and <code>--eot</code> will not stop the pyOCD run.</p>
 <h2 id="layer-sdsio_fs">Layer: sdsio_fs</h2>
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/filesystem"><code>layer/sdsio/filesystem/sdsio_fs.clayer.yml</code></a> is configured for recording to a Memory Card. It uses the MDK-Middleware File System component.</p>
 <h3 id="using-file-system-interface">Using File System Interface</h3>
