@@ -215,6 +215,7 @@ logger.addHandler(_log_handler)
 Stream = sdsio_manager(
     work_dir=_work_dir,
     auto_playback=_auto_playback,
+    exit_after_playback=True,
     play_list=_play_list,
     mon_port=None,
     write_flush_records=_write_flush_records,

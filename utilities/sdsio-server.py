@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "3.0.1-dev6"
+SDSIO_SERVER_VERSION = "3.0.1-dev7"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -462,14 +462,17 @@ class sdsFlags:
             self._auto_start_pending = True
             return True
 
-    def request_auto_playback_terminate(self) -> bool:
+    def request_auto_playback_terminate(self, _force=False) -> bool:
         with self._lock:
             if not self._auto_playback:
                 return False
-            if self._auto_start_pending or self._auto_terminate_pending:
+            if self._auto_terminate_pending:
                 return False
-            if self._target_flags & SDS_FLAG_MASK_START:
-                return False
+            if not _force:
+                if self._auto_start_pending:
+                    return False
+                if self._target_flags & SDS_FLAG_MASK_START:
+                    return False
             self._set |= SDS_FLAG_MASK_CI_TERMINATE
             self._clear &= ~SDS_FLAG_MASK_CI_TERMINATE
             self._auto_terminate_pending = True
@@ -913,13 +916,16 @@ class sdsio_manager:
             if self._flags.request_auto_playback_terminate():
                 _complete_msg = "Playback complete - no more steps remaining." if self._play_list else "Playback complete."
                 logger.info(_complete_msg)
-                if self._exit_after_playback:
-                    logger.info("SDSIO-Server terminating (playback complete).")
-                    self._send_ci_terminate_on_shutdown = True
-                    self.shutdown_requested.set()
-                    if self._loop and self._main_task:
-                        self._loop.call_soon_threadsafe(self._main_task.cancel)
+                self._request_exit_after_playback("playback complete")
 
+    def _request_exit_after_playback(self, _reason: str):
+        if not self._exit_after_playback:
+            return
+        logger.info(f"SDSIO-Server terminating ({_reason}).")
+        self._send_ci_terminate_on_shutdown = True
+        self.shutdown_requested.set()
+        if self._loop and self._main_task:
+            self._loop.call_soon_threadsafe(self._main_task.cancel)
     def _open(self, mode, name):
         _cmd = CMD_OPEN
         # prepare error response
@@ -967,6 +973,8 @@ class sdsio_manager:
                             self._rec_dir = self._work_dir
                     else:
                         logger.error(f"Open Failed. End of playlist. No more steps available for playback stream '{name}'.")
+                        if self._exit_after_playback and self._flags.request_auto_playback_terminate(_force=True):
+                            self._request_exit_after_playback("playback data unavailable")
                         return _resp_err
                 else:
                     _set_flags = 0
@@ -984,6 +992,8 @@ class sdsio_manager:
                         logger.error(f"Open Failed. No more files available for playback stream '{name}'.")
                     else:
                         logger.error(f"Open Failed. No files found for playback stream '{name}'.")
+                    if self._exit_after_playback and self._flags.request_auto_playback_terminate(_force=True):
+                        self._request_exit_after_playback("playback data unavailable")
                     return _resp_err
                 self._label_list = _play_label_list
                 if _index_based_playback and self._play_step_index == 0:
@@ -1046,6 +1056,8 @@ class sdsio_manager:
             for _sds_file_path in _file_paths:
                 if not path.exists(_sds_file_path):
                     logger.error(f"Missing file for playback stream '{name}': {self._format_path(_sds_file_path)}")
+                    if self._exit_after_playback and self._flags.request_auto_playback_terminate(_force=True):
+                        self._request_exit_after_playback("playback data unavailable")
                     return _resp_err
 
             if not self._timestamp_boundaries:
