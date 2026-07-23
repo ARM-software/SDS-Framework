@@ -425,6 +425,8 @@ Then reload rules with `sudo udevadm control --reload && sudo udevadm trigger`. 
 
 The SDSIO-Server can be used in CI systems. When combined with the [pyOCD Debugger](https://open-cmsis-pack.github.io/cmsis-toolbox/pyOCD-Debugger/) fully automated HIL tests can be configured.
 
+When `sdsio-server` runs with `--playback --exit-after-playback`, playback completion requests CI termination by setting `SDS_FLAG_TERMINATE` in the flags sent to the target. If the target application writes EOT (`0x04`) to standard output retargeted through a pyOCD-managed channel, such as semihosting or RTT stdio, pyOCD can detect it when started with `--eot` and exit. If standard output is retargeted directly to UART, pyOCD does not see that character, so `--eot` will not terminate pyOCD. Keep `--timelimit` as a fallback in case the target application does not reach the termination state or EOT is not routed through pyOCD.
+
 This example contains the relevant steps in a GitHub workflow:
 
 ```
