@@ -27,7 +27,7 @@ logger = logging.getLogger("sdsio")
 # ---------------------------------------------------------------------------- #
 #                  SDSIO server-compatible stream implementation                #
 # ---------------------------------------------------------------------------- #
-SDSIO_VSI_VERSION = "3.0.1-dev7"
+SDSIO_VSI_VERSION = "3.0.1-dev8"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -223,6 +223,7 @@ class sdsio_manager:
         exit_after_playback=False,
         no_progress_info=False,
         play_list: Optional[list] = None,
+        playback_test_case: Optional[int] = None,
         mon_port: Optional[int] = None,
         write_flush_records: Optional[int] = None,
         status_bar_factory=None,
@@ -260,6 +261,8 @@ class sdsio_manager:
         self._exit_after_playback = exit_after_playback
         self._send_ci_terminate_on_shutdown = False
         self._play_list = play_list
+        self._play_step_limit = len(play_list) if play_list else None
+        self._single_playback_test_case_selected = False
         self._mon_port = mon_port
         self._write_flush_records = write_flush_records
         # SDS Control Flags
@@ -270,7 +273,7 @@ class sdsio_manager:
             if monitor_factory is None:
                 monitor_factory = sdsMonitorInterface
             if monitor_factory:
-                self._monitor = monitor_factory(self._mon_port, self._flags)
+                self._monitor = monitor_factory(self._mon_port, self._flags, self.select_playback_test_case)
         self._ctrl_input = None
         if control_input_factory is not False and sys.stdin.isatty():
             if control_input_factory is None:
@@ -289,6 +292,8 @@ class sdsio_manager:
         except RuntimeError:
             self._loop = None
             self._main_task = None
+        if playback_test_case is not None:
+            self.select_playback_test_case(playback_test_case)
 
     def shutdown(self):
         self.shutdown_requested.set()
@@ -473,9 +478,41 @@ class sdsio_manager:
         finally:
             buf.set_eof()
 
+    def _get_play_step_limit(self):
+        if not self._play_list:
+            return None
+        if self._play_step_limit is None:
+            return len(self._play_list)
+        return min(self._play_step_limit, len(self._play_list))
+
+    def _is_single_playback_test_case_selected(self) -> bool:
+        return self._single_playback_test_case_selected
+
+    def select_playback_test_case(self, test_case: int) -> bool:
+        if test_case == 0:
+            return True
+        if self.opened_streams:
+            logger.error("Playback test case selection failed: streams are currently open.")
+            return False
+        if not self._play_list:
+            logger.error("Playback test case selection failed: no play steps are configured.")
+            return False
+
+        if test_case < 1 or test_case > len(self._play_list):
+            logger.error(f"Playback test case selection failed: {test_case} is outside 1-{len(self._play_list)}.")
+            return False
+        self._play_step_index = test_case - 1
+        self._play_step_limit = test_case
+        self._single_playback_test_case_selected = True
+        self._label_list.clear()
+        self._timestamp_boundaries.clear()
+        logger.info(f"Selected playback test case {test_case}/{len(self._play_list)}.")
+        return True
+
     def _create_play_label_list(self, name) -> list[str]:
         _labels = []
-        if self._play_list and self._play_step_index < len(self._play_list):
+        _play_step_limit = self._get_play_step_limit()
+        if self._play_list and self._play_step_index < _play_step_limit:
             _step = self._play_list[self._play_step_index]
             _labels = list(_step.get('labels', []))
         else:
@@ -489,7 +526,7 @@ class sdsio_manager:
         if not self._flags.auto_playback or self.opened_streams:
             return False
         if self._play_list:
-            return self._play_step_index < len(self._play_list)
+            return self._play_step_index < self._get_play_step_limit()
         if self._last_playback_stream_name:
             return bool(self._create_play_label_list(self._last_playback_stream_name))
         return False
@@ -549,11 +586,14 @@ class sdsio_manager:
                 # Get flags, Set working dir
                 _index_based_playback = False
                 if self._play_list:
-                    if self._play_step_index < len(self._play_list):
+                    if self._play_step_index < self._get_play_step_limit():
                         _step = self._play_list[self._play_step_index]
                         _step_desc = _step.get('step', '')
                         _desc_suffix = f": {_step_desc}" if _step_desc else ""
-                        logger.info(f"Playback step {self._play_step_index + 1}/{len(self._play_list)}{_desc_suffix}.")
+                        if self._is_single_playback_test_case_selected():
+                            logger.info(f"Playback step {self._play_step_index + 1}{_desc_suffix}.")
+                        else:
+                            logger.info(f"Playback step {self._play_step_index + 1}/{len(self._play_list)}{_desc_suffix}.")
                         _set_flags = _step.get('setflags', 0)
                         _clear_flags = _step.get('clearflags', 0)
                         _recdir = _step.get('recdir', None)

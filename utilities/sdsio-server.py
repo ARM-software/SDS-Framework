@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "3.0.1-dev7"
+SDSIO_SERVER_VERSION = "3.0.1-dev8"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -263,9 +263,10 @@ class StatusBar:
 #                          SDS IO Monitor interface                            #
 # ---------------------------------------------------------------------------- #
 class sdsMonitorInterface():
-    def __init__(self, port, flags: Optional['sdsFlags'] = None):
+    def __init__(self, port, flags: Optional['sdsFlags'] = None, playback_selector=None):
         self._port = port
         self._flags = flags
+        self._playback_selector = playback_selector
         self._lock = threading.Lock()     # guards self._socket
         self._recv_buf = bytearray()      # only accessed from handle_commands thread
         self._last_info = (0, 0, b'')     # cached (flags, idle_rate, err_data) for new clients
@@ -343,7 +344,17 @@ class sdsMonitorInterface():
             if _cmd == SDSIO_MON_FLAGS:
                 _set_flags  = int.from_bytes(self._recv_buf[4:8],  'little')
                 _clear_flags = int.from_bytes(self._recv_buf[8:12], 'little')
-                logger.info(f"Monitor command received: SDSIO_MON_FLAGS (set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}).")
+                _test_case = int.from_bytes(self._recv_buf[12:16], 'little')
+                _test_case_msg = f", test_case={_test_case}" if _test_case else ""
+                logger.info(f"Monitor command received: SDSIO_MON_FLAGS (set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}{_test_case_msg}).")
+                if _test_case:
+                    if not self._playback_selector:
+                        logger.warning(f"Monitor playback test case request ignored: {_test_case}.")
+                        del self._recv_buf[:16]
+                        continue
+                    if not self._playback_selector(_test_case):
+                        del self._recv_buf[:16]
+                        continue
                 if self._flags:
                     self._flags.apply(_set_flags, _clear_flags)
             elif _cmd == SDSIO_MON_SHUTDOWN:
@@ -633,6 +644,7 @@ class sdsio_manager:
         exit_after_playback=False,
         no_progress_info=False,
         play_list: Optional[list] = None,
+        playback_test_case: Optional[int] = None,
         mon_port: Optional[int] = None,
         write_flush_records: Optional[int] = None,
         status_bar_factory=None,
@@ -670,6 +682,8 @@ class sdsio_manager:
         self._exit_after_playback = exit_after_playback
         self._send_ci_terminate_on_shutdown = False
         self._play_list = play_list
+        self._play_step_limit = len(play_list) if play_list else None
+        self._single_playback_test_case_selected = False
         self._mon_port = mon_port
         self._write_flush_records = write_flush_records
         # SDS Control Flags
@@ -680,7 +694,7 @@ class sdsio_manager:
             if monitor_factory is None:
                 monitor_factory = sdsMonitorInterface
             if monitor_factory:
-                self._monitor = monitor_factory(self._mon_port, self._flags)
+                self._monitor = monitor_factory(self._mon_port, self._flags, self.select_playback_test_case)
         self._ctrl_input = None
         if control_input_factory is not False and sys.stdin.isatty():
             if control_input_factory is None:
@@ -699,6 +713,8 @@ class sdsio_manager:
         except RuntimeError:
             self._loop = None
             self._main_task = None
+        if playback_test_case is not None:
+            self.select_playback_test_case(playback_test_case)
 
     def shutdown(self):
         self.shutdown_requested.set()
@@ -883,9 +899,41 @@ class sdsio_manager:
         finally:
             buf.set_eof()
 
+    def _get_play_step_limit(self):
+        if not self._play_list:
+            return None
+        if self._play_step_limit is None:
+            return len(self._play_list)
+        return min(self._play_step_limit, len(self._play_list))
+
+    def _is_single_playback_test_case_selected(self) -> bool:
+        return self._single_playback_test_case_selected
+
+    def select_playback_test_case(self, test_case: int) -> bool:
+        if test_case == 0:
+            return True
+        if self.opened_streams:
+            logger.error("Playback test case selection failed: streams are currently open.")
+            return False
+        if not self._play_list:
+            logger.error("Playback test case selection failed: no play steps are configured.")
+            return False
+
+        if test_case < 1 or test_case > len(self._play_list):
+            logger.error(f"Playback test case selection failed: {test_case} is outside 1-{len(self._play_list)}.")
+            return False
+        self._play_step_index = test_case - 1
+        self._play_step_limit = test_case
+        self._single_playback_test_case_selected = True
+        self._label_list.clear()
+        self._timestamp_boundaries.clear()
+        logger.info(f"Selected playback test case {test_case}/{len(self._play_list)}.")
+        return True
+
     def _create_play_label_list(self, name) -> list[str]:
         _labels = []
-        if self._play_list and self._play_step_index < len(self._play_list):
+        _play_step_limit = self._get_play_step_limit()
+        if self._play_list and self._play_step_index < _play_step_limit:
             _step = self._play_list[self._play_step_index]
             _labels = list(_step.get('labels', []))
         else:
@@ -899,7 +947,7 @@ class sdsio_manager:
         if not self._flags.auto_playback or self.opened_streams:
             return False
         if self._play_list:
-            return self._play_step_index < len(self._play_list)
+            return self._play_step_index < self._get_play_step_limit()
         if self._last_playback_stream_name:
             return bool(self._create_play_label_list(self._last_playback_stream_name))
         return False
@@ -959,11 +1007,14 @@ class sdsio_manager:
                 # Get flags, Set working dir
                 _index_based_playback = False
                 if self._play_list:
-                    if self._play_step_index < len(self._play_list):
+                    if self._play_step_index < self._get_play_step_limit():
                         _step = self._play_list[self._play_step_index]
                         _step_desc = _step.get('step', '')
                         _desc_suffix = f": {_step_desc}" if _step_desc else ""
-                        logger.info(f"Playback step {self._play_step_index + 1}/{len(self._play_list)}{_desc_suffix}.")
+                        if self._is_single_playback_test_case_selected():
+                            logger.info(f"Playback step {self._play_step_index + 1}{_desc_suffix}.")
+                        else:
+                            logger.info(f"Playback step {self._play_step_index + 1}/{len(self._play_list)}{_desc_suffix}.")
                         _set_flags = _step.get('setflags', 0)
                         _clear_flags = _step.get('clearflags', 0)
                         _recdir = _step.get('recdir', None)
@@ -2192,6 +2243,20 @@ def non_negative_int(value):
         raise argparse.ArgumentTypeError("Value must be 0 or greater!")
     return _value
 
+def _parse_playback_selection(value):
+    if value is None:
+        return False, None
+    _value = str(value).strip().lower()
+    if _value in ("", "*", "all"):
+        return True, None
+    try:
+        _test_case = int(_value, 0)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"Invalid playback test case: {value}!")
+    if _test_case < 1:
+        raise argparse.ArgumentTypeError("Playback test case must be 1 or greater!")
+    return True, _test_case
+
 def ip_validator(ip_str):
     try:
         ipaddress.ip_address(ip_str)
@@ -2275,6 +2340,7 @@ def parse_arguments():
         "examples:\n"
         "  %(prog)s -c sdsio.yml                     # Recommended: all config in YAML\n"
         "  %(prog)s -c sdsio.yml --playback          # Playback mode\n"
+        "  %(prog)s -c sdsio.yml --playback 2        # Playback test case 2\n"
         "  %(prog)s -c sdsio.yml --mon-port 6060     # With VS Code SDS extension monitor\n"
         "  %(prog)s usb --workdir ./data             # USB interface, explicit work dir\n"
         "  %(prog)s socket --port 5050               # Socket interface\n"
@@ -2323,8 +2389,8 @@ def parse_arguments():
     def _add_general_opts(p):
         """Append a general-opts group to subparser p (called after server-specific groups)."""
         _g = p.add_argument_group("general-opts")
-        _g.add_argument("--playback", "-p", dest="auto_playback", action="store_true",
-                       help="Start SDSIO-Server in playback mode (typically used in CI tests)",
+        _g.add_argument("--playback", "-p", dest="auto_playback", nargs="?", const="all", metavar="<test_case|*>",
+                       help="Start SDSIO-Server in playback mode; optionally select a playback test case or '*' for all",
                        default=argparse.SUPPRESS)
         _g.add_argument("--exit-after-playback", "-x", dest="exit_after_playback", action="store_true",
                        help="Terminate when playback is completed",
@@ -2431,8 +2497,8 @@ def parse_arguments():
     _add_general_opts(_parser_usb)
 
     _general = _parser.add_argument_group("general-opts")
-    _general.add_argument("--playback", "-p", dest="auto_playback", action="store_true",
-                         help="Start SDSIO-Server in playback mode (typically used in CI tests)", default=None)
+    _general.add_argument("--playback", "-p", dest="auto_playback", nargs="?", const="all", metavar="<test_case|*>",
+                         help="Start SDSIO-Server in playback mode; optionally select a playback test case or '*' for all", default=None)
     _general.add_argument("--exit-after-playback", "-x", dest="exit_after_playback", action="store_true",
                          help="Terminate when playback is completed", default=None)
     _general.add_argument("--no-progress-info", "-n", dest="no_progress_info", action="store_true",
@@ -2602,11 +2668,6 @@ async def main():
     if _ctrl_yml_path:
         logger.info(f"SDSIO configuration YAML: {_ctrl_yml_path}")
 
-    # Auto playback
-    _auto_playback = _args.auto_playback if _args.auto_playback else False
-    _exit_after_playback = _args.exit_after_playback if _args.exit_after_playback else False
-    _no_progress_info = _args.no_progress_info if _args.no_progress_info else False
-
     # Playback list
     _play_list: Optional[list] = _ctrl_data.get('play', None) if _ctrl_data else None
     if _play_list:
@@ -2615,8 +2676,24 @@ async def main():
             if _recdir and not path.isabs(_recdir):
                 _step['recdir'] = path.normpath(path.join(_work_dir, _recdir))
 
+    # Auto playback
+    try:
+        _auto_playback, _playback_test_case = _parse_playback_selection(_args.auto_playback)
+    except argparse.ArgumentTypeError as _e:
+        logger.error(str(_e))
+        sys.exit(1)
+    if _playback_test_case is not None:
+        if not _play_list:
+            logger.error("Playback test case selection requires play steps in SDSIO configuration YAML.")
+            sys.exit(1)
+        if _playback_test_case > len(_play_list):
+            logger.error(f"Playback test case {_playback_test_case} is outside 1-{len(_play_list)}.")
+            sys.exit(1)
+    _exit_after_playback = _args.exit_after_playback if _args.exit_after_playback else False
+    _no_progress_info = _args.no_progress_info if _args.no_progress_info else False
+
     _manager = sdsio_manager(work_dir=_work_dir, auto_playback=_auto_playback, exit_after_playback=_exit_after_playback,
-                             no_progress_info=_no_progress_info, play_list=_play_list,
+                             no_progress_info=_no_progress_info, play_list=_play_list, playback_test_case=_playback_test_case,
                              mon_port=_args.monitor_port, write_flush_records=_write_flush_records)
 
     try:
