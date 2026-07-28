@@ -153,6 +153,7 @@ The `streams:` node provides additional information about the SDS data streams t
 
 The `play:` node specifies one or more playback steps.
 Each playback step defines the list of labels to play back for each opened SDS stream.
+Playback steps are selected by their sequential number in the `play:` list, starting with `1`.
 
 For one playback step, all files of the `labels:` list are concatenated and appear as one data stream for the firmware.
 A pause (where the data stream needs to be closed and opened again by the firmware) is created with another `- step:` section.
@@ -242,7 +243,7 @@ configuration:
   --control, -c <*.sdsio.yml>      Configure interface, SDS file directories, and playback steps
 
 general-opts:
-  --playback, -p                   Start SDSIO-Server in playback mode (typically used in CI tests)
+  --playback, -p <test_case|*>     Start SDSIO-Server in playback mode; optionally select a playback test case or '*' for all
   --exit-after-playback, -x        Terminate when playback is completed
   --no-progress-info, -n           Disable dynamic progress indicator
   --workdir <path>                 Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
@@ -277,11 +278,25 @@ Start SDSIO-Server using a control file:
 python sdsio-server.py -c myproject.sdsio.yml
 ```
 
-Start SDSIO-Server automatically starting the playback:
+Start SDSIO-Server automatically starting playback of all configured `play:` steps:
 
 ```bash
 python sdsio-server.py -c sdsio.yml --playback
 ```
+
+Start SDSIO-Server automatically starting playback from all configured `play:` steps explicitly:
+
+```bash
+python sdsio-server.py -c sdsio.yml --playback all
+```
+
+Start SDSIO-Server automatically starting only the second configured `play:` step:
+
+```bash
+python sdsio-server.py -c sdsio.yml --playback 2
+```
+
+The numeric `--playback` value is the sequential number of a `play:` step in `sdsio.yml`, starting with `1`.
 
 Start SDSIO-Server and override the `workdir:` node.
 

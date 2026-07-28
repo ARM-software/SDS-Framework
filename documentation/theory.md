@@ -528,7 +528,7 @@ ID  | Name               | Description
 :--:|:-------------------|:------------------------
 1   | SDSIO_MON_OPEN     | Information about the SDS file open operation (message)
 2   | SDSIO_MON_CLOSE    | Information about the SDS file close operation (message)
-6   | SDSIO_MON_FLAGS    | Monitor program request to the SDSIO-Server to update SDS control flags in the firmware
+6   | SDSIO_MON_FLAGS    | Monitor program request to the SDSIO-Server to update SDS control flags in the firmware and optionally select a playback test case
 7   | SDSIO_MON_INFO     | Information update received from the firmware and forwarded to the Monitor program (message)
 8   | SDSIO_MON_SHUTDOWN | Monitor program request to the SDSIO-Server to complete current tasks and shut down gracefully
 
@@ -562,13 +562,21 @@ The Message with ID = **2** (SDSIO_MON_CLOSE) is sent whenever an SDS data file 
 
 The Command with ID = **6** (SDSIO_MON_FLAGS) is used by the Monitor program to request an update of the SDS control flags in the firmware.
 The `Set Mask` specifies the bits to set in the `sdsFlags` and the `Clear Mask` specifies the bits to clear in the `sdsFlags`.
+The `TestCase` value optionally selects a `play:` step from the `*.sdsio.yml` file before the flag update is applied.
 This command does not generate a response from the SDSIO-Server.
 
 ```txt
-| WORD | WORD     | WORD       | WORD |
->  6   | Set Mask | Clear Mask |  0   |
-|******|**********|************|******|
+| WORD | WORD     | WORD       | WORD     |
+>  6   | Set Mask | Clear Mask | TestCase |
+|******|**********|************|**********|
 ```
+
+`TestCase` values are:
+
+- `0`: do not change the selected playback step.
+- `1..N`: select the corresponding `play:` step by sequential number, starting with `1`.
+
+Selecting a `TestCase` does not start playback by itself. To select and start a playback test case, set the `SDS_FLAG_START` and `SDS_FLAG_PLAYBACK` bits in `Set Mask` together with the desired `TestCase` value.
 
 **SDSIO_MON_INFO**
 
