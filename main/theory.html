@@ -818,7 +818,7 @@ SDSIO-Server can also send asynchronous messages at any time when not processing
 <tr>
 <td style="text-align: center;">6</td>
 <td style="text-align: left;">SDSIO_MON_FLAGS</td>
-<td style="text-align: left;">Monitor program request to the SDSIO-Server to update SDS control flags in the firmware</td>
+<td style="text-align: left;">Monitor program request to the SDSIO-Server to update SDS control flags in the firmware and optionally select a playback test case</td>
 </tr>
 <tr>
 <td style="text-align: center;">7</td>
@@ -852,11 +852,17 @@ as the Command and may contain <strong>additional data</strong>.</p>
 <p><strong>SDSIO_MON_FLAGS</strong></p>
 <p>The Command with ID = <strong>6</strong> (SDSIO_MON_FLAGS) is used by the Monitor program to request an update of the SDS control flags in the firmware.
 The <code>Set Mask</code> specifies the bits to set in the <code>sdsFlags</code> and the <code>Clear Mask</code> specifies the bits to clear in the <code>sdsFlags</code>.
+The <code>TestCase</code> value selects a <code>play:</code> step from the <code>*.sdsio.yml</code> file before the flag update is applied.
 This command does not generate a response from the SDSIO-Server.</p>
-<pre><code class="language-txt">| WORD | WORD     | WORD       | WORD |
-&gt;  6   | Set Mask | Clear Mask |  0   |
-|******|**********|************|******|
+<pre><code class="language-txt">| WORD | WORD     | WORD       | WORD     |
+&gt;  6   | Set Mask | Clear Mask | TestCase |
+|******|**********|************|**********|
 </code></pre>
+<p>Valid <code>TestCase</code> values are:</p>
+<ul>
+<li><code>0..N-1</code>: select the corresponding <code>play:</code> step by zero-based index, starting with <code>0</code>.</li>
+</ul>
+<p>Selecting a <code>TestCase</code> does not start playback by itself. To select and start a playback test case, set the <code>SDS_FLAG_START</code> and <code>SDS_FLAG_PLAYBACK</code> bits in <code>Set Mask</code> together with the desired <code>TestCase</code> value.</p>
 <p><strong>SDSIO_MON_INFO</strong></p>
 <p>The Message with ID = <strong>7</strong> (SDSIO_MON_INFO) contains status information received by the SDSIO-Server from the firmware,
 including sdsFlags, sdsIdleRate, and error information.

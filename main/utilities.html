@@ -461,7 +461,8 @@ Install <strong>Python</strong> and the packages listed in the file <code>utilit
 </table>
 <h3 id="play"><code>play:</code></h3>
 <p>The <code>play:</code> node specifies one or more playback steps.
-Each playback step defines the list of labels to play back for each opened SDS stream.</p>
+Each playback step defines the list of labels to play back for each opened SDS stream.
+Playback steps are selected by their zero-based index in the <code>play:</code> list, starting with <code>0</code>.</p>
 <p>For one playback step, all files of the <code>labels:</code> list are concatenated and appear as one data stream for the firmware.
 A pause (where the data stream needs to be closed and opened again by the firmware) is created with another <code>- step:</code> section.</p>
 <table>
@@ -578,7 +579,7 @@ configuration:
   --control, -c &lt;*.sdsio.yml&gt;      Configure interface, SDS file directories, and playback steps
 
 general-opts:
-  --playback, -p                   Start SDSIO-Server in playback mode (typically used in CI tests)
+  --playback, -p &lt;step_index|*&gt;    Start SDSIO-Server in playback mode; optionally select a zero-based playback step index or '*' for all
   --exit-after-playback, -x        Terminate when playback is completed
   --no-progress-info, -n           Disable dynamic progress indicator
   --workdir &lt;path&gt;                 Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)
@@ -633,9 +634,13 @@ general-opts:
 <p>Start SDSIO-Server using a control file:</p>
 <pre><code class="language-bash">python sdsio-server.py -c myproject.sdsio.yml
 </code></pre>
-<p>Start SDSIO-Server automatically starting the playback:</p>
-<pre><code class="language-bash">python sdsio-server.py -c sdsio.yml --playback
+<p>Start SDSIO-Server automatically starting playback of all configured <code>play:</code> steps:</p>
+<pre><code class="language-bash">python sdsio-server.py -c sdsio.yml --playback &quot;*&quot;
 </code></pre>
+<p>Start SDSIO-Server automatically starting only the first configured <code>play:</code> step:</p>
+<pre><code class="language-bash">python sdsio-server.py -c sdsio.yml --playback 0
+</code></pre>
+<p>The numeric <code>--playback</code> value is the zero-based index of a <code>play:</code> step in <code>sdsio.yml</code>, starting with <code>0</code>.</p>
 <p>Start SDSIO-Server and override the <code>workdir:</code> node.</p>
 <pre><code class="language-bash">python sdsio-server.py -c myproject.sdsio.yml --workdir ./mytest2
 </code></pre>
