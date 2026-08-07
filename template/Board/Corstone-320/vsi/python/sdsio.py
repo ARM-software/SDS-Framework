@@ -246,8 +246,8 @@ class sdsio_manager:
         self._read_buffers = {}      # sid -> ByteStreamBuffer
         self._read_threads = {}      # sid -> Thread
         self._read_stop = {}         # sid -> Event
-        # lock to protect stream_id increment and open checks
-        self._manager_lock = threading.Lock()
+        # lock to protect playback selection and stream state transitions
+        self._manager_lock = threading.RLock()
         # timestamp of last stream read or write command
         self.time_last_rw = time.time()
         # status bar
@@ -293,7 +293,8 @@ class sdsio_manager:
             self._loop = None
             self._main_task = None
         if playback_test_case is not None:
-            self.select_playback_test_case(playback_test_case)
+            if playback_test_case < 0 or not self.select_playback_test_case(playback_test_case):
+                raise ValueError(f"Invalid playback test case: {playback_test_case}")
 
     def shutdown(self):
         self.shutdown_requested.set()
@@ -489,25 +490,24 @@ class sdsio_manager:
         return self._single_playback_test_case_selected
 
     def select_playback_test_case(self, test_case: int) -> bool:
-        if test_case == 0:
-            return True
-        if self.opened_streams:
-            logger.error("Playback test case selection failed: streams are currently open.")
-            return False
-        if not self._play_list:
-            logger.error("Playback test case selection failed: no play steps are configured.")
-            return False
+        with self._manager_lock:
+            if self.opened_streams:
+                logger.error("Playback test case selection failed: streams are currently open.")
+                return False
+            if not self._play_list:
+                logger.error("Playback test case selection failed: no play steps are configured.")
+                return False
 
-        if test_case < 1 or test_case > len(self._play_list):
-            logger.error(f"Playback test case selection failed: {test_case} is outside 1-{len(self._play_list)}.")
-            return False
-        self._play_step_index = test_case - 1
-        self._play_step_limit = test_case
-        self._single_playback_test_case_selected = True
-        self._label_list.clear()
-        self._timestamp_boundaries.clear()
-        logger.info(f"Selected playback test case {test_case}/{len(self._play_list)}.")
-        return True
+            if test_case < 0 or test_case >= len(self._play_list):
+                logger.error(f"Playback test case selection failed: {test_case} is outside 0-{len(self._play_list) - 1}.")
+                return False
+            self._play_step_index = test_case
+            self._play_step_limit = test_case + 1
+            self._single_playback_test_case_selected = True
+            self._label_list.clear()
+            self._timestamp_boundaries.clear()
+            logger.info(f"Selected playback step index {test_case} (step {test_case + 1} of {len(self._play_list)}).")
+            return True
 
     def _create_play_label_list(self, name) -> list[str]:
         _labels = []
@@ -532,18 +532,19 @@ class sdsio_manager:
         return False
 
     def _request_auto_playback_if_needed(self, target_flags: Optional[int] = None):
-        _target_flags = self._flags.target_flags if target_flags is None else target_flags
-        if _target_flags & SDS_FLAG_MASK_START:
-            return
-        if self.opened_streams:
-            return
-        if self._has_next_auto_playback_step():
-            self._flags.request_auto_playback_start()
-        elif self._flags.auto_playback and self._last_playback_stream_name:
-            if self._flags.request_auto_playback_terminate():
-                _complete_msg = "Playback complete - no more steps remaining." if self._play_list else "Playback complete."
-                logger.info(_complete_msg)
-                self._request_exit_after_playback("playback complete")
+        with self._manager_lock:
+            _target_flags = self._flags.target_flags if target_flags is None else target_flags
+            if _target_flags & SDS_FLAG_MASK_START:
+                return
+            if self.opened_streams:
+                return
+            if self._has_next_auto_playback_step():
+                self._flags.request_auto_playback_start()
+            elif self._flags.auto_playback and self._last_playback_stream_name:
+                if self._flags.request_auto_playback_terminate():
+                    _complete_msg = "Playback complete - no more steps remaining." if self._play_list else "Playback complete."
+                    logger.info(_complete_msg)
+                    self._request_exit_after_playback("playback complete")
 
     def _request_exit_after_playback(self, _reason: str):
         if not self._exit_after_playback:
@@ -554,6 +555,10 @@ class sdsio_manager:
         if self._loop and self._main_task:
             self._loop.call_soon_threadsafe(self._main_task.cancel)
     def _open(self, mode, name):
+        with self._manager_lock:
+            return self._open_locked(mode, name)
+
+    def _open_locked(self, mode, name):
         _cmd = CMD_OPEN
         # prepare error response
         _resp_err = bytearray()
@@ -590,10 +595,7 @@ class sdsio_manager:
                         _step = self._play_list[self._play_step_index]
                         _step_desc = _step.get('step', '')
                         _desc_suffix = f": {_step_desc}" if _step_desc else ""
-                        if self._is_single_playback_test_case_selected():
-                            logger.info(f"Playback step {self._play_step_index + 1}{_desc_suffix}.")
-                        else:
-                            logger.info(f"Playback step {self._play_step_index + 1}/{len(self._play_list)}{_desc_suffix}.")
+                        logger.info(f"Playback step index {self._play_step_index} (step {self._play_step_index + 1} of {len(self._play_list)}){_desc_suffix}.")
                         _set_flags = _step.get('setflags', 0)
                         _clear_flags = _step.get('clearflags', 0)
                         _recdir = _step.get('recdir', None)
@@ -731,6 +733,10 @@ class sdsio_manager:
         return _resp
 
     def _close(self, sid):
+        with self._manager_lock:
+            return self._close_locked(sid)
+
+    def _close_locked(self, sid):
         _resp = bytearray()
         _stream = self.opened_streams[sid]
         _name = _stream.name
