@@ -1,0 +1,4 @@
+ifaddr
+pyyaml
+pyserial
+libusb1
