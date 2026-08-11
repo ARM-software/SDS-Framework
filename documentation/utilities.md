@@ -5,15 +5,13 @@
 <!-- markdownlint-disable MD024 -->
 
 The SDS-Framework pack includes in the folder `utilities` several utilities that are implemented in Python.
-Install **Python** and the packages listed in the appropriate requirements file to run these utilities:
+Install **Python** and the packages listed in the file `utilities/requirements.txt` to run these utilities:
 
 - [**SDSIO Control File `*.sdsio.yml`:**](#sdsio-control-file-sdsioyml) configures the SDSIO-Server or the FVP VSI3 simulation interface.
 - [**SDSIO-Server:**](#sdsio-server) enables recording and playback of SDS data files via USB, socket (TCP/IP) or serial (UART) connection.
 - [**SDS-View:**](#sds-view) graphical data viewer for SDS data files.
 - [**SDS-Convert:**](#sds-convert) converts SDS data files into CSV, Qeexo V2 CSV, or WAV format.
 - [**SDS-Check:**](#sds-check) checks SDS data files for correctness and consistency.
-
-Use `utilities/requirements-sdsio-server.txt` for SDSIO-Server only. Use `utilities/requirements.txt` when running SDS-View or SDS-Convert.
 
 ## Setup
 
@@ -29,9 +27,6 @@ Perform the following steps to setup the Python environment for using the SDS ut
 
 ```bash
 >cd %CMSIS_PACK_ROOT%/ARM/SDS/3.1.0/utilities
-# SDSIO-Server only
->pip install -r requirements-sdsio-server.txt
-# All utilities
 >pip install -r requirements.txt
 ```
 

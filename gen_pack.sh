@@ -51,6 +51,7 @@ LICENSE
 PACK_DELETE_FILES="
 gen_pack.sh
 .gitignore
+DEVELOPMENT.md
 "
 
 # Specify patches to be applied

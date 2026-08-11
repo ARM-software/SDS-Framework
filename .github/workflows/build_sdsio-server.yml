@@ -58,7 +58,7 @@ jobs:
         run: pip install pyinstaller
 
       - name: Install dependencies
-        run: pip install -r ./utilities/requirements-sdsio-server.txt
+        run: pip install -r ./.github/requirements-sdsio-server.txt
 
       - name: Extract SDSIO-Server version
         shell: bash
