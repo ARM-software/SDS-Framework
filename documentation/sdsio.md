@@ -65,7 +65,7 @@ Press 'Ctrl+C' or 'X' to exit.
 Working directory: ...\SDS_data
 SDSIO configuration YAML: ...\myproject.sdsio.yml
 SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.
-SDSIO-Server listening on 172.20.10.2:5050
+SDSIO-Server listening on 192.0.2.10:5050...
 ```
 
 !!! Note
@@ -235,7 +235,7 @@ SDSIO_FVP environment variable not set.
 Working directory: ...\datatest\SDS Recordings.
 SDSIO configuration YAML: ...\SDS\datatest.sdsio.yml.
 sdsFlags = 0xB0000000.
-Playback step 0/0: Test 0.
+Playback step index 0: Test 0.
 Playback: Test_In (Test_In.0.sds).
 Record:   Test_Out (Test_Out.0.p.sds).
 Closed:   Test_In (Test_In.0.sds).

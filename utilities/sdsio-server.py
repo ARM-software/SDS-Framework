@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "3.0.1-dev8"
+SDSIO_SERVER_VERSION = "3.0.1-dev9"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -66,6 +66,7 @@ SDSIO_MON_CLOSE       = 2
 SDSIO_MON_FLAGS       = 6
 SDSIO_MON_INFO        = 7
 SDSIO_MON_SHUTDOWN    = 8
+SDSIO_MON_TESTCASE_ALL = 0xFFFFFFFF
 
 # SDS Flags bit positions
 SDS_FLAG_MASK_START        = (1 << 31)
@@ -345,21 +346,25 @@ class sdsMonitorInterface():
                 _set_flags  = int.from_bytes(self._recv_buf[4:8],  'little')
                 _clear_flags = int.from_bytes(self._recv_buf[8:12], 'little')
                 _test_case = int.from_bytes(self._recv_buf[12:16], 'little')
-                _test_case_msg = f", test_case={_test_case}"
+                _test_case_desc = "all" if _test_case == SDSIO_MON_TESTCASE_ALL else str(_test_case)
+                _test_case_msg = f", test_case={_test_case_desc}"
                 logger.info(f"Monitor command received: SDSIO_MON_FLAGS (set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}{_test_case_msg}).")
-                if _test_case < 0:
-                    logger.error(f"Monitor playback test case request failed: {_test_case} is invalid.")
-                    del self._recv_buf[:16]
-                    continue
                 if not self._playback_selector:
-                    logger.warning(f"Monitor playback test case request ignored: {_test_case}.")
+                    logger.warning(f"Monitor playback test case request ignored: {_test_case_desc}.")
                     del self._recv_buf[:16]
                     continue
-                if not self._playback_selector(_test_case):
+                _playback_test_case = None if _test_case == SDSIO_MON_TESTCASE_ALL else _test_case
+                if not self._playback_selector(_playback_test_case):
                     del self._recv_buf[:16]
                     continue
                 if self._flags:
-                    self._flags.apply(_set_flags, _clear_flags)
+                    _playback_start_mask = SDS_FLAG_MASK_START | SDS_FLAG_MASK_PLAYBACK_MODE
+                    _auto_playback = (
+                        _test_case == SDSIO_MON_TESTCASE_ALL
+                        and (_set_flags & _playback_start_mask) == _playback_start_mask
+                        and not (_clear_flags & _playback_start_mask)
+                    )
+                    self._flags.apply(_set_flags, _clear_flags, auto_playback=_auto_playback)
             elif _cmd == SDSIO_MON_SHUTDOWN:
                 logger.info("Monitor command received: SDSIO_MON_SHUTDOWN.")
                 del self._recv_buf[:16]
@@ -443,8 +448,12 @@ class sdsFlags:
             self._set = SDS_FLAG_MASK_PLAYBACK_MODE | SDS_FLAG_MASK_START
             self._auto_start_pending = True
 
-    def apply(self, set_mask: int, clear_mask: int):
+    def apply(self, set_mask: int, clear_mask: int, auto_playback: Optional[bool] = None):
         with self._lock:
+            if auto_playback is not None:
+                self._auto_playback = auto_playback
+                self._auto_start_pending = auto_playback and bool(set_mask & SDS_FLAG_MASK_START)
+                self._auto_terminate_pending = False
             self._set    = (self._set | set_mask) & ~clear_mask
             self._clear  = (self._clear | clear_mask) & ~set_mask
             if set_mask & SDS_FLAG_MASK_PLAYBACK_MODE:
@@ -913,7 +922,7 @@ class sdsio_manager:
     def _is_single_playback_test_case_selected(self) -> bool:
         return self._single_playback_test_case_selected
 
-    def select_playback_test_case(self, test_case: int) -> bool:
+    def select_playback_test_case(self, test_case: Optional[int]) -> bool:
         with self._manager_lock:
             if self.opened_streams:
                 logger.error("Playback test case selection failed: streams are currently open.")
@@ -922,15 +931,22 @@ class sdsio_manager:
                 logger.error("Playback test case selection failed: no play steps are configured.")
                 return False
 
-            if test_case < 0 or test_case >= len(self._play_list):
+            if test_case is not None and (test_case < 0 or test_case >= len(self._play_list)):
                 logger.error(f"Playback test case selection failed: {test_case} is outside 0-{len(self._play_list) - 1}.")
                 return False
-            self._play_step_index = test_case
-            self._play_step_limit = test_case + 1
-            self._single_playback_test_case_selected = True
+
+            if test_case is None:
+                self._play_step_index = 0
+                self._play_step_limit = len(self._play_list)
+                self._single_playback_test_case_selected = False
+                logger.debug(f"Selected all playback step indexes 0-{len(self._play_list) - 1}.")
+            else:
+                self._play_step_index = test_case
+                self._play_step_limit = test_case + 1
+                self._single_playback_test_case_selected = True
+                logger.debug(f"Selected playback step index {test_case}.")
             self._label_list.clear()
             self._timestamp_boundaries.clear()
-            logger.info(f"Selected playback step index {test_case} (step {test_case + 1} of {len(self._play_list)}).")
             return True
 
     def _create_play_label_list(self, name) -> list[str]:
@@ -1019,7 +1035,7 @@ class sdsio_manager:
                         _step = self._play_list[self._play_step_index]
                         _step_desc = _step.get('step', '')
                         _desc_suffix = f": {_step_desc}" if _step_desc else ""
-                        logger.info(f"Playback step index {self._play_step_index} (step {self._play_step_index + 1} of {len(self._play_list)}){_desc_suffix}.")
+                        logger.info(f"Playback step index {self._play_step_index}{_desc_suffix}.")
                         _set_flags = _step.get('setflags', 0)
                         _clear_flags = _step.get('clearflags', 0)
                         _recdir = _step.get('recdir', None)
