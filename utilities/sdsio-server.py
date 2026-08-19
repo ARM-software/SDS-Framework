@@ -939,12 +939,12 @@ class sdsio_manager:
                 self._play_step_index = 0
                 self._play_step_limit = len(self._play_list)
                 self._single_playback_test_case_selected = False
-                logger.debug(f"Selected all playback step indexes 0-{len(self._play_list) - 1}.")
+                logger.debug(f"Selected all playback steps 0-{len(self._play_list) - 1}.")
             else:
                 self._play_step_index = test_case
                 self._play_step_limit = test_case + 1
                 self._single_playback_test_case_selected = True
-                logger.debug(f"Selected playback step index {test_case}.")
+                logger.debug(f"Selected playback step {test_case}.")
             self._label_list.clear()
             self._timestamp_boundaries.clear()
             return True
@@ -1035,7 +1035,7 @@ class sdsio_manager:
                         _step = self._play_list[self._play_step_index]
                         _step_desc = _step.get('step', '')
                         _desc_suffix = f": {_step_desc}" if _step_desc else ""
-                        logger.info(f"Playback step index {self._play_step_index}{_desc_suffix}.")
+                        logger.info(f"Playback step {self._play_step_index}{_desc_suffix}.")
                         _set_flags = _step.get('setflags', 0)
                         _clear_flags = _step.get('clearflags', 0)
                         _recdir = _step.get('recdir', None)
