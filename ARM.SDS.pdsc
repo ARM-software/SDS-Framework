@@ -21,6 +21,7 @@
       - Added an option to automatically terminate after playback completion
       - Added an option to suppress the progress indicator
       - Added CI termination signaling upon playback completion
+      - Added support for playback step selection
       SDSIO-VSI:
       - Improved the shutdown procedure
       Template:
