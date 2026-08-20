@@ -571,9 +571,9 @@ This command does not generate a response from the SDSIO-Server.
 |******|**********|************|***********|
 ```
 
-Valid `Play Step` values are:
+The `Play Step` field accepts a zero-based step number or the special all-steps value:
 
-- `0..N-1`: select the corresponding `play:` step by zero-based index, starting with `0`.
+- `0` to `N - 1`: select one of the `N` configured `play:` steps (`0` selects the first step).
 - `0xFFFFFFFF`: select all configured `play:` steps.
 
 Selecting a `Play Step` does not start playback by itself. To select and start a play step, set the `SDS_FLAG_START` and `SDS_FLAG_PLAYBACK` bits in `Set Mask` together with the desired `Play Step` value.

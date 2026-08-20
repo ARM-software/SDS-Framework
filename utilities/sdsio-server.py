@@ -664,7 +664,7 @@ class sdsio_manager:
         control_input_factory=None,
     ):
         self._stream_id = 0
-        self._play_step_index = 0
+        self._play_step = 0
         self._rec_index = None      # recording session index (None = not yet determined)
         self._work_dir = path.normpath(work_dir)
         self._rec_dir = self._work_dir
@@ -936,12 +936,12 @@ class sdsio_manager:
                 return False
 
             if play_step is None:
-                self._play_step_index = 0
+                self._play_step = 0
                 self._play_step_limit = len(self._play_list)
                 self._single_play_step_selected = False
                 logger.debug(f"Selected all playback steps 0-{len(self._play_list) - 1}.")
             else:
-                self._play_step_index = play_step
+                self._play_step = play_step
                 self._play_step_limit = play_step + 1
                 self._single_play_step_selected = True
                 logger.debug(f"Selected playback step {play_step}.")
@@ -952,21 +952,21 @@ class sdsio_manager:
     def _create_play_label_list(self, name) -> list[str]:
         _labels = []
         _play_step_limit = self._get_play_step_limit()
-        if self._play_list and self._play_step_index < _play_step_limit:
-            _step = self._play_list[self._play_step_index]
+        if self._play_list and self._play_step < _play_step_limit:
+            _step = self._play_list[self._play_step]
             _labels = list(_step.get('labels', []))
         else:
-            # No playlist: one file per open, indexed by play_step_index
-            _candidate = path.join(self._work_dir, f"{name}.{self._play_step_index}.sds")
+            # No playlist: one file per open, selected by play_step
+            _candidate = path.join(self._work_dir, f"{name}.{self._play_step}.sds")
             if path.exists(_candidate):
-                _labels.append(str(self._play_step_index))
+                _labels.append(str(self._play_step))
         return _labels
 
     def _has_next_auto_playback_step(self) -> bool:
         if not self._flags.auto_playback or self.opened_streams:
             return False
         if self._play_list:
-            return self._play_step_index < self._get_play_step_limit()
+            return self._play_step < self._get_play_step_limit()
         if self._last_playback_stream_name:
             return bool(self._create_play_label_list(self._last_playback_stream_name))
         return False
@@ -1031,11 +1031,11 @@ class sdsio_manager:
                 # Get flags, Set working dir
                 _index_based_playback = False
                 if self._play_list:
-                    if self._play_step_index < self._get_play_step_limit():
-                        _step = self._play_list[self._play_step_index]
+                    if self._play_step < self._get_play_step_limit():
+                        _step = self._play_list[self._play_step]
                         _step_desc = _step.get('step', '')
                         _desc_suffix = f": {_step_desc}" if _step_desc else ""
-                        logger.info(f"Playback step {self._play_step_index}{_desc_suffix}.")
+                        logger.info(f"Playback step {self._play_step}{_desc_suffix}.")
                         _set_flags = _step.get('setflags', 0)
                         _clear_flags = _step.get('clearflags', 0)
                         _recdir = _step.get('recdir', None)
@@ -1060,7 +1060,7 @@ class sdsio_manager:
                 # Create label list
                 _play_label_list = self._create_play_label_list(name)
                 if not _play_label_list:
-                    if not self._play_list and self._play_step_index > 0:
+                    if not self._play_list and self._play_step > 0:
                         logger.error(f"Open Failed. No more files available for playback stream '{name}'.")
                     else:
                         logger.error(f"Open Failed. No files found for playback stream '{name}'.")
@@ -1068,7 +1068,7 @@ class sdsio_manager:
                         self._request_exit_after_playback("playback data unavailable")
                     return _resp_err
                 self._label_list = _play_label_list
-                if _index_based_playback and self._play_step_index == 0:
+                if _index_based_playback and self._play_step == 0:
                     logger.info("No play steps, index based playback started.")
 
         else:
@@ -1219,7 +1219,7 @@ class sdsio_manager:
 
         if not self.opened_streams:
             if self._playback_mode:
-                self._play_step_index += 1
+                self._play_step += 1
             self._label_list.clear()
             self._timestamp_boundaries.clear()
             self._request_auto_playback_if_needed()
@@ -2414,8 +2414,8 @@ def parse_arguments():
     def _add_general_opts(p):
         """Append a general-opts group to subparser p (called after server-specific groups)."""
         _g = p.add_argument_group("general-opts")
-        _g.add_argument("--playback", "-p", dest="auto_playback", nargs="?", const="all", metavar="<step_index|*>",
-                       help="Start SDSIO-Server in playback mode; optionally select a zero-based playback step index or '*' for all",
+        _g.add_argument("--playback", "-p", dest="auto_playback", nargs="?", const="all", metavar="<step|*>",
+                       help="Start SDSIO-Server in playback mode; optionally select a zero-based play step or '*' for all",
                        default=argparse.SUPPRESS)
         _g.add_argument("--exit-after-playback", "-x", dest="exit_after_playback", action="store_true",
                        help="Terminate when playback is completed",
@@ -2522,8 +2522,8 @@ def parse_arguments():
     _add_general_opts(_parser_usb)
 
     _general = _parser.add_argument_group("general-opts")
-    _general.add_argument("--playback", "-p", dest="auto_playback", nargs="?", const="all", metavar="<step_index|*>",
-                         help="Start SDSIO-Server in playback mode; optionally select a zero-based playback step index or '*' for all", default=None)
+    _general.add_argument("--playback", "-p", dest="auto_playback", nargs="?", const="all", metavar="<step|*>",
+                         help="Start SDSIO-Server in playback mode; optionally select a zero-based play step or '*' for all steps", default=None)
     _general.add_argument("--exit-after-playback", "-x", dest="exit_after_playback", action="store_true",
                          help="Terminate when playback is completed", default=None)
     _general.add_argument("--no-progress-info", "-n", dest="no_progress_info", action="store_true",
