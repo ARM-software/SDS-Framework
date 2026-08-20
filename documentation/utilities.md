@@ -243,7 +243,7 @@ configuration:
   --control, -c <*.sdsio.yml>      Configure interface, SDS file directories, and playback steps
 
 general-opts:
-  --playback, -p <step|*>          Start SDSIO-Server in playback mode; optionally select a zero-based play step or '*' for all steps
+  --playback, -p <step|"*">        Start SDSIO-Server in playback mode; optionally select a zero-based play step or "*" for all steps
   --exit-after-playback, -x        Terminate when playback is completed
   --no-progress-info, -n           Disable dynamic progress indicator
   --workdir <path>                 Directory for SDS files (overrides *.sdsio.yml setting; default: current directory)

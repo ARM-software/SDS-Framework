@@ -2364,7 +2364,7 @@ def parse_arguments():
         "\n"
         "examples:\n"
         "  %(prog)s -c sdsio.yml                     # Recommended: all config in YAML\n"
-        "  %(prog)s -c sdsio.yml --playback \"*\"      # Playback mode\n"
+        "  %(prog)s -c sdsio.yml --playback \"*\"      # Play all steps\n"
         "  %(prog)s -c sdsio.yml --playback 0        # Play step 0\n"
         "  %(prog)s -c sdsio.yml --mon-port 6060     # With VS Code SDS extension monitor\n"
         "  %(prog)s usb --workdir ./data             # USB interface, explicit work dir\n"
@@ -2414,8 +2414,8 @@ def parse_arguments():
     def _add_general_opts(p):
         """Append a general-opts group to subparser p (called after server-specific groups)."""
         _g = p.add_argument_group("general-opts")
-        _g.add_argument("--playback", "-p", dest="auto_playback", nargs="?", const="all", metavar="<step|*>",
-                       help="Start SDSIO-Server in playback mode; optionally select a zero-based play step or '*' for all",
+        _g.add_argument("--playback", "-p", dest="auto_playback", nargs="?", const="all", metavar="<step|\"*\">",
+                       help="Start SDSIO-Server in playback mode; optionally select a zero-based play step or \"*\" for all steps",
                        default=argparse.SUPPRESS)
         _g.add_argument("--exit-after-playback", "-x", dest="exit_after_playback", action="store_true",
                        help="Terminate when playback is completed",
@@ -2522,8 +2522,8 @@ def parse_arguments():
     _add_general_opts(_parser_usb)
 
     _general = _parser.add_argument_group("general-opts")
-    _general.add_argument("--playback", "-p", dest="auto_playback", nargs="?", const="all", metavar="<step|*>",
-                         help="Start SDSIO-Server in playback mode; optionally select a zero-based play step or '*' for all steps", default=None)
+    _general.add_argument("--playback", "-p", dest="auto_playback", nargs="?", const="all", metavar="<step|\"*\">",
+                         help="Start SDSIO-Server in playback mode; optionally select a zero-based play step or \"*\" for all steps", default=None)
     _general.add_argument("--exit-after-playback", "-x", dest="exit_after_playback", action="store_true",
                          help="Terminate when playback is completed", default=None)
     _general.add_argument("--no-progress-info", "-n", dest="no_progress_info", action="store_true",
