@@ -818,7 +818,7 @@ SDSIO-Server can also send asynchronous messages at any time when not processing
 <tr>
 <td style="text-align: center;">6</td>
 <td style="text-align: left;">SDSIO_MON_FLAGS</td>
-<td style="text-align: left;">Monitor program request to the SDSIO-Server to update SDS control flags in the firmware and optionally select a playback test case</td>
+<td style="text-align: left;">Monitor program request to the SDSIO-Server to update SDS control flags in the firmware and optionally select a play step</td>
 </tr>
 <tr>
 <td style="text-align: center;">7</td>
@@ -852,17 +852,19 @@ as the Command and may contain <strong>additional data</strong>.</p>
 <p><strong>SDSIO_MON_FLAGS</strong></p>
 <p>The Command with ID = <strong>6</strong> (SDSIO_MON_FLAGS) is used by the Monitor program to request an update of the SDS control flags in the firmware.
 The <code>Set Mask</code> specifies the bits to set in the <code>sdsFlags</code> and the <code>Clear Mask</code> specifies the bits to clear in the <code>sdsFlags</code>.
-The <code>TestCase</code> value selects a <code>play:</code> step from the <code>*.sdsio.yml</code> file before the flag update is applied.
+The <code>Play Step</code> value selects a <code>play:</code> step from the <code>*.sdsio.yml</code> file before the flag update is applied.
 This command does not generate a response from the SDSIO-Server.</p>
-<pre><code class="language-txt">| WORD | WORD     | WORD       | WORD     |
-&gt;  6   | Set Mask | Clear Mask | TestCase |
-|******|**********|************|**********|
+<pre><code class="language-txt">| WORD | WORD     | WORD       | WORD      |
+&gt;  6   | Set Mask | Clear Mask | Play Step |
+|******|**********|************|***********|
 </code></pre>
-<p>Valid <code>TestCase</code> values are:</p>
+<p>The <code>Play Step</code> field accepts a zero-based step number or the special all-steps value:</p>
 <ul>
-<li><code>0..N-1</code>: select the corresponding <code>play:</code> step by zero-based index, starting with <code>0</code>.</li>
+<li><code>0</code> to <code>N - 1</code>: select one of the <code>N</code> configured <code>play:</code> steps (<code>0</code> selects the first step).</li>
+<li><code>0xFFFFFFFF</code>: select all configured <code>play:</code> steps.</li>
 </ul>
-<p>Selecting a <code>TestCase</code> does not start playback by itself. To select and start a playback test case, set the <code>SDS_FLAG_START</code> and <code>SDS_FLAG_PLAYBACK</code> bits in <code>Set Mask</code> together with the desired <code>TestCase</code> value.</p>
+<p>Selecting a <code>Play Step</code> does not start playback by itself. To select and start a play step, set the <code>SDS_FLAG_START</code> and <code>SDS_FLAG_PLAYBACK</code> bits in <code>Set Mask</code> together with the desired <code>Play Step</code> value.
+When <code>Play Step</code> is <code>0xFFFFFFFF</code>, the SDSIO-Server automatically starts each subsequent step after the previous step completes.</p>
 <p><strong>SDSIO_MON_INFO</strong></p>
 <p>The Message with ID = <strong>7</strong> (SDSIO_MON_INFO) contains status information received by the SDSIO-Server from the firmware,
 including sdsFlags, sdsIdleRate, and error information.
