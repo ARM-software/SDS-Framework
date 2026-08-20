@@ -528,7 +528,7 @@ ID  | Name               | Description
 :--:|:-------------------|:------------------------
 1   | SDSIO_MON_OPEN     | Information about the SDS file open operation (message)
 2   | SDSIO_MON_CLOSE    | Information about the SDS file close operation (message)
-6   | SDSIO_MON_FLAGS    | Monitor program request to the SDSIO-Server to update SDS control flags in the firmware and optionally select a playback test case
+6   | SDSIO_MON_FLAGS    | Monitor program request to the SDSIO-Server to update SDS control flags in the firmware and optionally select a play step
 7   | SDSIO_MON_INFO     | Information update received from the firmware and forwarded to the Monitor program (message)
 8   | SDSIO_MON_SHUTDOWN | Monitor program request to the SDSIO-Server to complete current tasks and shut down gracefully
 
@@ -562,22 +562,22 @@ The Message with ID = **2** (SDSIO_MON_CLOSE) is sent whenever an SDS data file 
 
 The Command with ID = **6** (SDSIO_MON_FLAGS) is used by the Monitor program to request an update of the SDS control flags in the firmware.
 The `Set Mask` specifies the bits to set in the `sdsFlags` and the `Clear Mask` specifies the bits to clear in the `sdsFlags`.
-The `TestCase` value selects a `play:` step from the `*.sdsio.yml` file before the flag update is applied.
+The `Play Step` value selects a `play:` step from the `*.sdsio.yml` file before the flag update is applied.
 This command does not generate a response from the SDSIO-Server.
 
 ```txt
-| WORD | WORD     | WORD       | WORD     |
->  6   | Set Mask | Clear Mask | TestCase |
-|******|**********|************|**********|
+| WORD | WORD     | WORD       | WORD      |
+>  6   | Set Mask | Clear Mask | Play Step |
+|******|**********|************|***********|
 ```
 
-Valid `TestCase` values are:
+Valid `Play Step` values are:
 
 - `0..N-1`: select the corresponding `play:` step by zero-based index, starting with `0`.
 - `0xFFFFFFFF`: select all configured `play:` steps.
 
-Selecting a `TestCase` does not start playback by itself. To select and start a playback test case, set the `SDS_FLAG_START` and `SDS_FLAG_PLAYBACK` bits in `Set Mask` together with the desired `TestCase` value.
-When `TestCase` is `0xFFFFFFFF`, the SDSIO-Server automatically starts each subsequent step after the previous step completes.
+Selecting a `Play Step` does not start playback by itself. To select and start a play step, set the `SDS_FLAG_START` and `SDS_FLAG_PLAYBACK` bits in `Set Mask` together with the desired `Play Step` value.
+When `Play Step` is `0xFFFFFFFF`, the SDSIO-Server automatically starts each subsequent step after the previous step completes.
 
 **SDSIO_MON_INFO**
 

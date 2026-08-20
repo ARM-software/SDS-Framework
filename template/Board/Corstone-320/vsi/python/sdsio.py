@@ -227,7 +227,7 @@ class sdsio_manager:
         exit_after_playback=False,
         no_progress_info=False,
         play_list: Optional[list] = None,
-        playback_test_case: Optional[int] = None,
+        play_step: Optional[int] = None,
         mon_port: Optional[int] = None,
         write_flush_records: Optional[int] = None,
         status_bar_factory=None,
@@ -266,7 +266,7 @@ class sdsio_manager:
         self._send_ci_terminate_on_shutdown = False
         self._play_list = play_list
         self._play_step_limit = len(play_list) if play_list else None
-        self._single_playback_test_case_selected = False
+        self._single_play_step_selected = False
         self._mon_port = mon_port
         self._write_flush_records = write_flush_records
         # SDS Control Flags
@@ -277,7 +277,7 @@ class sdsio_manager:
             if monitor_factory is None:
                 monitor_factory = sdsMonitorInterface
             if monitor_factory:
-                self._monitor = monitor_factory(self._mon_port, self._flags, self.select_playback_test_case)
+                self._monitor = monitor_factory(self._mon_port, self._flags, self.select_play_step)
         self._ctrl_input = None
         if control_input_factory is not False and sys.stdin.isatty():
             if control_input_factory is None:
@@ -296,9 +296,9 @@ class sdsio_manager:
         except RuntimeError:
             self._loop = None
             self._main_task = None
-        if playback_test_case is not None:
-            if playback_test_case < 0 or not self.select_playback_test_case(playback_test_case):
-                raise ValueError(f"Invalid playback test case: {playback_test_case}")
+        if play_step is not None:
+            if play_step < 0 or not self.select_play_step(play_step):
+                raise ValueError(f"Invalid play step: {play_step}")
 
     def shutdown(self):
         self.shutdown_requested.set()
@@ -490,32 +490,32 @@ class sdsio_manager:
             return len(self._play_list)
         return min(self._play_step_limit, len(self._play_list))
 
-    def _is_single_playback_test_case_selected(self) -> bool:
-        return self._single_playback_test_case_selected
+    def _is_single_play_step_selected(self) -> bool:
+        return self._single_play_step_selected
 
-    def select_playback_test_case(self, test_case: Optional[int]) -> bool:
+    def select_play_step(self, play_step: Optional[int]) -> bool:
         with self._manager_lock:
             if self.opened_streams:
-                logger.error("Playback test case selection failed: streams are currently open.")
+                logger.error("Play step selection failed: streams are currently open.")
                 return False
             if not self._play_list:
-                logger.error("Playback test case selection failed: no play steps are configured.")
+                logger.error("Play step selection failed: no play steps are configured.")
                 return False
 
-            if test_case is not None and (test_case < 0 or test_case >= len(self._play_list)):
-                logger.error(f"Playback test case selection failed: {test_case} is outside 0-{len(self._play_list) - 1}.")
+            if play_step is not None and (play_step < 0 or play_step >= len(self._play_list)):
+                logger.error(f"Play step selection failed: {play_step} is outside 0-{len(self._play_list) - 1}.")
                 return False
 
-            if test_case is None:
+            if play_step is None:
                 self._play_step_index = 0
                 self._play_step_limit = len(self._play_list)
-                self._single_playback_test_case_selected = False
+                self._single_play_step_selected = False
                 logger.debug(f"Selected all playback steps 0-{len(self._play_list) - 1}.")
             else:
-                self._play_step_index = test_case
-                self._play_step_limit = test_case + 1
-                self._single_playback_test_case_selected = True
-                logger.debug(f"Selected playback step {test_case}.")
+                self._play_step_index = play_step
+                self._play_step_limit = play_step + 1
+                self._single_play_step_selected = True
+                logger.debug(f"Selected playback step {play_step}.")
             self._label_list.clear()
             self._timestamp_boundaries.clear()
             return True
