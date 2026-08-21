@@ -17,6 +17,7 @@
       Active development ...
       SDS-Framework:
       - Enhanced the SDS metadata schema, templates, and documentation
+      - Improved robustness
       SDSIO-Server:
       - Added an option to automatically terminate after playback completion
       - Added an option to suppress the progress indicator
@@ -106,7 +107,7 @@
       </RTE_Components_h>
       <files>
         <file category="doc"    name="docs/SDS_API/group__SDS__Stream__Interface.html"/>
-        <file category="header" name="sds/config/sds_config.h" attr="config" version="3.0.0"/>
+        <file category="header" name="sds/config/sds_config.h" attr="config" version="3.1.0"/>
         <file category="header" name="sds/include/sds.h"/>
         <file category="source" name="sds/sds.c"/>
         <file category="source" name="sds/sds_buffer.c"/>

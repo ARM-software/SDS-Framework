@@ -164,7 +164,7 @@ __NO_RETURN void AlgorithmThread (void *argument) {
       do {
         ret = sdsRead(sds_data_in_id, &timeslot, algo_data_in_buf, sizeof(algo_data_in_buf));
         if (ret == SDS_NO_DATA) {
-          osDelay(10U);
+          osDelay(1U);
           DiscardInputData();
         }
       } while (ret == SDS_NO_DATA);
@@ -190,7 +190,7 @@ __NO_RETURN void AlgorithmThread (void *argument) {
         do {
           ret = sdsWrite(sds_data_in_id, timeslot, algo_data_in_buf, sizeof(algo_data_in_buf));
           if (ret == SDS_NO_SPACE) {
-            osDelay(10U);
+            osDelay(1U);
           }
         } while (ret == SDS_NO_SPACE);
         SDS_ASSERT(ret == sizeof(algo_data_in_buf));
@@ -208,7 +208,7 @@ __NO_RETURN void AlgorithmThread (void *argument) {
       do {
         ret = sdsWrite(sds_data_out_id, timeslot, algo_data_out_buf, sizeof(algo_data_out_buf));
         if (ret == SDS_NO_SPACE) {
-          osDelay(10U);
+          osDelay(1U);
         }
       } while (ret == SDS_NO_SPACE);
       SDS_ASSERT(ret == sizeof(algo_data_out_buf));
