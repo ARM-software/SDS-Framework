@@ -40,7 +40,7 @@
 #define SDS_THREAD_STACK_SIZE           1024
 
 // SDS system thread priority
-#define SDS_THREAD_PRIORITY             osPriorityNormal
+#define SDS_THREAD_PRIORITY             osPriorityNormal1
 
 // SDS stream open timeout in kernel ticks
 #define SDS_OPEN_TIMEOUT                3000U
