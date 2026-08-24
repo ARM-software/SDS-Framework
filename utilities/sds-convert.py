@@ -222,39 +222,39 @@ def createWAV(filename):
         sys.exit(f"Error in createWAV(): {e}")
 
 def prepareData(meta_data, raw_data, data_manipulation):
-    sensor_data = []
-    desc_n_max = len(meta_data)
-    desc_n = 0
-    for channel in meta_data:
-        tmp_data = []
-        # Extract channel data type information from YAML file
-        d_type = getDataType(channel["type"])
-        # Calculate number of bytes needed for decoding the data in .sds file
-        d_byte = calcsize(d_type)
-        # Disunite raw data into a list of data points according to the number
-        # of bytes needed for each data point
-        tmp_data = [raw_data[i:(i + d_byte)] for i in range(0, len(raw_data), d_byte)]
-        # Keep only every n-th data point
-        tmp_data = tmp_data[desc_n::desc_n_max]
-        # Decode retrieved data points
-        tmp_data = list(unpack(f"{int(len(tmp_data))}{d_type}", b''.join(tmp_data)))
-        # Scale and offset data points if output format is not Qeexo V2 CSV
-        if data_manipulation:
-            if "scale" in channel:
-                scale = channel["scale"]
-            else:
-                scale = 1
-            if "offset" in channel:
-                offset = channel["offset"]
-            else:
-                offset = 0
-            data = [((x * scale) + offset) for x in tmp_data]
-        else:
-            data = tmp_data
-        # Store decoded data in a dictionary
-        sensor_data.append(data)
-        # Increment channel description number
-        desc_n += 1
+    sensor_data = [[] for _ in meta_data]
+
+    data_types = [getDataType(channel["type"]) for channel in meta_data]
+    sample_format = "=" + "".join(data_types)
+    sample_size = calcsize(sample_format)
+
+    if sample_size == 0:
+        return sensor_data
+
+    if len(raw_data) % sample_size != 0:
+        raise ValueError(
+            f"Raw data size ({len(raw_data)}) is not a multiple of "
+            f"sample size ({sample_size})"
+        )
+
+    n_samples = len(raw_data) // sample_size
+
+    for sample_idx in range(n_samples):
+        offset = sample_idx * sample_size
+        sample = unpack(
+            sample_format,
+            raw_data[offset:offset + sample_size]
+        )
+
+        for channel_idx, value in enumerate(sample):
+            channel = meta_data[channel_idx]
+
+            if data_manipulation:
+                scale = channel.get("scale", 1)
+                channel_offset = channel.get("offset", 0)
+                value = (value * scale) + channel_offset
+
+            sensor_data[channel_idx].append(value)
 
     return sensor_data
 
