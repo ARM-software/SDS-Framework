@@ -54,21 +54,13 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">SDS Template Application</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#thread-information">Thread Information</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#sdscontrolthread-thread">sdsControlThread Thread</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#algorithmthread-thread">AlgorithmThread Thread</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#sdsthread-thread">sdsThread Thread</a>
-    </li>
-        </ul>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#sds-template-structure">SDS Template Structure</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#record-mode">Record Mode</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#playback-mode">Playback Mode</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#thread-information">Thread Information</a>
     </li>
         </ul>
     </li>
@@ -169,40 +161,6 @@ For hardware targets, the following <a href="sdsio.html">SDSIO interfaces</a> ar
 <li><a href="sdsio.html#layer-sdsio_fs">Memory Card Interface</a> using the MDK-Middleware File System component.</li>
 </ul>
 <p>With a custom SDSIO interface, alternative I/O configurations are possible.</p>
-<h3 id="thread-information">Thread Information</h3>
-<p>This application creates two threads: <code>sdsControlThread</code> and <code>AlgorithmThread</code>.
-The <code>sdsControlThread</code> uses default stack size and <code>osPriorityNormal1</code> priority.
-The <code>AlgorithmThread</code> uses default stack size and <code>osPriorityNormal</code> priority.</p>
-<p>The SDS Stream component creates the <code>sdsThread</code> thread with default stack size of 1024 bytes and default priority of <code>osPriorityNormal1</code>.
-Both the stack size and thread priority can be customized in the <code>sds_config.h</code> configuration file.</p>
-<h4 id="sdscontrolthread-thread">sdsControlThread Thread</h4>
-<p>This thread is responsible for the following tasks:</p>
-<ul>
-<li>creating of the <code>AlgorithmThread</code>.</li>
-<li>exchanging control information with the SDSIO-Server.</li>
-<li>handling application control via the button (VIO).</li>
-<li>managing the application state machine, including states such as inactive, connection, streaming start/stop, reset, and termination.</li>
-<li>measuring the idle rate.</li>
-<li>providing status information via a single LED (VIO).</li>
-</ul>
-<h4 id="algorithmthread-thread">AlgorithmThread Thread</h4>
-<p>This thread is responsible for the following tasks:</p>
-<ul>
-<li>initializing the input data source (sensor used for data acquisition).</li>
-<li>initializing the algorithm (ML model).</li>
-<li>acquiring input data from a physical sensor and recording the acquired data to an SDS file, or playing back input data from an SDS file.</li>
-<li>executing the algorithm on the input data.</li>
-<li>recording the algorithm results to an SDS file.</li>
-</ul>
-<h4 id="sdsthread-thread">sdsThread Thread</h4>
-<p>This thread handles SDS stream data exchange using the selected I/O interface.</p>
-<div class="admonition notes">
-<p class="admonition-title">Notes</p>
-</div>
-<ul>
-<li>Ensure that all threads responsible for low-level SDSIO communication run at a higher priority to support timely and reliable data transfer over the I/O interface.</li>
-<li>Adjust thread priorities according to your application requirements, ensuring that time-critical and essential tasks are assigned sufficient priority and processing time to maintain optimal system performance.</li>
-</ul>
 <h2 id="sds-template-structure">SDS Template Structure</h2>
 <p>The structure of the SDS template application is shown below. Two projects let you choose between a data communication test and a user algorithm test. Three target types are available, allowing the test application to be deployed either on hardware (an evaluation board) or on one of two AVH FVP simulation models.</p>
 <p>A standard board layer, provided by several BSPs, implements the hardware interface. For communication, the SDSIO layer uses the MDK-Middleware or (for the AVH FVP target) a virtual simulation interface (VSI).</p>
@@ -223,6 +181,49 @@ For example, an additional button on the board can be used to toggle between rec
 The test application can run either on hardware (evaluation board) or on an AVH FVP (simulation model).
 Because the input data stream can be repeated, it enables consistent verification and optimization of the algorithm while capturing the resulting output data stream.</p>
 <p><img alt="Playback Mode" src="images/Example_Playback.png" title="Playback Mode" /></p>
+<h3 id="thread-information">Thread Information</h3>
+<p>The application runs the thread <code>sdsControlThread</code>, which calls <code>sdsInit</code> to create <code>sdsThread</code> and then creates <code>AlgorithmThread</code>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Thread</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Stack size</th>
+<th style="text-align: left;">Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>sdsControlThread</code></td>
+<td style="text-align: left;">Manages application control</td>
+<td style="text-align: left;">RTOS default</td>
+<td style="text-align: left;"><code>osPriorityNormal1</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sdsThread</code></td>
+<td style="text-align: left;">Transfers SDS stream data</td>
+<td style="text-align: left;">1024 bytes</td>
+<td style="text-align: left;"><code>osPriorityNormal1</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>AlgorithmThread</code></td>
+<td style="text-align: left;">Processes user algorithm</td>
+<td style="text-align: left;">RTOS default</td>
+<td style="text-align: left;"><code>osPriorityNormal</code></td>
+</tr>
+</tbody>
+</table>
+<p>The <code>sdsThread</code> values are the defaults defined by <code>SDS_THREAD_STACK_SIZE</code> and <code>SDS_THREAD_PRIORITY</code> and can be changed in <code>sds_config.h</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Keep SDSIO communication at a higher priority than the threads that produce or consume stream data.</p>
+</div>
+<p><strong>Details:</strong></p>
+<ul>
+<li><code>sdsControlThread</code> initializes SDS, creates <code>AlgorithmThread</code>, exchanges server control information, handles the VIO button and LED, manages application state, and measures the idle rate.</li>
+<li><code>sdsThread</code> transfers stream data through the selected SDSIO interface.</li>
+<li><code>AlgorithmThread</code> initializes the input source and algorithm, acquires or plays back input data, runs the algorithm, and records input and output data.</li>
+</ul>
 <h2 id="working-with-the-sds-template">Working with the SDS Template</h2>
 <p>The SDS template application and <a href="sdsio.html">SDSIO interface layers</a> are part of the <a href="https://www.keil.arm.com/packs/sds-arm">SDS pack</a>.</p>
 <p>Several <a href="https://www.keil.arm.com/packs/">Board Support Packs (BSP)</a> contain board layers that support the required API interfaces. Refer to the <em>Overview</em> page of the pack to check the <em>Provided connection API Interface</em> of the layers. The table below lists the required API interfaces that should be provided by the <code>Board-Layer</code>.  </p>

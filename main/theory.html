@@ -76,7 +76,19 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#sds-metadata-format">SDS Metadata Format</a>
 <ul>
-<li class="toctree-l3"><a class="reference internal" href="#value-list-data-stream">Value list data stream</a>
+<li class="toctree-l3"><a class="reference internal" href="#data-blocks-records-and-values">Data blocks, records, and values</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#value-list-data-stream">Value-list data stream</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#example-gyroscope-data">Example: Gyroscope data</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#example-time-of-flight-data">Example: Time-of-Flight data</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#example-motion-inference-input">Example: Motion-inference input</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#example-object-detection-output">Example: Object-detection output</a>
+</li>
+</ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#audio-data-stream">Audio data stream</a>
 </li>
@@ -215,7 +227,7 @@ Opening a stream in <code>sdsModeRead</code> mode is used for playback and openi
 use the same timeslot for the recording of data blocks in different data streams for one iteration of a DSP or ML algorithm.
 In most cases the granularity of an RTOS tick (typically 1ms) is a good choice for a timeslot resolution.</p>
 <h2 id="sds-metadata-format">SDS Metadata Format</h2>
-<p>The content of each data stream may be described in an SDS metadata file in <a href="https://en.wikipedia.org/wiki/YAML">YAML format</a> that is created by the user. For example, a data stream named <code>sensorX</code> (stored in files <code>sensorX.0.sds</code>, <code>sensorX.1.sds</code>, ...) can be described with a corresponding metadata file <code>sensorX.sds.yml</code> as shown below.</p>
+<p>The content of each data stream may be described in an SDS metadata file in <a href="https://en.wikipedia.org/wiki/YAML">YAML format</a> that is created by the user. Data conversion utilities and data viewers use this metadata to interpret the binary stream content. For example, a data stream named <code>sensorX</code> (stored in files <code>sensorX.0.sds</code>, <code>sensorX.1.sds</code>, ...) can be described with a corresponding metadata file <code>sensorX.sds.yml</code> as shown below.</p>
 <p><img alt="SDS Metadata Format" src="images/SDS-Metainfo.png" title="SDS Metadata Format"/></p>
 <p>The following section defines the YAML format of this metadata file. The file <a href="https://github.com/ARM-software/SDS-Framework/blob/main/schema/sds.schema.json"><code>schema/sds.schema.json</code></a> is a schema description of the SDS metadata format.</p>
 <table>
@@ -256,7 +268,7 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <p class="admonition-title">Note</p>
 <ul>
 <li><code>block-frequency:</code> is optional as it can be derived from the timeslot value in combination with <code>tick-frequency:</code>.</li>
-<li><code>sample-frequency:</code> is required when a data block contains multiple samples as shown in the picture below. Otherwise all samples are generated at the same time.</li>
+<li><code>sample-frequency:</code> is required when a data block contains a temporal sequence sampled at a fixed rate. Omit it when all records share the block timeslot.</li>
 <li>SDS v3.0 used <code>frequency:</code> to indicate a sample rate. In SDS v3.1 this is renamed to <code>sample-frequency:</code> to clarify the information.</li>
 </ul>
 </div>
@@ -268,7 +280,18 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <li><a href="#audio-data-stream"><code>audio:</code></a> entry to describe audio channel parameters.</li>
 <li><a href="#image-data-stream"><code>image:</code></a> entry to describe a camera stream with frame layout parameters.</li>
 </ul>
-<h3 id="value-list-data-stream">Value list data stream</h3>
+<h3 id="data-blocks-records-and-values">Data blocks, records, and values</h3>
+<p>An SDS stream contains data blocks. One data block represents one application operation, typically one DSP processing step or ML inference. A data block contains zero or more records, and each record contains the values listed under <code>content:</code> in the specified order. For temporal data, these records are also called samples.</p>
+<p>For a <code>value:</code> list, the data block repeats the described record layout. The number of records is calculated as:</p>
+<pre><code class="language-txt">record count = block size / record size
+</code></pre>
+<p>The meaning of multiple records depends on the stream:</p>
+<ul>
+<li><strong>Temporal sequence:</strong> Records were acquired consecutively. <code>sample-frequency:</code> specifies their rate and therefore the time interval between them. For example, one motion-inference block may contain 125 consecutive accelerometer samples.</li>
+<li><strong>Result collection:</strong> Records were produced by the same operation and share the block timeslot. <code>sample-frequency:</code> is omitted because the records are not a temporal sequence. For example, one object-detection block may contain a variable number of detected objects.</li>
+</ul>
+<p>The timeslot identifies the complete data block or application operation. It does not provide an individual acquisition time for every record. When exact per-record times are required, include a timestamp as another value in each record.</p>
+<h3 id="value-list-data-stream">Value-list data stream</h3>
 <p>Typically describes the sample layout of a sensor data stream or the output of ML algorithms. A data block may contain several samples as shown in the picture above. The <code>sample-frequency:</code> should be specified when the data stream uses a discrete sample rate.</p>
 <p>With <code>dim-x:</code> and <code>dim-y:</code> arrays can be composed. The equivalent representation in C is "<em>type name[dim-y][dim-x]</em>".</p>
 <table>
@@ -309,8 +332,9 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 </tr>
 </tbody>
 </table>
-<p><strong>Examples:</strong></p>
-<p>The following <code>sensorX.sds.yml</code> provides the format description of the SDS <code>sensorX</code> binary data files and may be used by data conversion utilities and data viewers.</p>
+<p>The following examples show metadata files for several value-list data streams.</p>
+<h4 id="example-gyroscope-data">Example: Gyroscope data</h4>
+<p>The following <code>sensorX.sds.yml</code> describes the binary layout of the <code>sensorX</code> data stream:</p>
 <pre><code class="language-yml">sds:                   # describes a synchronous data stream
   name: sensorX        # user defined name
   description: Gyroscope stream with 1KHz sample rate, plus additional user data
@@ -335,7 +359,8 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
     - value: flag
       type: uint32_t:1 # a single bit stored in a 32-bit int
 </code></pre>
-<p>The following <code>ToF.sds.yml</code> provides the format description of a Time-of-Flight sensor.</p>
+<h4 id="example-time-of-flight-data">Example: Time-of-Flight data</h4>
+<p>The following <code>ToF.sds.yml</code> metadata describes data from a Time-of-Flight sensor:</p>
 <pre><code class="language-yml">sds:                   # describes a synchronous data stream
   name: ToF            # user defined name
   description: Time-of-Flight sensor with 8x8 matrix
@@ -345,6 +370,48 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
       dim-x: 8
       dim-y: 8
 </code></pre>
+<h4 id="example-motion-inference-input">Example: Motion-inference input</h4>
+<p>The following <code>Motion.sds.yml</code> metadata describes motion samples used together as the input to one inference:</p>
+<pre><code class="language-yml">sds:
+  name: motion
+  description: Motion samples used for one inference
+  sample-frequency: 1000
+  content:
+    - value: x
+      type: float
+    - value: y
+      type: float
+    - value: z
+      type: float
+</code></pre>
+<p>One record contains the three values <code>x</code>, <code>y</code>, and <code>z</code> and has a size of 12 bytes. A data block containing 125 records has a block size of 1500 bytes. The records form a temporal sequence sampled at 1 kHz, while the complete block is processed by one inference and has one timeslot.</p>
+<h4 id="example-object-detection-output">Example: Object-detection output</h4>
+<p>The following <code>Object.sds.yml</code> metadata describes a variable-size collection of objects produced by one inference:</p>
+<pre><code class="language-yml">sds:
+  name: detections
+  description: 0 - n objects detected in one inference
+  content:
+    - value: class_id
+      type: uint32_t
+    - value: confidence
+      type: float
+    - value: x
+      type: uint32_t
+    - value: y
+      type: uint32_t
+    - value: width
+      type: uint32_t
+    - value: height
+      type: uint32_t
+</code></pre>
+<p>One detection record has a size of 24 bytes. For example, a block size of 240 bytes contains 10 object detections. The number of detections may vary between blocks and is calculated by dividing the block size by 24. <code>sample-frequency:</code> is omitted because all detections are results of the same inference and share the block timeslot.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The current <code>sdsWrite</code> implementation does not accept a zero-byte data block. An application must therefore omit the block or define an application-specific non-empty representation when an inference produces no detections.</li>
+<li>A variable-size segmentation mask cannot be described as a fixed-size detection record. It may be stored in a separate image or mask stream and correlated with the detection stream using the same timeslot.</li>
+</ul>
+</div>
 <h3 id="audio-data-stream">Audio data stream</h3>
 <p>Describes audio data format, typically used for a microphone data stream.</p>
 <table>
