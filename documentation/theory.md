@@ -167,7 +167,7 @@ The meaning of multiple records depends on the stream:
 
 The timeslot identifies the complete data block or application operation. It does not provide an individual acquisition time for every record. When exact per-record times are required, include a timestamp as another value in each record.
 
-### Value list data stream
+### Value-list data stream
 
 Typically describes the sample layout of a sensor data stream or the output of ML algorithms. A data block may contain several samples as shown in the picture above. The `sample-frequency:` should be specified when the data stream uses a discrete sample rate.
 
@@ -273,7 +273,7 @@ sds:
       type: uint32_t
 ```
 
-One detection record has a size of 24 bytes. For example, a block size of 240 bytes contains 19 object detections. The number of detections may vary between blocks and is calculated by dividing the block size by 24. `sample-frequency:` is omitted because all detections are results of the same inference and share the block timeslot.
+One detection record has a size of 24 bytes. For example, a block size of 240 bytes contains 10 object detections. The number of detections may vary between blocks and is calculated by dividing the block size by 24. `sample-frequency:` is omitted because all detections are results of the same inference and share the block timeslot.
 
 !!! Note
     - The current `sdsWrite` implementation does not accept a zero-byte data block. An application must therefore omit the block or define an application-specific non-empty representation when an inference produces no detections.
