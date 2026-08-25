@@ -120,7 +120,7 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 
 ## SDS Metadata Format
 
-The content of each data stream may be described in an SDS metadata file in [YAML format](https://en.wikipedia.org/wiki/YAML) that is created by the user. For example, a data stream named `sensorX` (stored in files `sensorX.0.sds`, `sensorX.1.sds`, ...) can be described with a corresponding metadata file `sensorX.sds.yml` as shown below.
+The content of each data stream may be described in an SDS metadata file in [YAML format](https://en.wikipedia.org/wiki/YAML) that is created by the user. Data conversion utilities and data viewers use this metadata to interpret the binary stream content. For example, a data stream named `sensorX` (stored in files `sensorX.0.sds`, `sensorX.1.sds`, ...) can be described with a corresponding metadata file `sensorX.sds.yml` as shown below.
 
 ![SDS Metadata Format](./images/SDS-Metainfo.png "SDS Metadata Format")
 
@@ -137,7 +137,7 @@ The following section defines the YAML format of this metadata file. The file [`
 
 !!! Note
     - `block-frequency:` is optional as it can be derived from the timeslot value in combination with `tick-frequency:`.
-    - `sample-frequency:` is required when a data block contains multiple samples as shown in the picture below. Otherwise all samples are generated at the same time.
+    - `sample-frequency:` is required when a data block contains a temporal sequence sampled at a fixed rate. Omit it when all records share the block timeslot.
     - SDS v3.0 used `frequency:` to indicate a sample rate. In SDS v3.1 this is renamed to `sample-frequency:` to clarify the information.
 
 The picture below shows how `sample-frequency:` and `block-frequency:` are applied. When data streams from different sources are combined, data blocks may vary in size.
@@ -150,7 +150,24 @@ The `content:` list describes the binary layout of one data block. Depending on 
 - [`audio:`](#audio-data-stream) entry to describe audio channel parameters.
 - [`image:`](#image-data-stream) entry to describe a camera stream with frame layout parameters.
 
-### Value list data stream
+### Data blocks, records, and values
+
+An SDS stream contains data blocks. One data block represents one application operation, typically one DSP processing step or ML inference. A data block contains zero or more records, and each record contains the values listed under `content:` in the specified order. For temporal data, these records are also called samples.
+
+For a `value:` list, the data block repeats the described record layout. The number of records is calculated as:
+
+```txt
+record count = block size / record size
+```
+
+The meaning of multiple records depends on the stream:
+
+- **Temporal sequence:** Records were acquired consecutively. `sample-frequency:` specifies their rate and therefore the time interval between them. For example, one motion-inference block may contain 125 consecutive accelerometer samples.
+- **Result collection:** Records were produced by the same operation and share the block timeslot. `sample-frequency:` is omitted because the records are not a temporal sequence. For example, one object-detection block may contain a variable number of detected objects.
+
+The timeslot identifies the complete data block or application operation. It does not provide an individual acquisition time for every record. When exact per-record times are required, include a timestamp as another value in each record.
+
+### Value-list data stream
 
 Typically describes the sample layout of a sensor data stream or the output of ML algorithms. A data block may contain several samples as shown in the picture above. The `sample-frequency:` should be specified when the data stream uses a discrete sample rate.
 
@@ -166,9 +183,11 @@ With `dim-x:` and `dim-y:` arrays can be composed. The equivalent representation
 &nbsp;&nbsp;&nbsp; `scale:`          | Scale factor of the value (optional); default: 1.0
 &nbsp;&nbsp;&nbsp; `unit:`           | Physical unit of the value (optional)
 
-**Examples:**
+The following examples show metadata files for several value-list data streams.
 
-The following `sensorX.sds.yml` provides the format description of the SDS `sensorX` binary data files and may be used by data conversion utilities and data viewers.
+#### Example: Gyroscope data
+
+The following `sensorX.sds.yml` describes the binary layout of the `sensorX` data stream:
 
 ```yml
 sds:                   # describes a synchronous data stream
@@ -196,7 +215,9 @@ sds:                   # describes a synchronous data stream
       type: uint32_t:1 # a single bit stored in a 32-bit int
 ```
 
-The following `ToF.sds.yml` provides the format description of a Time-of-Flight sensor.
+#### Example: Time-of-Flight data
+
+The following `ToF.sds.yml` metadata describes data from a Time-of-Flight sensor:
 
 ```yml
 sds:                   # describes a synchronous data stream
@@ -208,6 +229,55 @@ sds:                   # describes a synchronous data stream
       dim-x: 8
       dim-y: 8
 ```
+
+#### Example: Motion-inference input
+
+The following `Motion.sds.yml` metadata describes motion samples used together as the input to one inference:
+
+```yml
+sds:
+  name: motion
+  description: Motion samples used for one inference
+  sample-frequency: 1000
+  content:
+    - value: x
+      type: float
+    - value: y
+      type: float
+    - value: z
+      type: float
+```
+
+One record contains the three values `x`, `y`, and `z` and has a size of 12 bytes. A data block containing 125 records has a block size of 1500 bytes. The records form a temporal sequence sampled at 1 kHz, while the complete block is processed by one inference and has one timeslot.
+
+#### Example: Object-detection output
+
+The following `Object.sds.yml` metadata describes a variable-size collection of objects produced by one inference:
+
+```yml
+sds:
+  name: detections
+  description: 0 - n objects detected in one inference
+  content:
+    - value: class_id
+      type: uint32_t
+    - value: confidence
+      type: float
+    - value: x
+      type: uint32_t
+    - value: y
+      type: uint32_t
+    - value: width
+      type: uint32_t
+    - value: height
+      type: uint32_t
+```
+
+One detection record has a size of 24 bytes. For example, a block size of 240 bytes contains 10 object detections. The number of detections may vary between blocks and is calculated by dividing the block size by 24. `sample-frequency:` is omitted because all detections are results of the same inference and share the block timeslot.
+
+!!! Note
+    - The current `sdsWrite` implementation does not accept a zero-byte data block. An application must therefore omit the block or define an application-specific non-empty representation when an inference produces no detections.
+    - A variable-size segmentation mask cannot be described as a fixed-size detection record. It may be stored in a separate image or mask stream and correlated with the detection stream using the same timeslot.
 
 ### Audio data stream
 
