@@ -21,6 +21,44 @@ For hardware targets, the following [SDSIO interfaces](sdsio.md) are available a
 
 With a custom SDSIO interface, alternative I/O configurations are possible.
 
+### Thread Information
+
+This application creates two threads: `sdsControlThread` and `AlgorithmThread`.
+The `sdsControlThread` uses default stack size and `osPriorityNormal1` priority.
+The `AlgorithmThread` uses default stack size and `osPriorityNormal` priority.
+
+The SDS Stream component creates the `sdsThread` thread with default stack size of 1024 bytes and default priority of `osPriorityNormal1`.
+Both the stack size and thread priority can be customized in the `sds_config.h` configuration file.
+
+#### sdsControlThread Thread
+
+This thread is responsible for the following tasks:
+
+  - creating of the `AlgorithmThread`.
+  - exchanging control information with the SDSIO-Server.
+  - handling application control via the button (VIO).
+  - managing the application state machine, including states such as inactive, connection, streaming start/stop, reset, and termination.
+  - measuring the idle rate.
+  - providing status information via a single LED (VIO).
+
+#### AlgorithmThread Thread
+
+This thread is responsible for the following tasks:
+
+ - initializing the input data source (sensor used for data acquisition).
+ - initializing the algorithm (ML model).
+ - acquiring input data from a physical sensor and recording the acquired data to an SDS file, or playing back input data from an SDS file.
+ - executing the algorithm on the input data.
+ - recording the algorithm results to an SDS file.
+
+#### sdsThread Thread
+
+This thread handles SDS stream data exchange using the selected I/O interface.
+
+!!! Notes
+ - Ensure that all threads responsible for low-level SDSIO communication run at a higher priority to support timely and reliable data transfer over the I/O interface.
+ - Adjust thread priorities according to your application requirements, ensuring that time-critical and essential tasks are assigned sufficient priority and processing time to maintain optimal system performance.
+
 ## SDS Template Structure
 
 The structure of the SDS template application is shown below. Two projects let you choose between a data communication test and a user algorithm test. Three target types are available, allowing the test application to be deployed either on hardware (an evaluation board) or on one of two AVH FVP simulation models.
