@@ -1,0 +1,82 @@
+name: Test SDS-Convert
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/test_sds-convert.yml
+      - utilities/sds-convert.py
+      - utilities/requirements.txt
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { sample: accelerometer.0.sds, metadata: accelerometer.sds.yml, format: csv,       output: accelerometer.0.csv }
+          - { sample: accelerometer.1.sds, metadata: accelerometer.sds.yml, format: csv,       output: accelerometer.1.csv }
+          - { sample: adc_raw.0.sds,       metadata: adc_raw.sds.yml,       format: csv,       output: adc_raw.0.csv }
+          - { sample: counter.0.sds,       metadata: counter.sds.yml,       format: csv,       output: counter.0.csv }
+          - { sample: empty.0.sds,         metadata: empty.sds.yml,         format: csv,       output: empty.0.csv }
+          # - { sample: gpio.0.sds,          metadata: gpio.sds.yml,          format: csv,       output: gpio.0.csv }
+          - { sample: gyroscope.0.sds,     metadata: gyroscope.sds.yml,     format: csv,       output: gyroscope.0.csv }
+          # - { sample: large_block.0.sds,   metadata: large_block.sds.yml,   format: csv,       output: large_block.0.csv }
+          - { sample: multi_frame.0.sds,   metadata: multi_frame.sds.yml,   format: csv,       output: multi_frame.0.csv }
+          - { sample: no_metadata.0.sds,   metadata: no_metadata.sds.yml,   format: csv,       output: no_metadata.0.csv }
+          - { sample: precision.0.sds,     metadata: precision.sds.yml,     format: csv,       output: precision.0.csv }
+          - { sample: single_record.0.sds, metadata: single_record.sds.yml, format: csv,       output: single_record.0.csv }
+          - { sample: temperature.0.sds,   metadata: temperature.sds.yml,   format: csv,       output: temperature.0.csv }
+          - { sample: Test_In.0.sds,       metadata: Test_In.sds.yml,       format: csv,       output: Test_In.0.csv }
+          - { sample: Test_In.1.sds,       metadata: Test_In.sds.yml,       format: csv,       output: Test_In.1.csv }
+          - { sample: Test_In.2.sds,       metadata: Test_In.sds.yml,       format: csv,       output: Test_In.2.csv }
+          - { sample: Test_In.3.sds,       metadata: Test_In.sds.yml,       format: csv,       output: Test_In.3.csv }
+          # - { sample: Test_Out.0.p.sds,    metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.0.p.csv }
+          # - { sample: Test_Out.1.sds,      metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.1.csv }
+          # - { sample: Test_Out.2.sds,      metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.2.csv }
+          # - { sample: Test_Out.3.sds,      metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.3.csv }
+          - { sample: mic_16bit.0.sds,     metadata: mic_16bit.sds.yml,     format: audio_wav, output: mic_16bit.0.wav }
+          - { sample: mic_stereo.0.sds,    metadata: mic_stereo.sds.yml,    format: audio_wav, output: mic_stereo.0.wav }
+          - { sample: camera_nv12.0.sds,   metadata: camera_nv12.sds.yml,   format: video,     output: camera_nv12.0.mp4 }
+          # - { sample: camera_raw8.0.sds,   metadata: camera_raw8.sds.yml,   format: video,     output: camera_raw8.0.mp4 }
+          - { sample: camera_rgb565.0.sds, metadata: camera_rgb565.sds.yml, format: video,     output: camera_rgb565.0.mp4 }
+          - { sample: camera_rgb888.0.sds, metadata: camera_rgb888.sds.yml, format: video,     output: camera_rgb888.0.mp4 }
+
+    steps:
+      - name: Checkout SDS Framework
+        uses: actions/checkout@v7
+
+      - name: Checkout SDS sample data
+        uses: actions/checkout@v7
+        with:
+          repository: Open-CMSIS-Pack/sds-sample-data
+          path: sds-sample-data
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: utilities/requirements.txt
+
+      - name: Install dependencies
+        run: python -m pip install -r utilities/requirements.txt
+
+      - name: Convert ${{ matrix.sample }} using ${{ matrix.format }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python utilities/sds-convert.py "${{ matrix.format }}" \
+            -i "sds-sample-data/${{ matrix.sample }}" \
+            -o "${RUNNER_TEMP}/${{ matrix.output }}" \
+            -y "sds-sample-data/${{ matrix.metadata }}"
+          test -s "${RUNNER_TEMP}/${{ matrix.output }}"
+          # cmp "${RUNNER_TEMP}/${{ matrix.output }}" "sds-sample-data/${{ matrix.output }}"
