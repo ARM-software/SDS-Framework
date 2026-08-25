@@ -232,19 +232,13 @@ def prepareData(meta_data, raw_data, data_manipulation):
         return sensor_data
 
     if len(raw_data) % sample_size != 0:
-        raise ValueError(
-            f"Raw data size ({len(raw_data)}) is not a multiple of "
-            f"sample size ({sample_size})"
-        )
+        raise ValueError(f"Raw data size ({len(raw_data)}) is not a multiple of sample size ({sample_size})")
 
     n_samples = len(raw_data) // sample_size
 
     for sample_idx in range(n_samples):
         offset = sample_idx * sample_size
-        sample = unpack(
-            sample_format,
-            raw_data[offset:offset + sample_size]
-        )
+        sample = unpack(sample_format, raw_data[offset:offset + sample_size])
 
         for channel_idx, value in enumerate(sample):
             channel = meta_data[channel_idx]
