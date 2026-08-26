@@ -128,7 +128,11 @@ def requireValueMetadataMap(meta_data, convert_format):
 
 # Convert C style data type to Python style
 def getDataType(data_type):
-    if   data_type == "int16_t":
+    if   data_type == "int8_t":
+        d_type = "b"
+    elif data_type == "uint8_t":
+        d_type = "B"
+    elif data_type == "int16_t":
         d_type = "h"
     elif data_type == "uint16_t":
         d_type = "H"
