@@ -17,7 +17,7 @@
  *
  * Name:    sds_config.h
  * Purpose: SDS configuration options
- * Rev.:    V3.0.0
+ * Rev.:    V3.1.0
  */
 
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
