@@ -27,7 +27,7 @@ logger = logging.getLogger("sdsio")
 # ---------------------------------------------------------------------------- #
 #                  SDSIO server-compatible stream implementation                #
 # ---------------------------------------------------------------------------- #
-SDSIO_VSI_VERSION = "3.0.1-dev9"
+SDSIO_VSI_VERSION = "3.1.0"
 
 class StreamInfo(NamedTuple):
     name: str = None
