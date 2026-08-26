@@ -100,7 +100,7 @@
 
   <components>
     <!-- SDS -->
-    <component Cclass="SDS" Cgroup="Stream" Cvariant="CMSIS-RTOS2" Cversion="3.0.0" condition="SDS with CMSIS-RTOS2">
+    <component Cclass="SDS" Cgroup="Stream" Cvariant="CMSIS-RTOS2" Cversion="3.1.0" condition="SDS with CMSIS-RTOS2">
       <description>SDS Stream Interface for record/playback data streams</description>
       <RTE_Components_h>
         #define RTE_SDS                                 /* Synchronous Data Stream (SDS) */
