@@ -1,6 +1,7 @@
 sds:
   name: Video Stream - I420
   description: I420 (YUV420 planar) video frames from camera
+  sample-frequency: 24
   content:
     - image:
         pixel_format: I420

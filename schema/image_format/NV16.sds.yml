@@ -1,6 +1,7 @@
 sds:
   name: Video Stream - NV16
   description: NV16 (YUV422 semi-planar, UV) video frames from camera
+  sample-frequency: 24
   content:
     - image:
         pixel_format: NV16

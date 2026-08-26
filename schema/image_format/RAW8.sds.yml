@@ -1,6 +1,7 @@
 sds:
   name: Video Stream - RAW8
   description: RAW8 grayscale video frames from monochrome camera
+  sample-frequency: 24
   content:
     - image:
         pixel_format: RAW8

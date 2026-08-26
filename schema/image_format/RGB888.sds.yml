@@ -1,6 +1,7 @@
 sds:
   name: Video Stream - RGB888
   description: RGB888 video frames from camera
+  sample-frequency: 24
   content:
     - image:
         pixel_format: RGB888

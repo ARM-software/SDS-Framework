@@ -1,6 +1,7 @@
 sds:
   name: Video Stream - YUYV
   description: YUYV (YUV422 packed) video frames from camera
+  sample-frequency: 24
   content:
     - image:
         pixel_format: YUYV

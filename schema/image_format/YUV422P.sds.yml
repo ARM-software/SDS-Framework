@@ -1,6 +1,7 @@
 sds:
   name: Video Stream - YUV422P
   description: YUV422P (YUV422 planar) video frames from camera
+  sample-frequency: 24
   content:
     - image:
         pixel_format: YUV422P

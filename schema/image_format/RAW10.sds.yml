@@ -1,6 +1,7 @@
 sds:
   name: Video Stream - RAW10
   description: RAW10 video frames from Bayer camera sensor
+  sample-frequency: 24
   content:
     - image:
         pixel_format: RAW10
