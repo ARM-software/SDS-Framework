@@ -1,6 +1,7 @@
 sds:
   name: Video Stream - YUV444
   description: YUV444 (packed 4:4:4) video frames from camera
+  sample-frequency: 24
   content:
     - image:
         pixel_format: YUV444

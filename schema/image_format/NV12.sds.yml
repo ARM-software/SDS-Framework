@@ -1,6 +1,7 @@
 sds:
   name: Video Stream - NV12
   description: NV12 (YUV420 semi-planar) video frames from camera
+  sample-frequency: 24
   content:
     - image:
         pixel_format: NV12

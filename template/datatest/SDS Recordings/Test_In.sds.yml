@@ -1,7 +1,7 @@
 sds:
   name: Test Input Data
   description: Generated accelerometer samples at 16600 Hz
-  frequency: 16600
+  sample-frequency: 16600
   content:
   - value: x
     type:  uint16_t

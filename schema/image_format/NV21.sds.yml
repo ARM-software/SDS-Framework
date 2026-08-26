@@ -1,6 +1,7 @@
 sds:
   name: Video Stream - NV21
   description: NV21 (YUV420 semi-planar, VU) video frames from camera
+  sample-frequency: 24
   content:
     - image:
         pixel_format: NV21
