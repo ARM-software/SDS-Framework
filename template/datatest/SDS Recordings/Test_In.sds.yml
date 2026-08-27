@@ -3,15 +3,15 @@ sds:
   description: Generated accelerometer samples at 16600 Hz
   sample-frequency: 16600
   content:
-  - value: x
-    type:  uint16_t
-    scale: 0.001
-    unit:  G
-  - value: y
-    type:  uint16_t
-    scale: 0.001
-    unit:  G
-  - value: z
-    type:  uint16_t
-    scale: 0.001
-    unit:  G
+    - value: x
+      type:  uint16_t
+      scale: 0.001
+      unit:  G
+    - value: y
+      type:  uint16_t
+      scale: 0.001
+      unit:  G
+    - value: z
+      type:  uint16_t
+      scale: 0.001
+      unit:  G
