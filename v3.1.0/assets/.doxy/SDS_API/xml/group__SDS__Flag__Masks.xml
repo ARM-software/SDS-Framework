@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="group__SDS__Flag__Masks" kind="group">
+    <compoundname>SDS_Flag_Masks</compoundname>
+    <title>sdsFlags Bitmasks</title>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="group__SDS__Flag__Masks_1ga232e6df52024368cc29a897d21780039" prot="public" static="no">
+        <name>SDS_FLAG_START</name>
+        <initializer>(0x80000000UL)</initializer>
+        <briefdescription>
+<para>Flag controlling streaming (set to start, cleared to stop). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="192" column="9" bodyfile="sds/include/sds.h" bodystart="192" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Flag__Masks_1ga25462727626bbc463cfb9abd839d3d9d" prot="public" static="no">
+        <name>SDS_FLAG_TERMINATE</name>
+        <initializer>(0x40000000UL)</initializer>
+        <briefdescription>
+<para>Flag for terminating CI run (on FVP simulation or pyOCD). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="193" column="9" bodyfile="sds/include/sds.h" bodystart="193" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Flag__Masks_1gad0eb45bd3ad461042a817db48664e137" prot="public" static="no">
+        <name>SDS_FLAG_PLAYBACK</name>
+        <initializer>(0x20000000UL)</initializer>
+        <briefdescription>
+<para>Flag for switching between recording and playback mode (set for playback; unset for recording). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="194" column="9" bodyfile="sds/include/sds.h" bodystart="194" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Flag__Masks_1ga1895aa890cc25c079b60d4a92589dbf9" prot="public" static="no">
+        <name>SDS_FLAG_ALIVE</name>
+        <initializer>(0x10000000UL)</initializer>
+        <briefdescription>
+<para>Flag used by host to signal it is alive (set when the host is alive; unset when the host is not alive). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="195" column="9" bodyfile="sds/include/sds.h" bodystart="195" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Flag__Masks_1ga133028b3ccc0fd0bf85b7a8923c061d9" prot="public" static="no">
+        <name>SDS_FLAG_RESET</name>
+        <initializer>(0x08000000UL)</initializer>
+        <briefdescription>
+<para>Flag used to request firmware reset (set to reset the firmware). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="196" column="9" bodyfile="sds/include/sds.h" bodystart="196" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>SDS Flag Bitmasks. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The following values are used by function <ref refid="group__SDS__Stream__Interface_1gacc58cf2b724d52c75d118a5c5ddc81d0" kindref="member">sdsFlagsModify</ref> and global variable <ref refid="group__SDS__Stream__Interface_1ga5dc742cda7ce949a6b73105b0be095ca" kindref="member">sdsFlags</ref>. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

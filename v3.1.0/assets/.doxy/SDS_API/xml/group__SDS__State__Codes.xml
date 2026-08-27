@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="group__SDS__State__Codes" kind="group">
+    <compoundname>SDS_State_Codes</compoundname>
+    <title>sdsState Codes</title>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="group__SDS__State__Codes_1ga5a907b659d9fc6e216b439f5a8d57aab" prot="public" static="no">
+        <name>SDS_STATE_INACTIVE</name>
+        <initializer>(0UL)</initializer>
+        <briefdescription>
+<para>Device is not connected to the host and streaming is not active. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="204" column="9" bodyfile="sds/include/sds.h" bodystart="204" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__State__Codes_1gaf024399c5bc1c5039781344237c0b131" prot="public" static="no">
+        <name>SDS_STATE_CONNECTED</name>
+        <initializer>(1UL)</initializer>
+        <briefdescription>
+<para>Device is connected to the host, but streaming is not active. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="205" column="9" bodyfile="sds/include/sds.h" bodystart="205" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__State__Codes_1gaf3dbe95252bc1daf54149780fa3b534b" prot="public" static="no">
+        <name>SDS_STATE_START</name>
+        <initializer>(2UL)</initializer>
+        <briefdescription>
+<para>Request to start streaming; open streams and get ready for read/write operations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="206" column="9" bodyfile="sds/include/sds.h" bodystart="206" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__State__Codes_1ga644145791174ce37a634c8a4849117ea" prot="public" static="no">
+        <name>SDS_STATE_ACTIVE</name>
+        <initializer>(3UL)</initializer>
+        <briefdescription>
+<para>Streaming is active. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="207" column="9" bodyfile="sds/include/sds.h" bodystart="207" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__State__Codes_1ga075dd3c7ac9d29ad30b24568c0734374" prot="public" static="no">
+        <name>SDS_STATE_STOP_REQ</name>
+        <initializer>(4UL)</initializer>
+        <briefdescription>
+<para>Request to stop streaming and close all open streams. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="208" column="9" bodyfile="sds/include/sds.h" bodystart="208" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__State__Codes_1ga4163f8773a87c556109c184f118ee833" prot="public" static="no">
+        <name>SDS_STATE_STOP_DONE</name>
+        <initializer>(5UL)</initializer>
+        <briefdescription>
+<para>Streaming has stopped. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="209" column="9" bodyfile="sds/include/sds.h" bodystart="209" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__State__Codes_1ga53d987b53be4e6630c55f0ecc5550851" prot="public" static="no">
+        <name>SDS_STATE_END</name>
+        <initializer>(6UL)</initializer>
+        <briefdescription>
+<para>Request to end streaming (e.g., no more playback data is available). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="210" column="9" bodyfile="sds/include/sds.h" bodystart="210" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__State__Codes_1gad98b7ed572340d850818401fe30c255b" prot="public" static="no">
+        <name>SDS_STATE_RESET</name>
+        <initializer>(7UL)</initializer>
+        <briefdescription>
+<para>Request to reset the device. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="211" column="9" bodyfile="sds/include/sds.h" bodystart="211" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__State__Codes_1gace7f9148e2614b1dd42cf6804f7b82e1" prot="public" static="no">
+        <name>SDS_STATE_TERMINATE</name>
+        <initializer>(8UL)</initializer>
+        <briefdescription>
+<para>Request to terminate the active session. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="212" column="9" bodyfile="sds/include/sds.h" bodystart="212" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>SDS State Codes. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The following values are used by global variable <ref refid="group__SDS__Stream__Interface_1gac5fbc1c61d43606b0c54a482781a2ce9" kindref="member">sdsState</ref>. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

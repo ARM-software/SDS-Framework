@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.13.2" xml:lang="en-US">
+  <compounddef id="group__SDS__Return__Codes" kind="group">
+    <compoundname>SDS_Return_Codes</compoundname>
+    <title>Function Return Codes</title>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="group__SDS__Return__Codes_1gafebe74e89e19cf971c72779eeaec6863" prot="public" static="no">
+        <name>SDS_OK</name>
+        <initializer>(0)</initializer>
+        <briefdescription>
+<para>Function completed successfully. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="35" column="9" bodyfile="sds/include/sds.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Return__Codes_1ga734982f7ce9f8eb3c592d540b605331b" prot="public" static="no">
+        <name>SDS_ERROR</name>
+        <initializer>(-1)</initializer>
+        <briefdescription>
+<para>Unspecified error. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="36" column="9" bodyfile="sds/include/sds.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Return__Codes_1ga2878077ff7828f21757082f0125577ad" prot="public" static="no">
+        <name>SDS_ERROR_PARAMETER</name>
+        <initializer>(-2)</initializer>
+        <briefdescription>
+<para>Invalid parameter passed to a function. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="37" column="9" bodyfile="sds/include/sds.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Return__Codes_1ga92e9c489cdb95b2b3c2350050f07e8b1" prot="public" static="no">
+        <name>SDS_ERROR_TIMEOUT</name>
+        <initializer>(-3)</initializer>
+        <briefdescription>
+<para>Function execution timed out. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="38" column="9" bodyfile="sds/include/sds.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Return__Codes_1ga3cca5be420b6b8fbdb3c56fedf535fbd" prot="public" static="no">
+        <name>SDS_ERROR_IO</name>
+        <initializer>(-4)</initializer>
+        <briefdescription>
+<para>I/O error during function execution. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="39" column="9" bodyfile="sds/include/sds.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Return__Codes_1ga5b26591fac6b0aff5dbfec00d2ea773b" prot="public" static="no">
+        <name>SDS_NO_SPACE</name>
+        <initializer>(-5)</initializer>
+        <briefdescription>
+<para>Insufficient space in SDS circular buffer to write the entire data block. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="40" column="9" bodyfile="sds/include/sds.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Return__Codes_1gadf38bbd9b95c00dc3fd512e04087c612" prot="public" static="no">
+        <name>SDS_NO_DATA</name>
+        <initializer>(-6)</initializer>
+        <briefdescription>
+<para>Insufficient data in SDS stream buffer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="41" column="9" bodyfile="sds/include/sds.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="group__SDS__Return__Codes_1gae272775a6617dce7b3728042876cadd8" prot="public" static="no">
+        <name>SDS_EOS</name>
+        <initializer>(-7)</initializer>
+        <briefdescription>
+<para>End of stream reached in read operation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="sds/include/sds.h" line="42" column="9" bodyfile="sds/include/sds.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>SDS Function Return Codes. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The following values are returned by most SDS functions. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>
