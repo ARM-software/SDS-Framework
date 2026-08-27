@@ -13,26 +13,8 @@
   <repository type="git">https://github.com/ARM-software/SDS-Framework.git</repository>
 
   <releases>
-    <release version="3.1.0-dev">
+    <release version="3.2.0-dev">
       Active development ...
-      SDS-Framework:
-      - Enhanced the SDS metadata schema, templates, and documentation
-      - Improved robustness
-      SDSIO-Server:
-      - Added an option to automatically terminate after playback completion
-      - Added an option to suppress the progress indicator
-      - Added CI termination signaling upon playback completion
-      - Added support for playback step selection
-      SDSIO-VSI:
-      - Improved the shutdown procedure
-      Template:
-      - Corrected idle-time measurement
-      - Improved robustness
-      SDS-Convert:
-      - Added support for the updated SDS metadata schema
-      - Renamed simple_csv format to csv
-      SDS-View:
-      - Added support for the updated SDS metadata schema
     </release>
   </releases>
 
