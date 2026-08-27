@@ -32,7 +32,7 @@ To access [SDS data files](theory.md#sds-data-files), configure the `*.sdsio.yml
 
 ```bash
 >python sdsio-server.py -c myproject.sdsio.yml
-SDSIO-Server v3.0.0
+SDSIO-Server v3.1.0
 Press 'Ctrl+C' or 'X' to exit.
 Working directory: ...\SDS_data
 SDSIO configuration YAML: ...\myproject.sdsio.yml
@@ -60,7 +60,7 @@ To access [SDS data files](theory.md#sds-data-files), configure the `*.sdsio.yml
 
 ```bash
 >python sdsio-server.py -c myproject.sdsio.yml
-SDSIO-Server v3.0.0
+SDSIO-Server v3.1.0
 Press 'Ctrl+C' or 'X' to exit.
 Working directory: ...\SDS_data
 SDSIO configuration YAML: ...\myproject.sdsio.yml
@@ -230,7 +230,7 @@ During FVP simulation, an `sdsio.log` file is generated that records all [SDS da
 ```txt
 Created by ...\Board\Corstone-300\vsi\python\arm_vsi3.py
 
-SDSIO VSI version 3.0.0
+SDSIO VSI version 3.1.0
 SDSIO_FVP environment variable not set.
 Working directory: ...\datatest\SDS Recordings.
 SDSIO configuration YAML: ...\SDS\datatest.sdsio.yml.
