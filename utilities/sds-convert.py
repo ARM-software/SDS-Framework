@@ -513,7 +513,6 @@ def get_color_conversion(pixel_format):
         'I420': cv2.COLOR_YUV2BGR_I420,
         'YUV444': cv2.COLOR_YUV2BGR,
         'YUV444P': cv2.COLOR_YUV2BGR,
-        'RAW8': None,  # Grayscale, no conversion needed
     }
     return conversions.get(pixel_format, None)
 
