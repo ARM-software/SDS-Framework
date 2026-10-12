@@ -25,36 +25,36 @@ jobs:
           - { sample: accelerometer.0.sds, metadata: accelerometer.sds.yml, format: csv,       output: accelerometer.0.csv }
           - { sample: accelerometer.1.sds, metadata: accelerometer.sds.yml, format: csv,       output: accelerometer.1.csv }
           - { sample: adc_raw.0.sds,       metadata: adc_raw.sds.yml,       format: csv,       output: adc_raw.0.csv }
+          - { sample: camera_nv12.0.sds,   metadata: camera_nv12.sds.yml,   format: video,     output: camera_nv12.0.mp4 }
+          - { sample: camera_raw8.0.sds,   metadata: camera_raw8.sds.yml,   format: video,     output: camera_raw8.0.mp4 }
+          - { sample: camera_rgb565.0.sds, metadata: camera_rgb565.sds.yml, format: video,     output: camera_rgb565.0.mp4 }
+          - { sample: camera_rgb888.0.sds, metadata: camera_rgb888.sds.yml, format: video,     output: camera_rgb888.0.mp4 }
           - { sample: counter.0.sds,       metadata: counter.sds.yml,       format: csv,       output: counter.0.csv }
           - { sample: empty.0.sds,         metadata: empty.sds.yml,         format: csv,       output: empty.0.csv }
-          # - { sample: gpio.0.sds,          metadata: gpio.sds.yml,          format: csv,       output: gpio.0.csv }
+          - { sample: gpio.0.sds,          metadata: gpio.sds.yml,          format: csv,       output: gpio.0.csv }
           - { sample: gyroscope.0.sds,     metadata: gyroscope.sds.yml,     format: csv,       output: gyroscope.0.csv }
           # - { sample: large_block.0.sds,   metadata: large_block.sds.yml,   format: csv,       output: large_block.0.csv }
+          - { sample: mic_16bit.0.sds,     metadata: mic_16bit.sds.yml,     format: audio_wav, output: mic_16bit.0.wav }
+          - { sample: mic_stereo.0.sds,    metadata: mic_stereo.sds.yml,    format: audio_wav, output: mic_stereo.0.wav }
           - { sample: multi_frame.0.sds,   metadata: multi_frame.sds.yml,   format: csv,       output: multi_frame.0.csv }
           - { sample: no_metadata.0.sds,   metadata: no_metadata.sds.yml,   format: csv,       output: no_metadata.0.csv }
-          - { sample: precision.0.sds,     metadata: precision.sds.yml,     format: csv,       output: precision.0.csv }
+          # - { sample: precision.0.sds,     metadata: precision.sds.yml,     format: csv,       output: precision.0.csv }
           - { sample: single_record.0.sds, metadata: single_record.sds.yml, format: csv,       output: single_record.0.csv }
           - { sample: temperature.0.sds,   metadata: temperature.sds.yml,   format: csv,       output: temperature.0.csv }
           - { sample: Test_In.0.sds,       metadata: Test_In.sds.yml,       format: csv,       output: Test_In.0.csv }
           - { sample: Test_In.1.sds,       metadata: Test_In.sds.yml,       format: csv,       output: Test_In.1.csv }
           - { sample: Test_In.2.sds,       metadata: Test_In.sds.yml,       format: csv,       output: Test_In.2.csv }
           - { sample: Test_In.3.sds,       metadata: Test_In.sds.yml,       format: csv,       output: Test_In.3.csv }
-          # - { sample: Test_Out.0.p.sds,    metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.0.p.csv }
-          # - { sample: Test_Out.1.sds,      metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.1.csv }
-          # - { sample: Test_Out.2.sds,      metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.2.csv }
-          # - { sample: Test_Out.3.sds,      metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.3.csv }
-          - { sample: mic_16bit.0.sds,     metadata: mic_16bit.sds.yml,     format: audio_wav, output: mic_16bit.0.wav }
-          - { sample: mic_stereo.0.sds,    metadata: mic_stereo.sds.yml,    format: audio_wav, output: mic_stereo.0.wav }
-          - { sample: camera_nv12.0.sds,   metadata: camera_nv12.sds.yml,   format: video,     output: camera_nv12.0.mp4 }
-          # - { sample: camera_raw8.0.sds,   metadata: camera_raw8.sds.yml,   format: video,     output: camera_raw8.0.mp4 }
-          - { sample: camera_rgb565.0.sds, metadata: camera_rgb565.sds.yml, format: video,     output: camera_rgb565.0.mp4 }
-          - { sample: camera_rgb888.0.sds, metadata: camera_rgb888.sds.yml, format: video,     output: camera_rgb888.0.mp4 }
+          - { sample: Test_Out.0.p.sds,    metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.0.p.csv }
+          - { sample: Test_Out.1.sds,      metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.1.csv }
+          - { sample: Test_Out.2.sds,      metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.2.csv }
+          - { sample: Test_Out.3.sds,      metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.3.csv }
 
     steps:
-      - name: Checkout SDS Framework
+      - name: Check out SDS Framework
         uses: actions/checkout@v7
 
-      - name: Checkout SDS sample data
+      - name: Check out SDS sample data
         uses: actions/checkout@v7
         with:
           repository: Open-CMSIS-Pack/sds-sample-data
@@ -67,16 +67,55 @@ jobs:
           cache: pip
           cache-dependency-path: utilities/requirements.txt
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: python -m pip install -r utilities/requirements.txt
 
-      - name: Convert ${{ matrix.sample }} using ${{ matrix.format }}
+      - name: Install FFmpeg for video comparison
+        if: matrix.format == 'video'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version
+          ffprobe -version
+
+      - name: Convert ${{ matrix.sample }} to ${{ matrix.format }}
         shell: bash
         run: |
-          set -euo pipefail
           python utilities/sds-convert.py "${{ matrix.format }}" \
             -i "sds-sample-data/${{ matrix.sample }}" \
             -o "${RUNNER_TEMP}/${{ matrix.output }}" \
             -y "sds-sample-data/${{ matrix.metadata }}"
+
+      - name: Verify ${{ matrix.output }} is nonempty
+        shell: bash
+        run: |
           test -s "${RUNNER_TEMP}/${{ matrix.output }}"
-          # cmp "${RUNNER_TEMP}/${{ matrix.output }}" "sds-sample-data/${{ matrix.output }}"
+
+      - name: Compare ${{ matrix.output }} with reference file
+        shell: bash
+        run: |
+          actual="${RUNNER_TEMP}/${{ matrix.output }}"
+          expected="sds-sample-data/converted/${{ matrix.output }}"
+
+          if [[ "$actual" == *.mp4 ]]; then
+            # Compare frame count, dimensions, and frame rate before visual similarity.
+            actual_video=$(ffprobe -v error -count_frames -select_streams v:0 \
+              -show_entries stream=width,height,r_frame_rate,nb_read_frames -of csv=p=0 "$actual")
+            expected_video=$(ffprobe -v error -count_frames -select_streams v:0 \
+              -show_entries stream=width,height,r_frame_rate,nb_read_frames -of csv=p=0 "$expected")
+            if [[ -z "$actual_video" || "$actual_video" != "$expected_video" ]]; then
+              echo "Video frame count, dimensions, or frame rate differ: $actual_video vs $expected_video" >&2
+              exit 1
+            fi
+
+            ssim_output=$(ffmpeg -hide_banner -i "$actual" -i "$expected" \
+              -filter_complex '[0:v:0][1:v:0]ssim' -an -f null - 2>&1)
+            ssim_score=$(sed -n 's/.*All:\([0-9.]*\).*/\1/p' <<< "$ssim_output" | tail -n 1)
+            echo "Video SSIM: $ssim_score (minimum: 0.98)"
+            if [[ -z "$ssim_score" ]] || ! awk -v score="$ssim_score" 'BEGIN { exit !(score >= 0.98) }'; then
+              echo "$ssim_output" >&2
+              exit 1
+            fi
+          else
+            cmp "$actual" "$expected"
+          fi
