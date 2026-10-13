@@ -15,6 +15,9 @@
   <releases>
     <release version="3.2.0-dev">
       Active development ...
+      SDS-Convert:
+      - Fixed handling of result collection records
+      - Fixed tick-frequency support
     </release>
   </releases>
 

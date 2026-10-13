@@ -258,22 +258,28 @@ def prepareData(meta_data, raw_data, data_manipulation):
 
 # Write data to CSV file, simple format
 # Only supports one sensor at a time
-def write_SDS_SimpleCSV(args, data, meta_data):
+def write_SDS_SimpleCSV(args, data, meta_data, sample_frequency, tick_frequency):
     normalize = args.normalize
     csv_start_timeslot = args.start_timeslot
     csv_stop_timeslot = args.stop_timeslot
 
-    # Automatically generate new column for each sensor channel
+    # Generate columns for each value in each record of a block
     csv_header = ['timeslot']
-    for channel in meta_data:
-        channel_name = channel["value"]
-        csv_header.append(channel_name)
+    # max_block_content_cnt is maximum number of times that content described by metadata can fit into largest data block
+    max_block_content_cnt = 1
+    if sample_frequency is None and data["data_size"]:
+        record_size = calcsize("=" + "".join(getDataType(value["type"]) for value in meta_data))
+        max_block_content_cnt = max(data["data_size"]) // record_size
+    for i in range(max_block_content_cnt):
+        for value in meta_data:
+            value_name = value["value"]
+            csv_header.append(f"{value_name}_{i}" if max_block_content_cnt > 1 else value_name)
 
     # Write header to CSV file
     writer.writerow(csv_header)
 
-    # Convert [ms] to [s]
-    timeslot = [t / 1000 for t in data["timeslot"]]
+    # Convert ticks to seconds
+    timeslot = [t / tick_frequency for t in data["timeslot"]]
     data_size = data["data_size"]
 
     cnt = 0
@@ -284,7 +290,7 @@ def write_SDS_SimpleCSV(args, data, meta_data):
         if cnt == cnt_max:
             break
 
-        # Create a list of lists, based on the number of channels
+        # Create a list of lists, based on the number of values
         record_row = [[] for i in range(0, len(meta_data))]
 
         # Extract needed data and flush used bytes from buffer
@@ -300,6 +306,18 @@ def write_SDS_SimpleCSV(args, data, meta_data):
             # Normalize output timeslots
             if normalize:
                 csv_timeslot -= timeslot[0]
+            # Without a sample frequency, records share the block timeslot
+            if sample_frequency is None:
+                # If start/stop timeslot parameters are specified, write to output file
+                # when timeslots are between selected boundaries
+                if (csv_start_timeslot is None) or (csv_timeslot >= csv_start_timeslot):
+                    if (csv_stop_timeslot is None) or (csv_timeslot < csv_stop_timeslot):
+                        tmp_record_row = [record_row[value_index][i] for i in range(len(record_row[0])) for value_index in range(len(meta_data))]
+                        writer.writerow([float(csv_timeslot)] + tmp_record_row)
+                    else:
+                        break
+                cnt += 1
+                continue
             # Get number of samples in this record
             n_samples = len(record_row[0])
             # Interpolate timeslots if there is more than one data point in this record
@@ -795,12 +813,14 @@ def main():
         sensor_name = []
         meta_data = {}
         sensor_frequency = {}
+        tick_frequency = {}
         for filename in args.yaml:
             try:
                 with open(filename, "r") as file:
                     yaml_data = yaml.load(file, Loader=yaml.FullLoader)["sds"]
                     sensor_name.append(yaml_data["name"])
                     sensor_frequency[sensor_name[-1]] = getSampleFrequency(yaml_data)
+                    tick_frequency[sensor_name[-1]] = yaml_data.get("tick-frequency", 1000)
                     meta_data[sensor_name[-1]] = yaml_data["content"]
             except Exception as e:
                 sys.exit(f"Error loading YAML file: {e}")
@@ -843,7 +863,8 @@ def main():
                     sys.exit("CSV file format only supports 1 metadata and 1 SDS file")
                 requireValueMetadata(meta_data[sensor_name[0]], "CSV")
                 createCSV(filename)
-                write_SDS_SimpleCSV(args, data[sensor_name[0]], meta_data[sensor_name[0]])
+                write_SDS_SimpleCSV(args, data[sensor_name[0]], meta_data[sensor_name[0]],
+                                    sensor_frequency[sensor_name[0]], tick_frequency[sensor_name[0]])
         else:
             readCSV(filename)
 
