@@ -29,16 +29,19 @@ jobs:
           - { sample: camera_raw8.0.sds,   metadata: camera_raw8.sds.yml,   format: video,     output: camera_raw8.0.mp4 }
           - { sample: camera_rgb565.0.sds, metadata: camera_rgb565.sds.yml, format: video,     output: camera_rgb565.0.mp4 }
           - { sample: camera_rgb888.0.sds, metadata: camera_rgb888.sds.yml, format: video,     output: camera_rgb888.0.mp4 }
+          - { sample: CameraIn.0.sds,      metadata: CameraIn.sds.yml,      format: video,     output: CameraIn.0.mp4 }
           - { sample: counter.0.sds,       metadata: counter.sds.yml,       format: csv,       output: counter.0.csv }
+          - { sample: Detections.0.sds,    metadata: Detections.sds.yml,    format: csv,       output: Detections.0.csv }
           - { sample: empty.0.sds,         metadata: empty.sds.yml,         format: csv,       output: empty.0.csv }
           - { sample: gpio.0.sds,          metadata: gpio.sds.yml,          format: csv,       output: gpio.0.csv }
           - { sample: gyroscope.0.sds,     metadata: gyroscope.sds.yml,     format: csv,       output: gyroscope.0.csv }
-          # - { sample: large_block.0.sds,   metadata: large_block.sds.yml,   format: csv,       output: large_block.0.csv }
+          - { sample: large_block.0.sds,   metadata: large_block.sds.yml,   format: csv,       output: large_block.0.csv }
+          - { sample: large_block.1.sds,   metadata: large_block.sds.yml,   format: csv,       output: large_block.1.csv }
           - { sample: mic_16bit.0.sds,     metadata: mic_16bit.sds.yml,     format: audio_wav, output: mic_16bit.0.wav }
           - { sample: mic_stereo.0.sds,    metadata: mic_stereo.sds.yml,    format: audio_wav, output: mic_stereo.0.wav }
           - { sample: multi_frame.0.sds,   metadata: multi_frame.sds.yml,   format: csv,       output: multi_frame.0.csv }
           - { sample: no_metadata.0.sds,   metadata: no_metadata.sds.yml,   format: csv,       output: no_metadata.0.csv }
-          # - { sample: precision.0.sds,     metadata: precision.sds.yml,     format: csv,       output: precision.0.csv }
+          - { sample: precision.0.sds,     metadata: precision.sds.yml,     format: csv,       output: precision.0.csv }
           - { sample: single_record.0.sds, metadata: single_record.sds.yml, format: csv,       output: single_record.0.csv }
           - { sample: temperature.0.sds,   metadata: temperature.sds.yml,   format: csv,       output: temperature.0.csv }
           - { sample: Test_In.0.sds,       metadata: Test_In.sds.yml,       format: csv,       output: Test_In.0.csv }
