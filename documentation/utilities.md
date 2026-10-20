@@ -38,7 +38,7 @@ Perform the following steps to setup the Python environment for using the SDS ut
 ### Windows
 
 - On Windows, ensure that the environment variable **PATHEXT** contains the extension `.PY`.
-- For native Windows ARM64, see the [SDSIO-Server setup instructions](https://github.com/ARM-software/SDS-Framework/blob/main/utilities/README.md#windows-on-arm64). These cover server-only Python dependencies, the ARM64 libusb DLL, and the WinUSB device driver required for USB transport.
+- For Windows x64 or ARM64, use the matching [standalone SDSIO-Server build](https://github.com/ARM-software/SDS-Framework/blob/main/utilities/README.md#windows-on-arm64), which includes Python, its server dependencies, and the corresponding libusb DLL. Skip the Python/pip setup above when using this executable. USB transport still requires the target's WinUSB driver binding; no manual DLL installation is needed.
 
 !!! Tip
     - When the **Path** environment variable is configured, you may simply start the utilities by using its name. For example, entering `>sdsio-server` starts the utility.
