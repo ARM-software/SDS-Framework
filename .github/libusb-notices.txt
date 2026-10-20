@@ -1,0 +1,28 @@
+SDSIO-Server Windows builds: third-party USB components
+
+libusb 1.0.30: https://github.com/libusb/libusb/releases/tag/v1.0.30
+Copyright the libusb authors; GNU LGPL version 2.1 or later.
+The matching x64 or ARM64 DLL is embedded in sdsio-server.exe and dynamically loaded.
+COPYING.libusb contains the license; libusb-1.0.30.tar.bz2 contains its source.
+
+The libusb1 Python wrapper is also LGPL version 2.1 or later. Its corresponding
+source distribution, including license texts, is included alongside this notice;
+the archive filename identifies the version used for this build.
+
+application-source.zip contains the SDSIO-Server source, Apache-2.0 license,
+Python dependency list, and build documentation from this build's revision.
+Other Python components retain their respective licenses.
+
+Rebuilding with a modified or replacement USB library:
+1. Extract application-source.zip and use Python matching the executable's
+   architecture (native ARM64 Python for ARM64, x64 Python for x64).
+2. In a virtual environment, install PyInstaller and the dependencies:
+   python -m pip install pyinstaller -r .github\requirements-sdsio-server.txt
+   To modify the Python wrapper, install your edited libusb1 source instead.
+3. Build libusb from the included source using its Windows build instructions,
+   or obtain a compatible libusb-1.0.dll of your choice.
+4. From the extracted application source root, run (substitute the DLL path):
+   python -m PyInstaller --clean --noconfirm --onefile --name sdsio-server --add-binary "C:\path\to\libusb-1.0.dll:usb1" utilities\sdsio-server.py
+5. The replacement executable is in dist\sdsio-server.exe.
+
+Keep this directory with the executable when redistributing the artifact.

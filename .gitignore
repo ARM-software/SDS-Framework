@@ -86,3 +86,7 @@ uv2csolution.log
 
 # legacy intermediate project file
 *.cprj
+
+# build artifacts
+**/build
+**/__pycache__
