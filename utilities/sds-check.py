@@ -22,6 +22,8 @@ import struct
 import argparse
 import os.path
 
+SDS_CHECK_VERSION = "3.1.0"
+
 info = {}
 
 class RecordManager:
@@ -161,6 +163,8 @@ def main():
     formatter = lambda prog: argparse.HelpFormatter(prog,max_help_position=60)
     parser = argparse.ArgumentParser(description="SDS data validation", formatter_class=formatter, add_help=False)
     parser.add_argument("-h", "--help", action="help", help="Show this help message and exit")
+    parser.add_argument("-V", "--version", action="version", help="Show program's version number and exit",
+                        version=f"SDS-Check {SDS_CHECK_VERSION}")
 
     required = parser.add_argument_group("required")
     required.add_argument("-i", dest="sds", metavar="<sds_file>", help="SDS file", required=True)
