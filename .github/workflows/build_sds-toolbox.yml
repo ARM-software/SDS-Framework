@@ -1,0 +1,142 @@
+name: Build SDS-Toolbox
+
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - published
+  schedule:
+    - cron: '0 0 * * *' # Nightly at 00:00 UTC
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build SDS-Toolbox for ${{ matrix.target.platform }}
+    runs-on: ${{ matrix.target.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - { os: windows-2025,     platform: windows-amd64, venv_bin: 'Scripts', pyinstaller_args: '' }
+          # - { os: windows-11-arm,   platform: windows-arm64, venv_bin: 'Scripts', pyinstaller_args: '' }
+          - { os: macos-15,         platform: darwin-arm64,  venv_bin: 'bin', pyinstaller_args: --strip }
+          - { os: ubuntu-24.04,     platform: linux-amd64,   venv_bin: 'bin', pyinstaller_args: --strip }
+          - { os: ubuntu-24.04-arm, platform: linux-arm64,   venv_bin: 'bin', pyinstaller_args: --strip }
+    defaults:
+      run:
+        shell: bash
+    env:
+      PACKAGE_DIR: sds-toolbox-${{ matrix.target.platform }}
+      PYINSTALLER_ARGS: ${{ matrix.target.pyinstaller_args }}
+      UTILITIES: sds-check sds-convert sds-view sdsio-server
+      BUILD_UTILITY: &build-utility |
+        build_dir="$RUNNER_TEMP/sds-build-$UTILITY"
+        python -m venv "$build_dir/venv"
+        source "$build_dir/venv/${{ matrix.target.venv_bin }}/activate"
+
+        python -m pip install pyinstaller $REQUIREMENTS
+        export PYINSTALLER_CONFIG_DIR="$build_dir/cache"
+        python -m PyInstaller --clean --noconfirm --onefile \
+          --name "$UTILITY" --distpath "$PACKAGE_DIR/bin" \
+          --workpath "$build_dir/work" --specpath "$build_dir" \
+          $PYINSTALLER_ARGS $EXTRA_ARGS "utilities/$UTILITY.py"
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: .github/workflows/build_sds-toolbox.yml
+
+      - parallel:
+          - name: Build sds-check
+            env:
+              UTILITY: sds-check
+              REQUIREMENTS: ''
+            run: *build-utility
+
+          - name: Build sds-convert
+            env:
+              UTILITY: sds-convert
+              REQUIREMENTS: numpy pandas pyyaml opencv-python-headless
+            run: *build-utility
+
+          - name: Build sds-view
+            env:
+              UTILITY: sds-view
+              REQUIREMENTS: matplotlib numpy pyyaml
+              EXTRA_ARGS: --hidden-import=matplotlib.backends.backend_tkagg --hidden-import=PIL._tkinter_finder
+            run: *build-utility
+
+          - name: Build sdsio-server
+            env:
+              UTILITY: sdsio-server
+              REQUIREMENTS: ifaddr pyyaml pyserial libusb1
+            run: *build-utility
+
+      - name: Check executables
+        run: |
+          for utility in $UTILITIES; do
+            "$PACKAGE_DIR/bin/$utility" --version
+          done
+
+      - name: Prepare archive name
+        run: |
+          version=$(git describe --tags --always)
+          echo "ARCHIVE_NAME=$PACKAGE_DIR-$version" >> "$GITHUB_ENV"
+
+      - name: Create platform archive
+        run: |
+          cp LICENSE "$PACKAGE_DIR/LICENSE"
+          if [[ "${{ runner.os }}" == Windows ]]; then
+            7z a "$ARCHIVE_NAME.zip" "$PACKAGE_DIR"
+          else
+            tar -czf "$ARCHIVE_NAME.tar.gz" "$PACKAGE_DIR"
+          fi
+
+      - name: Upload platform archive
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: ${{ env.ARCHIVE_NAME }}.*
+          archive: false
+          if-no-files-found: error
+          retention-days: 1
+
+  release:
+    name: Attach archives to GitHub release
+    if: github.event_name == 'release'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download platform archives
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: artifacts
+          pattern: sds-toolbox-*
+          merge-multiple: true
+          skip-decompress: true
+
+      - name: Upload archives to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" artifacts/sds-toolbox-* --repo "$GITHUB_REPOSITORY" --clobber
