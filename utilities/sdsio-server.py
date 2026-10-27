@@ -2390,12 +2390,12 @@ def parse_arguments():
     _parser.is_top_level = True
     _parser.usage = "%(prog)s [-h] [-V] [{socket | serial | usb} [interface-opts]] [-c sdsio.yml] [general-opts]"
 
-    def _add_info_opts(p, version_text=None):
+    def _add_info_opts(p):
         _options = p.add_argument_group("options")
         _options.add_argument("--help", "-h", help="Show this help message and exit", action="help")
         _options.add_argument("--version", "-V", action="version",
                               help="Show program's version number and exit",
-                              version=version_text or f"%(prog)s {SDSIO_SERVER_VERSION}")
+                              version=f"SDSIO-Server {SDSIO_SERVER_VERSION}")
 
     _add_info_opts(_parser)
 
@@ -2452,7 +2452,7 @@ def parse_arguments():
     _parser_socket.is_subparser = True
     _parser_socket.error_hint = "For help on how to use the socket interface and its arguments, run: %(prog)s -h"
     _parser_socket.usage = "%(prog)s [-h] [-V] [--ipaddr <IP> | --netif <Interface>] [--port <TCP Port>] [--connect [<message>]] [--connect-time <ms>] [general-opts]"
-    _add_info_opts(_parser_socket, version_text=f"{_parser.prog} {SDSIO_SERVER_VERSION}")
+    _add_info_opts(_parser_socket)
 
     _socket_group = _parser_socket.add_argument_group("interface-opts (optional)")
     _socket_group.add_argument("--ipaddr", dest="ip", metavar="<IP>",
@@ -2483,7 +2483,7 @@ def parse_arguments():
     _parser_serial.is_subparser = True
     _parser_serial.error_hint = "For help on how to use the serial interface and its arguments, run: %(prog)s -h"
     _parser_serial.usage = "%(prog)s [-h] [-V] --port <Serial Port> [--baudrate <Baudrate>] [--parity <Parity>] [--stopbits <Stop bits>] [--connect-timeout <Timeout>] [general-opts]"
-    _add_info_opts(_parser_serial, version_text=f"{_parser.prog} {SDSIO_SERVER_VERSION}")
+    _add_info_opts(_parser_serial)
 
     _serial_required = _parser_serial.add_argument_group("interface-opts (required)")
     _serial_required.add_argument("--port", dest="port", metavar="<Serial Port>",
@@ -2518,7 +2518,7 @@ def parse_arguments():
     _parser_usb.is_subparser = True
     _parser_usb.error_hint = "For help on how to use the USB interface and its arguments, run: %(prog)s -h"
     _parser_usb.usage = "%(prog)s [-h] [-V] [general-opts]"
-    _add_info_opts(_parser_usb, version_text=f"{_parser.prog} {SDSIO_SERVER_VERSION}")
+    _add_info_opts(_parser_usb)
     _add_general_opts(_parser_usb)
 
     _general = _parser.add_argument_group("general-opts")
@@ -2597,7 +2597,7 @@ async def main():
     global logger, spinner
     logger = _log
     spinner = _spinner
-    logger.info("SDSIO-Server v%s", SDSIO_SERVER_VERSION)
+    logger.info("SDSIO-Server %s", SDSIO_SERVER_VERSION)
     logger.info("Press 'Ctrl+C' or 'X' to exit.")
 
     # Open and parse the control YAML if provided, and apply any configuration

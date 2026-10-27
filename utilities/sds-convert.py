@@ -33,6 +33,7 @@ except ImportError as err:
 except Exception as e:
     print(f"SDS-Convert: Exception: {type(e).__name__}")
 
+SDS_CONVERT_VERSION = "3.1.0"
 
 class RecordManager:
     def __init__(self):
@@ -667,6 +668,8 @@ def main():
         formatter_class=formatter,
         add_help=False)
     parser.add_argument("-h", "--help", action="help", help="Show this help message and exit")
+    parser.add_argument("-V", "--version", action="version", help="Show program's version number and exit",
+                        version=f"SDS-Convert {SDS_CONVERT_VERSION}")
 
     subparsers = parser.add_subparsers(
         dest="convert_format",
