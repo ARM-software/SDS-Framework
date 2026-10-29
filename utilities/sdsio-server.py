@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "3.1.0"
+SDSIO_SERVER_VERSION = "3.1.1"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -349,21 +349,24 @@ class sdsMonitorInterface():
                 _play_step_desc = "all" if _play_step == SDSIO_MON_PLAY_STEP_ALL else str(_play_step)
                 _play_step_msg = f", play_step={_play_step_desc}"
                 logger.info(f"Monitor command received: SDSIO_MON_FLAGS (set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}{_play_step_msg}).")
-                if not self._playback_selector:
-                    logger.warning(f"Monitor play step request ignored: {_play_step_desc}.")
-                    del self._recv_buf[:16]
-                    continue
-                _selected_play_step = None if _play_step == SDSIO_MON_PLAY_STEP_ALL else _play_step
-                if not self._playback_selector(_selected_play_step):
-                    del self._recv_buf[:16]
-                    continue
+                _playback_start_mask = SDS_FLAG_MASK_START | SDS_FLAG_MASK_PLAYBACK_MODE
+                _playback_start = (
+                    (_set_flags & _playback_start_mask) == _playback_start_mask
+                    and not (_clear_flags & _playback_start_mask)
+                )
+                if _playback_start or not (_set_flags or _clear_flags):
+                    if not self._playback_selector:
+                        logger.warning(f"Monitor play step request ignored: {_play_step_desc}.")
+                        del self._recv_buf[:16]
+                        continue
+                    _selected_play_step = None if _play_step == SDSIO_MON_PLAY_STEP_ALL else _play_step
+                    if not self._playback_selector(_selected_play_step):
+                        del self._recv_buf[:16]
+                        continue
                 if self._flags:
-                    _playback_start_mask = SDS_FLAG_MASK_START | SDS_FLAG_MASK_PLAYBACK_MODE
-                    _auto_playback = (
-                        _play_step == SDSIO_MON_PLAY_STEP_ALL
-                        and (_set_flags & _playback_start_mask) == _playback_start_mask
-                        and not (_clear_flags & _playback_start_mask)
-                    )
+                    _auto_playback = None
+                    if _playback_start or (_clear_flags & SDS_FLAG_MASK_START):
+                        _auto_playback = _playback_start and _play_step == SDSIO_MON_PLAY_STEP_ALL
                     self._flags.apply(_set_flags, _clear_flags, auto_playback=_auto_playback)
             elif _cmd == SDSIO_MON_SHUTDOWN:
                 logger.info("Monitor command received: SDSIO_MON_SHUTDOWN.")
@@ -458,7 +461,7 @@ class sdsFlags:
             self._clear  = (self._clear | clear_mask) & ~set_mask
             if set_mask & SDS_FLAG_MASK_PLAYBACK_MODE:
                 self._playback_mode = True
-            if not self._auto_playback and (clear_mask & SDS_FLAG_MASK_PLAYBACK_MODE):
+            if clear_mask & SDS_FLAG_MASK_PLAYBACK_MODE:
                 self._playback_mode = False
 
     def update_from_target(self, flags: int):
@@ -468,7 +471,7 @@ class sdsFlags:
                 self._auto_start_pending = False
             if flags & SDS_FLAG_MASK_PLAYBACK_MODE:
                 self._playback_mode = True
-            elif not self._auto_playback:
+            else:
                 self._playback_mode = False
 
     def request_auto_playback_start(self) -> bool:
@@ -512,7 +515,7 @@ class sdsFlags:
     def consume_clear(self) -> int:
         with self._lock:
             _val = self._clear
-            if not self._auto_playback and (_val & SDS_FLAG_MASK_PLAYBACK_MODE):
+            if _val & SDS_FLAG_MASK_PLAYBACK_MODE:
                 self._playback_mode = False
             self._clear = 0
             return _val
