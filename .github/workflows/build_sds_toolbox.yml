@@ -1,0 +1,140 @@
+name: Build SDS-Toolbox
+
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - published
+  schedule:
+    - cron: '0 0 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build ${{ matrix.utility.name }} on ${{ matrix.target.os }}
+    runs-on: ${{ matrix.target.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - { os: windows-2025,     platform: windows,     pyinstaller_args: '' }
+          # - { os: windows-11-arm,   platform: windows-arm64, pyinstaller_args: '' }
+          - { os: macos-15,         platform: macos,       pyinstaller_args: --strip }
+          - { os: ubuntu-24.04,     platform: linux,       pyinstaller_args: --strip }
+          - { os: ubuntu-24.04-arm, platform: linux-arm64, pyinstaller_args: --strip }
+        utility:
+          - name: sds-check
+            requirements: ''
+            pyinstaller_args: ''
+          - name: sds-convert
+            requirements: numpy pandas pyyaml opencv-python-headless
+            pyinstaller_args: ''
+          - name: sds-view
+            requirements: matplotlib numpy pyyaml
+            pyinstaller_args: --hidden-import=matplotlib.backends.backend_tkagg --hidden-import=PIL._tkinter_finder
+          - name: sdsio-server
+            requirements: ifaddr pyyaml pyserial libusb1
+            pyinstaller_args: ''
+    defaults:
+      run:
+        shell: bash
+    env:
+      UTILITY_NAME: ${{ matrix.utility.name }}
+      UTILITY_REQUIREMENTS: ${{ matrix.utility.requirements }}
+      PYINSTALLER_ARGS: ${{ matrix.target.pyinstaller_args }} ${{ matrix.utility.pyinstaller_args }}
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      - name: Install utility dependencies
+        if: ${{ matrix.utility.requirements != '' }}
+        run: pip install $UTILITY_REQUIREMENTS
+
+      - name: Build executable
+        run: |
+          pyinstaller --clean --noconfirm --onefile --name "$UTILITY_NAME" $PYINSTALLER_ARGS "utilities/$UTILITY_NAME.py"
+
+      - name: Check executable version
+        run: dist/"$UTILITY_NAME" --version
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ matrix.utility.name }}-${{ matrix.target.platform }}
+          path: dist/${{ matrix.utility.name }}*
+          retention-days: 1
+
+  # Package SDS-Toolbox for different platforms
+  package:
+    name: Package SDS-Toolbox for ${{ matrix.platform }}
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: write
+    strategy:
+      matrix:
+        platform: [windows, linux, macos, linux-arm64]
+    env:
+      PLATFORM: ${{ matrix.platform }}
+      UTILITIES: sds-check sds-convert sds-view sdsio-server
+
+    steps:
+      - name: Download platform executables
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: '*-${{ matrix.platform }}'
+          path: bin
+          merge-multiple: true
+
+      - name: Create platform archive
+        shell: bash
+        run: |
+          suffix=""
+          if [ "$PLATFORM" = windows ]; then suffix=".exe"; fi
+
+          for utility in $UTILITIES; do
+            test -f "bin/$utility$suffix"
+          done
+
+          if [ "$PLATFORM" != windows ]; then chmod +x bin/*; fi
+          zip -q -r "sds-toolbox-$PLATFORM.zip" bin
+
+      - name: Upload platform archive
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: sds-toolbox-${{ matrix.platform }}.zip
+          archive: false
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Remove temporary tool artifacts
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for utility in $UTILITIES; do
+            artifact_id=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts?per_page=100" \
+              --jq ".artifacts[] | select(.name == \"$utility-$PLATFORM\") | .id")
+            test -n "$artifact_id"
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id"
+          done

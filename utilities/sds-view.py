@@ -24,6 +24,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import yaml
 
+SDS_VIEW_VERSION = "3.1.0"
 
 class RecordManager:
     def __init__(self):
@@ -223,6 +224,9 @@ def main():
                                      add_help=False)
     parser.add_argument("-h", "--help", action="help",
                           help="Show this help message and exit")
+    parser.add_argument("-V", "--version", action="version",
+                          help="Show program's version number and exit",
+                          version=f"SDS-View {SDS_VIEW_VERSION}")
 
     required = parser.add_argument_group("required")
     required.add_argument("-i", dest="sds", metavar="<sds_file>",
