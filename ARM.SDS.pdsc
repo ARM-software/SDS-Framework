@@ -15,6 +15,11 @@
   <releases>
     <release version="3.2.0-dev">
       Active development ...
+      SDSIO-Server:
+      - Fixed monitor flag updates blocked by playback selection
+      - Improved automatic playback control and termination
+      SDSIO-VSI:
+      - Synchronized playback control with SDSIO-Server
     </release>
   </releases>
 
