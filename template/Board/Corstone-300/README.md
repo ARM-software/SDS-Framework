@@ -44,7 +44,7 @@ stores and loads signal values.
 
 ### VSI3 Interface
 
-The board layer includes in the `arm_vsi3.py` interface that implements a playback 
+The board layer includes in the `arm_vsi3.py` interface that implements a playback
 interface for SDS data files using a [Virtual Streaming Interface](https://arm-software.github.io/AVH/main/simulation/html/group__arm__vsi.html). Refer to [Using FVP Simulation Models](https://arm-software.github.io/SDS-Framework/main/sdsio.html#layer-sdsio_fvp) for more information.
 
 ### FVP Configuration File
@@ -54,3 +54,8 @@ interface for SDS data files using a [Virtual Streaming Interface](https://arm-s
 | fvp_config.txt     | Corstone-300 FVP without Ethos-U
 | fvp_config_u55.txt | Corstone-300 FVP with an Ethos-U55-256
 | fvp_config_u65.txt | Corstone-300 FVP with an Ethos-U65-256
+
+Ethos-U specific configuration adds `ethosu.extra_args="--fast"` option to speed
+up NPU simulation while preserving functional inference results. Remove it when
+benchmarking performance, otherwise performance counters and timing are not
+representative of real hardware.

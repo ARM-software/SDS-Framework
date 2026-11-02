@@ -51,3 +51,8 @@ interface for SDS data files using a [Virtual Streaming Interface](https://arm-s
 | File               | Description
 |:-------------------|:-------------
 | fvp_config.txt     | Corstone-320 FVP without or with an Ethos-U85-256
+
+Ethos-U specific configuration adds `ethosu.extra_args="--fast"` option to speed
+up NPU simulation while preserving functional inference results. Remove it when
+benchmarking performance, otherwise performance counters and timing are not
+representative of real hardware.
