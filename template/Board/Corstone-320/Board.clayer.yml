@@ -1,6 +1,6 @@
 layer:
   type: Board
-  description: Board setup for AI/ML
+  description: Base configuration of SSE-320 FVP
   for-board: ARM::SSE-320
   for-device: ARM::SSE-320-FVP
 
@@ -12,17 +12,15 @@ layer:
         - STDIN
         - STDOUT
         - STDERR
-        - Heap: 786432
+        - Heap: 98304
 
   define:
     - CMSIS_target_header: \"Corstone-320.h\"
-    - ARM_MODEL_USE_PMU_COUNTERS
-    - UART0_BASE_S_TMP
 
   packs:
     - pack: ARM::CMSIS
-    - pack: ARM::CMSIS-Compiler@^2.1.0
-    - pack: ARM::SSE_320_BSP@1.1.0
+    - pack: ARM::CMSIS-Compiler@^2.3.0
+    - pack: ARM::SSE_320_BSP@^2.0.0
 
   components:
     - component: CMSIS:CORE
@@ -31,9 +29,9 @@ layer:
     - component: CMSIS Driver:VIO
 
     - component: CMSIS-Compiler:CORE
-    - component: CMSIS-Compiler:STDERR:Custom
-    - component: CMSIS-Compiler:STDIN:Custom
-    - component: CMSIS-Compiler:STDOUT:Custom
+    - component: CMSIS-Compiler:STDERR:UART&CMSIS
+    - component: CMSIS-Compiler:STDIN:UART&CMSIS
+    - component: CMSIS-Compiler:STDOUT:UART&CMSIS
 
     - component: Device:Definition
     - component: Device:Startup&C Startup
@@ -46,9 +44,8 @@ layer:
   groups:
     - group: Board
       files:
-        - file: ./main.c
-        - file: ./main.h
-        - file: ./retarget_stdio.c
+        - file: main.c
+        - file: main.h
 
   linker:
-    - regions: ./regions_SSE-320.h
+    - regions: RTE/Device/SSE-320-FVP/regions_SSE-320.h
