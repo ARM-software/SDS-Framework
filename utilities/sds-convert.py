@@ -270,7 +270,7 @@ def write_SDS_SimpleCSV(args, data, meta_data, sample_frequency, tick_frequency)
     max_block_content_cnt = 1
     if sample_frequency is None and data["data_size"]:
         record_size = calcsize("=" + "".join(getDataType(value["type"]) for value in meta_data))
-        max_block_content_cnt = max(data["data_size"]) // record_size
+        max_block_content_cnt = max(1, max(data["data_size"]) // record_size)
     for i in range(max_block_content_cnt):
         for value in meta_data:
             value_name = value["value"]
@@ -301,8 +301,8 @@ def write_SDS_SimpleCSV(args, data, meta_data, sample_frequency, tick_frequency)
         # Convert raw data according to description in meta data
         record_row = prepareData(meta_data, raw_data, data_manipulation=True)
 
-        # Prepare and write CSV row to output file if record_row is not empty
-        if record_row != [[] for i in range(0, len(meta_data))]:
+        # Preserve empty result collections; temporal blocks require samples
+        if sample_frequency is None or record_row != [[] for i in range(0, len(meta_data))]:
             csv_timeslot = timeslot[cnt]
             # Normalize output timeslots
             if normalize:
@@ -314,7 +314,7 @@ def write_SDS_SimpleCSV(args, data, meta_data, sample_frequency, tick_frequency)
                 if (csv_start_timeslot is None) or (csv_timeslot >= csv_start_timeslot):
                     if (csv_stop_timeslot is None) or (csv_timeslot < csv_stop_timeslot):
                         tmp_record_row = [record_row[value_index][i] for i in range(len(record_row[0])) for value_index in range(len(meta_data))]
-                        writer.writerow([float(csv_timeslot)] + tmp_record_row)
+                        writer.writerow([float(csv_timeslot)] + (tmp_record_row or [""] * (len(csv_header) - 1)))
                     else:
                         break
                 cnt += 1
@@ -337,9 +337,9 @@ def write_SDS_SimpleCSV(args, data, meta_data, sample_frequency, tick_frequency)
                 # Interpolate timeslots between current and next record, based on the number of
                 # data points in current record
                 sample_times = np.linspace(csv_timeslot, csv_timeslot_next,  n_samples + 1)[:-1]
-                csv_timeslot_previous = csv_timeslot
             else:
                 sample_times = [csv_timeslot]
+            csv_timeslot_previous = csv_timeslot
 
             # Write generated CSV row to output file
             for sample_idx, sample_time in enumerate(sample_times):
@@ -353,7 +353,10 @@ def write_SDS_SimpleCSV(args, data, meta_data, sample_frequency, tick_frequency)
                         break
             cnt += 1
         else:
-            break
+            csv_timeslot_previous = timeslot[cnt]
+            if normalize:
+                csv_timeslot_previous -= timeslot[0]
+            cnt += 1
 
     csv_file.close()
 
@@ -769,7 +772,7 @@ def main():
     parser_qeexo_v2_csv_optional.add_argument("--interval", dest="interval", metavar="<interval>",
                                               help="Qeexo timeslot interval, in ms (default: %(default)s)",
                                               type=int, default=50)
-    parser_qeexo_v2_csv_optional.add_argument("--sds_index", dest="sds_index", metavar="<sds_index>", 
+    parser_qeexo_v2_csv_optional.add_argument("--sds_index", dest="sds_index", metavar="<sds_index>",
                                               help="SDS file index to write (default: <sensor>.%(default)s.sds)",
                                               type=int, default=0)
 
