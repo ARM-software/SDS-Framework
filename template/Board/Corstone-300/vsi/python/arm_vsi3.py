@@ -96,10 +96,10 @@ def _get_non_negative_int(value, name: str):
     try:
         _value = int(value)
     except (TypeError, ValueError):
-        logger.error(f"Invalid integer value for {name}: {value}.")
+        logger.error(f"Invalid integer value for {name}: {value}")
         return None
     if _value < 0:
-        logger.error(f"{name} must be 0 or greater.")
+        logger.error(f"{name} must be 0 or greater")
         return None
     return _value
 
@@ -115,7 +115,7 @@ def _get_bool(value, name: str):
             return True
         if _value in ("false", "no", "off", "0"):
             return False
-    logger.error(f"Invalid boolean value for {name}: {value}.")
+    logger.error(f"Invalid boolean value for {name}: {value}")
     return False
 
 
@@ -124,12 +124,12 @@ def _load_sdsio_server_config(base_dir: str):
 
     _env_fvp = os.environ.get("SDSIO_FVP")
     if _env_fvp is not None:
-        logger.info(f"SDSIO_FVP environment variable: '{_env_fvp}'.")
+        logger.info(f"SDSIO_FVP environment variable: '{_env_fvp}'")
         if not path.isabs(_env_fvp):
-            logger.info(f"SDSIO_FVP is not an absolute path: '{_env_fvp}'. Ignoring.")
+            logger.info(f"SDSIO_FVP is not an absolute path: '{_env_fvp}'. Ignoring")
             _env_fvp = None
     else:
-        logger.info("SDSIO_FVP environment variable not set.")
+        logger.info("SDSIO_FVP environment variable not set")
 
     if _env_fvp is not None:
         if path.isfile(_env_fvp):
@@ -146,9 +146,9 @@ def _load_sdsio_server_config(base_dir: str):
                     _cfg_path = _candidate
                     break
             if _cfg_path is None:
-                logger.info(f"No SDSIO YAML file found in SDSIO_FVP directory: '{_env_fvp}'. Falling back to default search.")
+                logger.info(f"No SDSIO YAML file found in SDSIO_FVP directory: '{_env_fvp}'. Falling back to default search")
         else:
-            logger.info(f"SDSIO_FVP path does not exist: '{_env_fvp}'. Falling back to default search.")
+            logger.info(f"SDSIO_FVP path does not exist: '{_env_fvp}'. Falling back to default search")
 
     if _cfg_path is None:
         _candidates = [
@@ -184,9 +184,9 @@ def _load_sdsio_server_config(base_dir: str):
     if _ctrl_data and _ctrl_data.get("verbose") is not None:
         _verbose = _get_bool(_ctrl_data.get("verbose"), "verbose")
 
-    logger.info(f"Working directory: {path.abspath(_work_dir)}.")
+    logger.info(f"Working directory: {path.abspath(_work_dir)}")
     if _ctrl_data:
-        logger.info(f"SDSIO configuration YAML: {path.abspath(_cfg_path)}.")
+        logger.info(f"SDSIO configuration YAML: {path.abspath(_cfg_path)}")
 
     # auto-playback is always enabled on VSI
     _auto_playback = True
@@ -229,7 +229,7 @@ def shutdown():
     try:
         Stream.shutdown()
     except Exception:
-        logger.error("Failed to shutdown SDSIO manager.")
+        logger.error("Failed to shutdown SDSIO manager")
 
 # Register the shutdown function to be called on exit
 atexit.register(shutdown)
@@ -242,7 +242,7 @@ def processCOMMAND(command):
     cmd = { 1: "CMD_OPEN", 2: "CMD_CLOSE", 3: "CMD_WRITE", 4: "CMD_READ", 5: "CMD_PING", 6: "CMD_FLAGS", 7: "CMD_INFO" }
 
     if not command in cmd:
-        logger.error(f"ERROR:    Unknown COMMAND: {command}.")
+        logger.error(f"ERROR:    Unknown COMMAND: {command}")
         return 0
 
     logger.debug(f"Processing {cmd[command]}")
@@ -284,7 +284,7 @@ def processCOMMAND(command):
             ARGUMENT = len(Data)
 
     except Exception:
-        logger.exception(f"ERROR:    Failed to process {cmd[command]}.")
+        logger.exception(f"ERROR:    Failed to process {cmd[command]}")
         ARGUMENT = SDSIO_ERROR
         if command == CMD_OPEN:
             STREAM_ID = 0
