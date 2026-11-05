@@ -33,7 +33,7 @@ except ImportError as err:
 except Exception as e:
     print(f"SDS-Convert: Exception: {type(e).__name__}")
 
-SDS_CONVERT_VERSION = "3.1.0"
+SDS_CONVERT_VERSION = "3.1.1"
 
 class RecordManager:
     def __init__(self):
