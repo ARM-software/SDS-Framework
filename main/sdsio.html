@@ -158,12 +158,12 @@
 <p>To access <a href="theory.html#sds-data-files">SDS data files</a>, configure the <code>*.sdsio.yml</code> file with the <a href="utilities.html#usb"><code>interface - usb:</code></a> node and start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> on the host computer with:</p>
 <pre><code class="language-bash">&gt;python sdsio-server.py -c myproject.sdsio.yml
 SDSIO-Server 3.x.y
-Press 'Ctrl+C' or 'X' to exit.
+Press 'Ctrl+C' or 'X' to exit
 Working directory: ...\SDS_data
 SDSIO configuration YAML: ...\myproject.sdsio.yml
-SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.
+SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7
 SDSIO-Server waiting for USB SDSIO-Client...
-SDSIO-Client USB device connected.
+SDSIO-Client USB device connected
 </code></pre>
 <h2 id="layer-sdsio_network">Layer: sdsio_network</h2>
 <p>The <a href="https://github.com/ARM-software/SDS-Framework/tree/main/layer/sdsio/network"><code>layer/sdsio/network/sdsio_network.clayer.yml</code></a> is configured for recording and playback via the Ethernet interface. It uses the  <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> Network component. Both the target hardware and the SDSIO-Server are connected to a local LAN.</p>
@@ -184,10 +184,10 @@ SDSIO-Client USB device connected.
 <p>To access <a href="theory.html#sds-data-files">SDS data files</a>, configure the <code>*.sdsio.yml</code> file with the <a href="utilities.html#socket"><code>interface - socket:</code></a> node for Network interface, and start the <a href="utilities.html#sdsio-server">SDSIO-Server</a> on the host computer with:</p>
 <pre><code class="language-bash">&gt;python sdsio-server.py -c myproject.sdsio.yml
 SDSIO-Server 3.x.y
-Press 'Ctrl+C' or 'X' to exit.
+Press 'Ctrl+C' or 'X' to exit
 Working directory: ...\SDS_data
 SDSIO configuration YAML: ...\myproject.sdsio.yml
-SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.
+SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7
 SDSIO-Server listening on 192.0.2.10:5050...
 </code></pre>
 <div class="admonition note">
@@ -297,7 +297,6 @@ SDSIO VSI interface initialized successfully
 ==== SDS playback stopped
 
 Info: /OSCI/SystemC: Simulation stopped by user.
-Fatal Python error: _Py_GetConfig: the function must be called with the GIL held ...
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -312,19 +311,19 @@ Fatal Python error: _Py_GetConfig: the function must be called with the GIL held
 <pre><code class="language-txt">Created by ...\Board\Corstone-300\vsi\python\arm_vsi3.py
 
 SDSIO VSI version 3.x.y
-SDSIO_FVP environment variable not set.
-Working directory: ...\datatest\SDS Recordings.
-SDSIO configuration YAML: ...\SDS\datatest.sdsio.yml.
-sdsFlags = 0xB0000000.
-Playback step 0: Test 0.
-Playback: Test_In (Test_In.0.sds).
-Record:   Test_Out (Test_Out.0.p.sds).
-Closed:   Test_In (Test_In.0.sds).
-Closed:   Test_Out (Test_Out.0.p.sds).
-Playback complete - no more steps remaining.
-sdsFlags = 0x30000000.
-sdsFlags = 0x70000000.
-sdsFlags = 0x30000000.
+SDSIO_FVP environment variable not set
+Working directory: ...\datatest\SDS Recordings
+SDSIO configuration YAML: ...\SDS\datatest.sdsio.yml
+sdsFlags = 0xB0000000
+Playback step 0: Test 0
+Playback: Test_In (Test_In.0.sds)
+Record:   Test_Out (Test_Out.0.p.sds)
+Closed:   Test_In (Test_In.0.sds)
+Closed:   Test_Out (Test_Out.0.p.sds)
+Playback complete - no more steps remaining
+sdsFlags = 0x30000000
+sdsFlags = 0x70000000
+sdsFlags = 0x30000000
 </code></pre>
 <p><strong>FVP Model Configuration:</strong></p>
 <p>The FVP model is configured with the file <code>./Board/Corstone-300/fvp_config.txt</code> or <code>./Board/Corstone-320/fvp_config.txt</code>.
