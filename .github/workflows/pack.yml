@@ -27,7 +27,7 @@ jobs:
           git fetch --tags --force
 
       - name: Setup Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.1.0
 
       - name: Install MkDocs
         run: |
