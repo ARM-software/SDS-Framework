@@ -264,9 +264,10 @@ R/r | Start recording
 P/p | Start playback
 S/s | Stop recording/playback
 T/t | Reset target
+Q/q | Query current flags
+X/x | Terminate server
 A-H | Set user flags 0-7
 a-h | Clear user flags 0-7
-X/x | Terminate server
 
 #### SDSIO Control File
 

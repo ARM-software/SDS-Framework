@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "3.1.2"
+SDSIO_SERVER_VERSION = "3.1.3"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -532,7 +532,8 @@ class sdsFlags:
 
     @property
     def target_flags(self):
-        return self._target_flags
+        with self._lock:
+            return self._target_flags
 
 
 # ---------------------------------------------------------------------------- #
@@ -606,6 +607,9 @@ class sdsControlInput(threading.Thread):
             if _ch in ('x', 'X'):
                 self._request_shutdown(f"'{_ch}'")
                 return
+            if _ch in ('q', 'Q'):
+                logger.info(f"sdsFlags = 0x{self._flags.target_flags:08X}.")
+                continue
             _action = self._KEY_ACTIONS.get(_ch)
             if _action:
                 _set_mask, _clear_mask, _desc = _action
@@ -717,7 +721,7 @@ class sdsio_manager:
             if control_input_factory is None:
                 control_input_factory = sdsControlInput
             if control_input_factory:
-                logger.info("SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.")
+                logger.info("SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.")
                 self._ctrl_input = control_input_factory(self._flags, self._monitor, self.shutdown_requested)
 
         self._info_flags: int = 0
@@ -2372,9 +2376,9 @@ def parse_arguments():
     _top_epilog = (
         "keyboard input (while running):\n"
         "  R/r  start recording      P/p  start playback\n"
-        "  S/s  stop rec/play        X/x  terminate server\n"
+        "  S/s  stop rec/play        T/t  reset target\n"
+        "  Q/q  query current flags  X/x  terminate server\n"
         "  A-H  set user flags 0-7   a-h  clear user flags 0-7\n"
-        "  T/t  reset target\n"
         "\n"
         "examples:\n"
         "  %(prog)s -c sdsio.yml                     # Recommended: all config in YAML\n"
