@@ -18,6 +18,7 @@
       SDSIO-Server:
       - Fixed monitor flag updates blocked by playback selection
       - Improved automatic playback control and termination
+      - Added Q/q keyboard command to display current value of SDS flags
       SDSIO-VSI:
       - Synchronized playback control with SDSIO-Server
       SDS-Convert:

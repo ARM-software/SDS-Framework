@@ -27,7 +27,7 @@ logger = logging.getLogger("sdsio")
 # ---------------------------------------------------------------------------- #
 #                  SDSIO server-compatible stream implementation                #
 # ---------------------------------------------------------------------------- #
-SDSIO_VSI_VERSION = "3.1.2"
+SDSIO_VSI_VERSION = "3.1.3"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -211,7 +211,8 @@ class sdsFlags:
 
     @property
     def target_flags(self):
-        return self._target_flags
+        with self._lock:
+            return self._target_flags
 
 
 # ---------------------------------------------------------------------------- #
@@ -281,7 +282,7 @@ class sdsio_manager:
             if control_input_factory is None:
                 control_input_factory = sdsControlInput
             if control_input_factory:
-                logger.info("SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.")
+                logger.info("SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.")
                 self._ctrl_input = control_input_factory(self._flags, self._monitor, self.shutdown_requested)
 
         self._info_flags: int = 0
