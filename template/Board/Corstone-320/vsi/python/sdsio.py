@@ -282,7 +282,7 @@ class sdsio_manager:
             if control_input_factory is None:
                 control_input_factory = sdsControlInput
             if control_input_factory:
-                logger.info("SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.")
+                logger.info("SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7")
                 self._ctrl_input = control_input_factory(self._flags, self._monitor, self.shutdown_requested)
 
         self._info_flags: int = 0
@@ -377,7 +377,7 @@ class sdsio_manager:
                         try:
                             os.remove(_sds_file_path + ".bak")
                         except Exception:
-                            logger.warning(f"Could not delete backup file '{self._format_path(_sds_file_path)}.bak'.")
+                            logger.warning(f"Could not delete backup file '{self._format_path(_sds_file_path)}.bak'")
                     try:
                         os.rename(_sds_file_path, _sds_file_path + ".bak")
                     except Exception:
@@ -460,7 +460,7 @@ class sdsio_manager:
                 if _eof_reached:
                     break
         except Exception:
-            logger.exception(f"Writer {sid} error.")
+            logger.exception(f"Writer {sid} error")
 
     def _file_read_worker(self, sid, name, buf: ByteStreamBuffer, stop_evt):
         _chunk_size = 128 * 1024
@@ -478,7 +478,7 @@ class sdsio_manager:
                             break  # EOF on this file, move to next label
                 # Close notifications are tracked via remaining_file_sizes in read(); last close is in close()
         except Exception:
-            logger.exception(f"Reader {sid} error.")
+            logger.exception(f"Reader {sid} error")
         finally:
             buf.set_eof()
 
@@ -495,26 +495,26 @@ class sdsio_manager:
     def select_play_step(self, play_step: Optional[int]) -> Optional[bool]:
         with self._manager_lock:
             if self.opened_streams or (self._flags.target_flags & SDS_FLAG_MASK_START):
-                logger.debug("Play step selection unchanged: target is busy.")
+                logger.debug("Play step selection unchanged: target is busy")
                 return None
             if not self._play_list:
-                logger.error("Play step selection failed: no play steps are configured.")
+                logger.error("Play step selection failed: no play steps are configured")
                 return False
 
             if play_step is not None and (play_step < 0 or play_step >= len(self._play_list)):
-                logger.error(f"Play step selection failed: {play_step} is outside 0-{len(self._play_list) - 1}.")
+                logger.error(f"Play step selection failed: {play_step} is outside 0-{len(self._play_list) - 1}")
                 return False
 
             if play_step is None:
                 self._play_step = 0
                 self._play_step_limit = len(self._play_list)
                 self._single_play_step_selected = False
-                logger.debug(f"Selected all playback steps 0-{len(self._play_list) - 1}.")
+                logger.debug(f"Selected all playback steps 0-{len(self._play_list) - 1}")
             else:
                 self._play_step = play_step
                 self._play_step_limit = play_step + 1
                 self._single_play_step_selected = True
-                logger.debug(f"Selected playback step {play_step}.")
+                logger.debug(f"Selected playback step {play_step}")
             self._label_list.clear()
             self._timestamp_boundaries.clear()
             return True
@@ -554,14 +554,14 @@ class sdsio_manager:
                 if self._flags.finish_auto_playback(terminate=self._exit_after_playback):
                     if not self._play_list:
                         self._play_step = 0
-                    _complete_msg = "Playback complete - no more steps remaining." if self._play_list else "Playback complete."
+                    _complete_msg = "Playback complete - no more steps remaining" if self._play_list else "Playback complete"
                     logger.info(_complete_msg)
                     self._request_exit_after_playback("playback complete")
 
     def _request_exit_after_playback(self, _reason: str):
         if not self._exit_after_playback:
             return
-        logger.info(f"SDSIO-Server terminating ({_reason}).")
+        logger.info(f"SDSIO-Server terminating ({_reason})")
         self._send_ci_terminate_on_shutdown = True
         self.shutdown_requested.set()
         if self._loop and self._main_task:
@@ -581,16 +581,16 @@ class sdsio_manager:
 
         # validate name
         if len(name) == 0:
-            logger.info(f"Invalid stream name: {name}.")
+            logger.info(f"Invalid stream name: {name}")
             return _resp_err
         _invalid_chars = [chr(_i) for _i in range(0x00, 0x10)] + [chr(0x7F), '"', '*', '/', ':', '<', '>', '?', '\\', '|']
         if any(_ch in name for _ch in _invalid_chars):
-            logger.info(f"Invalid stream name: {name}.")
+            logger.info(f"Invalid stream name: {name}")
             return _resp_err
 
         # ensure not already open
         if any(_stream.name == name for _stream in self.opened_streams.values()):
-            logger.info(f"Stream '{name}' is already opened, cannot open again.")
+            logger.info(f"Stream '{name}' is already opened, cannot open again")
             return _resp_err
 
         # update playback mode from flags only when new session is started
@@ -614,7 +614,7 @@ class sdsio_manager:
                         _step = self._play_list[self._play_step]
                         _step_desc = _step.get('step', '')
                         _desc_suffix = f": {_step_desc}" if _step_desc else ""
-                        logger.info(f"Playback step {self._play_step}{_desc_suffix}.")
+                        logger.info(f"Playback step {self._play_step}{_desc_suffix}")
                         _set_flags = _step.get('setflags', 0)
                         _clear_flags = _step.get('clearflags', 0)
                         _recdir = _step.get('recdir', None)
@@ -623,7 +623,7 @@ class sdsio_manager:
                         else:
                             self._rec_dir = self._work_dir
                     else:
-                        logger.error(f"Open Failed. End of playlist. No more steps available for playback stream '{name}'.")
+                        logger.error(f"Open Failed. End of playlist. No more steps available for playback stream '{name}'")
                         if self._flags.finish_auto_playback(terminate=self._exit_after_playback, _force=True):
                             self._request_exit_after_playback("playback data unavailable")
                         return _resp_err
@@ -633,26 +633,26 @@ class sdsio_manager:
                     _index_based_playback = True
 
                 if _set_flags or _clear_flags:
-                    logger.debug(f"Applying flags for playback stream '{name}': set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}.")
+                    logger.debug(f"Applying flags for playback stream '{name}': set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}")
                     self._flags.apply(_set_flags, _clear_flags)
 
                 # Create label list
                 _play_label_list = self._create_play_label_list(name)
                 if not _play_label_list:
                     if not self._play_list and self._play_step > 0:
-                        logger.error(f"Open Failed. No more files available for playback stream '{name}'.")
+                        logger.error(f"Open Failed. No more files available for playback stream '{name}'")
                     else:
-                        logger.error(f"Open Failed. No files found for playback stream '{name}'.")
+                        logger.error(f"Open Failed. No files found for playback stream '{name}'")
                     if self._flags.finish_auto_playback(terminate=self._exit_after_playback, _force=True):
                         self._request_exit_after_playback("playback data unavailable")
                     return _resp_err
                 self._label_list = _play_label_list
                 if _index_based_playback and self._play_step == 0:
-                    logger.info("No play steps, index based playback started.")
+                    logger.info("No play steps, index based playback started")
 
         else:
             if mode == 0:
-                logger.info(f"Cannot open stream '{name}' for playback. Playback mode is not enabled.")
+                logger.info(f"Cannot open stream '{name}' for playback. Playback mode is not enabled")
                 return _resp_err
 
         # mode 1 = write, 0 = read
@@ -809,7 +809,7 @@ class sdsio_manager:
         _resp = bytearray()
         _buf = self._write_buffers.get(sid)
         if not _buf:
-            logger.info(f"Not opened for write: {sid}.")
+            logger.info(f"Not opened for write: {sid}")
             return _resp
         _buf.write(data)
 
@@ -892,7 +892,7 @@ class sdsio_manager:
         _resp.extend(sid.to_bytes(4,'little'))
         _resp.extend((1).to_bytes(4,'little'))
         _resp.extend((0).to_bytes(4,'little'))
-        logger.info("Ping received.")
+        logger.info("Ping received")
         return _resp
 
     def _info(self, flags: int, idle_rate: int, err_data: bytes):
@@ -901,11 +901,11 @@ class sdsio_manager:
         self._flags.update_from_target(flags)
         self._request_auto_playback_if_needed(flags)
         if self._info_flags != flags:
-            logger.info(f"sdsFlags = 0x{flags:08X}.")
+            logger.info(f"sdsFlags = 0x{flags:08X}")
             self._info_flags = flags
         if idle_rate and self._info_IdleRate != idle_rate:
             if idle_rate != 0xFFFFFFFF:
-                logger.info(f"{idle_rate}% idle.")
+                logger.info(f"{idle_rate}% idle")
             self._info_IdleRate = idle_rate
         if err_data:
             _status = int.from_bytes(err_data[0:4], 'little', signed=True)
@@ -980,5 +980,5 @@ class sdsio_manager:
             return self._info(_flags, _idle_rate, _err_data)
 
         else:
-            logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client.")
+            logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client")
             return bytearray()

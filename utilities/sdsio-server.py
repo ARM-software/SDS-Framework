@@ -272,7 +272,7 @@ class sdsMonitorInterface():
         self._recv_buf = bytearray()      # only accessed from handle_commands thread
         self._last_info = (0, 0, b'')     # cached (flags, idle_rate, err_data) for new clients
         if self._port:
-            logger.info(f"Starting monitor server on port {self._port}.")
+            logger.info(f"Starting monitor server on port {self._port}")
             self._listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self._listening_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             self._listening_socket.bind(('127.0.0.1', self._port))
@@ -289,7 +289,7 @@ class sdsMonitorInterface():
             with self._lock:
                 self._socket = _soc
             self._recv_buf.clear()
-            logger.info("Monitor client connected.")
+            logger.info("Monitor client connected")
             # Send current info immediately on connection
             self.send_info_msg(*self._last_info)
         except socket.timeout:
@@ -315,7 +315,7 @@ class sdsMonitorInterface():
                 self._recv_buf.extend(_chunk)
             else:
                 # Peer closed connection gracefully
-                logger.info("Monitor client disconnected.")
+                logger.info("Monitor client disconnected")
                 with self._lock:
                     if self._socket is _soc:
                         try:
@@ -328,7 +328,7 @@ class sdsMonitorInterface():
         except BlockingIOError:
             pass  # No data available right now
         except Exception:
-            logger.info("Monitor client disconnected.")
+            logger.info("Monitor client disconnected")
             with self._lock:
                 if self._socket is _soc:
                     try:
@@ -348,7 +348,7 @@ class sdsMonitorInterface():
                 _play_step = int.from_bytes(self._recv_buf[12:16], 'little')
                 _play_step_desc = "all" if _play_step == SDSIO_MON_PLAY_STEP_ALL else str(_play_step)
                 _play_step_msg = f", play_step={_play_step_desc}"
-                logger.info(f"Monitor command received: SDSIO_MON_FLAGS (set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}{_play_step_msg}).")
+                logger.info(f"Monitor command received: SDSIO_MON_FLAGS (set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}{_play_step_msg})")
                 _playback_start_mask = SDS_FLAG_MASK_START | SDS_FLAG_MASK_PLAYBACK_MODE
                 _playback_start = (
                     (_set_flags & _playback_start_mask) == _playback_start_mask
@@ -356,7 +356,7 @@ class sdsMonitorInterface():
                 )
                 if _playback_start or not (_set_flags or _clear_flags):
                     if not self._playback_selector:
-                        logger.warning(f"Monitor play step request ignored: {_play_step_desc}.")
+                        logger.warning(f"Monitor play step request ignored: {_play_step_desc}")
                         del self._recv_buf[:16]
                         continue
                     _selected_play_step = None if _play_step == SDSIO_MON_PLAY_STEP_ALL else _play_step
@@ -373,11 +373,11 @@ class sdsMonitorInterface():
                         _auto_playback = _playback_start and _play_step == SDSIO_MON_PLAY_STEP_ALL
                     self._flags.apply(_set_flags, _clear_flags, auto_playback=_auto_playback)
             elif _cmd == SDSIO_MON_SHUTDOWN:
-                logger.info("Monitor command received: SDSIO_MON_SHUTDOWN.")
+                logger.info("Monitor command received: SDSIO_MON_SHUTDOWN")
                 del self._recv_buf[:16]
                 return True
             else:
-                logger.warning(f"Unknown monitor command received: {_cmd}.")
+                logger.warning(f"Unknown monitor command received: {_cmd}")
             del self._recv_buf[:16]
         return False
 
@@ -580,7 +580,7 @@ class sdsControlInput(threading.Thread):
         self.start()
 
     def _request_shutdown(self, source: str):
-        logger.info(f"SDSIO command: terminate ({source}).")
+        logger.info(f"SDSIO command: terminate ({source})")
         if self._shutdown_event:
             self._shutdown_event.set()
         if self._loop and self._main_task:
@@ -608,13 +608,13 @@ class sdsControlInput(threading.Thread):
                 self._request_shutdown(f"'{_ch}'")
                 return
             if _ch in ('q', 'Q'):
-                logger.info(f"sdsFlags = 0x{self._flags.target_flags:08X}.")
+                logger.info(f"sdsFlags = 0x{self._flags.target_flags:08X}")
                 continue
             _action = self._KEY_ACTIONS.get(_ch)
             if _action:
                 _set_mask, _clear_mask, _desc = _action
                 self._flags.apply(_set_mask, _clear_mask)
-                logger.info(f"SDSIO command: {_desc} ('{_ch}').")
+                logger.info(f"SDSIO command: {_desc} ('{_ch}')")
 
     def stop(self):
         self._quit.set()
@@ -721,7 +721,7 @@ class sdsio_manager:
             if control_input_factory is None:
                 control_input_factory = sdsControlInput
             if control_input_factory:
-                logger.info("SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7.")
+                logger.info("SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7")
                 self._ctrl_input = control_input_factory(self._flags, self._monitor, self.shutdown_requested)
 
         self._info_flags: int = 0
@@ -816,7 +816,7 @@ class sdsio_manager:
                         try:
                             os.remove(_sds_file_path + ".bak")
                         except Exception:
-                            logger.warning(f"Could not delete backup file '{self._format_path(_sds_file_path)}.bak'.")
+                            logger.warning(f"Could not delete backup file '{self._format_path(_sds_file_path)}.bak'")
                     try:
                         os.rename(_sds_file_path, _sds_file_path + ".bak")
                     except Exception:
@@ -899,7 +899,7 @@ class sdsio_manager:
                 if _eof_reached:
                     break
         except Exception:
-            logger.exception(f"Writer {sid} error.")
+            logger.exception(f"Writer {sid} error")
 
     def _file_read_worker(self, sid, name, buf: ByteStreamBuffer, stop_evt):
         _chunk_size = 128 * 1024
@@ -917,7 +917,7 @@ class sdsio_manager:
                             break  # EOF on this file, move to next label
                 # Close notifications are tracked via remaining_file_sizes in read(); last close is in close()
         except Exception:
-            logger.exception(f"Reader {sid} error.")
+            logger.exception(f"Reader {sid} error")
         finally:
             buf.set_eof()
 
@@ -934,26 +934,26 @@ class sdsio_manager:
     def select_play_step(self, play_step: Optional[int]) -> Optional[bool]:
         with self._manager_lock:
             if self.opened_streams or (self._flags.target_flags & SDS_FLAG_MASK_START):
-                logger.debug("Play step selection unchanged: target is busy.")
+                logger.debug("Play step selection unchanged: target is busy")
                 return None
             if not self._play_list:
-                logger.error("Play step selection failed: no play steps are configured.")
+                logger.error("Play step selection failed: no play steps are configured")
                 return False
 
             if play_step is not None and (play_step < 0 or play_step >= len(self._play_list)):
-                logger.error(f"Play step selection failed: {play_step} is outside 0-{len(self._play_list) - 1}.")
+                logger.error(f"Play step selection failed: {play_step} is outside 0-{len(self._play_list) - 1}")
                 return False
 
             if play_step is None:
                 self._play_step = 0
                 self._play_step_limit = len(self._play_list)
                 self._single_play_step_selected = False
-                logger.debug(f"Selected all playback steps 0-{len(self._play_list) - 1}.")
+                logger.debug(f"Selected all playback steps 0-{len(self._play_list) - 1}")
             else:
                 self._play_step = play_step
                 self._play_step_limit = play_step + 1
                 self._single_play_step_selected = True
-                logger.debug(f"Selected playback step {play_step}.")
+                logger.debug(f"Selected playback step {play_step}")
             self._label_list.clear()
             self._timestamp_boundaries.clear()
             return True
@@ -993,14 +993,14 @@ class sdsio_manager:
                 if self._flags.finish_auto_playback(terminate=self._exit_after_playback):
                     if not self._play_list:
                         self._play_step = 0
-                    _complete_msg = "Playback complete - no more steps remaining." if self._play_list else "Playback complete."
+                    _complete_msg = "Playback complete - no more steps remaining" if self._play_list else "Playback complete"
                     logger.info(_complete_msg)
                     self._request_exit_after_playback("playback complete")
 
     def _request_exit_after_playback(self, _reason: str):
         if not self._exit_after_playback:
             return
-        logger.info(f"SDSIO-Server terminating ({_reason}).")
+        logger.info(f"SDSIO-Server terminating ({_reason})")
         self._send_ci_terminate_on_shutdown = True
         self.shutdown_requested.set()
         if self._loop and self._main_task:
@@ -1020,16 +1020,16 @@ class sdsio_manager:
 
         # validate name
         if len(name) == 0:
-            logger.info(f"Invalid stream name: {name}.")
+            logger.info(f"Invalid stream name: {name}")
             return _resp_err
         _invalid_chars = [chr(_i) for _i in range(0x00, 0x10)] + [chr(0x7F), '"', '*', '/', ':', '<', '>', '?', '\\', '|']
         if any(_ch in name for _ch in _invalid_chars):
-            logger.info(f"Invalid stream name: {name}.")
+            logger.info(f"Invalid stream name: {name}")
             return _resp_err
 
         # ensure not already open
         if any(_stream.name == name for _stream in self.opened_streams.values()):
-            logger.info(f"Stream '{name}' is already opened, cannot open again.")
+            logger.info(f"Stream '{name}' is already opened, cannot open again")
             return _resp_err
 
         # update playback mode from flags only when new session is started
@@ -1053,7 +1053,7 @@ class sdsio_manager:
                         _step = self._play_list[self._play_step]
                         _step_desc = _step.get('step', '')
                         _desc_suffix = f": {_step_desc}" if _step_desc else ""
-                        logger.info(f"Playback step {self._play_step}{_desc_suffix}.")
+                        logger.info(f"Playback step {self._play_step}{_desc_suffix}")
                         _set_flags = _step.get('setflags', 0)
                         _clear_flags = _step.get('clearflags', 0)
                         _recdir = _step.get('recdir', None)
@@ -1062,7 +1062,7 @@ class sdsio_manager:
                         else:
                             self._rec_dir = self._work_dir
                     else:
-                        logger.error(f"Open Failed. End of playlist. No more steps available for playback stream '{name}'.")
+                        logger.error(f"Open Failed. End of playlist. No more steps available for playback stream '{name}'")
                         if self._flags.finish_auto_playback(terminate=self._exit_after_playback, _force=True):
                             self._request_exit_after_playback("playback data unavailable")
                         return _resp_err
@@ -1072,26 +1072,26 @@ class sdsio_manager:
                     _index_based_playback = True
 
                 if _set_flags or _clear_flags:
-                    logger.debug(f"Applying flags for playback stream '{name}': set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}.")
+                    logger.debug(f"Applying flags for playback stream '{name}': set=0x{_set_flags:08X}, clear=0x{_clear_flags:08X}")
                     self._flags.apply(_set_flags, _clear_flags)
 
                 # Create label list
                 _play_label_list = self._create_play_label_list(name)
                 if not _play_label_list:
                     if not self._play_list and self._play_step > 0:
-                        logger.error(f"Open Failed. No more files available for playback stream '{name}'.")
+                        logger.error(f"Open Failed. No more files available for playback stream '{name}'")
                     else:
-                        logger.error(f"Open Failed. No files found for playback stream '{name}'.")
+                        logger.error(f"Open Failed. No files found for playback stream '{name}'")
                     if self._flags.finish_auto_playback(terminate=self._exit_after_playback, _force=True):
                         self._request_exit_after_playback("playback data unavailable")
                     return _resp_err
                 self._label_list = _play_label_list
                 if _index_based_playback and self._play_step == 0:
-                    logger.info("No play steps, index based playback started.")
+                    logger.info("No play steps, index based playback started")
 
         else:
             if mode == 0:
-                logger.info(f"Cannot open stream '{name}' for playback. Playback mode is not enabled.")
+                logger.info(f"Cannot open stream '{name}' for playback. Playback mode is not enabled")
                 return _resp_err
 
         # mode 1 = write, 0 = read
@@ -1248,7 +1248,7 @@ class sdsio_manager:
         _resp = bytearray()
         _buf = self._write_buffers.get(sid)
         if not _buf:
-            logger.info(f"Not opened for write: {sid}.")
+            logger.info(f"Not opened for write: {sid}")
             return _resp
         _buf.write(data)
 
@@ -1331,7 +1331,7 @@ class sdsio_manager:
         _resp.extend(sid.to_bytes(4,'little'))
         _resp.extend((1).to_bytes(4,'little'))
         _resp.extend((0).to_bytes(4,'little'))
-        logger.info("Ping received.")
+        logger.info("Ping received")
         return _resp
 
     def _info(self, flags: int, idle_rate: int, err_data: bytes):
@@ -1340,11 +1340,11 @@ class sdsio_manager:
         self._flags.update_from_target(flags)
         self._request_auto_playback_if_needed(flags)
         if self._info_flags != flags:
-            logger.info(f"sdsFlags = 0x{flags:08X}.")
+            logger.info(f"sdsFlags = 0x{flags:08X}")
             self._info_flags = flags
         if idle_rate and self._info_IdleRate != idle_rate:
             if idle_rate != 0xFFFFFFFF:
-                logger.info(f"{idle_rate}% idle.")
+                logger.info(f"{idle_rate}% idle")
             self._info_IdleRate = idle_rate
         if err_data:
             _status = int.from_bytes(err_data[0:4], 'little', signed=True)
@@ -1419,7 +1419,7 @@ class sdsio_manager:
             return self._info(_flags, _idle_rate, _err_data)
 
         else:
-            logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client.")
+            logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client")
             return bytearray()
 
 
@@ -1459,7 +1459,7 @@ class async_sdsio_server_socket:
             try:
                 _data = await asyncio.wait_for(reader.read(4096), timeout=_remaining)
                 if _data:
-                    logger.debug(f"Discarding initial response data from host: {_data!r}.")
+                    logger.debug(f"Discarding initial response data from host: {_data!r}")
             except asyncio.TimeoutError:
                 break
             if not _data:
@@ -1470,7 +1470,7 @@ class async_sdsio_server_socket:
         self._handler_tasks.add(_task)
         self._active_writer = writer
         try:
-            logger.info("SDSIO-Client connected.")
+            logger.info("SDSIO-Client connected")
             while True:
                 # Send async FLAGS response periodically
                 _resp = self._manager.get_async_response()
@@ -1487,7 +1487,7 @@ class async_sdsio_server_socket:
                 # validate command before reading payload
                 _cmd = int.from_bytes(_hdr[0:4],'little')
                 if _cmd not in CMD_ALL:
-                    logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client.")
+                    logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client")
                     logger.info("Closing SDSIO-Client connection...")
                     break
 
@@ -1501,7 +1501,7 @@ class async_sdsio_server_socket:
             raise                          # re-raise per docs
         except (asyncio.IncompleteReadError, ConnectionResetError, OSError):
             if not self._shutting_down:
-                logger.info("SDSIO-Client disconnected.")
+                logger.info("SDSIO-Client disconnected")
         finally:
             self._handler_tasks.discard(_task)
             if self._active_writer is writer:
@@ -1606,10 +1606,10 @@ async def sdsio_server_socket_run_supervised(ip, port, connect_mode, connect_mes
         try:
             await _srv.start()
             # If start() returns normally, break out
-            logger.info("SDSIO-Server shut down cleanly.")
+            logger.info("SDSIO-Server shut down cleanly")
             break
         except Exception:
-            logger.info("SDSIO-Server fatal error.")
+            logger.info("SDSIO-Server fatal error")
             logger.info("SDSIO-Server restarting...")
             # Clean up any streams
             manager.clean()
@@ -1649,20 +1649,20 @@ class sdsio_server_serial:
             self._ser.stopbits = self._stop_bits
             self._ser.timeout = 0
         except Exception:
-            logger.info("Error initializing serial.")
+            logger.info("Error initializing serial")
             sys.exit(1)
         _start_time = time.time()
         while not self._manager.shutdown_requested.is_set():
             try:
                 self._ser.open()
-                logger.info("Serial port opened successfully.")
+                logger.info("Serial port opened successfully")
                 return True
             except Exception:
                 if _first_attempt:
                     logger.info(f"SDSIO-Server waiting for serial SDSIO-Client on {self._port}...")
                     _first_attempt = False
                 if self._connect_timeout and (time.time() - _start_time >= self._connect_timeout):
-                    logger.info(f"Serial port open failed after {self._connect_timeout} seconds.")
+                    logger.info(f"Serial port open failed after {self._connect_timeout} seconds")
                     sys.exit(1)
                 time.sleep(0.5)
         return False
@@ -1677,14 +1677,14 @@ class sdsio_server_serial:
         try:
             return self._ser.read(size)
         except Exception:
-            logger.info("Serial read error.")
+            logger.info("Serial read error")
             raise
 
     def _write(self, data):
         try:
             return self._ser.write(data)
         except Exception:
-            logger.info("Serial write error.")
+            logger.info("Serial write error")
             raise
 
     def start(self):
@@ -1713,7 +1713,7 @@ class sdsio_server_serial:
                     # validate command before reading payload
                     _cmd = int.from_bytes(_header[0:4], 'little')
                     if _cmd not in CMD_ALL:
-                        logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client.")
+                        logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client")
                         _buffer.clear()
                         return  # Exit start(), finally block will clean up
 
@@ -1751,7 +1751,7 @@ def sdsio_server_serial_run_supervised(port, baudrate, parity, stop_bits, connec
         except Exception:
             if manager.shutdown_requested.is_set():
                 break
-            logger.info("SDSIO-Server fatal error.")
+            logger.info("SDSIO-Server fatal error")
             logger.info("SDSIO-Server restarting...")
             # Reset all open streams
             manager.clean()
@@ -1882,7 +1882,7 @@ class sdsio_server_usb:
                 except OSError:
                     pass
         except Exception:
-            logger.exception("[TUNE] thread tuning failed.")
+            logger.exception("[TUNE] thread tuning failed")
 
     def _libusb_loop(self):
         if self._high_priority:
@@ -1979,7 +1979,7 @@ class sdsio_server_usb:
                 # validate command before reading payload
                 _cmd = int.from_bytes(_hdr[0:4],'little')
                 if _cmd not in CMD_ALL:
-                    logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client.")
+                    logger.error(f"=== FATAL ERROR === : Data integrity error - protocol mismatch. Restart the SDSIO-Client")
                     self._protocol_error = True
                     self._running = False
                     self._rx_buf.clear()
@@ -2089,9 +2089,9 @@ class sdsio_server_usb:
             # Mark server active in the normal path too (hotplug working)
             self._running = True
             if not _silent_reconnect:
-                logger.info(f"SDSIO-Client USB device connected.")
+                logger.info(f"SDSIO-Client USB device connected")
             else:
-                logger.debug("USB connection re-established.")
+                logger.debug("USB connection re-established")
                 _silent_reconnect = False
 
             # start polling thread
@@ -2149,7 +2149,7 @@ class sdsio_server_usb:
                     _silent_reconnect = True
                     continue
                 else:
-                    logger.info("USB SDSIO-Client disconnected.")
+                    logger.info("USB SDSIO-Client disconnected")
 
             # On protocol error, wait for device to be physically reset
             if _protocol_err:
@@ -2616,7 +2616,7 @@ async def main():
     logger = _log
     spinner = _spinner
     logger.info("SDSIO-Server %s", SDSIO_SERVER_VERSION)
-    logger.info("Press 'Ctrl+C' or 'X' to exit.")
+    logger.info("Press 'Ctrl+C' or 'X' to exit")
 
     # Open and parse the control YAML if provided, and apply any configuration
     # CLI arguments will override YAML settings where applicable (e.g. server type)
@@ -2632,9 +2632,9 @@ async def main():
             if 'sdsio' in _yml_data:
                 _ctrl_data = _yml_data['sdsio']
             else:
-                raise ValueError("Invalid control YAML.")
+                raise ValueError("Invalid control YAML")
         except Exception as _e:
-            logger.error(f"Failed to load control YAML: {_e}.")
+            logger.error(f"Failed to load control YAML: {_e}")
 
     # Server type
     if _args.server_type is not None:
@@ -2727,10 +2727,10 @@ async def main():
         sys.exit(1)
     if _play_step is not None:
         if not _play_list:
-            logger.error("Play step selection requires play steps in SDSIO configuration YAML.")
+            logger.error("Play step selection requires play steps in SDSIO configuration YAML")
             sys.exit(1)
         if _play_step >= len(_play_list):
-            logger.error(f"Play step {_play_step} is outside 0-{len(_play_list) - 1}.")
+            logger.error(f"Play step {_play_step} is outside 0-{len(_play_list) - 1}")
             sys.exit(1)
     _exit_after_playback = _args.exit_after_playback if _args.exit_after_playback else False
     _no_progress_info = _args.no_progress_info if _args.no_progress_info else False
@@ -2742,7 +2742,7 @@ async def main():
     try:
         if _server_type == "socket":
             if _connect_mode and _socket_iface:
-                logger.error("Socket connect mode cannot use network interface selection; configure ipaddr instead.")
+                logger.error("Socket connect mode cannot use network interface selection; configure ipaddr instead")
                 sys.exit(1)
             if _connect_mode and not _ip:
                 # Default to localhost
@@ -2783,5 +2783,5 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except (KeyboardInterrupt, asyncio.CancelledError):
-        logger.info("Ctrl+C received, shutting down.")
-    logger.info("SDSIO-Server shut down.")
+        logger.info("Ctrl+C received, shutting down")
+    logger.info("SDSIO-Server shut down")
