@@ -20,6 +20,9 @@
       - Improved automatic playback control and termination
       SDSIO-VSI:
       - Synchronized playback control with SDSIO-Server
+      SDS-Convert:
+      - Fixed handling of result collection records
+      - Fixed tick-frequency support
     </release>
   </releases>
 
