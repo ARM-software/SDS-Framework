@@ -202,7 +202,7 @@ def _build_sdsio_request(command: int, sid: int = 0, argument: int = 0, data: by
     _req.extend(data)
     return _req
 
-logger.info(f"SDSIO VSI version {SDSIO_VSI_VERSION}")
+logger.info(f"SDSIO VSI {SDSIO_VSI_VERSION}")
 _work_dir, _auto_playback, _play_list, _write_flush_records, _verbose = _load_sdsio_server_config(os.getcwd())
 logger.setLevel(logging.DEBUG if _verbose else logging.INFO)
 os.makedirs(_work_dir, exist_ok=True)
