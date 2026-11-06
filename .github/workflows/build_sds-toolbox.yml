@@ -2,6 +2,12 @@ name: Build SDS-Toolbox
 
 on:
   workflow_dispatch:
+    inputs:
+      trigger_extension_build:
+        description: 'Trigger CMSIS SDS extension build as part of this workflow.'
+        required: false
+        default: false
+        type: boolean
   release:
     types:
       - published
@@ -140,3 +146,26 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: gh release upload "$RELEASE_TAG" artifacts/sds-toolbox-* --repo "$GITHUB_REPOSITORY" --clobber
+
+  # Triggers the CMSIS SDS extension nightly workflow
+  trigger-sds-extn:
+    name: Trigger SDS Extension Nightly
+    needs: build
+    if: >-
+      success() && github.repository == 'ARM-software/SDS-Framework' &&
+      ((github.event_name == 'workflow_dispatch' && github.event.inputs.trigger_extension_build) || github.event_name == 'schedule')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@46b06cea07f9e64621fdf066ba77ac6915163d43 # v2.22.3
+        with:
+          egress-policy: audit
+
+      - name: Trigger vscode-cmsis-sds workflow
+        run: |
+          curl --fail-with-body --show-error --silent -X POST \
+            -H "Authorization: Bearer ${{ secrets.CROSS_REPO_SDS_EXTN_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Content-Type: application/json" \
+            https://api.github.com/repos/Open-CMSIS-Pack/vscode-cmsis-sds/actions/workflows/nightly.yml/dispatches \
+            -d '{"ref":"main"}'
