@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "3.1.3"
+SDSIO_SERVER_VERSION = "3.1.4"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -274,10 +274,19 @@ class sdsMonitorInterface():
         if self._port:
             logger.info(f"Starting monitor server on port {self._port}")
             self._listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self._listening_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self._listening_socket.bind(('127.0.0.1', self._port))
-            self._listening_socket.listen(1)
-            self._listening_socket.settimeout(0.01)
+            try:
+                if os.name == "nt":
+                    self._listening_socket.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+                else:
+                    self._listening_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                self._listening_socket.bind(('127.0.0.1', self._port))
+                self._listening_socket.listen(1)
+                self._listening_socket.settimeout(0.01)
+            except OSError as _e:
+                self._listening_socket.close()
+                raise OSError(
+                    f"Failed to start monitor server on port {self._port}: {_e}"
+                ) from _e
         else:
             self._listening_socket = None
         self._socket = None
@@ -692,13 +701,6 @@ class sdsio_manager:
         self._manager_lock = threading.RLock()
         # timestamp of last stream read or write command
         self.time_last_rw = time.time()
-        # status bar
-        self._status = None
-        if status_bar_factory is None and not no_progress_info:
-            status_bar_factory = StatusBar
-        if status_bar_factory:
-            self._status = status_bar_factory(self)
-
         self._playback_mode = False
         self._exit_after_playback = exit_after_playback
         self._send_ci_terminate_on_shutdown = False
@@ -710,20 +712,6 @@ class sdsio_manager:
         # SDS Control Flags
         self.shutdown_requested = threading.Event()
         self._flags = sdsFlags(auto_playback)
-        self._monitor = None
-        if self._mon_port and monitor_factory is not False:
-            if monitor_factory is None:
-                monitor_factory = sdsMonitorInterface
-            if monitor_factory:
-                self._monitor = monitor_factory(self._mon_port, self._flags, self.select_play_step)
-        self._ctrl_input = None
-        if control_input_factory is not False and sys.stdin.isatty():
-            if control_input_factory is None:
-                control_input_factory = sdsControlInput
-            if control_input_factory:
-                logger.info("SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7")
-                self._ctrl_input = control_input_factory(self._flags, self._monitor, self.shutdown_requested)
-
         self._info_flags: int = 0
         self._info_IdleRate: int = 0
         self._last_async_time = time.time()
@@ -737,6 +725,31 @@ class sdsio_manager:
         if play_step is not None:
             if play_step < 0 or not self.select_play_step(play_step):
                 raise ValueError(f"Invalid play step: {play_step}")
+
+        self._status = None
+        self._monitor = None
+        self._ctrl_input = None
+        try:
+            # status bar
+            if status_bar_factory is None and not no_progress_info:
+                status_bar_factory = StatusBar
+            if status_bar_factory:
+                self._status = status_bar_factory(self)
+
+            if self._mon_port and monitor_factory is not False:
+                if monitor_factory is None:
+                    monitor_factory = sdsMonitorInterface
+                if monitor_factory:
+                    self._monitor = monitor_factory(self._mon_port, self._flags, self.select_play_step)
+            if control_input_factory is not False and sys.stdin.isatty():
+                if control_input_factory is None:
+                    control_input_factory = sdsControlInput
+                if control_input_factory:
+                    logger.info("SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7")
+                    self._ctrl_input = control_input_factory(self._flags, self._monitor, self.shutdown_requested)
+        except BaseException:
+            self.shutdown()
+            raise
 
     def shutdown(self):
         self.shutdown_requested.set()
@@ -2784,4 +2797,7 @@ if __name__ == "__main__":
         asyncio.run(main())
     except (KeyboardInterrupt, asyncio.CancelledError):
         logger.info("Ctrl+C received, shutting down")
+    except OSError as _e:
+        logger.error(f"Error: {_e}")
+        sys.exit(1)
     logger.info("SDSIO-Server shut down")
