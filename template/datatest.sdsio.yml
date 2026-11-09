@@ -4,7 +4,7 @@ sdsio:
     usb:
 
 # Uncomment to use Network interface
-#   socket:        
+#   socket:
 
 # Uncomment to use RTT interface
 #   socket:
@@ -29,4 +29,4 @@ sdsio:
   # Defines a playback test sequence
   play:
     - step: "Test 0"
-      labels: [ 0 ]
+      labels: [ "0" ]
