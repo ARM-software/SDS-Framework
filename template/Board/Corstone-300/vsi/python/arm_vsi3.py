@@ -171,7 +171,7 @@ def _load_sdsio_server_config(base_dir: str):
             if "sdsio" in _yml_data:
                 _ctrl_data = _yml_data["sdsio"] or {}
         except Exception as _e:
-            logger.error(f"Failed to load SDS configuration YAML: {_e}")
+            logger.error(f"Failed to load SDS configuration YAML file: {_e}")
 
     _work_dir = _ctrl_data.get("workdir", base_dir) if _ctrl_data else base_dir
     _cfg_base = path.dirname(_cfg_path) if _cfg_path else base_dir
