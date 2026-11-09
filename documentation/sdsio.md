@@ -35,7 +35,7 @@ To access [SDS data files](theory.md#sds-data-files), configure the `*.sdsio.yml
 SDSIO-Server 3.x.y
 Press 'Ctrl+C' or 'X' to exit
 Working directory: ...\SDS_data
-SDSIO configuration YAML: ...\myproject.sdsio.yml
+SDS configuration: ...\myproject.sdsio.yml
 SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7
 SDSIO-Server waiting for USB SDSIO-Client...
 SDSIO-Client USB device connected
@@ -63,7 +63,7 @@ To access [SDS data files](theory.md#sds-data-files), configure the `*.sdsio.yml
 SDSIO-Server 3.x.y
 Press 'Ctrl+C' or 'X' to exit
 Working directory: ...\SDS_data
-SDSIO configuration YAML: ...\myproject.sdsio.yml
+SDS configuration: ...\myproject.sdsio.yml
 SDSIO command input: R=Record, P=playback, S/s=stop, T/t=reset, Q/q=query flags, X/x=exit, A-H=set flags 0-7, a-h=clear flags 0-7
 SDSIO-Server listening on 192.0.2.10:5050...
 ```
@@ -232,13 +232,13 @@ Created by ...\Board\Corstone-300\vsi\python\arm_vsi3.py
 SDSIO VSI version 3.x.y
 SDSIO_FVP environment variable not set
 Working directory: ...\datatest\SDS Recordings
-SDSIO configuration YAML: ...\SDS\datatest.sdsio.yml
+SDS configuration: ...\SDS\datatest.sdsio.yml
 sdsFlags = 0xB0000000
 Playback step 0: Test 0
-Playback: Test_In (Test_In.0.sds)
-Record:   Test_Out (Test_Out.0.p.sds)
-Closed:   Test_In (Test_In.0.sds)
-Closed:   Test_Out (Test_Out.0.p.sds)
+Playback:  Test_In (Test_In.0.sds)
+Record:    Test_Out (Test_Out.0.p.sds)
+Closed:    Test_In (Test_In.0.sds)
+Closed:    Test_Out (Test_Out.0.p.sds)
 Playback complete - no more steps remaining
 sdsFlags = 0x30000000
 sdsFlags = 0x70000000

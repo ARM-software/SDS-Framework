@@ -146,7 +146,7 @@ def _load_sdsio_server_config(base_dir: str):
                     _cfg_path = _candidate
                     break
             if _cfg_path is None:
-                logger.info(f"No SDSIO YAML file found in SDSIO_FVP directory: '{_env_fvp}'. Falling back to default search")
+                logger.info(f"No SDS configuration YAML file found in SDSIO_FVP directory: '{_env_fvp}'. Falling back to default search")
         else:
             logger.info(f"SDSIO_FVP path does not exist: '{_env_fvp}'. Falling back to default search")
 
@@ -171,7 +171,7 @@ def _load_sdsio_server_config(base_dir: str):
             if "sdsio" in _yml_data:
                 _ctrl_data = _yml_data["sdsio"] or {}
         except Exception as _e:
-            logger.error(f"Failed to load control YAML: {_e}")
+            logger.error(f"Failed to load SDS configuration YAML file: {_e}")
 
     _work_dir = _ctrl_data.get("workdir", base_dir) if _ctrl_data else base_dir
     _cfg_base = path.dirname(_cfg_path) if _cfg_path else base_dir
@@ -186,7 +186,7 @@ def _load_sdsio_server_config(base_dir: str):
 
     logger.info(f"Working directory: {path.abspath(_work_dir)}")
     if _ctrl_data:
-        logger.info(f"SDSIO configuration YAML: {path.abspath(_cfg_path)}")
+        logger.info(f"SDS configuration: {path.abspath(_cfg_path)}")
 
     # auto-playback is always enabled on VSI
     _auto_playback = True

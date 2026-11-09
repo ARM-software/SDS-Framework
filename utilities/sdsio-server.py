@@ -40,7 +40,7 @@ else:
     import termios
     import tty
 
-SDSIO_SERVER_VERSION = "3.1.4"
+SDSIO_SERVER_VERSION = "3.1.5"
 
 class StreamInfo(NamedTuple):
     name: str = None
@@ -840,7 +840,7 @@ class sdsio_manager:
                     _records_since_flush = 0
                     if _index > 0:
                         # First file open was already notified in _open(); notify for subsequent files here
-                        logger.info(f"Record:   {_stream.name} ({self._format_path(_sds_file_path)})")
+                        logger.info(f"Record:    {_stream.name} ({self._format_path(_sds_file_path)})")
                         if self._monitor:
                             self._monitor.send_open_msg(_sds_file_path, 1)
                         self.opened_streams[sid] = self.opened_streams[sid]._replace(file_idx=_index)
@@ -906,7 +906,7 @@ class sdsio_manager:
                         os.fsync(_file_obj.fileno())
                 # Last file close is handled in close(); send close only for non-last files
                 if not _eof_reached and _index < len(_stream.file_paths) - 1:
-                    logger.info(f"Closed:   {name} ({self._format_path(_sds_file_path)})")
+                    logger.info(f"Closed:    {name} ({self._format_path(_sds_file_path)})")
                     if self._monitor:
                         self._monitor.send_close_msg(_sds_file_path)
                 if _eof_reached:
@@ -1149,7 +1149,7 @@ class sdsio_manager:
             self._write_stop[_sid]   = _stop_evt
             # Notify monitor for the first file; subsequent files are notified in the write worker
             if _file_paths:
-                logger.info(f"Record:   {name} ({self._format_path(_file_paths[0])})")
+                logger.info(f"Record:    {name} ({self._format_path(_file_paths[0])})")
                 if self._monitor:
                     self._monitor.send_open_msg(_file_paths[0], 1)
 
@@ -1189,7 +1189,7 @@ class sdsio_manager:
             self._read_stop[_sid]  = _stop_evt
             # Notify monitor for the first file; subsequent files are notified in the read worker
             if _file_paths:
-                logger.info(f"Playback: {name} ({self._format_path(_file_paths[0])})")
+                logger.info(f"Playback:  {name} ({self._format_path(_file_paths[0])})")
                 if self._monitor:
                     self._monitor.send_open_msg(_file_paths[0], 0)
             self._last_playback_stream_name = name
@@ -1224,7 +1224,7 @@ class sdsio_manager:
                 _last_idx = _last_stream.file_idx
                 if _last_idx < len(_last_stream.file_paths):
                     _sds_file_path = _last_stream.file_paths[_last_idx]
-                    logger.info(f"Closed:   {_name} ({self._format_path(_sds_file_path)})")
+                    logger.info(f"Closed:    {_name} ({self._format_path(_sds_file_path)})")
                     if self._monitor:
                         self._monitor.send_close_msg(_sds_file_path)
             self._write_threads.pop(sid)
@@ -1239,7 +1239,7 @@ class sdsio_manager:
                 _last_idx = _last_stream.file_idx
                 if _last_idx < len(_last_stream.file_paths):
                     _sds_file_path = _last_stream.file_paths[_last_idx]
-                    logger.info(f"Closed:   {_name} ({self._format_path(_sds_file_path)})")
+                    logger.info(f"Closed:    {_name} ({self._format_path(_sds_file_path)})")
                     if self._monitor:
                         self._monitor.send_close_msg(_sds_file_path)
             self._read_buffers.pop(sid)
@@ -1312,7 +1312,7 @@ class sdsio_manager:
                         if _stream.file_paths and _f_idx < len(_stream.file_paths) - 1:
                             # Non-last file fully drained: report close and advance to next file
                             _sds_file_path = _stream.file_paths[_f_idx]
-                            logger.info(f"Closed:   {_stream.name} ({self._format_path(_sds_file_path)})")
+                            logger.info(f"Closed:    {_stream.name} ({self._format_path(_sds_file_path)})")
                             if self._monitor:
                                 self._monitor.send_close_msg(_sds_file_path)
                             self.opened_streams[sid] = self.opened_streams[sid]._replace(file_idx=_f_idx + 1)
@@ -1320,7 +1320,7 @@ class sdsio_manager:
                             if _next_idx < len(_stream.file_paths):
                                 # First file open was already notified in _open(); notify for subsequent files here
                                 _sds_file_path = _stream.file_paths[_next_idx]
-                                logger.info(f"Playback: {_stream.name} ({self._format_path(_sds_file_path)})")
+                                logger.info(f"Playback:  {_stream.name} ({self._format_path(_sds_file_path)})")
                                 if self._monitor:
                                     self._monitor.send_open_msg(_sds_file_path, 0)
                             continue
@@ -2645,9 +2645,9 @@ async def main():
             if 'sdsio' in _yml_data:
                 _ctrl_data = _yml_data['sdsio']
             else:
-                raise ValueError("Invalid control YAML")
+                raise ValueError("Invalid SDS configuration YAML file")
         except Exception as _e:
-            logger.error(f"Failed to load control YAML: {_e}")
+            logger.error(f"Failed to load SDS configuration YAML file: {_e}")
 
     # Server type
     if _args.server_type is not None:
@@ -2722,7 +2722,7 @@ async def main():
 
     logger.info(f"Working directory: {path.abspath(_work_dir)}")
     if _ctrl_yml_path:
-        logger.info(f"SDSIO configuration YAML: {_ctrl_yml_path}")
+        logger.info(f"SDS configuration: {_ctrl_yml_path}")
 
     # Playback list
     _play_list: Optional[list] = _ctrl_data.get('play', None) if _ctrl_data else None
@@ -2740,7 +2740,7 @@ async def main():
         sys.exit(1)
     if _play_step is not None:
         if not _play_list:
-            logger.error("Play step selection requires play steps in SDSIO configuration YAML")
+            logger.error("Play step selection requires play steps in SDS configuration YAML file (*.sdsio.yml)")
             sys.exit(1)
         if _play_step >= len(_play_list):
             logger.error(f"Play step {_play_step} is outside 0-{len(_play_list) - 1}")
