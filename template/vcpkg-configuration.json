@@ -5,10 +5,10 @@
         "location" : "https://artifacts.tools.arm.com/vcpkg-registry"
     } ],
     "requires" : { 
-        "arm:tools/open-cmsis-pack/cmsis-toolbox" : "^2.14.1",
-        "arm:tools/kitware/cmake" : "^4.3.3",
-        "arm:tools/ninja-build/ninja" : "^1.13.2",
+        "arm:tools/open-cmsis-pack/cmsis-toolbox" : "^2.15.0",
         "arm:compilers/arm/armclang" : "^6.24.0",
-        "arm:models/arm/avh-fvp" : "^11.32.23"
+        "arm:models/arm/avh-fvp" : "^11.32.23",
+        "arm:tools/kitware/cmake" : "^4.3.3",
+        "arm:tools/ninja-build/ninja" : "^1.13.2"
     }
 }
