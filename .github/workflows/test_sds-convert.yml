@@ -55,10 +55,10 @@ jobs:
 
     steps:
       - name: Check out SDS Framework
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Check out SDS sample data
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           repository: Open-CMSIS-Pack/sds-sample-data
           path: sds-sample-data
