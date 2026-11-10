@@ -276,7 +276,6 @@ sds:
 One detection record has a size of 24 bytes. For example, a block size of 240 bytes contains 10 object detections. The number of detections may vary between blocks and is calculated by dividing the block size by 24. `sample-frequency:` is omitted because all detections are results of the same inference and share the block timeslot.
 
 !!! Note
-    - The current `sdsWrite` implementation does not accept a zero-byte data block. An application must therefore omit the block or define an application-specific non-empty representation when an inference produces no detections.
     - A variable-size segmentation mask cannot be described as a fixed-size detection record. It may be stored in a separate image or mask stream and correlated with the detection stream using the same timeslot.
 
 ### Audio data stream
