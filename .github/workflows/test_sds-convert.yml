@@ -41,6 +41,7 @@ jobs:
           - { sample: mic_stereo.0.sds,    metadata: mic_stereo.sds.yml,    format: audio_wav, output: mic_stereo.0.wav }
           - { sample: multi_frame.0.sds,   metadata: multi_frame.sds.yml,   format: csv,       output: multi_frame.0.csv }
           - { sample: no_metadata.0.sds,   metadata: no_metadata.sds.yml,   format: csv,       output: no_metadata.0.csv }
+          - { sample: obj_det.0.sds,       metadata: obj_det.sds.yml,       format: csv,       output: obj_det.0.csv }
           - { sample: precision.0.sds,     metadata: precision.sds.yml,     format: csv,       output: precision.0.csv }
           - { sample: single_record.0.sds, metadata: single_record.sds.yml, format: csv,       output: single_record.0.csv }
           - { sample: temperature.0.sds,   metadata: temperature.sds.yml,   format: csv,       output: temperature.0.csv }
