@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import yaml
 
-SDS_VIEW_VERSION = "3.1.0"
+SDS_VIEW_VERSION = "3.1.1"
 
 class RecordManager:
     def __init__(self):
@@ -32,11 +32,13 @@ class RecordManager:
         self.TIMESLOT_SIZE  = 4
         self.data = bytearray()
         self.timeslot = []
+        self.data_size = []
 
     # Flush data buffer
     def flush(self):
         self.data = bytearray()
         self.timeslot = []
+        self.data_size = []
 
     # Private function for retrieving data from record
     def __getRecord(self, file):
@@ -45,6 +47,7 @@ class RecordManager:
             timeslot  = struct.unpack("I", record[:self.TIMESLOT_SIZE])[0]
             data_size = struct.unpack("I", record[self.TIMESLOT_SIZE:])[0]
             self.timeslot.append(timeslot)
+            self.data_size.append(data_size)
             self.data.extend(bytearray(file.read(data_size)))
             return True
         else:
@@ -55,7 +58,7 @@ class RecordManager:
         record = True
         while record:
             record = self.__getRecord(file)
-        return {"raw_data" : self.data, "timeslot" : self.timeslot}
+        return {"raw_data" : self.data, "timeslot" : self.timeslot, "data_size" : self.data_size}
 
 
 def getSampleFrequency(meta_data):
@@ -142,7 +145,7 @@ def closeFile(file_name):
         sys.exit(1)
 
 # Create new figure and plot content
-def plotData(all_data, data_desc, freq, title, view3D):
+def plotData(all_data, data_desc, freq, tick_frequency, title, view3D):
     raw_data = all_data["raw_data"]
     dim = {}
     desc_n = 0
@@ -183,26 +186,36 @@ def plotData(all_data, data_desc, freq, title, view3D):
         # Scale and offset data points
         scaled_data = [((x * scale) + offset) for x in data]
 
-        if freq is None:
-            t = np.arange(0, len(data))
-        else:
-            # Generate timeslots using number of data points and sampling frequency
-            t = np.arange(0, len(data) / freq, 1 / freq)
-            if len(t) > len(data):
-                # Truncate timeslots to match the number of data points
-                t = t[0:len(data)]
-        plt.plot(t, scaled_data, label=desc["value"])
+        # Keep each record at its original timeslot and break the line at empty records.
+        t = []
+        plot_data = []
+        index = 0
+        for timeslot, data_size in zip(all_data["timeslot"], all_data["data_size"]):
+            record_time = (timeslot - all_data["timeslot"][0]) / tick_frequency
+            count = data_size // (d_byte * desc_n_max)
+            if count == 0:
+                t.append(record_time)
+                plot_data.append(np.nan)
+            else:
+                t.extend(record_time + (np.arange(count) / freq if freq else np.zeros(count)))
+                plot_data.extend(scaled_data[index:index + count])
+                index += count
+        plt.plot(t, plot_data, label=desc["value"])
 
         # Store data points in a dictionary for later use when there are 3 axes described
         if view3D and (desc_n_max == 3):
-            dim[desc_n] = scaled_data
+            dim[desc_n] = plot_data
 
         # Increment description number
         desc_n += 1
 
+    if all_data["timeslot"]:
+        timeslots = all_data["timeslot"]
+        interval = timeslots[-1] - timeslots[-2] if len(timeslots) > 1 else 0
+        plt.xlim(0, (timeslots[-1] - timeslots[0] + interval) / tick_frequency)
     plt.grid(linestyle=":")
     plt.title(title)
-    plt.xlabel("sample" if freq is None else "seconds")
+    plt.xlabel("seconds")
     plt.ylabel(unit)
     plt.legend()
 
@@ -267,7 +280,7 @@ def main():
         data_freq = getPlotFrequency(meta_data, data)
 
         # Plot data from .sds file/files
-        plotData(data, data_desc, data_freq, data_name, args.view3D)
+        plotData(data, data_desc, data_freq, meta_data.get("tick-frequency", 1000), data_name, args.view3D)
 
     # Show plotted figures
     plt.show()
