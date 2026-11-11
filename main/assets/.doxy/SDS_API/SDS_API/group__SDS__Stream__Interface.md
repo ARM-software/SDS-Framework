@@ -599,7 +599,7 @@ int32_t sdsRead (
 
 * `id` [**sdsId\_t**](group__SDS__Stream__Interface.md#typedef-sdsid_t) handle to SDS stream 
 * `timeslot` pointer to buffer for a timeslot value 
-* `buf` pointer to the data block buffer to be read 
+* `buf` pointer to the data block buffer to be read; may be NULL when buf\_size is 0 
 * `buf_size` size of the data block buffer in bytes 
 
 
@@ -621,7 +621,7 @@ The `sdsThread` worker thread asynchronously reads the data from the SDS file us
 Before attempting to read, the function verifies that the entire header and the complete data block specified by the header are both present in the SDS circular buffer. If either the header is incomplete or the corresponding data block is not yet fully available, the function aborts and returns [**SDS\_NO\_DATA**](group__SDS__Return__Codes.md#define-sds_no_data).
 
 
-The function verifies that the user-provided buffer `buf`, with size `buf_size`, is large enough to accommodate the entire data block. If it is too small, the function aborts and returns [**SDS\_ERROR\_PARAMETER**](group__SDS__Return__Codes.md#define-sds_error_parameter).
+The function verifies that the user-provided buffer `buf`, with size `buf_size`, is large enough to accommodate the entire data block. If it is too small, the function aborts and returns [**SDS\_ERROR\_PARAMETER**](group__SDS__Return__Codes.md#define-sds_error_parameter). For a zero-length data block, `buf_size` may be 0 and `buf` may be NULL.
 
 
 If the end of the stream has been reached and no further data is available, the function returns [**SDS\_EOS**](group__SDS__Return__Codes.md#define-sds_eos).
@@ -690,7 +690,7 @@ int32_t sdsWrite (
 
 * `id` [**sdsId\_t**](group__SDS__Stream__Interface.md#typedef-sdsid_t) handle to SDS stream 
 * `timeslot` timeslot 
-* `buf` pointer to the data block buffer to be written 
+* `buf` pointer to the data block buffer to be written; may be NULL when buf\_size is 0 
 * `buf_size` size of the data block buffer in bytes 
 
 
@@ -709,7 +709,7 @@ Writes a data block, including a header containing the timeslot information and 
 The `sdsThread` worker thread asynchronously writes the data to the SDS file via the underlying SDSIO interface. For an explanation of how the SDS system selects and names the target SDS file, refer to [Filenames section](../theory.md#filenames). This asynchronous design enables efficient, non-blocking data handling and optimized performance.
 
 
-Before attempting to write, the function verifies that the entire header and the complete data block, provided via the buffer pointer `buf` and its size `buf_size`, can fit within the available space in the internal SDS circular buffer. If insufficient space is available, the operation is aborted and the function returns [**SDS\_NO\_SPACE**](group__SDS__Return__Codes.md#define-sds_no_space).
+Before attempting to write, the function verifies that the entire header and the complete data block, provided via the buffer pointer `buf` and its size `buf_size`, can fit within the available space in the internal SDS circular buffer. A zero-length data block may be written by setting `buf_size` to 0; in this case `buf` may be NULL. If insufficient space is available, the operation is aborted and the function returns [**SDS\_NO\_SPACE**](group__SDS__Return__Codes.md#define-sds_no_space).
 
 
 On success, the function writes the header and data block to the SDS circular buffer and returns the number of data bytes written, excluding the header.

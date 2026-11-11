@@ -408,7 +408,6 @@ In most cases the granularity of an RTOS tick (typically 1ms) is a good choice f
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>The current <code>sdsWrite</code> implementation does not accept a zero-byte data block. An application must therefore omit the block or define an application-specific non-empty representation when an inference produces no detections.</li>
 <li>A variable-size segmentation mask cannot be described as a fixed-size detection record. It may be stored in a separate image or mask stream and correlated with the detection stream using the same timeslot.</li>
 </ul>
 </div>
