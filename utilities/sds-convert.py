@@ -33,7 +33,7 @@ except ImportError as err:
 except Exception as e:
     print(f"SDS-Convert: Exception: {type(e).__name__}")
 
-SDS_CONVERT_VERSION = "3.1.1"
+SDS_CONVERT_VERSION = "3.1.2"
 
 class RecordManager:
     def __init__(self):
@@ -301,62 +301,71 @@ def write_SDS_SimpleCSV(args, data, meta_data, sample_frequency, tick_frequency)
         # Convert raw data according to description in meta data
         record_row = prepareData(meta_data, raw_data, data_manipulation=True)
 
-        # Preserve empty result collections; temporal blocks require samples
-        if sample_frequency is None or record_row != [[] for i in range(0, len(meta_data))]:
-            csv_timeslot = timeslot[cnt]
-            # Normalize output timeslots
-            if normalize:
-                csv_timeslot -= timeslot[0]
-            # Without a sample frequency, records share the block timeslot
-            if sample_frequency is None:
-                # If start/stop timeslot parameters are specified, write to output file
-                # when timeslots are between selected boundaries
-                if (csv_start_timeslot is None) or (csv_timeslot >= csv_start_timeslot):
-                    if (csv_stop_timeslot is None) or (csv_timeslot < csv_stop_timeslot):
-                        tmp_record_row = [record_row[value_index][i] for i in range(len(record_row[0])) for value_index in range(len(meta_data))]
-                        writer.writerow([float(csv_timeslot)] + (tmp_record_row or [""] * (len(csv_header) - 1)))
-                    else:
-                        break
-                cnt += 1
-                continue
-            # Get number of samples in this record
-            n_samples = len(record_row[0])
-            # Interpolate timeslots if there is more than one data point in this record
-            if n_samples > 1:
-                # Reuse previous time difference to interpolate timeslots for final record
-                if cnt == (cnt_max-1):
-                    if cnt == 0:
-                        csv_timeslot_next = csv_timeslot
-                    else:
-                        csv_timeslot_next = csv_timeslot + (csv_timeslot - csv_timeslot_previous)
+        # For temporal samples (if sampling-frequency is given)
+        #   - for zero-size data blocks generate expected number of empty samples
+        # For non-temporal samples (if sampling-frequency is not given)
+        #   - extend data records containing less than maximum number of objects to maximum number of objects
+        if sample_frequency is not None:
+            if data_size[cnt] == 0:
+                if cnt < cnt_max - 1:
+                    duration = timeslot[cnt + 1] - timeslot[cnt]
                 else:
-                    csv_timeslot_next = timeslot[cnt + 1]
-                    if normalize:
-                        csv_timeslot_next -= timeslot[0]
-
-                # Interpolate timeslots between current and next record, based on the number of
-                # data points in current record
-                sample_times = np.linspace(csv_timeslot, csv_timeslot_next,  n_samples + 1)[:-1]
-            else:
-                sample_times = [csv_timeslot]
-            csv_timeslot_previous = csv_timeslot
-
-            # Write generated CSV row to output file
-            for sample_idx, sample_time in enumerate(sample_times):
-                # If start/stop timeslot parameters are specified, write to output file
-                # when timeslots are between selected boundaries
-                if (csv_start_timeslot is None) or (sample_time >= csv_start_timeslot):
-                    if (csv_stop_timeslot is None) or (csv_stop_timeslot > sample_time):
-                        tmp_record_row = [record_row[i][sample_idx] for i in range(len(record_row))]
-                        writer.writerow([float(sample_time)] + tmp_record_row)
-                    else:
-                        break
-            cnt += 1
+                    duration = timeslot[cnt] - timeslot[cnt - 1] if cnt else 0
+                n_samples = max(1, round(duration * sample_frequency))
+                record_row = [[""] * n_samples for _ in meta_data]
         else:
-            csv_timeslot_previous = timeslot[cnt]
-            if normalize:
-                csv_timeslot_previous -= timeslot[0]
+            if data_size[cnt] < (max_block_content_cnt * record_size):
+                empty_objects = max_block_content_cnt - (data_size[cnt] // record_size)
+                for values in record_row:
+                    values.extend([""] * empty_objects)
+
+        csv_timeslot = timeslot[cnt]
+        # Normalize output timeslots
+        if normalize:
+            csv_timeslot -= timeslot[0]
+        # Without a sample frequency, records share the block timeslot
+        if sample_frequency is None:
+            # If start/stop timeslot parameters are specified, write header to output file
+            # when timeslots are between selected boundaries
+            if (csv_start_timeslot is None) or (csv_timeslot >= csv_start_timeslot):
+                if (csv_stop_timeslot is None) or (csv_timeslot < csv_stop_timeslot):
+                    tmp_record_row = [record_row[value_index][i] for i in range(len(record_row[0])) for value_index in range(len(meta_data))]
+                    writer.writerow([float(csv_timeslot)] + (tmp_record_row or [""] * (len(csv_header) - 1)))
+                else:
+                    break
             cnt += 1
+            continue
+        # Get number of samples in this record
+        n_samples = len(record_row[0])
+        # Interpolate timeslots if there is more than one data point in this record
+        if sample_frequency is not None and n_samples > 1:
+            # Reuse previous time difference to interpolate timeslots for final record
+            if cnt == (cnt_max-1):
+                if cnt == 0:
+                    csv_timeslot_next = csv_timeslot
+                else:
+                    csv_timeslot_next = csv_timeslot + (csv_timeslot - csv_timeslot_previous)
+            else:
+                csv_timeslot_next = timeslot[cnt + 1]
+                if normalize:
+                    csv_timeslot_next -= timeslot[0]
+            # Interpolate timeslots between current and next record, based on the number of
+            # data points in current record
+            sample_times = np.linspace(csv_timeslot, csv_timeslot_next,  n_samples + 1)[:-1]
+        else:
+            sample_times = [csv_timeslot]
+        csv_timeslot_previous = csv_timeslot
+        # Write generated CSV row to output file
+        for sample_idx, sample_time in enumerate(sample_times):
+            # If start/stop timeslot parameters are specified, write to output file
+            # when timeslots are between selected boundaries
+            if (csv_start_timeslot is None) or (sample_time >= csv_start_timeslot):
+                if (csv_stop_timeslot is None) or (csv_stop_timeslot > sample_time):
+                    tmp_record_row = [record_row[i][sample_idx] for i in range(len(record_row))]
+                    writer.writerow([float(sample_time)] + tmp_record_row)
+                else:
+                    break
+        cnt += 1
 
     csv_file.close()
 
