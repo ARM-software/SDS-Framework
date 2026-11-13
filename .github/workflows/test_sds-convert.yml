@@ -49,10 +49,12 @@ jobs:
           - { sample: Test_In.1.sds,       metadata: Test_In.sds.yml,       format: csv,       output: Test_In.1.csv }
           - { sample: Test_In.2.sds,       metadata: Test_In.sds.yml,       format: csv,       output: Test_In.2.csv }
           - { sample: Test_In.3.sds,       metadata: Test_In.sds.yml,       format: csv,       output: Test_In.3.csv }
+          - { sample: Test_In.4.sds,       metadata: Test_In.sds.yml,       format: csv,       output: Test_In.4.csv }
           - { sample: Test_Out.0.p.sds,    metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.0.p.csv }
           - { sample: Test_Out.1.sds,      metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.1.csv }
           - { sample: Test_Out.2.sds,      metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.2.csv }
           - { sample: Test_Out.3.sds,      metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.3.csv }
+          - { sample: Test_Out.4.sds,      metadata: Test_Out.sds.yml,      format: csv,       output: Test_Out.4.csv }
 
     steps:
       - name: Check out SDS Framework
