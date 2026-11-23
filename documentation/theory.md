@@ -287,7 +287,7 @@ Describes audio data format, typically used for a microphone data stream.
 `- audio:`                                               | Audio format specification
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `bit-depth:`        | Bits per audio sample (required)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `channels:`         | Number of interleaved audio channels (required)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `format:`           | Audio format used (optional), currently only `pcm` is supported
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `format:`           | Audio format used (optional); default: `pcm`; currently only `pcm` is supported
 
 **Example:**
 
