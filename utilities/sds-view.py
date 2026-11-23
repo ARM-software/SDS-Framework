@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import yaml
 
-SDS_VIEW_VERSION = "3.1.1"
+SDS_VIEW_VERSION = "3.1.2"
 
 class RecordManager:
     def __init__(self):
@@ -93,24 +93,28 @@ def getPlotFrequency(meta_data, data):
     return tick_frequency / delta
 
 
-def requireValueMetadata(meta_data):
+def checkSupportedMetadata(meta_data):
     for entry in meta_data:
-        if "value" not in entry or "type" not in entry:
-            content_type = next((key for key in ("image", "audio") if key in entry), "non-value")
-            sys.exit(f"Error: SDS-View requires `value:` content entries; found `{content_type}:`")
-
+        if not (("value" in entry and "type" in entry) or
+                (isinstance(entry.get("audio"), dict) and entry["audio"].get("bit-depth") in (8, 16, 32) and entry["audio"].get("channels") == 1 and entry["audio"].get("format") == "pcm")):
+            if "value" in entry and not "type" in entry:
+                sys.exit("Error: SDS-View supports content `value:` only with `type:`")
+            elif isinstance(entry.get("audio"), dict):
+                sys.exit("Error: SDS-View supports content `audio:` only with `bit-depth: 8, 16 or 32`, `channels: 1` and `format: pcm`")
+            else:
+                sys.exit("Error: Unknown or unsupported content, supported contents are only `value` and `audio`")
 
 # Convert C style data type to Python style
 def getDataType(data_type):
-    if   data_type == "int8_t":
+    if   data_type == "int8_t" or data_type == 8:
         d_type = "b"
     elif data_type == "uint8_t":
         d_type = "B"
-    elif data_type == "int16_t":
+    elif data_type == "int16_t" or data_type == 16:
         d_type = "h"
     elif data_type == "uint16_t":
         d_type = "H"
-    elif data_type == "int32_t":
+    elif data_type == "int32_t" or data_type == 32:
         d_type = "i"
     elif data_type == "uint32_t":
         d_type = "I"
@@ -119,7 +123,7 @@ def getDataType(data_type):
     elif data_type == "double":
         d_type = "d"
     else:
-        print(f"Unknown data type: {data_type}\n")
+        print(f"Unknown or unsupported data type: {data_type}\n")
         d_type = "I"
 
     return d_type
@@ -172,6 +176,8 @@ def plotData(all_data, data_desc, freq, tick_frequency, title, view3D):
 
         if "type" in desc:
             d_type = getDataType(desc["type"])
+        elif "audio" in desc:
+            d_type = getDataType(desc["audio"]["bit-depth"])
         else:
             sys.exit(1)
 
@@ -200,7 +206,12 @@ def plotData(all_data, data_desc, freq, tick_frequency, title, view3D):
                 t.extend(record_time + (np.arange(count) / freq if freq else np.zeros(count)))
                 plot_data.extend(scaled_data[index:index + count])
                 index += count
-        plt.plot(t, plot_data, label=desc["value"])
+        if "type" in desc:
+            plt.plot(t, plot_data, label=desc["value"])
+        elif "audio" in desc:
+            plt.plot(t, plot_data, label="Audio")
+        else:
+            sys.exit(1)
 
         # Store data points in a dictionary for later use when there are 3 axes described
         if view3D and (desc_n_max == 3):
@@ -266,7 +277,9 @@ def main():
     # Parse description file
     data_name = meta_data["name"]
     data_desc = meta_data["content"]
-    requireValueMetadata(data_desc)
+    if not data_desc:
+        sys.exit("Error: SDS metadata content must not be empty")
+    checkSupportedMetadata(data_desc)
 
     # Record manager
     Record = RecordManager()
