@@ -778,14 +778,15 @@ interface-opts (optional):
 </ul>
 <h2 id="sds-view">SDS-View</h2>
 <p>The Python utility <a href="https://github.com/ARM-software/SDS-Framework/tree/main/utilities"><strong>SDS-View</strong></a> generates a time-based plot
-from data recorded in SDS files (<code>&lt;stream-name&gt;.&lt;label&gt;.sds</code>) using the metadata provided in <code>&lt;stream-name&gt;.sds.yml</code>.</p>
+from data recorded in SDS files (<code>&lt;stream-name&gt;.&lt;label&gt;.sds</code>) using the metadata provided in <a href="theory.html#sds-metadata-format"><code>&lt;stream-name&gt;.sds.yml</code> metadata file</a>.</p>
 <p>The horizontal time scale is derived from the number of data points in a recording and <code>sample-frequency:</code> provided in the metadata description.
 All plots from a single recording are displayed on the same figure (shared vertical scale).</p>
 <p>If there are 3 values described in the metadata file, an optional 3D view may be displayed.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>SDS-View requires that all values in the <a href="theory.html#sds-metadata-format"><code>&lt;stream-name&gt;.sds.yml</code> metadata file</a> have the same data type (float, uint32_t, uint16_t, ...)</li>
+<li>SDS-View supports <code>value/type</code> and <code>audio</code> content with a <code>bit-depth</code> of <code>8, 16, or 32</code>, <code>channels: 1</code>, and <code>format: pcm</code>, as specified in the <a href="theory.html#sds-metadata-format"><code>&lt;stream-name&gt;.sds.yml</code> metadata file</a></li>
+<li>SDS-View requires all <code>values</code> defined in the <a href="theory.html#sds-metadata-format"><code>&lt;stream-name&gt;.sds.yml</code> metadata file</a> to have the same data type (e.g., float, uint32_t, or uint16_t).</li>
 </ul>
 </div>
 <h3 id="usage_1">Usage</h3>
