@@ -471,7 +471,7 @@ See also:
 ## SDS-View
 
 The Python utility [**SDS-View**](https://github.com/ARM-software/SDS-Framework/tree/main/utilities) generates a time-based plot
-from data recorded in SDS files (`<stream-name>.<label>.sds`) using the metadata provided in `<stream-name>.sds.yml`.
+from data recorded in SDS files (`<stream-name>.<label>.sds`) using the metadata provided in [`<stream-name>.sds.yml` metadata file](theory.md#sds-metadata-format).
 
 The horizontal time scale is derived from the number of data points in a recording and `sample-frequency:` provided in the metadata description.
 All plots from a single recording are displayed on the same figure (shared vertical scale).
@@ -479,7 +479,8 @@ All plots from a single recording are displayed on the same figure (shared verti
 If there are 3 values described in the metadata file, an optional 3D view may be displayed.
 
 !!! Note
-    - SDS-View requires that all values in the [`<stream-name>.sds.yml` metadata file](theory.md#sds-metadata-format) have the same data type (float, uint32_t, uint16_t, ...)
+    - SDS-View supports `value/type` and `audio` content with a `bit-depth` of `8, 16, or 32`, `channels: 1`, and `format: pcm`, as specified in the [`<stream-name>.sds.yml` metadata file](theory.md#sds-metadata-format)
+    - SDS-View requires all `values` defined in the [`<stream-name>.sds.yml` metadata file](theory.md#sds-metadata-format) to have the same data type (e.g., float, uint32_t, or uint16_t).
 
 ### Usage
 
