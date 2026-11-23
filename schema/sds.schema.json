@@ -138,8 +138,9 @@
                         "format" : {
                             "title" : "format:\nDocumentation: https://arm-software.github.io/SDS-Framework/main/theory.html#audio-data-stream",
                             "type" : "string",
-                            "description" : "Audio format used (optional), currently only pcm is supported",
-                            "enum" : [ "pcm" ]
+                            "description" : "Audio format used (optional); default: pcm; currently only pcm is supported",
+                            "enum" : [ "pcm" ],
+                            "default" : "pcm"
                         }
                     },
                     "required" : [ "bit-depth", "channels" ],
