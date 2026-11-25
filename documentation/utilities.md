@@ -626,7 +626,7 @@ optional:
 ```
 
 !!! Note
-    - Current implementation assumes that the tick frequency is `1000 Hz` and does not use the `tick-frequency` value from the metadata file.
+    - If `tick-frequency` is not specified in the metadata file, a default value of 1000 Hz is used.
 
 **Example of metadata yml file for gyroscope:**
 
